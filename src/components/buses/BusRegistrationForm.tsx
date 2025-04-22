@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -13,6 +12,9 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import FileUpload from './FileUpload';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BusGeneralInfoForm from './BusGeneralInfoForm';
+import BusTechnicalDetailsForm from './BusTechnicalDetailsForm';
+import BusDocumentsForm from './BusDocumentsForm';
 
 // Define the bus registration form schema
 const busRegistrationSchema = z.object({
@@ -136,477 +138,47 @@ const BusRegistrationForm: React.FC = () => {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-transport-700">Bus Registration</CardTitle>
-        <CardDescription>Register a new bus with all required information and documentation</CardDescription>
+        <CardTitle className="text-2xl font-bold text-transport-700">Registro de Autobús</CardTitle>
+        <CardDescription>Registre un nuevo autobús con toda la información requerida y documentación</CardDescription>
       </CardHeader>
 
       <Tabs defaultValue="general" className="w-full">
         <TabsList className="grid grid-cols-3 mx-6">
-          <TabsTrigger value="general">General Information</TabsTrigger>
-          <TabsTrigger value="technical">Technical Details</TabsTrigger>
-          <TabsTrigger value="documents">Documentation</TabsTrigger>
+          <TabsTrigger value="general">Información General</TabsTrigger>
+          <TabsTrigger value="technical">Detalles Técnicos</TabsTrigger>
+          <TabsTrigger value="documents">Documentación</TabsTrigger>
         </TabsList>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardContent className="p-6">
-              <TabsContent value="general" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="plate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Plate</FormLabel>
-                        <FormControl>
-                          <Input placeholder="SJB-123" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Enter the bus license plate
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Transportation Company</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a company" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="company1">Transport Co SA</SelectItem>
-                            <SelectItem value="company2">Costa Buses Inc</SelectItem>
-                            <SelectItem value="company3">Metropolitan Transit</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Select the company that owns the bus
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="brand"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Brand</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a brand" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="mercedes">Mercedes Benz</SelectItem>
-                            <SelectItem value="volvo">Volvo</SelectItem>
-                            <SelectItem value="scania">Scania</SelectItem>
-                            <SelectItem value="toyota">Toyota</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Select the bus brand
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="year"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Year</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="2023" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Manufacturing year
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="capacity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Capacity</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="40" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Number of passengers
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="unitType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Unit Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select unit type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="bus">Bus</SelectItem>
-                            <SelectItem value="minibus">Minibus</SelectItem>
-                            <SelectItem value="microbus">Microbus</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Select the type of unit
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Current operational status
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="engineSeries"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Engine Series</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ABC12345XYZ" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Engine serial number
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="mt-6">
-                  <div className="text-sm font-medium mb-2">Bus Photos</div>
-                  <FileUpload
-                    label="Bus Photos"
-                    acceptTypes=".jpg,.jpeg,.png"
-                    id="busPhotos"
-                    required={true}
-                    multiple={true}
-                    onChange={setBusPhotos}
-                    helperText="Upload at least one photo of the bus. You can upload multiple photos."
-                  />
-                </div>
+              <TabsContent value="general">
+                <BusGeneralInfoForm 
+                  form={form} 
+                  busPhotos={busPhotos}
+                  setBusPhotos={setBusPhotos}
+                />
               </TabsContent>
-
-              <TabsContent value="technical" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="readerSerial"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reader Serial</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Reader12345" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Card reader serial number (optional). Buses without readers will be set to inactive status.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator className="my-4" />
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Safety Features</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="hasCameraMonitoring"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>Camera Monitoring</FormLabel>
-                            <FormDescription>
-                              Bus is equipped with a camera monitoring system
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="hasReverseParking"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>Reverse Parking Sensors</FormLabel>
-                            <FormDescription>
-                              Bus is equipped with reverse parking sensors
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="hasABS"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>ABS System</FormLabel>
-                            <FormDescription>
-                              Bus is equipped with an Anti-lock Braking System
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="hasESC"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>ESC System</FormLabel>
-                            <FormDescription>
-                              Bus is equipped with Electronic Stability Control
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="hasSeatbelt"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>Seatbelts</FormLabel>
-                            <FormDescription>
-                              Bus is equipped with passenger seatbelts
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+              <TabsContent value="technical">
+                <BusTechnicalDetailsForm form={form} />
               </TabsContent>
-
-              <TabsContent value="documents" className="space-y-6">
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="dekraExpirationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="required-field">Dekra Expiration Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Expiration date of the Dekra certification
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div>
-                      <FileUpload
-                        label="Dekra Document"
-                        acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
-                        id="dekraDocument"
-                        required={true}
-                        onChange={setDekraDocument}
-                        helperText="Upload the Dekra certification document"
-                      />
-                    </div>
-                  </div>
-
-                  <Separator className="my-2" />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="insuranceExpirationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="required-field">Insurance Expiration Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Expiration date of the insurance
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div>
-                      <FileUpload
-                        label="Insurance Document"
-                        acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
-                        id="insuranceDocument"
-                        required={true}
-                        onChange={setInsuranceDocument}
-                        helperText="Upload the insurance document"
-                      />
-                    </div>
-                  </div>
-
-                  <Separator className="my-2" />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="taxExpirationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="required-field">Tax (Marchamo) Expiration Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Expiration date of the tax (marchamo)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div>
-                      <FileUpload
-                        label="Tax Document"
-                        acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
-                        id="taxDocument"
-                        required={true}
-                        onChange={setTaxDocument}
-                        helperText="Upload the tax (marchamo) document"
-                      />
-                    </div>
-                  </div>
-
-                  <Separator className="my-2" />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="ctpExpirationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="required-field">CTP Expiration Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Expiration date of the CTP certification
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div>
-                      <FileUpload
-                        label="CTP Document"
-                        acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
-                        id="ctpDocument"
-                        required={true}
-                        onChange={setCtpDocument}
-                        helperText="Upload the CTP certification document"
-                      />
-                    </div>
-                  </div>
-                </div>
+              <TabsContent value="documents">
+                <BusDocumentsForm
+                  form={form}
+                  dekraDocument={dekraDocument}
+                  setDekraDocument={setDekraDocument}
+                  insuranceDocument={insuranceDocument}
+                  setInsuranceDocument={setInsuranceDocument}
+                  taxDocument={taxDocument}
+                  setTaxDocument={setTaxDocument}
+                  ctpDocument={ctpDocument}
+                  setCtpDocument={setCtpDocument}
+                />
               </TabsContent>
             </CardContent>
-
             <CardFooter className="flex justify-between border-t p-6">
-              <Button variant="outline" type="button">Cancel</Button>
-              <Button type="submit" className="bg-transport-600 hover:bg-transport-700">Register Bus</Button>
+              <Button variant="outline" type="button">Cancelar</Button>
+              <Button type="submit" className="bg-transport-600 hover:bg-transport-700">Registrar Autobús</Button>
             </CardFooter>
           </form>
         </Form>
