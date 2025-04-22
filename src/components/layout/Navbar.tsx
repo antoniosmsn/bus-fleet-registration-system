@@ -12,26 +12,26 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Bus className="h-8 w-8 text-transport-600" />
-              <span className="ml-2 text-xl font-semibold text-gray-900">TransportSystem</span>
+              <span className="ml-2 text-xl font-semibold text-gray-900">SistemaTransporte</span>
             </Link>
             <nav className="hidden md:ml-8 md:flex md:space-x-4">
               <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
-                Dashboard
+                Panel Principal
               </Link>
               <Link to="/buses" className="px-3 py-2 text-sm font-medium text-transport-600 border-b-2 border-transport-600">
-                Buses
+                Autobuses
               </Link>
               <Link to="/companies" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
-                Companies
+                Empresas
               </Link>
               <Link to="/reports" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
-                Reports
+                Informes
               </Link>
             </nav>
           </div>
           <div className="flex items-center">
             <Button variant="outline" size="sm" className="mr-2">
-              Admin
+              Administrador
             </Button>
           </div>
         </div>

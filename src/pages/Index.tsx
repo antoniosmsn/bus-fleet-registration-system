@@ -20,10 +20,10 @@ const Index = () => {
         <div className="flex justify-center mb-4">
           <Bus className="h-20 w-20 text-transport-600" />
         </div>
-        <h1 className="text-4xl font-bold mb-4 text-transport-900">Bus Fleet Registration System</h1>
-        <p className="text-xl text-gray-600 mb-8">Manage your bus fleet with efficiency and compliance</p>
+        <h1 className="text-4xl font-bold mb-4 text-transport-900">Sistema de Registro de Flota de Autobuses</h1>
+        <p className="text-xl text-gray-600 mb-8">Administre su flota de autobuses con eficiencia y cumplimiento</p>
         <div className="animate-pulse text-transport-600">
-          Redirecting to the dashboard...
+          Redirigiendo al panel principal...
         </div>
       </div>
     </div>
