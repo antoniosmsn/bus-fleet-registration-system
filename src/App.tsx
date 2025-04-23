@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BusesIndex from "./pages/buses/Index";
 import RegisterBus from "./pages/buses/Register";
+import ZoneParametersConfig from "./pages/configuracion/parametros";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/buses" element={<BusesIndex />} />
           <Route path="/buses/register" element={<RegisterBus />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

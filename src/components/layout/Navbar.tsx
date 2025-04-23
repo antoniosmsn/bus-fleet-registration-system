@@ -18,8 +18,11 @@ const Navbar = () => {
               <Link to="/" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
                 Panel Principal
               </Link>
-              <Link to="/buses" className="px-3 py-2 text-sm font-medium text-transport-600 border-b-2 border-transport-600">
+              <Link to="/buses" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
                 Autobuses
+              </Link>
+              <Link to="/configuracion/parametros" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
+                Configuración
               </Link>
               <Link to="/companies" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
                 Empresas
