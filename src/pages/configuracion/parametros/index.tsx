@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/layout/Navbar";
 
 const formSchema = z.object({
@@ -72,222 +73,234 @@ const ConfiguracionParametros = () => {
       <main className="container mx-auto py-6">
         <Card>
           <CardHeader>
-            <CardTitle>Configuración de Parámetros Generales del Sistema</CardTitle>
+            <CardTitle>Configuración de Parámetros del Sistema</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="distanciaEntreParadas"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Distancia entre paradas (metros)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <Tabs defaultValue="operaciones" className="w-full">
+                  <TabsList className="grid w-full grid-cols-1 md:grid-cols-4">
+                    <TabsTrigger value="operaciones">Operaciones</TabsTrigger>
+                    <TabsTrigger value="seguridad">Seguridad</TabsTrigger>
+                    <TabsTrigger value="pasajeros">Pasajeros</TabsTrigger>
+                    <TabsTrigger value="telemetria">Telemetría</TabsTrigger>
+                  </TabsList>
 
-                  <FormField
-                    control={form.control}
-                    name="horaConfirmacionPlaneacion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hora confirmación de planeación</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <TabsContent value="operaciones" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="distanciaEntreParadas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Distancia entre paradas (metros)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="horaConfirmacionPlaneacion"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Hora confirmación de planeación</FormLabel>
+                            <FormControl>
+                              <Input type="time" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="limiteVelocidadBuses"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Límite velocidad de los autobuses (km/h)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="horaPrediccionDemanda"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Hora predicción de demanda</FormLabel>
+                            <FormControl>
+                              <Input type="time" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
 
-                  <FormField
-                    control={form.control}
-                    name="mesesConsultaPasajerosSinMovimiento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Meses para consulta de pasajeros sin movimiento</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <TabsContent value="seguridad" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="tiempoRegeneracionQR"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo regeneración QR (horas)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tiempoValidezQR"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo validez QR (minutos)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
 
-                  <FormField
-                    control={form.control}
-                    name="tiempoEnvioTelemetria"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo envío de telemetría (minutos)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <TabsContent value="pasajeros" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="mesesConsultaPasajerosSinMovimiento"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Meses consulta pasajeros sin movimiento</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tiempoActualizacionInfoPasajero"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo actualización información pasajero (días)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="diasSinRespuestaTiquetes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Días sin respuesta de tiquetes</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tiempoPasajeroEnViaje"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo pasajero en viaje (minutos)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="limiteDiarioViajes"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Límite diario de viajes</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="diasEliminacionSolicitudesPasajero"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Días eliminación solicitudes pasajero</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
 
-                  <FormField
-                    control={form.control}
-                    name="limiteVelocidadBuses"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Límite velocidad de los autobuses (km/h)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoEnvioAlertas"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo envío alertas (minutos)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="horaPrediccionDemanda"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hora predicción de demanda</FormLabel>
-                        <FormControl>
-                          <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoAntelacionPrediccion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo antelación predicción (horas)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} min="24" max="48" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="diasEliminacionSolicitudesPasajero"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Días eliminación solicitudes pasajero</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoRegeneracionQR"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo regeneración QR (horas)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoActualizacionInfoPasajero"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo actualización información pasajero (días)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="diasSinRespuestaTiquetes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Días sin respuesta de tiquetes</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoValidezQR"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo validez QR (minutos)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tiempoPasajeroEnViaje"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tiempo pasajero en viaje (minutos)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="limiteDiarioViajes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Límite diario de viajes</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                  <TabsContent value="telemetria" className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <FormField
+                        control={form.control}
+                        name="tiempoEnvioTelemetria"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo envío de telemetría (minutos)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tiempoEnvioAlertas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo envío alertas (minutos)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tiempoAntelacionPrediccion"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tiempo antelación predicción (horas)</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} min="24" max="48" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </TabsContent>
+                </Tabs>
 
                 <div className="flex justify-end space-x-4">
                   <Button type="submit">Guardar cambios</Button>
