@@ -13,48 +13,48 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from "@/components/layout/Navbar";
 
 const formSchema = z.object({
-  zonaFranca: z.string({
-    required_error: "Por favor seleccione una zona franca",
-  }),
-  sistema: z.object({
-    precisionGPSControl: z.string().min(1, "Este campo es requerido"),
-    precisionGPSReferencia: z.string().min(1, "Este campo es requerido"),
-    velocidadMaxima: z.string().min(1, "Este campo es requerido"),
-    mostrarTiempoReal: z.string().min(1, "Este campo es requerido"),
-    tiempoHolguraRoles: z.string().min(1, "Este campo es requerido"),
-    tiempoRecargaAlarmas: z.string().min(1, "Este campo es requerido"),
-    maxKilometrajeAlerta: z.string().min(1, "Este campo es requerido"),
-    maxPasajerosAlerta: z.string().min(1, "Este campo es requerido"),
-  }),
+  distanciaEntreParadas: z.string().min(1, "Este campo es requerido"),
+  horaConfirmacionPlaneacion: z.string().min(1, "Este campo es requerido"),
+  mesesConsultaPasajerosSinMovimiento: z.string().min(1, "Este campo es requerido"),
+  tiempoEnvioTelemetria: z.string().min(1, "Este campo es requerido"),
+  limiteVelocidadBuses: z.string().min(1, "Este campo es requerido"),
+  tiempoEnvioAlertas: z.string().min(1, "Este campo es requerido"),
+  horaPrediccionDemanda: z.string().min(1, "Este campo es requerido"),
+  tiempoAntelacionPrediccion: z.string().min(1, "Este campo es requerido"),
+  diasEliminacionSolicitudesPasajero: z.string().min(1, "Este campo es requerido"),
+  tiempoRegeneracionQR: z.string().min(1, "Este campo es requerido"),
+  tiempoActualizacionInfoPasajero: z.string().min(1, "Este campo es requerido"),
+  diasSinRespuestaTiquetes: z.string().min(1, "Este campo es requerido"),
+  tiempoValidezQR: z.string().min(1, "Este campo es requerido"),
+  tiempoPasajeroEnViaje: z.string().min(1, "Este campo es requerido"),
+  limiteDiarioViajes: z.string().min(1, "Este campo es requerido"),
 });
 
-const ZoneParametersConfig = () => {
+const ConfiguracionParametros = () => {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sistema: {
-        precisionGPSControl: "100",
-        precisionGPSReferencia: "175",
-        velocidadMaxima: "95",
-        mostrarTiempoReal: "Si",
-        tiempoHolguraRoles: "2880",
-        tiempoRecargaAlarmas: "60",
-        maxKilometrajeAlerta: "20",
-        maxPasajerosAlerta: "10",
-      },
+      distanciaEntreParadas: "25",
+      horaConfirmacionPlaneacion: "18:00",
+      mesesConsultaPasajerosSinMovimiento: "3",
+      tiempoEnvioTelemetria: "5",
+      limiteVelocidadBuses: "80",
+      tiempoEnvioAlertas: "30",
+      horaPrediccionDemanda: "00:01",
+      tiempoAntelacionPrediccion: "24",
+      diasEliminacionSolicitudesPasajero: "7",
+      tiempoRegeneracionQR: "24",
+      tiempoActualizacionInfoPasajero: "180",
+      diasSinRespuestaTiquetes: "3",
+      tiempoValidezQR: "15",
+      tiempoPasajeroEnViaje: "120",
+      limiteDiarioViajes: "4",
     },
   });
 
@@ -72,156 +72,221 @@ const ZoneParametersConfig = () => {
       <main className="container mx-auto py-6">
         <Card>
           <CardHeader>
-            <CardTitle>Establecer parámetros de la zona franca</CardTitle>
+            <CardTitle>Configuración de Parámetros Generales del Sistema</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="zonaFranca"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Empresa</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="distanciaEntreParadas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Distancia entre paradas (metros)</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione una empresa" />
-                          </SelectTrigger>
+                          <Input type="number" {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="zona1">Zona Franca 1</SelectItem>
-                          <SelectItem value="zona2">Zona Franca 2</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium">Sistema</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="sistema.precisionGPSControl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Precisión de GPS para puntos de control (m)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="horaConfirmacionPlaneacion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Hora confirmación de planeación</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.precisionGPSReferencia"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Precisión de GPS para puntos de referencia (m)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="mesesConsultaPasajerosSinMovimiento"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Meses para consulta de pasajeros sin movimiento</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.velocidadMaxima"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Velocidad máxima permitida (km/h)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="tiempoEnvioTelemetria"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo envío de telemetría (minutos)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.mostrarTiempoReal"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mostrar opciones de tiempo real</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Si">Sí</SelectItem>
-                              <SelectItem value="No">No</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="limiteVelocidadBuses"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Límite velocidad de los autobuses (km/h)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.tiempoHolguraRoles"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tiempo de holgura Análisis Roles (min)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="tiempoEnvioAlertas"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo envío alertas (minutos)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.tiempoRecargaAlarmas"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tiempo de recarga Alarmas (seg)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="horaPrediccionDemanda"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Hora predicción de demanda</FormLabel>
+                        <FormControl>
+                          <Input type="time" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.maxKilometrajeAlerta"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Máximo kilometraje recorrido alerta (km)</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="tiempoAntelacionPrediccion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo antelación predicción (horas)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} min="24" max="48" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="sistema.maxPasajerosAlerta"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Máximo de pasajeros del recorrido Alerta</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="diasEliminacionSolicitudesPasajero"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Días eliminación solicitudes pasajero</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tiempoRegeneracionQR"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo regeneración QR (horas)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tiempoActualizacionInfoPasajero"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo actualización información pasajero (días)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="diasSinRespuestaTiquetes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Días sin respuesta de tiquetes</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tiempoValidezQR"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo validez QR (minutos)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="tiempoPasajeroEnViaje"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tiempo pasajero en viaje (minutos)</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="limiteDiarioViajes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Límite diario de viajes</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <div className="flex justify-end space-x-4">
@@ -236,5 +301,5 @@ const ZoneParametersConfig = () => {
   );
 };
 
-export default ZoneParametersConfig;
+export default ConfiguracionParametros;
 
