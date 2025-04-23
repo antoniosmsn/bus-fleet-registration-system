@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import BusesIndex from "./pages/buses/Index";
 import RegisterBus from "./pages/buses/Register";
 import ZoneParametersConfig from "./pages/configuracion/parametros";
+import PerfilesIndex from "./pages/perfiles/Index";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +24,7 @@ const App = () => (
           <Route path="/buses" element={<BusesIndex />} />
           <Route path="/buses/register" element={<RegisterBus />} />
           <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
+          <Route path="/perfiles" element={<PerfilesIndex />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
