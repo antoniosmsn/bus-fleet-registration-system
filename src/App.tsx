@@ -10,6 +10,7 @@ import BusesIndex from "./pages/buses/Index";
 import RegisterBus from "./pages/buses/Register";
 import ZoneParametersConfig from "./pages/configuracion/parametros";
 import PerfilesIndex from "./pages/perfiles/Index";
+import RegisterPerfil from "./pages/perfiles/Register";
 
 const queryClient = new QueryClient();
 
