@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +34,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-// Mock data for perfiles (would be replaced by an API call)
 const mockPerfiles = [
   { id: 1, nombre: "Administrador", usuariosAsignados: 3 },
   { id: 2, nombre: "Supervisor", usuariosAsignados: 1 },
@@ -45,6 +44,7 @@ const mockPerfiles = [
 
 const PerfilesIndex = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [perfiles, setPerfiles] = useState(mockPerfiles);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,12 +52,10 @@ const PerfilesIndex = () => {
   
   const perfilesPerPage = 5;
 
-  // Filter perfiles based on search term
   const filteredPerfiles = perfiles.filter(perfil => 
     perfil.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort perfiles by name
   const sortedPerfiles = [...filteredPerfiles].sort((a, b) => {
     if (sortDirection === 'asc') {
       return a.nombre.localeCompare(b.nombre);
@@ -66,24 +64,20 @@ const PerfilesIndex = () => {
     }
   });
 
-  // Pagination logic
   const indexOfLastPerfil = currentPage * perfilesPerPage;
   const indexOfFirstPerfil = indexOfLastPerfil - perfilesPerPage;
   const currentPerfiles = sortedPerfiles.slice(indexOfFirstPerfil, indexOfLastPerfil);
   const totalPages = Math.ceil(sortedPerfiles.length / perfilesPerPage);
 
-  // Handle sorting
   const toggleSortDirection = () => {
     setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  // Handle search
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
-  // Handle delete profile
   const handleDeletePerfil = (perfilId: number, perfilNombre: string) => {
     const perfilToDelete = perfiles.find(p => p.id === perfilId);
     
@@ -96,7 +90,6 @@ const PerfilesIndex = () => {
         variant: "destructive",
       });
     } else {
-      // In a real application, this would call an API to delete the profile
       const updatedPerfiles = perfiles.filter(p => p.id !== perfilId);
       setPerfiles(updatedPerfiles);
       
@@ -107,7 +100,6 @@ const PerfilesIndex = () => {
     }
   };
 
-  // Generate page numbers for pagination
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
@@ -118,7 +110,7 @@ const PerfilesIndex = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Perfiles por Zona Franca</h1>
-          <Button>
+          <Button onClick={() => navigate('/perfiles/register')}>
             <Plus className="mr-2 h-4 w-4" /> Nuevo Perfil
           </Button>
         </div>

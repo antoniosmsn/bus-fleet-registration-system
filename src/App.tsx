@@ -25,6 +25,7 @@ const App = () => (
           <Route path="/buses/register" element={<RegisterBus />} />
           <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
           <Route path="/perfiles" element={<PerfilesIndex />} />
+          <Route path="/perfiles/register" element={<RegisterPerfil />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
