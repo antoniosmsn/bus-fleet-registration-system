@@ -30,9 +30,15 @@ import { consultarCedulaHacienda } from "@/services/haciendaService";
 
 interface ConductorInfoFormProps {
   form: UseFormReturn<ConductorFormValues>;
+  editMode?: boolean;
+  canChangeCompany?: boolean;
 }
 
-const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({ form }) => {
+const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({ 
+  form, 
+  editMode = false,
+  canChangeCompany = false 
+}) => {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -93,6 +99,7 @@ const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({ form }) => {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
+                disabled={editMode && !canChangeCompany}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -121,25 +128,34 @@ const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({ form }) => {
               <FormLabel>Número de Cédula o DIMEX <span className="text-red-500">*</span></FormLabel>
               <div className="flex space-x-2">
                 <FormControl>
-                  <Input placeholder="Ej. 101230456" {...field} maxLength={12} />
+                  <Input 
+                    placeholder="Ej. 101230456" 
+                    {...field} 
+                    maxLength={12} 
+                    disabled={editMode}
+                  />
                 </FormControl>
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={handleBuscarCedula}
-                  disabled={isSearchingCedula}
-                >
-                  {isSearchingCedula ? (
-                    <span className="animate-spin mr-1">●</span>
-                  ) : (
-                    <Search className="h-4 w-4 mr-1" />
-                  )}
-                  Buscar
-                </Button>
+                {!editMode && (
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    onClick={handleBuscarCedula}
+                    disabled={isSearchingCedula}
+                  >
+                    {isSearchingCedula ? (
+                      <span className="animate-spin mr-1">●</span>
+                    ) : (
+                      <Search className="h-4 w-4 mr-1" />
+                    )}
+                    Buscar
+                  </Button>
+                )}
               </div>
-              <FormDescription>
-                Utilice el botón de búsqueda para validar en Hacienda
-              </FormDescription>
+              {!editMode && (
+                <FormDescription>
+                  Utilice el botón de búsqueda para validar en Hacienda
+                </FormDescription>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -338,6 +354,33 @@ const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({ form }) => {
             </FormItem>
           )}
         />
+
+        {editMode && (
+          <FormField
+            control={form.control}
+            name="estado"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estado <span className="text-red-500">*</span></FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione estado" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Activo">Activo</SelectItem>
+                    <SelectItem value="Inactivo">Inactivo</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </div>
     </div>
   );

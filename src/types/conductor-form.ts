@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 export const conductorFormSchema = z.object({
@@ -69,6 +68,29 @@ export const conductorFormSchema = z.object({
 });
 
 export type ConductorFormValues = z.infer<typeof conductorFormSchema>;
+
+export const passwordChangeSchema = z.object({
+  currentPassword: z.string().nonempty("La contraseña actual es requerida"),
+  newPassword: z
+    .string()
+    .nonempty("La nueva contraseña es requerida")
+    .min(4, "Mínimo 4 caracteres")
+    .max(12, "Máximo 12 caracteres")
+    .regex(/^[a-hjk-mo-z]+$/, "Solo letras minúsculas (excluyendo i, l, ñ, acentos y símbolos)"),
+  confirmNewPassword: z.string().nonempty("La confirmación es requerida"),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmNewPassword"],
+});
+
+export const conductorEditFormSchema = conductorFormSchema.omit({ 
+  contrasena: true, 
+  confirmarContrasena: true 
+}).extend({
+  estado: z.enum(['Activo', 'Inactivo']),
+});
+
+export type PasswordChangeValues = z.infer<typeof passwordChangeSchema>;
 
 export interface ConductorRegistrationApiResponse {
   success: boolean;

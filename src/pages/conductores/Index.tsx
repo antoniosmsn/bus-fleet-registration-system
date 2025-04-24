@@ -18,6 +18,7 @@ import ConductoresExport from "@/components/conductores/ConductoresExport";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import EditConductorDialog from "@/components/conductores/EditConductorDialog";
 
 const ConductoresIndex = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const ConductoresIndex = () => {
     direction: null
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [editingConductor, setEditingConductor] = useState<Conductor | null>(null);
 
   const loadConductores = async () => {
     setLoading(true);
@@ -118,11 +120,11 @@ const ConductoresIndex = () => {
   };
 
   const handleEdit = (conductor: Conductor) => {
-    toast({
-      title: "Función en desarrollo",
-      description: `Editar conductor: ${conductor.nombre} ${conductor.apellidos}`
-    });
-    // navigate(`/conductores/edit/${conductor.id}`);
+    setEditingConductor(conductor);
+  };
+
+  const handleEditSuccess = () => {
+    loadConductores();
   };
 
   const handleViewDocuments = (conductor: Conductor) => {
@@ -199,6 +201,7 @@ const ConductoresIndex = () => {
           onEdit={handleEdit}
           onViewDocuments={handleViewDocuments}
           onToggleStatus={handleToggleStatus}
+          canChangeCompany={true}
         />
         
         <ConductoresPagination 
@@ -209,6 +212,16 @@ const ConductoresIndex = () => {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
         />
+        
+        {editingConductor && (
+          <EditConductorDialog
+            conductor={editingConductor}
+            isOpen={true}
+            onClose={() => setEditingConductor(null)}
+            onSuccess={handleEditSuccess}
+            canChangeCompany={true}
+          />
+        )}
       </div>
     </Layout>
   );

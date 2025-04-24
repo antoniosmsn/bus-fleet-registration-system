@@ -21,6 +21,7 @@ interface ConductoresTableProps {
   onEdit: (conductor: Conductor) => void;
   onViewDocuments: (conductor: Conductor) => void;
   onToggleStatus: (conductor: Conductor) => void;
+  canChangeCompany: boolean;
 }
 
 const ConductoresTable: React.FC<ConductoresTableProps> = ({

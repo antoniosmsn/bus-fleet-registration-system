@@ -1,4 +1,3 @@
-
 import { Conductor, ConductorFilterParams, SortParams } from "@/types/conductor";
 
 // Datos de ejemplo para simular la API
@@ -178,4 +177,53 @@ export const exportToExcel = (conductores: Conductor[]) => {
 export const exportToPDF = (conductores: Conductor[]) => {
   console.log('Exportando a PDF:', conductores);
   alert('La exportación a PDF ha sido simulada. En implementación real, se generaría y descargaría un archivo PDF.');
+};
+
+export const updateConductor = async (id: number, data: Partial<ConductorFormValues>) => {
+  // Simular retraso de API
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  // Validar cédula única por empresa
+  const existingConductor = conductoresMock.find(c => 
+    c.empresaTransporte === data.empresaTransporte && 
+    c.numeroCedula === data.numeroCedula && 
+    c.id !== id
+  );
+
+  if (existingConductor) {
+    return {
+      success: false,
+      message: "Ya existe un conductor con este número de cédula en la empresa seleccionada."
+    };
+  }
+
+  // Simulación de actualización exitosa
+  return {
+    success: true,
+    message: "Conductor actualizado correctamente"
+  };
+};
+
+export const changePassword = async (conductorId: number, data: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  // Simular retraso de API
+  await new Promise(resolve => setTimeout(resolve, 800));
+
+  // Simular validación de contraseña actual
+  const validCurrentPassword = true; // En un caso real, esto se validaría contra la BD
+
+  if (!validCurrentPassword) {
+    return {
+      success: false,
+      message: "La contraseña actual es incorrecta"
+    };
+  }
+
+  // Simulación de cambio exitoso
+  return {
+    success: true,
+    message: "Contraseña actualizada correctamente"
+  };
 };
