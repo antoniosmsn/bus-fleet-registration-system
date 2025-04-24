@@ -14,11 +14,20 @@ import { registrarConductor } from "@/services/registroConductorService";
 import ConductorInfoForm from '@/components/conductores/ConductorInfoForm';
 import ConductorDocsForm from '@/components/conductores/ConductorDocsForm';
 import { Form } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const RegisterConductor = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [assignedCode, setAssignedCode] = useState("");
   
   const form = useForm<ConductorFormValues>({
     resolver: zodResolver(conductorFormSchema),
@@ -42,11 +51,8 @@ const RegisterConductor = () => {
       const result = await registrarConductor(values);
       
       if (result.success) {
-        toast({
-          title: "¡Éxito!",
-          description: `${result.message}. Código asignado: ${result.data?.codigo}`
-        });
-        navigate("/conductores");
+        setAssignedCode(result.data?.codigo || "");
+        setShowSuccessModal(true);
       } else {
         toast({
           variant: "destructive",
@@ -64,6 +70,11 @@ const RegisterConductor = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate("/conductores");
   };
 
   return (
@@ -99,16 +110,6 @@ const RegisterConductor = () => {
                 </TabsContent>
               </Tabs>
 
-              <Alert className="mt-6">
-                <AlertDescription>
-                  <ul className="list-disc pl-4 space-y-1">
-                    <li>El conductor será registrado como "Activo" automáticamente.</li>
-                    <li>Se le asignará un código único de 4 dígitos al registrarlo.</li>
-                    <li>Solo se almacenará la última imagen cargada para cada documento.</li>
-                  </ul>
-                </AlertDescription>
-              </Alert>
-
               <div className="flex justify-end space-x-4 pt-4">
                 <Button
                   type="button"
@@ -128,6 +129,23 @@ const RegisterConductor = () => {
             </form>
           </Form>
         </div>
+
+        <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>¡Registro Exitoso!</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p>El conductor ha sido registrado exitosamente.</p>
+              <p className="mt-2 font-semibold">
+                Código asignado: <span className="text-primary">{assignedCode}</span>
+              </p>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleCloseSuccessModal}>Aceptar</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
