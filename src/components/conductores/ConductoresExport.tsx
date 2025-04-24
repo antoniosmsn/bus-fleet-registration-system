@@ -11,21 +11,26 @@ interface ConductoresExportProps {
 
 const ConductoresExport: React.FC<ConductoresExportProps> = ({ conductores }) => {
   return (
-    <div className="flex justify-end gap-2 mb-4">
-      <Button
-        variant="outline"
-        onClick={() => exportToExcel(conductores)}
-        className="flex items-center gap-1"
-      >
-        <FileText className="h-4 w-4" /> Exportar a Excel
-      </Button>
-      <Button
-        variant="outline" 
-        onClick={() => exportToPDF(conductores)}
-        className="flex items-center gap-1"
-      >
-        <FileText className="h-4 w-4" /> Exportar a PDF
-      </Button>
+    <div className="flex items-center justify-between mb-4">
+      <div></div> {/* Spacer to push export buttons to the right */}
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => exportToExcel(conductores)}
+          className="flex items-center gap-1"
+        >
+          <FileText className="h-4 w-4" /> Excel
+        </Button>
+        <Button
+          variant="outline" 
+          size="sm"
+          onClick={() => exportToPDF(conductores)}
+          className="flex items-center gap-1"
+        >
+          <FileText className="h-4 w-4" /> PDF
+        </Button>
+      </div>
     </div>
   );
 };
