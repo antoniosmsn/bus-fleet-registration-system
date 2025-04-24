@@ -165,3 +165,18 @@ export interface HaciendaApiResponse {
   }
   message?: string;
 }
+
+export const editPasswordChangeSchema = z.object({
+  newPassword: z
+    .string()
+    .nonempty("La nueva contraseña es requerida")
+    .min(4, "Mínimo 4 caracteres")
+    .max(12, "Máximo 12 caracteres")
+    .regex(/^[a-hjk-mo-z]+$/, "Solo letras minúsculas (excluyendo i, l, ñ, acentos y símbolos)"),
+  confirmNewPassword: z.string().nonempty("La confirmación es requerida"),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmNewPassword"],
+});
+
+export type EditPasswordChangeValues = z.infer<typeof editPasswordChangeSchema>;

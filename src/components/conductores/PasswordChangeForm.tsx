@@ -16,33 +16,47 @@ import {
 } from "@/components/ui/form";
 import { Eye, EyeOff } from "lucide-react";
 import { changePassword } from "@/services/conductorService";
-import { passwordChangeSchema, PasswordChangeValues } from "@/types/conductor-form";
+import { z } from "zod";
+
+// Create a new schema without the current password field
+const editPasswordChangeSchema = z.object({
+  newPassword: z
+    .string()
+    .nonempty("La nueva contraseña es requerida")
+    .min(4, "Mínimo 4 caracteres")
+    .max(12, "Máximo 12 caracteres")
+    .regex(/^[a-hjk-mo-z]+$/, "Solo letras minúsculas (excluyendo i, l, ñ, acentos y símbolos)"),
+  confirmNewPassword: z.string().nonempty("La confirmación es requerida"),
+}).refine((data) => data.newPassword === data.confirmNewPassword, {
+  message: "Las contraseñas no coinciden",
+  path: ["confirmNewPassword"],
+});
+
+type EditPasswordChangeValues = z.infer<typeof editPasswordChangeSchema>;
 
 interface PasswordChangeFormProps {
   conductorId: number;
+  isEditMode?: boolean;
 }
 
-const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({ conductorId }) => {
+const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({ conductorId, isEditMode = false }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
   const [showNewPassword, setShowNewPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-  const form = useForm<PasswordChangeValues>({
-    resolver: zodResolver(passwordChangeSchema),
+  const form = useForm<EditPasswordChangeValues>({
+    resolver: zodResolver(editPasswordChangeSchema),
     defaultValues: {
-      currentPassword: "",
       newPassword: "",
       confirmNewPassword: ""
     }
   });
 
-  const onSubmit = async (values: PasswordChangeValues) => {
+  const onSubmit = async (values: EditPasswordChangeValues) => {
     setIsLoading(true);
     try {
       const result = await changePassword(conductorId, {
-        currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
       if (result.success) {
@@ -72,34 +86,6 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({ conductorId }) 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="currentPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contraseña Actual <span className="text-red-500">*</span></FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    type={showCurrentPassword ? "text" : "password"}
-                    {...field}
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-10 w-10"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                >
-                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="newPassword"

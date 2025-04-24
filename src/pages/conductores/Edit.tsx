@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from "react-hook-form";
@@ -31,7 +30,6 @@ const EditConductor = () => {
   React.useEffect(() => {
     const loadConductor = async () => {
       try {
-        // Simulamos los datos del conductor con las imágenes proporcionadas
         const conductorData: Conductor = {
           id: 1,
           codigo: "COND001",
@@ -50,7 +48,6 @@ const EditConductor = () => {
         
         setConductor(conductorData);
         
-        // Establecer los valores por defecto en el formulario
         form.reset({
           empresaTransporte: conductorData.empresaTransporte,
           numeroCedula: conductorData.numeroCedula,
@@ -159,7 +156,10 @@ const EditConductor = () => {
                 </TabsContent>
 
                 <TabsContent value="password">
-                  <PasswordChangeForm conductorId={conductor.id} />
+                  <PasswordChangeForm 
+                    conductorId={conductor.id} 
+                    isEditMode={true} 
+                  />
                 </TabsContent>
               </Tabs>
 
