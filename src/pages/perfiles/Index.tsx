@@ -21,7 +21,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Shield } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -110,9 +110,14 @@ const PerfilesIndex = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Perfiles por Zona Franca</h1>
-          <Button onClick={() => navigate('/perfiles/register')}>
-            <Plus className="mr-2 h-4 w-4" /> Nuevo Perfil
-          </Button>
+          <div className="flex space-x-2">
+            <Button onClick={() => navigate('/perfiles/permisos')} variant="outline">
+              <Shield className="mr-2 h-4 w-4" /> Gestionar Permisos
+            </Button>
+            <Button onClick={() => navigate('/perfiles/register')}>
+              <Plus className="mr-2 h-4 w-4" /> Nuevo Perfil
+            </Button>
+          </div>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow">
