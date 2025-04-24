@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,13 @@ import ImageUpload from "@/components/conductores/ImageUpload";
 
 interface ConductorDocsFormProps {
   form: UseFormReturn<ConductorFormValues>;
+  currentImages?: {
+    cedula: string;
+    licencia: string;
+  };
 }
 
-const ConductorDocsForm: React.FC<ConductorDocsFormProps> = ({ form }) => {
+const ConductorDocsForm: React.FC<ConductorDocsFormProps> = ({ form, currentImages }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -119,13 +124,14 @@ const ConductorDocsForm: React.FC<ConductorDocsFormProps> = ({ form }) => {
           name="imagenCedula"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Imagen de Cédula <span className="text-red-500">*</span></FormLabel>
+              <FormLabel>Imagen de Cédula</FormLabel>
               <FormControl>
                 <ImageUpload
                   label="Imagen de Cédula"
                   value={field.value instanceof File ? field.value : null}
                   onChange={field.onChange}
                   error={form.formState.errors.imagenCedula?.message}
+                  currentImageUrl={currentImages?.cedula}
                 />
               </FormControl>
               <FormMessage />
@@ -139,13 +145,14 @@ const ConductorDocsForm: React.FC<ConductorDocsFormProps> = ({ form }) => {
           name="imagenLicencia"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Imagen de Licencia <span className="text-red-500">*</span></FormLabel>
+              <FormLabel>Imagen de Licencia</FormLabel>
               <FormControl>
                 <ImageUpload
                   label="Imagen de Licencia"
                   value={field.value instanceof File ? field.value : null}
                   onChange={field.onChange}
                   error={form.formState.errors.imagenLicencia?.message}
+                  currentImageUrl={currentImages?.licencia}
                 />
               </FormControl>
               <FormMessage />

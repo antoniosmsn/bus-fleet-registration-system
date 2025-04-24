@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Table, 
@@ -13,6 +12,7 @@ import { Conductor, SortParams } from "@/types/conductor";
 import { isDocumentoProximoAVencer } from "@/services/conductorService";
 import { ChevronUp, ChevronDown, Edit, Eye, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface ConductoresTableProps {
   conductores: Conductor[];
@@ -32,6 +32,8 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
   onViewDocuments,
   onToggleStatus
 }) => {
+  const navigate = useNavigate();
+
   const renderSortIcon = (column: keyof Conductor) => {
     if (sortParams.column !== column) {
       return null;
@@ -43,6 +45,10 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
 
   const handleSort = (column: keyof Conductor) => {
     onSort(column);
+  };
+
+  const handleEdit = (conductor: Conductor) => {
+    navigate(`/conductores/edit/${conductor.id}`);
   };
 
   return (

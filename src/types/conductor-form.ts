@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 export const conductorFormSchema = z.object({
@@ -142,6 +141,11 @@ export const conductorEditFormSchema = z.object({
 
 export type ConductorEditFormValues = z.infer<typeof conductorEditFormSchema>;
 export type PasswordChangeValues = z.infer<typeof passwordChangeSchema>;
+
+export interface ConductorImageUrls {
+  cedula: string;
+  licencia: string;
+}
 
 export interface ConductorRegistrationApiResponse {
   success: boolean;

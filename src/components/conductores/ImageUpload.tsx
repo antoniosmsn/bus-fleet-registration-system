@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -10,10 +10,23 @@ interface ImageUploadProps {
   value: File | null;
   onChange: (file: File | null) => void;
   error?: string;
+  currentImageUrl?: string;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ label, value, onChange, error }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ 
+  label, 
+  value, 
+  onChange, 
+  error,
+  currentImageUrl 
+}) => {
   const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (currentImageUrl && !preview && !value) {
+      setPreview(currentImageUrl);
+    }
+  }, [currentImageUrl, preview, value]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -38,7 +51,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ label, value, onChange, error
   };
 
   const handleRemoveFile = () => {
-    if (preview) {
+    if (preview && !currentImageUrl) {
       URL.revokeObjectURL(preview);
     }
     setPreview(null);
@@ -91,3 +104,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ label, value, onChange, error
 };
 
 export default ImageUpload;
+
