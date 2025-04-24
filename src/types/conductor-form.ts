@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const conductorFormSchema = z.object({
@@ -83,13 +84,63 @@ export const passwordChangeSchema = z.object({
   path: ["confirmNewPassword"],
 });
 
-export const conductorEditFormSchema = conductorFormSchema.omit({ 
-  contrasena: true, 
-  confirmarContrasena: true 
-}).extend({
+// Define a separate schema for editing conductors without requiring password fields
+export const conductorEditFormSchema = z.object({
+  empresaTransporte: z.string().nonempty("La empresa de transporte es requerida"),
+  numeroCedula: z
+    .string()
+    .nonempty("El número de cédula es requerido")
+    .max(12, "Máximo 12 caracteres"),
+  nombre: z
+    .string()
+    .nonempty("El nombre es requerido")
+    .max(100, "Máximo 100 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "Solo letras permitidas"),
+  primerApellido: z
+    .string()
+    .nonempty("El primer apellido es requerido")
+    .max(100, "Máximo 100 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "Solo letras permitidas"),
+  segundoApellido: z
+    .string()
+    .max(100, "Máximo 100 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/, "Solo letras permitidas")
+    .optional()
+    .or(z.literal("")),
+  fechaNacimiento: z
+    .date({
+      required_error: "La fecha de nacimiento es requerida",
+    }),
+  correoElectronico: z
+    .string()
+    .max(100, "Máximo 100 caracteres")
+    .email("Formato de correo inválido")
+    .optional()
+    .or(z.literal("")),
+  telefono: z
+    .string()
+    .nonempty("El teléfono es requerido")
+    .max(20, "Máximo 20 caracteres"),
+  fechaVencimientoCedula: z
+    .date({
+      required_error: "La fecha de vencimiento de cédula es requerida",
+    })
+    .refine((date) => date >= new Date(), {
+      message: "La fecha no puede ser anterior al día de hoy",
+    }),
+  fechaVencimientoLicencia: z
+    .date({
+      required_error: "La fecha de vencimiento de licencia es requerida",
+    })
+    .refine((date) => date >= new Date(), {
+      message: "La fecha no puede ser anterior al día de hoy",
+    }),
+  imagenCedula: z.instanceof(File, { message: "La imagen de cédula es requerida" }).optional(),
+  imagenLicencia: z.instanceof(File, { message: "La imagen de licencia es requerida" }).optional(),
   estado: z.enum(['Activo', 'Inactivo']),
 });
 
+export type ConductorEditFormValues = z.infer<typeof conductorEditFormSchema>;
 export type PasswordChangeValues = z.infer<typeof passwordChangeSchema>;
 
 export interface ConductorRegistrationApiResponse {

@@ -3,7 +3,7 @@ import React from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Conductor } from "@/types/conductor";
-import { ConductorFormValues, conductorEditFormSchema } from "@/types/conductor-form";
+import { ConductorEditFormValues, conductorEditFormSchema } from "@/types/conductor-form";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +38,7 @@ const EditConductorDialog: React.FC<EditConductorDialogProps> = ({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const form = useForm<ConductorFormValues>({
+  const form = useForm<ConductorEditFormValues>({
     resolver: zodResolver(conductorEditFormSchema),
     defaultValues: {
       empresaTransporte: conductor.empresaTransporte,
@@ -54,7 +54,7 @@ const EditConductorDialog: React.FC<EditConductorDialogProps> = ({
     }
   });
 
-  const onSubmit = async (values: ConductorFormValues) => {
+  const onSubmit = async (values: ConductorEditFormValues) => {
     setIsLoading(true);
     try {
       const result = await updateConductor(conductor.id, values);

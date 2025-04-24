@@ -41,7 +41,10 @@ const PasswordChangeForm: React.FC<PasswordChangeFormProps> = ({ conductorId }) 
   const onSubmit = async (values: PasswordChangeValues) => {
     setIsLoading(true);
     try {
-      const result = await changePassword(conductorId, values);
+      const result = await changePassword(conductorId, {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
       if (result.success) {
         toast({
           title: "Éxito",

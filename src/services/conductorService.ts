@@ -1,4 +1,5 @@
 import { Conductor, ConductorFilterParams, SortParams } from "@/types/conductor";
+import { ConductorEditFormValues, PasswordChangeValues } from "@/types/conductor-form";
 
 // Datos de ejemplo para simular la API
 const conductoresMock: Conductor[] = [
@@ -63,8 +64,8 @@ const conductoresMock: Conductor[] = [
     apellidos: "Mendoza Castro",
     fechaNacimiento: "1982-11-05",
     telefono: "6098-7654",
-    fechaVencimientoCedula: "2024-05-25", // Próximo a vencer
-    fechaVencimientoLicencia: "2024-06-15", // Próximo a vencer
+    fechaVencimientoCedula: "2024-05-25",
+    fechaVencimientoLicencia: "2024-06-15",
     estado: "Activo"
   }
 ];
@@ -77,12 +78,10 @@ export const getConductores = async (
   filters: ConductorFilterParams = {},
   sort: SortParams = { column: null, direction: null }
 ) => {
-  // Simular un retraso de la API
   await new Promise(resolve => setTimeout(resolve, 300));
   
   let filteredConductores = [...conductoresMock];
 
-  // Aplicar filtros
   if (filters.empresaTransporte && filters.empresaTransporte !== 'Todas') {
     filteredConductores = filteredConductores.filter(c => 
       c.empresaTransporte === filters.empresaTransporte
@@ -126,7 +125,6 @@ export const getConductores = async (
     });
   }
 
-  // Aplicar ordenamiento si está especificado
   if (sort.column && sort.direction) {
     filteredConductores.sort((a, b) => {
       const columnA = String(a[sort.column!]);
@@ -140,7 +138,6 @@ export const getConductores = async (
     });
   }
 
-  // Aplicar paginación
   const totalItems = filteredConductores.length;
   const totalPages = Math.ceil(totalItems / pageSize);
   const startIndex = (page - 1) * pageSize;
@@ -157,7 +154,6 @@ export const getConductores = async (
   };
 };
 
-// Función para verificar si un documento está próximo a vencer
 export const isDocumentoProximoAVencer = (fechaVencimiento: string, meses: number = 3): boolean => {
   const today = new Date();
   const futureDate = new Date();
@@ -167,23 +163,19 @@ export const isDocumentoProximoAVencer = (fechaVencimiento: string, meses: numbe
   return vencimiento <= futureDate && vencimiento >= today;
 };
 
-// Función para exportar a Excel (simulada)
 export const exportToExcel = (conductores: Conductor[]) => {
   console.log('Exportando a Excel:', conductores);
   alert('La exportación a Excel ha sido simulada. En implementación real, se generaría y descargaría un archivo Excel.');
 };
 
-// Función para exportar a PDF (simulada)
 export const exportToPDF = (conductores: Conductor[]) => {
   console.log('Exportando a PDF:', conductores);
   alert('La exportación a PDF ha sido simulada. En implementación real, se generaría y descargaría un archivo PDF.');
 };
 
-export const updateConductor = async (id: number, data: Partial<ConductorFormValues>) => {
-  // Simular retraso de API
+export const updateConductor = async (id: number, data: Partial<ConductorEditFormValues>) => {
   await new Promise(resolve => setTimeout(resolve, 800));
 
-  // Validar cédula única por empresa
   const existingConductor = conductoresMock.find(c => 
     c.empresaTransporte === data.empresaTransporte && 
     c.numeroCedula === data.numeroCedula && 
@@ -197,7 +189,6 @@ export const updateConductor = async (id: number, data: Partial<ConductorFormVal
     };
   }
 
-  // Simulación de actualización exitosa
   return {
     success: true,
     message: "Conductor actualizado correctamente"
@@ -208,11 +199,9 @@ export const changePassword = async (conductorId: number, data: {
   currentPassword: string;
   newPassword: string;
 }) => {
-  // Simular retraso de API
   await new Promise(resolve => setTimeout(resolve, 800));
 
-  // Simular validación de contraseña actual
-  const validCurrentPassword = true; // En un caso real, esto se validaría contra la BD
+  const validCurrentPassword = true;
 
   if (!validCurrentPassword) {
     return {
@@ -221,7 +210,6 @@ export const changePassword = async (conductorId: number, data: {
     };
   }
 
-  // Simulación de cambio exitoso
   return {
     success: true,
     message: "Contraseña actualizada correctamente"
