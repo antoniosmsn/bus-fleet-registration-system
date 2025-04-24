@@ -31,7 +31,7 @@ const EditConductor = () => {
   React.useEffect(() => {
     const loadConductor = async () => {
       try {
-        // Aquí deberías hacer la llamada a tu API para obtener los datos del conductor
+        // Simulamos los datos del conductor con las imágenes proporcionadas
         const conductorData: Conductor = {
           id: 1,
           codigo: "COND001",
@@ -44,8 +44,8 @@ const EditConductor = () => {
           fechaVencimientoCedula: "2024-12-31",
           fechaVencimientoLicencia: "2024-12-31",
           estado: "Activo",
-          imagenCedula: "URL_IMAGEN_CEDULA",
-          imagenLicencia: "URL_IMAGEN_LICENCIA"
+          imagenCedula: "https://scontent.fsjo10-1.fna.fbcdn.net/v/t1.6435-9/29261248_1268414659957459_6474482397776707584_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=vmrLsCSGoHIQ7kNvwFSlUoB&_nc_oc=AdnGd7ub0Gs0elHBzz2dtVgciyw7SCbMQpQIGzuWCIY6hph6qbqci2T1kKNEJ93MS7A&_nc_zt=23&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=mXluId6ioh0ja4dJo__GBQ&oh=00_AfEZO9D1A-B_ZqgfLVYVPtCALPsfvHy2lh0ooNJzWWCjRQ&oe=68322385",
+          imagenLicencia: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ68-wGp-1nJC0PeLDbm4hI1fvfCUGm258Zw&s"
         };
         
         setConductor(conductorData);
