@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import type { Profile } from '@/types/profile';
 
 const perfilFormSchema = z.object({
   nombre: z
@@ -28,26 +29,31 @@ const perfilFormSchema = z.object({
 
 type PerfilFormData = z.infer<typeof perfilFormSchema>;
 
+interface PerfilFormProps {
+  initialData?: Profile;
+}
+
 // Mock function to check for duplicate profiles
-const checkDuplicateProfile = async (nombre: string): Promise<boolean> => {
-  // This would be replaced with an actual API call
+const checkDuplicateProfile = async (nombre: string, id?: number): Promise<boolean> => {
+  // Simulating API call - This would be replaced with actual backend validation
   return false;
 };
 
-export function PerfilForm() {
+export function PerfilForm({ initialData }: PerfilFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isEditing = !!initialData;
   
   const form = useForm<PerfilFormData>({
     resolver: zodResolver(perfilFormSchema),
     defaultValues: {
-      nombre: "",
+      nombre: initialData?.nombre || "",
     },
   });
 
   const onSubmit = async (data: PerfilFormData) => {
     try {
-      const isDuplicate = await checkDuplicateProfile(data.nombre);
+      const isDuplicate = await checkDuplicateProfile(data.nombre, initialData?.id);
       
       if (isDuplicate) {
         toast({
@@ -58,12 +64,18 @@ export function PerfilForm() {
         return;
       }
 
-      // Mock saving the profile
-      console.log("Perfil a guardar:", data);
+      // Mock saving the profile - Would be replaced with actual API call
+      console.log("Perfil a guardar:", {
+        ...data,
+        id: initialData?.id,
+        activo: true,
+      });
       
       toast({
-        title: "Perfil registrado",
-        description: `Perfil '${data.nombre}' registrado exitosamente.`,
+        title: isEditing ? "Perfil actualizado" : "Perfil registrado",
+        description: isEditing 
+          ? `Perfil '${data.nombre}' actualizado exitosamente.`
+          : `Perfil '${data.nombre}' registrado exitosamente.`,
       });
       
       navigate("/perfiles");
@@ -71,7 +83,9 @@ export function PerfilForm() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Hubo un error al registrar el perfil. Por favor, intente nuevamente.",
+        description: isEditing
+          ? "Hubo un error al actualizar el perfil. Por favor, intente nuevamente."
+          : "Hubo un error al registrar el perfil. Por favor, intente nuevamente.",
       });
     }
   };
@@ -81,7 +95,7 @@ export function PerfilForm() {
   };
 
   const handleClear = () => {
-    form.reset();
+    form.reset(isEditing ? { nombre: initialData.nombre } : { nombre: "" });
   };
 
   return (
@@ -120,7 +134,7 @@ export function PerfilForm() {
             Limpiar
           </Button>
           <Button type="submit">
-            Guardar
+            {isEditing ? 'Actualizar' : 'Guardar'}
           </Button>
         </div>
       </form>

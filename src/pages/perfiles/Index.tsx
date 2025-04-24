@@ -146,7 +146,11 @@ const PerfilesIndex = () => {
                     <TableRow key={perfil.id}>
                       <TableCell>{perfil.nombre}</TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate('/perfiles/register', { state: { perfil } })}
+                        >
                           <Edit className="h-4 w-4 mr-1" /> Editar
                         </Button>
                         
