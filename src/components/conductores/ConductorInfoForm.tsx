@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, Search, Eye, EyeOff } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   FormControl,
@@ -24,12 +25,13 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { ConductorFormValues } from "@/types/conductor-form";
+import { ConductorFormValues, ConductorEditFormValues } from "@/types/conductor-form";
 import { getEmpresas } from "@/services/registroConductorService";
 import { consultarCedulaHacienda } from "@/services/haciendaService";
+import { Eye, EyeOff } from "lucide-react";
 
 interface ConductorInfoFormProps {
-  form: UseFormReturn<ConductorFormValues>;
+  form: UseFormReturn<ConductorFormValues | ConductorEditFormValues>;
   editMode?: boolean;
   canChangeCompany?: boolean;
 }
@@ -145,7 +147,7 @@ const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({
                     {isSearchingCedula ? (
                       <span className="animate-spin mr-1">●</span>
                     ) : (
-                      <Search className="h-4 w-4 mr-1" />
+                      <span className="mr-1">🔍</span>
                     )}
                     Buscar
                   </Button>
@@ -290,74 +292,80 @@ const ConductorInfoForm: React.FC<ConductorInfoFormProps> = ({
           )}
         />
 
-        {/* Contraseña */}
-        <FormField
-          control={form.control}
-          name="contrasena"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Contraseña <span className="text-red-500">*</span></FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    placeholder="Contraseña"
-                    type={showPassword ? "text" : "password"}
-                    {...field}
-                    maxLength={12}
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-10 w-10"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-              <FormDescription>
-                Mínimo 4, máximo 12 letras minúsculas (sin i, l, ñ, acentos, símbolos)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Solo mostrar estos campos en modo registro (no edición) */}
+        {!editMode && (
+          <>
+            {/* Contraseña */}
+            <FormField
+              control={form.control as any}
+              name="contrasena"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contraseña <span className="text-red-500">*</span></FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        placeholder="Contraseña"
+                        type={showPassword ? "text" : "password"}
+                        {...field}
+                        maxLength={12}
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-10 w-10"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <FormDescription>
+                    Mínimo 4, máximo 12 letras minúsculas (sin i, l, ñ, acentos, símbolos)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        {/* Confirmación de Contraseña */}
-        <FormField
-          control={form.control}
-          name="confirmarContrasena"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirmar Contraseña <span className="text-red-500">*</span></FormLabel>
-              <div className="relative">
-                <FormControl>
-                  <Input
-                    placeholder="Confirmar contraseña"
-                    type={showConfirmPassword ? "text" : "password"}
-                    {...field}
-                    maxLength={12}
-                  />
-                </FormControl>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-10 w-10"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            {/* Confirmación de Contraseña */}
+            <FormField
+              control={form.control as any}
+              name="confirmarContrasena"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirmar Contraseña <span className="text-red-500">*</span></FormLabel>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        placeholder="Confirmar contraseña"
+                        type={showConfirmPassword ? "text" : "password"}
+                        {...field}
+                        maxLength={12}
+                      />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-10 w-10"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
 
+        {/* Solo mostrar el campo de estado en modo edición */}
         {editMode && (
           <FormField
-            control={form.control}
+            control={form.control as any}
             name="estado"
             render={({ field }) => (
               <FormItem>
