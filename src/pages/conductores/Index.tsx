@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "@/components/layout/Layout";
@@ -18,7 +19,6 @@ import ConductoresExport from "@/components/conductores/ConductoresExport";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, Plus } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import EditConductorDialog from "@/components/conductores/EditConductorDialog";
 
 const ConductoresIndex = () => {
   const navigate = useNavigate();
@@ -39,7 +39,6 @@ const ConductoresIndex = () => {
     direction: null
   });
   const [loading, setLoading] = useState<boolean>(false);
-  const [editingConductor, setEditingConductor] = useState<Conductor | null>(null);
 
   const loadConductores = async () => {
     setLoading(true);
@@ -120,11 +119,7 @@ const ConductoresIndex = () => {
   };
 
   const handleEdit = (conductor: Conductor) => {
-    setEditingConductor(conductor);
-  };
-
-  const handleEditSuccess = () => {
-    loadConductores();
+    // No longer needed as we now navigate directly from the table component
   };
 
   const handleViewDocuments = (conductor: Conductor) => {
@@ -212,16 +207,6 @@ const ConductoresIndex = () => {
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
         />
-        
-        {editingConductor && (
-          <EditConductorDialog
-            conductor={editingConductor}
-            isOpen={true}
-            onClose={() => setEditingConductor(null)}
-            onSuccess={handleEditSuccess}
-            canChangeCompany={true}
-          />
-        )}
       </div>
     </Layout>
   );

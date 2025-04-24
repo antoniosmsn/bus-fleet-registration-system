@@ -170,7 +170,7 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => onEdit(conductor)}
+                      onClick={() => handleEdit(conductor)}
                       className="p-1 h-8 w-8"
                     >
                       <Edit className="h-4 w-4" />
