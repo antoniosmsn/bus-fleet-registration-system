@@ -21,6 +21,9 @@ const Navbar = () => {
               <Link to="/buses" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
                 Autobuses
               </Link>
+              <Link to="/conductores" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
+                Conductores
+              </Link>
               <Link to="/configuracion/parametros" className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600">
                 Configuración
               </Link>

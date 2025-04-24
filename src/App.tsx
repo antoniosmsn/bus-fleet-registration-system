@@ -12,6 +12,7 @@ import ZoneParametersConfig from "./pages/configuracion/parametros";
 import PerfilesIndex from "./pages/perfiles/Index";
 import RegisterPerfil from "./pages/perfiles/Register";
 import PerfilPermisos from "./pages/perfiles/Permisos";
+import ConductoresIndex from "./pages/conductores/Index";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/perfiles" element={<PerfilesIndex />} />
           <Route path="/perfiles/register" element={<RegisterPerfil />} />
           <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
+          <Route path="/conductores" element={<ConductoresIndex />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
