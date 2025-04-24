@@ -95,14 +95,14 @@ const ConductoresFilter: React.FC<ConductoresFilterProps> = ({
         <div className="flex flex-col w-full md:w-auto">
           <label className="text-sm font-medium mb-1">Documentos por vencer en</label>
           <Select
-            value={filters.vencimientoEnMeses?.toString() || ''}
-            onValueChange={(value) => handleInputChange('vencimientoEnMeses', value ? parseInt(value) : null)}
+            value={filters.vencimientoEnMeses?.toString() || 'none'}
+            onValueChange={(value) => handleInputChange('vencimientoEnMeses', value === 'none' ? null : parseInt(value))}
           >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Seleccionar período" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Sin filtro</SelectItem>
+              <SelectItem value="none">Sin filtro</SelectItem>
               <SelectItem value="1">1 mes</SelectItem>
               <SelectItem value="3">3 meses</SelectItem>
               <SelectItem value="6">6 meses</SelectItem>
