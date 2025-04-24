@@ -1,4 +1,3 @@
-
 export interface Conductor {
   id: number;
   empresaTransporte: string;
@@ -11,6 +10,9 @@ export interface Conductor {
   fechaVencimientoCedula: string;
   fechaVencimientoLicencia: string;
   estado: 'Activo' | 'Inactivo';
+  imagenCedula?: string;
+  imagenLicencia?: string;
+  correoElectronico?: string;
 }
 
 export interface ConductorFilterParams {

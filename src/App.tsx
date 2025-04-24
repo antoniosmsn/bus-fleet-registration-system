@@ -14,6 +14,7 @@ import RegisterPerfil from "./pages/perfiles/Register";
 import PerfilPermisos from "./pages/perfiles/Permisos";
 import ConductoresIndex from "./pages/conductores/Index";
 import RegisterConductor from "./pages/conductores/Register";
+import EditConductor from "./pages/conductores/Edit";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
           <Route path="/conductores" element={<ConductoresIndex />} />
           <Route path="/conductores/register" element={<RegisterConductor />} />
+          <Route path="/conductores/edit/:id" element={<EditConductor />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
