@@ -26,3 +26,26 @@ export function formatShortDate(date: Date | string | null): string {
     return 'Invalid Date';
   }
 }
+
+/**
+ * Checks if a date falls within a specified date range
+ * @param date The date to check
+ * @param start Start of the date range
+ * @param end End of the date range
+ * @returns true if the date is within the specified range
+ */
+export function isDateInRange(date: string | null, start: string | null, end: string | null): boolean {
+  if (!date) return false;
+  
+  const dateToCheck = new Date(date);
+  
+  if (start && new Date(start) > dateToCheck) {
+    return false;
+  }
+  
+  if (end && new Date(end) < dateToCheck) {
+    return false;
+  }
+  
+  return true;
+}

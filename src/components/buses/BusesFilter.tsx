@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Filter, X } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 
@@ -66,7 +65,8 @@ const BusesFilter: React.FC<BusesFilterProps> = ({ onFilter }) => {
   };
 
   const [filters, setFilters] = useState<BusFilterValues>(initialFilters);
-  const [isExpanded, setIsExpanded] = useState(false);
+  // Set isExpanded to true by default to show filters on page load
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
