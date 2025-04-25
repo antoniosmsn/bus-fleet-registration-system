@@ -14,7 +14,9 @@ const conductoresMock: Conductor[] = [
     telefono: "8801-2345",
     fechaVencimientoCedula: "2026-05-15",
     fechaVencimientoLicencia: "2025-10-20",
-    estado: "Activo"
+    estado: "Activo",
+    imagenCedula: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    imagenLicencia: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
   },
   {
     id: 2,

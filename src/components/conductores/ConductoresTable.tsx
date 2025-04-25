@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -12,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Conductor, SortParams } from "@/types/conductor";
 import { isDocumentoProximoAVencer } from "@/services/conductorService";
-import { Edit, Eye, ChevronUp, ChevronDown } from "lucide-react"; // Added ChevronUp, ChevronDown
+import { Edit, Eye, ChevronUp, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';
+import VisualizarDocumentosDialog from './VisualizarDocumentosDialog';
 
 interface ConductoresTableProps {
   conductores: Conductor[];
@@ -36,6 +36,7 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
 }) => {
   const navigate = useNavigate();
   const [conductorToToggle, setConductorToToggle] = useState<Conductor | null>(null);
+  const [conductorToViewDocs, setConductorToViewDocs] = useState<Conductor | null>(null);
 
   const handleEdit = (conductor: Conductor) => {
     navigate(`/conductores/edit/${conductor.id}`);
@@ -46,6 +47,10 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
       onToggleStatus(conductorToToggle);
       setConductorToToggle(null);
     }
+  };
+
+  const handleViewDocuments = (conductor: Conductor) => {
+    setConductorToViewDocs(conductor);
   };
 
   const renderSortIcon = (column: keyof Conductor) => {
@@ -195,7 +200,7 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        onClick={() => onViewDocuments(conductor)}
+                        onClick={() => handleViewDocuments(conductor)}
                         className="p-1 h-8 w-8"
                       >
                         <Eye className="h-4 w-4" />
@@ -218,6 +223,12 @@ const ConductoresTable: React.FC<ConductoresTableProps> = ({
           nuevoEstado={conductorToToggle.estado === 'Activo' ? 'Inactivo' : 'Activo'}
         />
       )}
+
+      <VisualizarDocumentosDialog
+        isOpen={conductorToViewDocs !== null}
+        onClose={() => setConductorToViewDocs(null)}
+        conductor={conductorToViewDocs}
+      />
     </>
   );
 };
