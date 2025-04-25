@@ -273,7 +273,8 @@ const BusesIndex = () => {
     if (dialogState.type === 'status') {
       const updatedBuses = buses.map(bus => {
         if (bus.id === dialogState.busId) {
-          const newStatus = bus.status === 'active' ? 'inactive' : 'active';
+          // Ensure the status is strictly typed as 'active' or 'inactive'
+          const newStatus: 'active' | 'inactive' = bus.status === 'active' ? 'inactive' : 'active';
           const statusText = newStatus === 'active' ? 'activado' : 'desactivado';
           
           toast({
