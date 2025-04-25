@@ -191,7 +191,7 @@ const BusesFilter: React.FC<BusesFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Todos los tipos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los tipos</SelectItem>
+                  <SelectItem value="all">Todos los tipos</SelectItem>
                   <SelectItem value="autobus">Autobús</SelectItem>
                   <SelectItem value="buseta">Buseta</SelectItem>
                   <SelectItem value="microbus">Microbús</SelectItem>
@@ -209,7 +209,7 @@ const BusesFilter: React.FC<BusesFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Todos los estados" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los estados</SelectItem>
+                  <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="active">Activo</SelectItem>
                   <SelectItem value="inactive">Inactivo</SelectItem>
                 </SelectContent>
@@ -226,7 +226,7 @@ const BusesFilter: React.FC<BusesFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="approved">Aprobado</SelectItem>
                   <SelectItem value="not_approved">Sin aprobación</SelectItem>
                 </SelectContent>
@@ -243,7 +243,7 @@ const BusesFilter: React.FC<BusesFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="none">No filtrar</SelectItem>
                   <SelectItem value="1">1 mes</SelectItem>
                   <SelectItem value="3">3 meses</SelectItem>
                   <SelectItem value="6">6 meses</SelectItem>

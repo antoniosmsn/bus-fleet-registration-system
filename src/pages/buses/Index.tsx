@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -27,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { isDateInRange, isDateCloseToExpiration } from '@/lib/dateUtils';
 
 const BusesIndex = () => {
   // Mock data for demonstration
@@ -189,65 +189,83 @@ const BusesIndex = () => {
       );
     }
     
-    if (filterValues.type) {
+    if (filterValues.type && filterValues.type !== 'all') {
       filtered = filtered.filter(bus => bus.type === filterValues.type);
     }
     
-    if (filterValues.status) {
+    if (filterValues.status && filterValues.status !== 'all') {
       filtered = filtered.filter(bus => bus.status === filterValues.status);
     }
     
-    if (filterValues.approval) {
+    if (filterValues.approval && filterValues.approval !== 'all') {
       const isApproved = filterValues.approval === 'approved';
       filtered = filtered.filter(bus => bus.approved === isApproved);
     }
 
     // Date range filters
-    if (filterValues.vencimientoDekraStart) {
+    if (filterValues.vencimientoDekraStart || filterValues.vencimientoDekraEnd) {
       filtered = filtered.filter(bus => 
-        bus.dekraExpirationDate && new Date(bus.dekraExpirationDate) >= new Date(filterValues.vencimientoDekraStart)
+        isDateInRange(bus.dekraExpirationDate, filterValues.vencimientoDekraStart, filterValues.vencimientoDekraEnd)
       );
     }
     
-    if (filterValues.vencimientoDekraEnd) {
+    if (filterValues.vencimientoPolizaStart || filterValues.vencimientoPolizaEnd) {
       filtered = filtered.filter(bus => 
-        bus.dekraExpirationDate && new Date(bus.dekraExpirationDate) <= new Date(filterValues.vencimientoDekraEnd)
+        isDateInRange(bus.insuranceExpirationDate, filterValues.vencimientoPolizaStart, filterValues.vencimientoPolizaEnd)
       );
     }
     
-    if (filterValues.vencimientoPolizaStart) {
+    if (filterValues.vencimientoCTPStart || filterValues.vencimientoCTPEnd) {
       filtered = filtered.filter(bus => 
-        bus.insuranceExpirationDate && new Date(bus.insuranceExpirationDate) >= new Date(filterValues.vencimientoPolizaStart)
-      );
-    }
-    
-    if (filterValues.vencimientoPolizaEnd) {
-      filtered = filtered.filter(bus => 
-        bus.insuranceExpirationDate && new Date(bus.insuranceExpirationDate) <= new Date(filterValues.vencimientoPolizaEnd)
-      );
-    }
-    
-    if (filterValues.vencimientoCTPStart) {
-      filtered = filtered.filter(bus => 
-        bus.ctpExpirationDate && new Date(bus.ctpExpirationDate) >= new Date(filterValues.vencimientoCTPStart)
-      );
-    }
-    
-    if (filterValues.vencimientoCTPEnd) {
-      filtered = filtered.filter(bus => 
-        bus.ctpExpirationDate && new Date(bus.ctpExpirationDate) <= new Date(filterValues.vencimientoCTPEnd)
+        isDateInRange(bus.ctpExpirationDate, filterValues.vencimientoCTPStart, filterValues.vencimientoCTPEnd)
       );
     }
     
     // Expiration months filter
-    if (filterValues.expirationMonths) {
+    if (filterValues.expirationMonths && filterValues.expirationMonths !== 'none') {
       setExpirationMonths(parseInt(filterValues.expirationMonths));
+      
+      // Filter buses with documents expiring within the selected months
+      const months = parseInt(filterValues.expirationMonths);
+      filtered = filtered.filter(bus => {
+        return (
+          (bus.dekraExpirationDate && isDateCloseToExpiration(new Date(bus.dekraExpirationDate), months)) ||
+          (bus.insuranceExpirationDate && isDateCloseToExpiration(new Date(bus.insuranceExpirationDate), months)) ||
+          (bus.ctpExpirationDate && isDateCloseToExpiration(new Date(bus.ctpExpirationDate), months))
+        );
+      });
     } else {
       setExpirationMonths(null);
     }
     
     setBuses(filtered);
-    setCurrentFilter(filterValues);
+    setCurrentFilter({
+      plate: filterValues.plate || undefined,
+      busId: filterValues.busId || undefined,
+      readerSerial: filterValues.readerSerial || undefined,
+      company: filterValues.company || undefined,
+      brand: filterValues.brand || undefined,
+      year: filterValues.year ? parseInt(filterValues.year) : undefined,
+      capacity: filterValues.capacity ? parseInt(filterValues.capacity) : undefined,
+      type: filterValues.type !== 'all' ? filterValues.type : undefined,
+      status: filterValues.status !== 'all' ? (filterValues.status as 'active' | 'inactive' | '') : '',
+      approved: filterValues.approval === 'approved' ? true : 
+               filterValues.approval === 'not_approved' ? false : null,
+      expirationMonths: filterValues.expirationMonths && filterValues.expirationMonths !== 'none' ? 
+                        parseInt(filterValues.expirationMonths) : null,
+      dekraExpirationDateRange: {
+        start: filterValues.vencimientoDekraStart || null,
+        end: filterValues.vencimientoDekraEnd || null
+      },
+      insuranceExpirationDateRange: {
+        start: filterValues.vencimientoPolizaStart || null,
+        end: filterValues.vencimientoPolizaEnd || null
+      },
+      ctpExpirationDateRange: {
+        start: filterValues.vencimientoCTPStart || null,
+        end: filterValues.vencimientoCTPEnd || null
+      }
+    });
     setCurrentPage(1);
   };
   
@@ -340,7 +358,7 @@ const BusesIndex = () => {
             <CardTitle>Autobuses Registrados</CardTitle>
             <CardDescription>
               {buses.length} autobuses encontrados
-              {currentFilter && Object.values(currentFilter).some(v => v) && " (filtrados)"}
+              {currentFilter && Object.values(currentFilter).some(v => v !== undefined && v !== null && v !== '') && " (filtrados)"}
             </CardDescription>
           </CardHeader>
           <CardContent>
