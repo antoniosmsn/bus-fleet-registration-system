@@ -16,7 +16,8 @@ const conductoresMock: Conductor[] = [
     fechaVencimientoLicencia: "2025-10-20",
     estado: "Activo",
     imagenCedula: "https://scontent.fsjo10-1.fna.fbcdn.net/v/t1.6435-9/29261248_1268414659957459_6474482397776707584_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=vmrLsCSGoHIQ7kNvwFSlUoB&_nc_oc=AdnGd7ub0Gs0elHBzz2dtVgciyw7SCbMQpQIGzuWCIY6hph6qbqci2T1kKNEJ93MS7A&_nc_zt=23&_nc_ht=scontent.fsjo10-1.fna&_nc_gid=mXluId6ioh0ja4dJo__GBQ&oh=00_AfEZO9D1A-B_ZqgfLVYVPtCALPsfvHy2lh0ooNJzWWCjRQ&oe=68322385",
-    imagenLicencia: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ68-wGp-1nJC0PeLDbm4hI1fvfCUGm258Zw&s"
+    imagenLicencia: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ68-wGp-1nJC0PeLDbm4hI1fvfCUGm258Zw&s",
+    correoElectronico: "juan.perez@transportesdelnorte.com"
   },
   {
     id: 2,
