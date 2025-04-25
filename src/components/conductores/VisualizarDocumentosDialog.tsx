@@ -39,7 +39,7 @@ const VisualizarDocumentosDialog: React.FC<VisualizarDocumentosDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
             Documentos de {conductor.nombre} {conductor.apellidos}
@@ -54,7 +54,7 @@ const VisualizarDocumentosDialog: React.FC<VisualizarDocumentosDialogProps> = ({
 
           <TabsContent value="cedula" className="mt-4">
             {conductor.imagenCedula ? (
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
+              <div className="relative aspect-[4/3] w-full max-h-[300px] overflow-hidden rounded-lg">
                 <img
                   src={conductor.imagenCedula}
                   alt="Cédula del conductor"
@@ -68,7 +68,7 @@ const VisualizarDocumentosDialog: React.FC<VisualizarDocumentosDialogProps> = ({
 
           <TabsContent value="licencia" className="mt-4">
             {conductor.imagenLicencia ? (
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
+              <div className="relative aspect-[4/3] w-full max-h-[300px] overflow-hidden rounded-lg">
                 <img
                   src={conductor.imagenLicencia}
                   alt="Licencia del conductor"
@@ -86,3 +86,4 @@ const VisualizarDocumentosDialog: React.FC<VisualizarDocumentosDialogProps> = ({
 };
 
 export default VisualizarDocumentosDialog;
+
