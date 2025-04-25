@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "@/components/layout/Layout";
@@ -130,21 +129,33 @@ const ConductoresIndex = () => {
     // navigate(`/conductores/${conductor.id}/documentos`);
   };
 
-  const handleToggleStatus = (conductor: Conductor) => {
+  const handleToggleStatus = async (conductor: Conductor) => {
     const newStatus = conductor.estado === 'Activo' ? 'Inactivo' : 'Activo';
-    toast({
-      title: "Estado actualizado",
-      description: `Conductor ${conductor.nombre} ${conductor.apellidos} ahora está ${newStatus}`
-    });
     
-    setConductores(prevConductores =>
-      prevConductores.map(c => {
-        if (c.id === conductor.id) {
-          return { ...c, estado: newStatus as 'Activo' | 'Inactivo' };
-        }
-        return c;
-      })
-    );
+    try {
+      // Here you would typically make an API call to update the status
+      // For now, we'll just update the local state
+      setConductores(prevConductores =>
+        prevConductores.map(c => {
+          if (c.id === conductor.id) {
+            return { ...c, estado: newStatus as 'Activo' | 'Inactivo' };
+          }
+          return c;
+        })
+      );
+      
+      toast({
+        title: "Estado actualizado",
+        description: `El conductor ${conductor.nombre} ${conductor.apellidos} ha sido ${newStatus.toLowerCase()}.`
+      });
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo actualizar el estado del conductor."
+      });
+    }
   };
 
   const hayDocumentosPorVencer = conductores.some(
@@ -193,7 +204,6 @@ const ConductoresIndex = () => {
           conductores={conductores}
           sortParams={sortParams}
           onSort={handleSort}
-          onEdit={handleEdit}
           onViewDocuments={handleViewDocuments}
           onToggleStatus={handleToggleStatus}
           canChangeCompany={true}

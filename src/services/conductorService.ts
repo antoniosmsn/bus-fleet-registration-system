@@ -189,6 +189,15 @@ export const updateConductor = async (id: number, data: Partial<ConductorEditFor
     };
   }
 
+  const conductorIndex = conductoresMock.findIndex(c => c.id === id);
+  if (conductorIndex >= 0) {
+    conductoresMock[conductorIndex] = {
+      ...conductoresMock[conductorIndex],
+      ...data,
+      apellidos: `${data.primerApellido || ''} ${data.segundoApellido || ''}`.trim(),
+    };
+  }
+
   return {
     success: true,
     message: "Conductor actualizado correctamente"
