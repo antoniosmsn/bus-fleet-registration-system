@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Conductor, SortParams } from "@/types/conductor";
 import { isDocumentoProximoAVencer } from "@/services/conductorService";
-import { Edit, Eye } from "lucide-react";
+import { Edit, Eye, ChevronUp, ChevronDown } from "lucide-react"; // Added ChevronUp, ChevronDown
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';

@@ -191,11 +191,34 @@ export const updateConductor = async (id: number, data: Partial<ConductorEditFor
 
   const conductorIndex = conductoresMock.findIndex(c => c.id === id);
   if (conductorIndex >= 0) {
-    conductoresMock[conductorIndex] = {
+    const updatedConductor = {
       ...conductoresMock[conductorIndex],
-      ...data,
-      apellidos: `${data.primerApellido || ''} ${data.segundoApellido || ''}`.trim(),
+      empresaTransporte: data.empresaTransporte || conductoresMock[conductorIndex].empresaTransporte,
+      numeroCedula: data.numeroCedula || conductoresMock[conductorIndex].numeroCedula,
+      nombre: data.nombre || conductoresMock[conductorIndex].nombre,
+      apellidos: data.primerApellido ? 
+        `${data.primerApellido} ${data.segundoApellido || ''}`.trim() : 
+        conductoresMock[conductorIndex].apellidos,
+      fechaNacimiento: data.fechaNacimiento ? 
+        data.fechaNacimiento instanceof Date ? 
+          data.fechaNacimiento.toISOString().split('T')[0] : 
+          data.fechaNacimiento : 
+        conductoresMock[conductorIndex].fechaNacimiento,
+      telefono: data.telefono || conductoresMock[conductorIndex].telefono,
+      fechaVencimientoCedula: data.fechaVencimientoCedula ? 
+        data.fechaVencimientoCedula instanceof Date ? 
+          data.fechaVencimientoCedula.toISOString().split('T')[0] : 
+          data.fechaVencimientoCedula : 
+        conductoresMock[conductorIndex].fechaVencimientoCedula,
+      fechaVencimientoLicencia: data.fechaVencimientoLicencia ? 
+        data.fechaVencimientoLicencia instanceof Date ? 
+          data.fechaVencimientoLicencia.toISOString().split('T')[0] : 
+          data.fechaVencimientoLicencia : 
+        conductoresMock[conductorIndex].fechaVencimientoLicencia,
+      estado: data.estado || conductoresMock[conductorIndex].estado,
     };
+    
+    conductoresMock[conductorIndex] = updatedConductor;
   }
 
   return {
@@ -205,18 +228,20 @@ export const updateConductor = async (id: number, data: Partial<ConductorEditFor
 };
 
 export const changePassword = async (conductorId: number, data: {
-  currentPassword: string;
   newPassword: string;
+  currentPassword?: string;
 }) => {
   await new Promise(resolve => setTimeout(resolve, 800));
 
-  const validCurrentPassword = true;
-
-  if (!validCurrentPassword) {
-    return {
-      success: false,
-      message: "La contraseña actual es incorrecta"
-    };
+  if (data.currentPassword) {
+    const validCurrentPassword = true; // This would be a real validation in a real app
+    
+    if (!validCurrentPassword) {
+      return {
+        success: false,
+        message: "La contraseña actual es incorrecta"
+      };
+    }
   }
 
   return {
