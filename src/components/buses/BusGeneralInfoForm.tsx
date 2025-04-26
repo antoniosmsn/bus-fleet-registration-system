@@ -9,9 +9,17 @@ interface BusGeneralInfoFormProps {
   form: any;
   busPhotos: File[];
   setBusPhotos: (files: File[]) => void;
+  isEditing?: boolean;
+  canChangeCompany?: boolean;
 }
 
-const BusGeneralInfoForm: React.FC<BusGeneralInfoFormProps> = ({ form, busPhotos, setBusPhotos }) => {
+const BusGeneralInfoForm: React.FC<BusGeneralInfoFormProps> = ({
+  form,
+  busPhotos,
+  setBusPhotos,
+  isEditing = false,
+  canChangeCompany = false
+}) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -36,19 +44,29 @@ const BusGeneralInfoForm: React.FC<BusGeneralInfoFormProps> = ({ form, busPhotos
           render={({ field }) => (
             <FormItem>
               <FormLabel className="required-field">Empresa de Transporte</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              {canChangeCompany || !isEditing ? (
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una empresa" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="company1">Transportes SA</SelectItem>
+                    <SelectItem value="company2">Buses Costa</SelectItem>
+                    <SelectItem value="company3">Tránsito Metropolitano</SelectItem>
+                  </SelectContent>
+                </Select>
+              ) : (
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccione una empresa" />
-                  </SelectTrigger>
+                  <Input value={field.value} readOnly className="bg-gray-100" />
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="company1">Transportes SA</SelectItem>
-                  <SelectItem value="company2">Buses Costa</SelectItem>
-                  <SelectItem value="company3">Tránsito Metropolitano</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>Seleccione la empresa propietaria</FormDescription>
+              )}
+              <FormDescription>
+                {canChangeCompany || !isEditing 
+                  ? "Seleccione la empresa propietaria" 
+                  : "La empresa de transporte no puede ser modificada"}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -178,11 +196,14 @@ const BusGeneralInfoForm: React.FC<BusGeneralInfoFormProps> = ({ form, busPhotos
           label="Fotos del bus"
           acceptTypes=".jpg,.jpeg,.png"
           id="busPhotos"
-          required={true}
+          required={!isEditing}
           multiple={true}
           onChange={setBusPhotos}
-          helperText="Suba al menos una foto. Puede subir varias."
+          helperText={isEditing ? "Suba fotos nuevas o reemplace las existentes" : "Suba al menos una foto. Puede subir varias."}
         />
+        {isEditing && busPhotos.length === 0 && (
+          <p className="text-sm text-gray-500 mt-2">Las fotos existentes se mantendrán si no sube nuevas.</p>
+        )}
       </div>
     </div>
   );

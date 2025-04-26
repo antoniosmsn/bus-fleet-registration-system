@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BusesIndex from "./pages/buses/Index";
 import RegisterBus from "./pages/buses/Register";
+import EditBus from "./pages/buses/Edit"; // Added new import
 import ZoneParametersConfig from "./pages/configuracion/parametros";
 import PerfilesIndex from "./pages/perfiles/Index";
 import RegisterPerfil from "./pages/perfiles/Register";
@@ -27,6 +29,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/buses" element={<BusesIndex />} />
           <Route path="/buses/register" element={<RegisterBus />} />
+          <Route path="/buses/edit/:id" element={<EditBus />} /> {/* Added new route */}
           <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
           <Route path="/perfiles" element={<PerfilesIndex />} />
           <Route path="/perfiles/register" element={<RegisterPerfil />} />

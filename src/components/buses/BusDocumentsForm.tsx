@@ -15,6 +15,7 @@ interface BusDocumentsFormProps {
   setTaxDocument: (f: File[]) => void;
   ctpDocument: File[];
   setCtpDocument: (f: File[]) => void;
+  isEditing?: boolean;
 }
 
 const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
@@ -27,6 +28,7 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
   setTaxDocument,
   ctpDocument,
   setCtpDocument,
+  isEditing = false,
 }) => {
   return (
     <div className="space-y-6">
@@ -42,6 +44,11 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
               </FormControl>
               <FormDescription>
                 Fecha de vencimiento del certificado Dekra
+                {isEditing && (
+                  <span className="block text-amber-600 mt-1">
+                    Si modifica esta fecha, debe ser mayor a la fecha actual
+                  </span>
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -53,10 +60,13 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
             label="Documento Dekra"
             acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
             id="dekraDocument"
-            required={true}
+            required={!isEditing}
             onChange={setDekraDocument}
-            helperText="Suba el certificado Dekra"
+            helperText={isEditing ? "Suba un nuevo documento para reemplazar el existente" : "Suba el certificado Dekra"}
           />
+          {isEditing && dekraDocument.length === 0 && (
+            <p className="text-sm text-gray-500 mt-2">El documento existente se mantendrá si no sube uno nuevo.</p>
+          )}
         </div>
       </div>
       <Separator className="my-2" />
@@ -73,6 +83,11 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
               </FormControl>
               <FormDescription>
                 Fecha de vencimiento del seguro
+                {isEditing && (
+                  <span className="block text-amber-600 mt-1">
+                    Si modifica esta fecha, debe ser mayor a la fecha actual
+                  </span>
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -84,10 +99,13 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
             label="Documento de seguro"
             acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
             id="insuranceDocument"
-            required={true}
+            required={!isEditing}
             onChange={setInsuranceDocument}
-            helperText="Suba el documento del seguro"
+            helperText={isEditing ? "Suba un nuevo documento para reemplazar el existente" : "Suba el documento del seguro"}
           />
+          {isEditing && insuranceDocument.length === 0 && (
+            <p className="text-sm text-gray-500 mt-2">El documento existente se mantendrá si no sube uno nuevo.</p>
+          )}
         </div>
       </div>
       <Separator className="my-2" />
@@ -104,6 +122,11 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
               </FormControl>
               <FormDescription>
                 Fecha de vencimiento del marchamo
+                {isEditing && (
+                  <span className="block text-amber-600 mt-1">
+                    Si modifica esta fecha, debe ser mayor a la fecha actual
+                  </span>
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -115,10 +138,13 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
             label="Documento de marchamo"
             acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
             id="taxDocument"
-            required={true}
+            required={!isEditing}
             onChange={setTaxDocument}
-            helperText="Suba el documento de marchamo"
+            helperText={isEditing ? "Suba un nuevo documento para reemplazar el existente" : "Suba el documento de marchamo"}
           />
+          {isEditing && taxDocument.length === 0 && (
+            <p className="text-sm text-gray-500 mt-2">El documento existente se mantendrá si no sube uno nuevo.</p>
+          )}
         </div>
       </div>
       <Separator className="my-2" />
@@ -135,6 +161,11 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
               </FormControl>
               <FormDescription>
                 Fecha de vencimiento del certificado CTP
+                {isEditing && (
+                  <span className="block text-amber-600 mt-1">
+                    Si modifica esta fecha, debe ser mayor a la fecha actual
+                  </span>
+                )}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -146,10 +177,13 @@ const BusDocumentsForm: React.FC<BusDocumentsFormProps> = ({
             label="Documento CTP"
             acceptTypes=".pdf,.docx,.jpg,.jpeg,.png"
             id="ctpDocument"
-            required={true}
+            required={!isEditing}
             onChange={setCtpDocument}
-            helperText="Suba el certificado de CTP"
+            helperText={isEditing ? "Suba un nuevo documento para reemplazar el existente" : "Suba el certificado de CTP"}
           />
+          {isEditing && ctpDocument.length === 0 && (
+            <p className="text-sm text-gray-500 mt-2">El documento existente se mantendrá si no sube uno nuevo.</p>
+          )}
         </div>
       </div>
     </div>
