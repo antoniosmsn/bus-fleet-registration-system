@@ -1,4 +1,3 @@
-
 export interface Bus {
   id: number;
   plate: string;
@@ -11,6 +10,7 @@ export interface Bus {
   dekraExpirationDate: string | null;
   insuranceExpirationDate: string | null;
   ctpExpirationDate: string | null;
+  taxExpirationDate: string | null;
   type: string; // 'autobus', 'buseta', 'microbus'
   status: 'active' | 'inactive';
   approved: boolean;
