@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { isDateCloseToExpiration } from '@/lib/dateUtils';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface BusesTableProps {
   buses: Bus[];
@@ -34,6 +35,8 @@ const BusesTable: React.FC<BusesTableProps> = ({
   onChangeStatus,
   onApprove
 }) => {
+  const navigate = useNavigate();
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No especificado';
     try {
@@ -46,6 +49,10 @@ const BusesTable: React.FC<BusesTableProps> = ({
   const isExpiringSoon = (dateString: string | null) => {
     if (!dateString || !expirationMonths) return false;
     return isDateCloseToExpiration(new Date(dateString), expirationMonths);
+  };
+
+  const handleEdit = (id: number) => {
+    navigate(`/buses/edit/${id}`);
   };
 
   return (
@@ -124,7 +131,7 @@ const BusesTable: React.FC<BusesTableProps> = ({
                         <BusIcon className="mr-2 h-4 w-4" />
                         <span>Ver detalles</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => console.log('Editar', bus.id)}>
+                      <DropdownMenuItem onClick={() => handleEdit(bus.id)}>
                         <Edit className="mr-2 h-4 w-4" />
                         <span>Editar</span>
                       </DropdownMenuItem>
