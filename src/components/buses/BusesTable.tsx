@@ -12,16 +12,10 @@ import { Switch } from '@/components/ui/switch';
 import { Bus } from '@/types/bus';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Check, CheckCircle, XCircle, Edit, Bus as BusIcon } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { isDateCloseToExpiration } from '@/lib/dateUtils';
-import { Link, useNavigate } from 'react-router-dom';
+import { Check, CheckCircle, XCircle, Edit, Eye, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import BusStatusDialog from './BusStatusDialog';
+import BusDocumentsDialog from './BusDocumentsDialog';
 import { useToast } from '@/hooks/use-toast';
 
 interface BusesTableProps {
@@ -41,6 +35,7 @@ const BusesTable: React.FC<BusesTableProps> = ({
   const { toast } = useToast();
   const [busToToggle, setBusToToggle] = useState<Bus | null>(null);
   const [busToApprove, setBusToApprove] = useState<Bus | null>(null);
+  const [selectedBusForDocs, setSelectedBusForDocs] = useState<Bus | null>(null);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No especificado';
@@ -96,6 +91,10 @@ const BusesTable: React.FC<BusesTableProps> = ({
       onApprove(busToApprove.id);
       setBusToApprove(null);
     }
+  };
+
+  const handleViewDocuments = (bus: Bus) => {
+    setSelectedBusForDocs(bus);
   };
 
   return (
@@ -175,6 +174,15 @@ const BusesTable: React.FC<BusesTableProps> = ({
                     <div className="flex space-x-2">
                       <Button 
                         variant="outline" 
+                        size="sm"
+                        onClick={() => handleViewDocuments(bus)}
+                      >
+                        <FileText className="mr-2 h-4 w-4" />
+                        Ver Documentos
+                      </Button>
+
+                      <Button 
+                        variant="outline" 
                         size="sm" 
                         onClick={() => handleEdit(bus.id)}
                       >
@@ -240,6 +248,12 @@ const BusesTable: React.FC<BusesTableProps> = ({
           dialogType="approval"
         />
       )}
+
+      <BusDocumentsDialog
+        bus={selectedBusForDocs}
+        isOpen={!!selectedBusForDocs}
+        onClose={() => setSelectedBusForDocs(null)}
+      />
     </>
   );
 };
