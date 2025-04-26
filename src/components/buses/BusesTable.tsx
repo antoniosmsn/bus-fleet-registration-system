@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import BusStatusDialog from './BusStatusDialog';
 import BusDocumentsDialog from './BusDocumentsDialog';
 import { useToast } from '@/hooks/use-toast';
+import { isDateCloseToExpiration } from '@/lib/dateUtils';
 
 interface BusesTableProps {
   buses: Bus[];
