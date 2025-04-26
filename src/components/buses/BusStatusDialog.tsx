@@ -16,7 +16,8 @@ interface BusStatusDialogProps {
   onClose: () => void;
   onConfirm: () => void;
   busPlate: string;
-  newStatus: 'active' | 'inactive';
+  dialogType: 'status' | 'approval';
+  newStatus?: 'active' | 'inactive';
   validationErrors?: string[];
 }
 
@@ -25,43 +26,60 @@ const BusStatusDialog: React.FC<BusStatusDialogProps> = ({
   onClose,
   onConfirm,
   busPlate,
+  dialogType,
   newStatus,
   validationErrors = []
 }) => {
   const hasErrors = validationErrors.length > 0;
   
+  const renderContent = () => {
+    if (dialogType === 'approval') {
+      return (
+        <p>¿Está seguro que desea aprobar el autobús {busPlate}?</p>
+      );
+    }
+
+    if (hasErrors) {
+      return (
+        <div className="space-y-2">
+          <p className="text-destructive font-medium">
+            No es posible activar el autobús {busPlate} por los siguientes motivos:
+          </p>
+          <ul className="list-disc pl-4 space-y-1">
+            {validationErrors.map((error, index) => (
+              <li key={index} className="text-destructive">{error}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    return (
+      <p>
+        ¿Está seguro que desea {newStatus === 'active' ? 'activar' : 'inactivar'} el autobús {busPlate}?
+        {newStatus === 'inactive' && (
+          <span className="block mt-2 text-destructive">
+            ADVERTENCIA: El autobús no podrá ser utilizado para operaciones y los conductores no podrán iniciar sesión.
+          </span>
+        )}
+      </p>
+    );
+  };
+  
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirmar cambio de estado</AlertDialogTitle>
+          <AlertDialogTitle>
+            {dialogType === 'approval' ? 'Confirmar aprobación' : 'Confirmar cambio de estado'}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {hasErrors ? (
-              <div className="space-y-2">
-                <p className="text-destructive font-medium">
-                  No es posible activar el autobús {busPlate} por los siguientes motivos:
-                </p>
-                <ul className="list-disc pl-4 space-y-1">
-                  {validationErrors.map((error, index) => (
-                    <li key={index} className="text-destructive">{error}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p>
-                ¿Está seguro que desea {newStatus === 'active' ? 'activar' : 'inactivar'} el autobús {busPlate}?
-                {newStatus === 'inactive' && (
-                  <span className="block mt-2 text-destructive">
-                    ADVERTENCIA: El autobús no podrá ser utilizado para operaciones y los conductores no podrán iniciar sesión.
-                  </span>
-                )}
-              </p>
-            )}
+            {renderContent()}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancelar</AlertDialogCancel>
-          {!hasErrors && (
+          {(!hasErrors || dialogType === 'approval') && (
             <AlertDialogAction onClick={onConfirm}>
               Confirmar
             </AlertDialogAction>

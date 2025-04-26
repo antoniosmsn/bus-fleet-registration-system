@@ -29,7 +29,6 @@ import {
 import { isDateInRange, isDateCloseToExpiration } from '@/lib/dateUtils';
 
 const BusesIndex = () => {
-  // Mock data for demonstration
   const allBuses: Bus[] = [
     { 
       id: 1, 
@@ -283,11 +282,24 @@ const BusesIndex = () => {
   };
   
   const handleApprove = (busId: number) => {
-    setDialogState({
-      isOpen: true,
-      type: 'approval',
-      busId
+    const updatedBuses = buses.map(bus => {
+      if (bus.id === busId) {
+        toast({
+          title: "Autobús aprobado",
+          description: `El autobús ${bus.plate} ha sido aprobado correctamente.`
+        });
+        
+        return {
+          ...bus,
+          approved: true,
+          approvalDate: new Date().toISOString(),
+          approvalUser: 'usuario.actual@sistema.com'
+        };
+      }
+      return bus;
     });
+    
+    setBuses(updatedBuses);
   };
   
   const handleConfirmAction = () => {
@@ -296,7 +308,6 @@ const BusesIndex = () => {
     if (dialogState.type === 'status') {
       const updatedBuses = buses.map(bus => {
         if (bus.id === dialogState.busId) {
-          // Ensure the status is strictly typed as 'active' or 'inactive'
           const newStatus: 'active' | 'inactive' = bus.status === 'active' ? 'inactive' : 'active';
           const statusText = newStatus === 'active' ? 'activado' : 'desactivado';
           

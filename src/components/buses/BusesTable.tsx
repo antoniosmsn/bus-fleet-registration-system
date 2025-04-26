@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Bus } from '@/types/bus';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CheckCircle, XCircle, Edit, Bus as BusIcon } from 'lucide-react';
+import { Check, CheckCircle, XCircle, Edit, Bus as BusIcon } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +40,7 @@ const BusesTable: React.FC<BusesTableProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [busToToggle, setBusToToggle] = useState<Bus | null>(null);
+  const [busToApprove, setBusToApprove] = useState<Bus | null>(null);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No especificado';
@@ -79,15 +80,21 @@ const BusesTable: React.FC<BusesTableProps> = ({
     setBusToToggle({ ...bus, validationErrors });
   };
 
+  const handleApprove = (bus: Bus) => {
+    setBusToApprove(bus);
+  };
+
   const handleConfirmStatusChange = () => {
     if (busToToggle) {
       onChangeStatus(busToToggle.id);
-      const newStatus = busToToggle.status === 'active' ? 'inactivo' : 'activo';
-      toast({
-        title: "Estado actualizado",
-        description: `El autobús ${busToToggle.plate} ha sido ${newStatus} exitosamente.`
-      });
       setBusToToggle(null);
+    }
+  };
+
+  const handleConfirmApproval = () => {
+    if (busToApprove) {
+      onApprove(busToApprove.id);
+      setBusToApprove(null);
     }
   };
 
@@ -165,33 +172,45 @@ const BusesTable: React.FC<BusesTableProps> = ({
                   <TableCell>{bus.approvalDate ? formatDate(bus.approvalDate) : 'N/A'}</TableCell>
                   <TableCell>{bus.approvalUser || 'N/A'}</TableCell>
                   <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">Acciones</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => console.log('Ver detalles', bus.id)}>
-                          <BusIcon className="mr-2 h-4 w-4" />
-                          <span>Ver detalles</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEdit(bus.id)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          <span>Editar</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onChangeStatus(bus.id)}>
-                          {bus.status === 'active' ? 
-                            <><XCircle className="mr-2 h-4 w-4" /><span>Desactivar</span></> : 
-                            <><CheckCircle className="mr-2 h-4 w-4" /><span>Activar</span></>
-                          }
-                        </DropdownMenuItem>
-                        {!bus.approved && (
-                          <DropdownMenuItem onClick={() => onApprove(bus.id)}>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleEdit(bus.id)}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </Button>
+                      
+                      {!bus.approved && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleApprove(bus)}
+                        >
+                          <Check className="mr-2 h-4 w-4" />
+                          Aprobar
+                        </Button>
+                      )}
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleToggleStatus(bus)}
+                      >
+                        {bus.status === 'active' ? (
+                          <>
+                            <XCircle className="mr-2 h-4 w-4" />
+                            Desactivar
+                          </>
+                        ) : (
+                          <>
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            <span>Aprobar</span>
-                          </DropdownMenuItem>
+                            Activar
+                          </>
                         )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -206,8 +225,19 @@ const BusesTable: React.FC<BusesTableProps> = ({
           onClose={() => setBusToToggle(null)}
           onConfirm={handleConfirmStatusChange}
           busPlate={busToToggle.plate}
+          dialogType="status"
           newStatus={busToToggle.status === 'active' ? 'inactive' : 'active'}
           validationErrors={busToToggle.validationErrors}
+        />
+      )}
+
+      {busToApprove && (
+        <BusStatusDialog
+          isOpen={true}
+          onClose={() => setBusToApprove(null)}
+          onConfirm={handleConfirmApproval}
+          busPlate={busToApprove.plate}
+          dialogType="approval"
         />
       )}
     </>
