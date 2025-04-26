@@ -11,11 +11,12 @@ export interface Bus {
   insuranceExpirationDate: string | null;
   ctpExpirationDate: string | null;
   taxExpirationDate: string | null;
-  type: string; // 'autobus', 'buseta', 'microbus'
+  type: string;
   status: 'active' | 'inactive';
   approved: boolean;
   approvalDate: string | null;
   approvalUser: string | null;
+  validationErrors?: string[];
 }
 
 export interface BusFilter {
