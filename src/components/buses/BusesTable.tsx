@@ -95,7 +95,14 @@ const BusesTable: React.FC<BusesTableProps> = ({
   };
 
   const handleViewDocuments = (bus: Bus) => {
-    setSelectedBusForDocs(bus);
+    const busWithDocs: Bus = {
+      ...bus,
+      dekraDocument: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      insuranceDocument: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      ctpDocument: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+      taxDocument: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
+    };
+    setSelectedBusForDocs(busWithDocs);
   };
 
   return (
