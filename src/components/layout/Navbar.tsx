@@ -1,53 +1,32 @@
-
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bus } from 'lucide-react';
+import { Bus, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const menuItems = [
-    { to: "/", label: "Panel Principal" },
-    { to: "/buses", label: "Autobuses" },
-    { to: "/conductores", label: "Conductores" },
-    { to: "/configuracion/parametros", label: "Configuración" },
-    { to: "/perfiles", label: "Perfiles" },
-    { to: "/companies", label: "Empresas" },
-    { to: "/reports", label: "Informes" },
-  ];
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <SidebarTrigger className="md:hidden mr-2" />
+            <Link to="/" className="flex items-center md:hidden">
               <Bus className="h-8 w-8 text-transport-600" />
               <span className="ml-2 text-xl font-semibold text-gray-900">SistemaTransporte</span>
             </Link>
-            
-            {/* Desktop Menu */}
-            <nav className="hidden md:ml-8 md:flex md:space-x-4">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="px-3 py-2 text-sm font-medium text-gray-900 hover:text-transport-600"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
           </div>
 
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm">
+              <User className="h-4 w-4 mr-2" />
               Administrador
             </Button>
 
@@ -71,18 +50,7 @@ const Navbar = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <nav className="flex flex-col space-y-4 mt-6">
-                  {menuItems.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className="px-4 py-2 text-sm font-medium text-gray-900 hover:text-transport-600 hover:bg-gray-50 rounded-md"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </nav>
+                {/* We'll use the sidebar content in the mobile menu */}
               </SheetContent>
             </Sheet>
           </div>

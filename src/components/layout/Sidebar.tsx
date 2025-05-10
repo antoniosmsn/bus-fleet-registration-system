@@ -1,0 +1,128 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Settings, FileText, Bus, Users } from 'lucide-react';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+
+const SidebarComponent = () => {
+  // Configuration menu items
+  const configItems = [
+    { 
+      title: "Parámetros por Zona Franca", 
+      url: "/configuracion/parametros", 
+      icon: Settings 
+    },
+    { 
+      title: "Perfiles y Permisos", 
+      url: "/perfiles", 
+      icon: FileText 
+    },
+  ];
+
+  // Registration menu items
+  const registrationItems = [
+    { 
+      title: "Empresas Administradoras", 
+      url: "/companies", 
+      icon: FileText 
+    },
+    { 
+      title: "Zonas Francas", 
+      url: "/zones", 
+      icon: FileText 
+    },
+    { 
+      title: "Empresas Cliente", 
+      url: "/clients", 
+      icon: FileText 
+    },
+    { 
+      title: "Empresas Transportistas", 
+      url: "/transport", 
+      icon: FileText 
+    },
+    { 
+      title: "Conductores", 
+      url: "/conductores", 
+      icon: Users 
+    },
+    { 
+      title: "Autobuses", 
+      url: "/buses", 
+      icon: Bus 
+    },
+    { 
+      title: "Usuarios Administradores", 
+      url: "/users", 
+      icon: Users 
+    },
+  ];
+
+  return (
+    <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
+      <SidebarHeader className="p-4">
+        <Link to="/" className="flex items-center">
+          <Bus className="h-6 w-6 text-transport-600" />
+          <span className="ml-2 text-lg font-semibold text-gray-900">SistemaTransporte</span>
+        </Link>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Settings className="mr-2" />
+            Configuración
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {configItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <FileText className="mr-2" />
+            Registro
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {registrationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+};
+
+export default SidebarComponent;
