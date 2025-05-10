@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BusesIndex from "./pages/buses/Index";
@@ -24,34 +25,36 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/buses" element={<BusesIndex />} />
-          <Route path="/buses/register" element={<RegisterBus />} />
-          <Route path="/buses/edit/:id" element={<EditBus />} />
-          <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
-          <Route path="/perfiles" element={<PerfilesIndex />} />
-          <Route path="/perfiles/register" element={<RegisterPerfil />} />
-          <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
-          <Route path="/conductores" element={<ConductoresIndex />} />
-          <Route path="/conductores/register" element={<RegisterConductor />} />
-          <Route path="/conductores/edit/:id" element={<EditConductor />} />
-          
-          {/* New routes for sidebar navigation */}
-          <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
-          <Route path="/zones" element={<PlaceholderPage title="Zonas Francas" />} />
-          <Route path="/clients" element={<PlaceholderPage title="Empresas Cliente" />} />
-          <Route path="/transport" element={<PlaceholderPage title="Empresas Transportistas" />} />
-          <Route path="/users" element={<PlaceholderPage title="Usuarios Administradores" />} />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <SidebarProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/buses" element={<BusesIndex />} />
+            <Route path="/buses/register" element={<RegisterBus />} />
+            <Route path="/buses/edit/:id" element={<EditBus />} />
+            <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
+            <Route path="/perfiles" element={<PerfilesIndex />} />
+            <Route path="/perfiles/register" element={<RegisterPerfil />} />
+            <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
+            <Route path="/conductores" element={<ConductoresIndex />} />
+            <Route path="/conductores/register" element={<RegisterConductor />} />
+            <Route path="/conductores/edit/:id" element={<EditConductor />} />
+            
+            {/* New routes for sidebar navigation */}
+            <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
+            <Route path="/zones" element={<PlaceholderPage title="Zonas Francas" />} />
+            <Route path="/clients" element={<PlaceholderPage title="Empresas Cliente" />} />
+            <Route path="/transport" element={<PlaceholderPage title="Empresas Transportistas" />} />
+            <Route path="/users" element={<PlaceholderPage title="Usuarios Administradores" />} />
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </SidebarProvider>
   </QueryClientProvider>
 );
 
