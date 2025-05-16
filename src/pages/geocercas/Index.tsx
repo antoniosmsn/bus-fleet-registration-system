@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { MapPin, Plus, Filter } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MapPin, Plus } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import GeocercasFilter from '@/components/geocercas/GeocercasFilter';
 import GeocercasTable from '@/components/geocercas/GeocercasTable';
 import GeocercasPagination from '@/components/geocercas/GeocercasPagination';
+import { toast } from 'sonner';
 
 interface Vertex {
   lat: number;
@@ -105,6 +105,7 @@ const GeocercasIndex = () => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ nombre: '' });
   const itemsPerPage = 5;
+  const navigate = useNavigate();
 
   // Simulating API call to load geocercas
   useEffect(() => {
@@ -152,10 +153,42 @@ const GeocercasIndex = () => {
     console.log('Audit: User navigated to page', page);
   };
 
-  // Handle selecting a geocerca (for future implementation)
+  // Handle selecting a geocerca
   const handleSelectGeocerca = (id: string) => {
     console.log('Geocerca selected:', id);
-    // In a real app, this could navigate to a detail view
+    // En una app real, aquí se registraría en la bitácora de auditoría
+    console.log('Audit: Usuario seleccionó geocerca', id);
+  };
+
+  // Handle editing a geocerca
+  const handleEditGeocerca = (id: string) => {
+    console.log('Edit geocerca:', id);
+    navigate(`/geocercas/editar/${id}`);
+    // En una app real, aquí se registraría en la bitácora de auditoría
+    console.log('Audit: Usuario navegó a editar geocerca', id);
+  };
+
+  // Handle toggling a geocerca's active status
+  const handleToggleActive = (id: string, active: boolean) => {
+    const updatedGeocercas = geocercas.map(g => 
+      g.id === id ? { ...g, active } : g
+    );
+    setGeocercas(updatedGeocercas);
+    
+    // Update filtered list as well
+    const updatedFiltered = filteredGeocercas.map(g => 
+      g.id === id ? { ...g, active } : g
+    );
+    setFilteredGeocercas(updatedFiltered);
+    
+    // Show toast notification
+    toast(active ? 'Geocerca activada' : 'Geocerca desactivada', {
+      description: `La geocerca "${updatedGeocercas.find(g => g.id === id)?.nombre}" ha sido ${active ? 'activada' : 'desactivada'}.`,
+      duration: 3000,
+    });
+    
+    // En una app real, aquí se registraría en la bitácora de auditoría
+    console.log('Audit: Usuario cambió estado de geocerca', id, active ? 'activo' : 'inactivo');
   };
 
   return (
@@ -182,6 +215,8 @@ const GeocercasIndex = () => {
           geocercas={getCurrentPageItems()} 
           loading={loading}
           onSelectGeocerca={handleSelectGeocerca}
+          onEditGeocerca={handleEditGeocerca}
+          onToggleActive={handleToggleActive}
         />
 
         {/* Pagination */}

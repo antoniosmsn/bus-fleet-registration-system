@@ -8,8 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MapPin } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { MapPin, Edit } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 
 interface Vertex {
   lat: number;
@@ -27,12 +28,16 @@ interface GeocercasTableProps {
   geocercas: Geocerca[];
   loading: boolean;
   onSelectGeocerca?: (id: string) => void;
+  onToggleActive?: (id: string, active: boolean) => void;
+  onEditGeocerca?: (id: string) => void;
 }
 
 const GeocercasTable: React.FC<GeocercasTableProps> = ({ 
   geocercas, 
   loading,
-  onSelectGeocerca 
+  onSelectGeocerca,
+  onToggleActive,
+  onEditGeocerca
 }) => {
   if (loading) {
     return (
@@ -56,14 +61,31 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
     );
   }
 
+  const handleToggleChange = (id: string, newActive: boolean) => {
+    if (onToggleActive) {
+      onToggleActive(id, newActive);
+      // En una app real, aquí se registraría en la bitácora de auditoría
+      console.log('Audit: Usuario cambió estado de geocerca', id, newActive ? 'activo' : 'inactivo');
+    }
+  };
+
+  const handleEditClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Evita que se active onSelectGeocerca
+    if (onEditGeocerca) {
+      onEditGeocerca(id);
+      // En una app real, aquí se registraría en la bitácora de auditoría
+      console.log('Audit: Usuario seleccionó editar geocerca', id);
+    }
+  };
+
   return (
     <div className="bg-white rounded-md shadow overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Nombre</TableHead>
-            <TableHead>Vértices</TableHead>
             <TableHead>Estado</TableHead>
+            <TableHead className="w-24">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -74,13 +96,23 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
               onClick={() => onSelectGeocerca && onSelectGeocerca(geocerca.id)}
             >
               <TableCell className="font-medium">{geocerca.nombre}</TableCell>
-              <TableCell>{geocerca.vertices.length} puntos</TableCell>
               <TableCell>
-                {geocerca.active ? (
-                  <Badge variant="default" className="bg-green-500">Activo</Badge>
-                ) : (
-                  <Badge variant="outline" className="text-gray-500">Inactivo</Badge>
-                )}
+                <Switch
+                  checked={geocerca.active}
+                  onCheckedChange={(checked) => handleToggleChange(geocerca.id, checked)}
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={geocerca.active ? "Desactivar geocerca" : "Activar geocerca"}
+                />
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="ghost" 
+                  size="sm"
+                  onClick={(e) => handleEditClick(e, geocerca.id)}
+                  aria-label="Editar geocerca"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
