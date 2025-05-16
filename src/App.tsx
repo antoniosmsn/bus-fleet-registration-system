@@ -17,6 +17,8 @@ import PerfilPermisos from "./pages/perfiles/Permisos";
 import ConductoresIndex from "./pages/conductores/Index";
 import RegisterConductor from "./pages/conductores/Register";
 import EditConductor from "./pages/conductores/Edit";
+import GeocercasIndex from "./pages/geocercas/Index";
+import CrearGeocerca from "./pages/geocercas/Crear";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -42,6 +44,8 @@ const App = () => (
             <Route path="/conductores" element={<ConductoresIndex />} />
             <Route path="/conductores/register" element={<RegisterConductor />} />
             <Route path="/conductores/edit/:id" element={<EditConductor />} />
+            <Route path="/geocercas" element={<GeocercasIndex />} />
+            <Route path="/geocercas/crear" element={<CrearGeocerca />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />

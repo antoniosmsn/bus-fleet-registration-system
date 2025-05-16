@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +28,11 @@ const SidebarComponent = () => {
       title: "Perfiles y Permisos", 
       url: "/perfiles", 
       icon: FileText 
+    },
+    { 
+      title: "Geocercas", 
+      url: "/geocercas", 
+      icon: MapPin 
     },
   ];
 
