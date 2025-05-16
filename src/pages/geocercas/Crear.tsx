@@ -185,11 +185,12 @@ const CrearGeocerca = () => {
                 </Button>
               </div>
 
-              <div className="pt-4 border-t flex justify-between space-x-2">
-                <Button variant="outline" onClick={handleClearForm}>
-                  Limpiar
-                </Button>
-                <div className="space-x-2">
+              <div className="pt-4 border-t">
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" onClick={handleClearForm}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Limpiar
+                  </Button>
                   <Link to="/geocercas">
                     <Button variant="secondary">
                       <X className="mr-2 h-4 w-4" />
