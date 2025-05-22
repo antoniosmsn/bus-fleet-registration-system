@@ -216,22 +216,7 @@ const EditarGeocerca = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Vértices ({vertices.length})</Label>
-                <div className="text-sm rounded-md bg-gray-50 p-2 max-h-48 overflow-y-auto">
-                  {vertices.length === 0 ? (
-                    <p className="text-gray-500 text-center p-2">No hay vértices definidos</p>
-                  ) : (
-                    <ul className="space-y-1">
-                      {vertices.map((vertex, index) => (
-                        <li key={index} className="text-xs font-mono">
-                          Punto {index + 1}: {vertex.lat.toFixed(6)}, {vertex.lng.toFixed(6)}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
+              {/* Removed vertices section */}
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
