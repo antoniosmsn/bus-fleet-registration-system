@@ -22,6 +22,7 @@ import CrearGeocerca from "./pages/geocercas/Crear";
 import EditarGeocerca from "./pages/geocercas/Editar";
 import RutasIndex from "./pages/rutas/Index";
 import RegisterRuta from "./pages/rutas/Register";
+import EditRuta from "./pages/rutas/Edit";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/geocercas/editar/:id" element={<EditarGeocerca />} />
             <Route path="/rutas" element={<RutasIndex />} />
             <Route path="/rutas/register" element={<RegisterRuta />} />
+            <Route path="/rutas/edit/:id" element={<EditRuta />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />

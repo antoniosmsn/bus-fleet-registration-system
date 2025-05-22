@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Table, 
   TableBody, 
@@ -8,13 +9,12 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { Edit, MapPin } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
-export type Ruta = {
+export interface Ruta {
   id: number;
   pais: string;
   provincia: string;
@@ -24,35 +24,24 @@ export type Ruta = {
   ramal: string;
   tipo: 'privada' | 'parque' | 'especial';
   estado: 'active' | 'inactive';
-  paradas: number; // Cantidad de paradas asignadas
-  geocercas: number; // Cantidad de geocercas asignadas
-};
+  paradas: number;
+  geocercas: number;
+}
 
 interface RutasTableProps {
   rutas: Ruta[];
   onChangeStatus: (id: number, newStatus: 'active' | 'inactive') => void;
 }
 
-const RutasTable: React.FC<RutasTableProps> = ({ 
-  rutas, 
-  onChangeStatus 
-}) => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleEdit = (id: number) => {
-    navigate(`/rutas/edit/${id}`);
-  };
-
-  const handleToggleStatus = (ruta: Ruta) => {
-    const newStatus = ruta.estado === 'active' ? 'inactive' : 'active';
-    onChangeStatus(ruta.id, newStatus);
-    
-    toast({
-      title: `Ruta ${newStatus === 'active' ? 'activada' : 'desactivada'}`,
-      description: `La ruta ha sido ${newStatus === 'active' ? 'activada' : 'desactivada'} exitosamente.`,
-      variant: newStatus === 'active' ? 'default' : 'destructive',
-    });
+const RutasTable: React.FC<RutasTableProps> = ({ rutas, onChangeStatus }) => {
+  // Helper function to get badge color based on tipo
+  const getTipoBadgeColor = (tipo: Ruta['tipo']) => {
+    switch (tipo) {
+      case 'privada': return 'bg-blue-100 text-blue-800';
+      case 'parque': return 'bg-green-100 text-green-800';
+      case 'especial': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
   return (
@@ -60,72 +49,65 @@ const RutasTable: React.FC<RutasTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>País</TableHead>
-            <TableHead>Provincia</TableHead>
-            <TableHead>Cantón</TableHead>
-            <TableHead>Distrito</TableHead>
-            <TableHead>Sector</TableHead>
-            <TableHead>Ramal</TableHead>
-            <TableHead>Tipo de Ruta</TableHead>
-            <TableHead>Paradas</TableHead>
-            <TableHead>Geocercas</TableHead>
+            <TableHead className="w-[250px]">Ubicación</TableHead>
+            <TableHead>Sector / Ramal</TableHead>
+            <TableHead>Tipo</TableHead>
+            <TableHead className="text-center">Paradas</TableHead>
+            <TableHead className="text-center">Geocercas</TableHead>
             <TableHead>Estado</TableHead>
-            <TableHead>Acciones</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rutas.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={11} className="text-center py-6 text-muted-foreground">
+              <TableCell colSpan={7} className="h-24 text-center">
                 No se encontraron rutas registradas.
               </TableCell>
             </TableRow>
           ) : (
             rutas.map((ruta) => (
               <TableRow key={ruta.id}>
-                <TableCell className="font-medium">{ruta.pais}</TableCell>
-                <TableCell>{ruta.provincia}</TableCell>
-                <TableCell>{ruta.canton}</TableCell>
-                <TableCell>{ruta.distrito}</TableCell>
-                <TableCell>{ruta.sector}</TableCell>
-                <TableCell>{ruta.ramal}</TableCell>
-                <TableCell>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    ruta.tipo === 'privada' 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : ruta.tipo === 'parque' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {ruta.tipo.charAt(0).toUpperCase() + ruta.tipo.slice(1)}
-                  </span>
-                </TableCell>
-                <TableCell>{ruta.paradas}</TableCell>
-                <TableCell>{ruta.geocercas}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={ruta.estado === 'active'}
-                      onCheckedChange={() => handleToggleStatus(ruta)}
-                    />
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      ruta.estado === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {ruta.estado === 'active' ? 'Activo' : 'Inactivo'}
+                <TableCell className="font-medium">
+                  <div className="flex flex-col">
+                    <span>{ruta.pais}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {ruta.provincia}, {ruta.canton}, {ruta.distrito}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEdit(ruta.id)}
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      Editar
-                    </Button>
+                  <div className="flex flex-col">
+                    <span>{ruta.sector}</span>
+                    <span className="text-sm text-muted-foreground">{ruta.ramal}</span>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Badge className={`${getTipoBadgeColor(ruta.tipo)}`}>
+                    {ruta.tipo === 'privada' ? 'Privada' : 
+                     ruta.tipo === 'parque' ? 'Parque' : 'Especial'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  <span className="flex items-center justify-center gap-1">
+                    <MapPin className="h-3 w-3" /> {ruta.paradas}
+                  </span>
+                </TableCell>
+                <TableCell className="text-center">{ruta.geocercas}</TableCell>
+                <TableCell>
+                  <Switch 
+                    checked={ruta.estado === 'active'} 
+                    onCheckedChange={(checked) => 
+                      onChangeStatus(ruta.id, checked ? 'active' : 'inactive')
+                    }
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Link to={`/rutas/edit/${ruta.id}`}>
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))
