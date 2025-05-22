@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Save, Map } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -120,7 +119,6 @@ const formSchema = z.object({
   sector: z.string({ required_error: 'El sector es obligatorio' }),
   ramal: z.string({ required_error: 'El ramal es obligatorio' }),
   tipoRuta: z.string({ required_error: 'El tipo de ruta es obligatorio' }),
-  estado: z.boolean().default(true),
   paradas: z.array(z.string()).min(2, 'Debe seleccionar al menos 2 paradas'),
   geocercas: z.array(z.string()).min(1, 'Debe seleccionar al menos una geocerca')
 });
@@ -149,7 +147,6 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
       sector: 'ZF',
       ramal: 'R1',
       tipoRuta: rutaData.tipoRuta || 'privada',
-      estado: rutaData.estado,
       paradas: [],
       geocercas: []
     }
@@ -202,6 +199,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
     const rutaActualizada = {
       id: rutaData.id,
       ...data,
+      estado: rutaData.estado, // Mantener el estado actual de la ruta
       paradas: paradasOrdenadas,
       paradaInicial: paradasOrdenadas[0],
       paradaFinal: paradasOrdenadas[paradasOrdenadas.length - 1],
@@ -430,8 +428,8 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                   />
                 </div>
                 
-                {/* Tercera fila: Tipo de Ruta y Estado */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Tercera fila: Tipo de Ruta */}
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   <FormField
                     control={form.control}
                     name="tipoRuta"
@@ -456,26 +454,6 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                           </SelectContent>
                         </Select>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="estado"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Estado de la Ruta</FormLabel>
-                          <p className="text-sm text-muted-foreground">
-                            {field.value ? 'Activo' : 'Inactivo'}
-                          </p>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
                       </FormItem>
                     )}
                   />

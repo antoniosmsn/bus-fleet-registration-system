@@ -31,7 +31,7 @@ const EditRuta = () => {
             sector: 'Sector Central',
             ramal: 'Ramal 101',
             tipoRuta: 'privada',
-            estado: true,
+            estado: true, // Keeping this in the data model even though we removed the UI element
             paradas: [
               { id: '1', nombre: 'Parada Principal', lat: 9.932, lng: -84.079 },
               { id: '3', nombre: 'Sector A', lat: 9.935, lng: -84.076 },
