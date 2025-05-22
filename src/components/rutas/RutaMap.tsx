@@ -1,0 +1,155 @@
+
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for Leaflet icon issue
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
+
+interface Parada {
+  id: string;
+  nombre: string;
+  lat: number;
+  lng: number;
+}
+
+interface Vertex {
+  lat: number;
+  lng: number;
+}
+
+interface Geocerca {
+  id: string;
+  nombre: string;
+  vertices: Vertex[];
+  active: boolean;
+}
+
+interface RutaMapProps {
+  paradas: Parada[];
+  geocercas: Geocerca[];
+}
+
+// Custom icons for start, end and intermediate stops
+const startIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const endIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+// Helper function to get random color for polygons
+const getRandomColor = (id: string) => {
+  const colors = ['#3388ff', '#ff3333', '#33ff33', '#ff33ff', '#ffff33', '#33ffff'];
+  const index = id.charCodeAt(0) % colors.length;
+  return colors[index];
+};
+
+export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
+  // Center the map initially on Costa Rica
+  const center: [number, number] = [9.9333, -84.0833];
+  
+  // Get bounds for the map to fit all elements
+  const getBounds = () => {
+    const points = [
+      ...paradas.map(p => [p.lat, p.lng]),
+      ...geocercas.flatMap(g => g.vertices.map(v => [v.lat, v.lng]))
+    ] as [number, number][];
+    
+    if (points.length === 0) return null;
+    
+    return L.latLngBounds(points);
+  };
+
+  // Create polyline from stops in order
+  const rutaPolyline = paradas.length >= 2 ? 
+    paradas.map(p => [p.lat, p.lng] as [number, number]) : 
+    [];
+
+  return (
+    <MapContainer 
+      center={center}
+      zoom={13}
+      style={{ height: '100%', width: '100%' }}
+      bounds={getBounds() || undefined}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      
+      {/* Render geocercas */}
+      {geocercas.map((geocerca) => (
+        geocerca.vertices.length >= 3 && (
+          <Polygon
+            key={geocerca.id}
+            positions={geocerca.vertices}
+            pathOptions={{ 
+              color: getRandomColor(geocerca.id),
+              weight: 2,
+              fillOpacity: 0.2
+            }}
+          >
+            <Popup>
+              <div className="text-sm">
+                <strong>{geocerca.nombre}</strong>
+                <p>Estado: {geocerca.active ? 'Activo' : 'Inactivo'}</p>
+              </div>
+            </Popup>
+          </Polygon>
+        )
+      ))}
+      
+      {/* Render the route line between stops */}
+      {rutaPolyline.length >= 2 && (
+        <Polyline 
+          positions={rutaPolyline} 
+          pathOptions={{ color: 'blue', weight: 3, dashArray: '5, 5' }}
+        />
+      )}
+      
+      {/* Render paradas markers */}
+      {paradas.map((parada, index) => {
+        const isStart = index === 0;
+        const isEnd = index === paradas.length - 1;
+        const icon = isStart ? startIcon : isEnd ? endIcon : undefined;
+        
+        return (
+          <Marker
+            key={parada.id}
+            position={[parada.lat, parada.lng]}
+            icon={icon}
+          >
+            <Popup>
+              <div className="text-sm">
+                <strong>{parada.nombre}</strong>
+                <p>
+                  {isStart && '🚩 Parada Inicial'}
+                  {isEnd && '🏁 Parada Final'}
+                  {!isStart && !isEnd && `Parada #${index + 1}`}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+    </MapContainer>
+  );
+};

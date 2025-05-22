@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -67,6 +67,11 @@ const SidebarComponent = () => {
       title: "Autobuses", 
       url: "/buses", 
       icon: Bus 
+    },
+    { 
+      title: "Rutas", 
+      url: "/rutas", 
+      icon: Route 
     },
     { 
       title: "Usuarios Administradores", 
