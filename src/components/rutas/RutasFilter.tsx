@@ -108,7 +108,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar país" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los países</SelectItem>
+                  <SelectItem value="todos">Todos los países</SelectItem>
                   {paises.map(pais => (
                     <SelectItem key={pais} value={pais}>{pais}</SelectItem>
                   ))}
@@ -127,7 +127,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar provincia" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas las provincias</SelectItem>
+                  <SelectItem value="todas">Todas las provincias</SelectItem>
                   {provincias.map(provincia => (
                     <SelectItem key={provincia} value={provincia}>{provincia}</SelectItem>
                   ))}
@@ -146,7 +146,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar cantón" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los cantones</SelectItem>
+                  <SelectItem value="todos">Todos los cantones</SelectItem>
                   {cantones.map(canton => (
                     <SelectItem key={canton} value={canton}>{canton}</SelectItem>
                   ))}
@@ -165,7 +165,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar distrito" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los distritos</SelectItem>
+                  <SelectItem value="todos">Todos los distritos</SelectItem>
                   {distritos.map(distrito => (
                     <SelectItem key={distrito} value={distrito}>{distrito}</SelectItem>
                   ))}
@@ -186,7 +186,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar sector" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los sectores</SelectItem>
+                  <SelectItem value="todos">Todos los sectores</SelectItem>
                   {sectores.map(sector => (
                     <SelectItem key={sector} value={sector}>{sector}</SelectItem>
                   ))}
@@ -205,7 +205,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar ramal" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los ramales</SelectItem>
+                  <SelectItem value="todos">Todos los ramales</SelectItem>
                   {ramales.map(ramal => (
                     <SelectItem key={ramal} value={ramal}>{ramal}</SelectItem>
                   ))}
@@ -223,7 +223,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los tipos</SelectItem>
+                  <SelectItem value="todos">Todos los tipos</SelectItem>
                   <SelectItem value="privada">Privada</SelectItem>
                   <SelectItem value="parque">Parque</SelectItem>
                   <SelectItem value="especial">Especial</SelectItem>
@@ -241,7 +241,7 @@ const RutasFilter: React.FC<RutasFilterProps> = ({ onFilter }) => {
                   <SelectValue placeholder="Seleccionar estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="todos">Todos</SelectItem>
                   <SelectItem value="active">Activo</SelectItem>
                   <SelectItem value="inactive">Inactivo</SelectItem>
                 </SelectContent>
