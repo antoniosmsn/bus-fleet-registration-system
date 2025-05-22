@@ -231,7 +231,7 @@ const RutaRegistrationForm = () => {
         <Tabs defaultValue="general" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="general">Información General</TabsTrigger>
-            <TabsTrigger value="mapa">Mapa y Ubicaciones</TabsTrigger>
+            <TabsTrigger value="mapa">Paradas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
