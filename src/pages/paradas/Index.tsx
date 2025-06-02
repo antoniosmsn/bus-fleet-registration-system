@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
-import ParadasMap from '@/components/paradas/ParadasMap';
+import ParadaMap from '@/components/paradas/ParadaMap';
 import ParadasExport from '@/components/paradas/ParadasExport';
 import ParadasPagination from '@/components/paradas/ParadasPagination';
 import ParadasFilter from '@/components/paradas/ParadasFilter';
@@ -675,11 +675,13 @@ const ParadasIndex = () => {
                   <span>Haz clic en el mapa para agregar o arrastra pins para editarlos</span>
                 </div>
               </div>
-              <ParadasMap 
-                paradas={paradas.map(p => ({
-                  ...p,
-                  estado: p.active ? 'Activo' : 'Inactivo'
-                }))}
+              <ParadaMap 
+                paradasExistentes={paradas}
+                selectedLocation={selectedLocation}
+                onLocationChange={handleLocationChange}
+                isDraggingEnabled={isDraggingEnabled}
+                onParadaLocationChange={handleParadaLocationChange}
+                onParadaSelect={handleParadaSelect} // New prop for handling pin selections
               />
             </div>
           </div>
