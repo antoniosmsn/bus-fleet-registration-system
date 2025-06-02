@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import ParadasMap from '@/components/paradas/ParadasMap';
+import ParadaMap from '@/components/paradas/ParadaMap';
 import { ChevronLeft, MapPin, Save } from 'lucide-react';
 
 interface Parada {
@@ -356,11 +356,10 @@ const RegisterParada = () => {
           
           <div className="lg:col-span-2">
             <div className="bg-white rounded-md shadow p-2 h-[600px]">
-              <ParadasMap 
-                paradas={paradasExistentes.map(p => ({
-                  ...p,
-                  estado: p.active ? 'Activo' : 'Inactivo'
-                }))}
+              <ParadaMap 
+                paradasExistentes={paradasExistentes}
+                selectedLocation={location}
+                onLocationChange={handleLocationChange}
               />
             </div>
           </div>
