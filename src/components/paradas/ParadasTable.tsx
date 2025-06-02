@@ -47,12 +47,15 @@ const ParadasTable: React.FC<ParadasTableProps> = ({ paradas }) => {
   };
 
   return (
-    <div className="bg-white rounded-md shadow">
+    <div className="bg-white rounded-md shadow overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Código</TableHead>
             <TableHead>Nombre</TableHead>
+            <TableHead>País</TableHead>
+            <TableHead>Provincia</TableHead>
+            <TableHead>Cantón</TableHead>
             <TableHead>Distrito</TableHead>
             <TableHead>Sector</TableHead>
             <TableHead>Estado</TableHead>
@@ -67,6 +70,15 @@ const ParadasTable: React.FC<ParadasTableProps> = ({ paradas }) => {
               </TableCell>
               <TableCell className="font-medium">
                 {parada.nombre}
+              </TableCell>
+              <TableCell>
+                {parada.pais}
+              </TableCell>
+              <TableCell>
+                {parada.provincia}
+              </TableCell>
+              <TableCell>
+                {parada.canton || '-'}
               </TableCell>
               <TableCell>
                 {parada.distrito || '-'}
