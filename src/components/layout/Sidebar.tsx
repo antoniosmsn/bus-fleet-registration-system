@@ -74,6 +74,11 @@ const SidebarComponent = () => {
       icon: Route 
     },
     { 
+      title: "Puntos de Parada", 
+      url: "/paradas", 
+      icon: Map 
+    },
+    { 
       title: "Usuarios Administradores", 
       url: "/users", 
       icon: Users 
