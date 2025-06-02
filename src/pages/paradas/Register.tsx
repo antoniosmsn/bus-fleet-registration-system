@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -75,7 +74,6 @@ const sectores = {
   'El Carmen': ['Centro', 'Norte', 'Este', 'Oeste', 'Sur']
 };
 
-// Distancia mínima entre paradas en metros
 const DISTANCIA_MINIMA = 25;
 
 const RegisterParada = () => {
@@ -118,11 +116,9 @@ const RegisterParada = () => {
     setLocation(newLocation);
   };
 
-  // Validar distancia mínima entre paradas
   const validarDistanciaMinima = (lat: number, lng: number): boolean => {
     for (const parada of paradasExistentes) {
-      // Calcular distancia en línea recta (fórmula de Haversine)
-      const R = 6371e3; // Radio de la Tierra en metros
+      const R = 6371e3;
       const φ1 = (parada.lat * Math.PI) / 180;
       const φ2 = (lat * Math.PI) / 180;
       const Δφ = ((lat - parada.lat) * Math.PI) / 180;
@@ -142,7 +138,6 @@ const RegisterParada = () => {
   };
 
   const handleRegister = () => {
-    // Validar formulario
     if (!codigo.trim()) {
       toast.error('El código de parada es obligatorio');
       return;
@@ -163,19 +158,16 @@ const RegisterParada = () => {
       return;
     }
 
-    // Validar código único
     if (paradasExistentes.some(p => p.codigo.toLowerCase() === codigo.toLowerCase())) {
       toast.error('Ya existe una parada con este código');
       return;
     }
 
-    // Validar distancia mínima
     if (!validarDistanciaMinima(location.lat, location.lng)) {
       toast.error(`La parada debe estar al menos a ${DISTANCIA_MINIMA} metros de otras paradas existentes`);
       return;
     }
 
-    // En una app real, enviaríamos estos datos a la API
     console.log('Registrando parada:', {
       codigo,
       nombre,
@@ -189,12 +181,9 @@ const RegisterParada = () => {
       active
     });
 
-    // En una app real, aquí se registraría en la bitácora de auditoría
     console.log('Audit: Usuario registró una nueva parada:', codigo);
 
     toast.success('Punto de parada registrado correctamente');
-    
-    // Navegar de vuelta a la página de índice después del registro exitoso
     navigate('/paradas');
   };
 
