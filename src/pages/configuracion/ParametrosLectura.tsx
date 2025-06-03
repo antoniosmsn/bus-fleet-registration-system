@@ -231,7 +231,7 @@ const ParametrosLectura = () => {
             </div>
 
             {/* Botones de acción */}
-            <div className="flex flex-wrap gap-3 mt-8 pt-6 border-t">
+            <div className="flex  gap-3 mt-8 pt-6 border-t">
               <Button variant="outline" onClick={handleMostrarParametrosBaseDatos}>
                 <Database className="mr-2 h-4 w-4" />
                  Mostrar parámetros base de datos
@@ -242,7 +242,7 @@ const ParametrosLectura = () => {
                 Leer parámetros de la lectora
               </Button>
               
-              <Button onClick={handleGuardarConfiguracion} className="ml-auto">
+              <Button onClick={handleGuardarConfiguracion}>
                 <Save className="mr-2 h-4 w-4" />
                 Guardar parámetros en base de datos
               </Button>
