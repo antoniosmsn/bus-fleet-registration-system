@@ -8,19 +8,31 @@ interface Parada {
   nombre: string;
   pais: string;
   provincia: string;
-  canton?: string;
-  distrito?: string;
-  sector?: string;
-  estado: string;
+  canton: string;
+  distrito: string;
+  sector: string;
   lat: number;
   lng: number;
+  active: boolean;
+}
+
+interface ParadaFilterValues {
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
 }
 
 interface ParadasExportProps {
   paradas: Parada[];
+  filtros: ParadaFilterValues;
 }
 
-const ParadasExport: React.FC<ParadasExportProps> = ({ paradas }) => {
+const ParadasExport: React.FC<ParadasExportProps> = ({ paradas, filtros }) => {
   const handleExportExcel = () => {
     console.log('Exportando a Excel:', paradas);
     // In a real app, this would generate and download an Excel file
