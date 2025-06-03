@@ -141,6 +141,7 @@ const ParadasIndex = () => {
   const [paradaToDelete, setParadaToDelete] = useState<Parada | null>(null);
   const [isDraggingEnabled, setIsDraggingEnabled] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   
   // Estado de paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -213,10 +214,10 @@ const ParadasIndex = () => {
       
       // Filtrar por estado si se proporciona
       if (filterValues.estado) {
-        if (filterValues.estado === 'active' && !parada.active) {
+        if (filterValues.estado === 'Activo' && !parada.active) {
           return false;
         }
-        if (filterValues.estado === 'inactive' && parada.active) {
+        if (filterValues.estado === 'Inactivo' && parada.active) {
           return false;
         }
       }
@@ -230,6 +231,28 @@ const ParadasIndex = () => {
     
     // Notificar al usuario
     toast.info(`Se encontraron ${filtered.length} paradas con los filtros aplicados`);
+  };
+
+  // Limpiar filtros
+  const handleClearFilters = () => {
+    setFilteredParadas(paradas);
+    setFilterValues({
+      codigo: '',
+      nombre: '',
+      pais: '',
+      provincia: '',
+      canton: '',
+      distrito: '',
+      sector: '',
+      estado: ''
+    });
+    setCurrentPage(1);
+    toast.info('Filtros limpiados');
+  };
+
+  // Toggle filtros
+  const handleToggleFilters = () => {
+    setShowFilters(!showFilters);
   };
 
   // Actualizar las paradas paginadas cuando cambian las filtradas o la página actual
@@ -581,6 +604,9 @@ const ParadasIndex = () => {
         {/* Nuevo componente de filtros */}
         <ParadasFilter
           onFilter={handleApplyFilters}
+          onClearFilters={handleClearFilters}
+          showFilters={showFilters}
+          onToggleFilters={handleToggleFilters}
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
