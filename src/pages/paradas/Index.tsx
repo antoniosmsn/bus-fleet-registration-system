@@ -105,8 +105,17 @@ const paradasMock: Parada[] = [
 // Convert paradas to the format expected by ParadaMap
 const convertToMapParadas = (paradas: Parada[]) => {
   return paradas.map(parada => ({
-    ...parada,
-    estado: parada.active ? 'Activo' : 'Inactivo'
+    id: parada.id,
+    codigo: parada.codigo,
+    nombre: parada.nombre,
+    pais: parada.pais,
+    provincia: parada.provincia,
+    canton: parada.canton,
+    distrito: parada.distrito,
+    sector: parada.sector || '',
+    estado: parada.active ? 'Activo' : 'Inactivo',
+    lat: parada.lat,
+    lng: parada.lng
   }));
 };
 
