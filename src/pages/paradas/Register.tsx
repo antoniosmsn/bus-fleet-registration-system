@@ -11,7 +11,7 @@ import ParadaMap from '@/components/paradas/ParadaMap';
 import { ChevronLeft, MapPin, Save } from 'lucide-react';
 
 interface Parada {
-  id?: string;
+  id: string;
   codigo: string;
   nombre: string;
   pais: string;
@@ -19,9 +19,9 @@ interface Parada {
   canton: string;
   distrito: string;
   sector: string;
+  estado: string;
   lat: number;
   lng: number;
-  active: boolean;
 }
 
 interface Location {
@@ -40,9 +40,9 @@ const paradasExistentes: Parada[] = [
     canton: 'San José',
     distrito: 'El Carmen',
     sector: 'Centro',
+    estado: 'Activo',
     lat: 9.932,
-    lng: -84.079,
-    active: true
+    lng: -84.079
   },
   {
     id: '2',
@@ -53,9 +53,9 @@ const paradasExistentes: Parada[] = [
     canton: 'San José',
     distrito: 'Uruca',
     sector: 'Industrial',
+    estado: 'Activo',
     lat: 9.945,
-    lng: -84.085,
-    active: true
+    lng: -84.085
   }
 ];
 

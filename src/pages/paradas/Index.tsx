@@ -102,6 +102,14 @@ const paradasMock: Parada[] = [
   }
 ];
 
+// Convert paradas to the format expected by ParadaMap
+const convertToMapParadas = (paradas: Parada[]) => {
+  return paradas.map(parada => ({
+    ...parada,
+    estado: parada.active ? 'Activo' : 'Inactivo'
+  }));
+};
+
 // Datos de catálogos - en una app real, esto vendría de una API
 const paises = ['Costa Rica'];
 const provincias = {
@@ -314,14 +322,16 @@ const ParadasIndex = () => {
   };
 
   // Handle selection of a parada from the map
-  const handleParadaSelect = (parada: Parada) => {
-    // Update selectedParada state
+  const handleParadaSelect = (mapParada: any) => {
+    // Convert back from map format to our format
+    const parada = paradas.find(p => p.id === mapParada.id);
+    if (!parada) return;
+
     setSelectedParada(parada);
     setSelectedLocation({ lat: parada.lat, lng: parada.lng });
     setEditMode(true);
     setIsDraggingEnabled(true);
     
-    // Reset form with the parada data
     form.reset({
       id: parada.id,
       codigo: parada.codigo,
@@ -355,8 +365,11 @@ const ParadasIndex = () => {
   };
 
   // Nuevo manejador para cuando se arrastra un pin de parada existente
-  const handleParadaLocationChange = (parada: Parada, newLocation: Location) => {
-    // Actualizar la ubicación en el estado
+  const handleParadaLocationChange = (mapParada: any, newLocation: Location) => {
+    // Convert back from map format to our format
+    const parada = paradas.find(p => p.id === mapParada.id);
+    if (!parada) return;
+
     const updatedParadas = paradas.map(p => 
       p.id === parada.id ? { ...p, lat: newLocation.lat, lng: newLocation.lng } : p
     );
@@ -568,11 +581,6 @@ const ParadasIndex = () => {
         {/* Nuevo componente de filtros */}
         <ParadasFilter
           onFilter={handleApplyFilters}
-          paises={paises}
-          provincias={provincias}
-          cantones={cantones}
-          distritos={distritos}
-          sectores={sectores}
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -676,12 +684,12 @@ const ParadasIndex = () => {
                 </div>
               </div>
               <ParadaMap 
-                paradasExistentes={paradas}
+                paradasExistentes={convertToMapParadas(paradas)}
                 selectedLocation={selectedLocation}
                 onLocationChange={handleLocationChange}
                 isDraggingEnabled={isDraggingEnabled}
                 onParadaLocationChange={handleParadaLocationChange}
-                onParadaSelect={handleParadaSelect} // New prop for handling pin selections
+                onParadaSelect={handleParadaSelect}
               />
             </div>
           </div>
