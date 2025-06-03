@@ -5,12 +5,17 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMapEvents, useMap } from 'react-leaflet';
 
 interface Parada {
-  id?: string;
+  id: string;
   codigo: string;
   nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
   lat: number;
   lng: number;
-  active: boolean;
 }
 
 interface Location {
@@ -24,7 +29,7 @@ interface ParadaMapProps {
   onLocationChange: (location: Location | null) => void;
   isDraggingEnabled?: boolean;
   onParadaLocationChange?: (parada: Parada, newLocation: Location) => void;
-  onParadaSelect?: (parada: Parada) => void; // New prop to handle parada selection
+  onParadaSelect?: (parada: Parada) => void;
 }
 
 // Fix for Leaflet icon issue
@@ -141,11 +146,11 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
         <React.Fragment key={parada.id || parada.codigo}>
           <Marker
             position={[parada.lat, parada.lng]}
-            icon={parada.active ? activeIcon : inactiveIcon}
+            icon={parada.estado === 'Activo' ? activeIcon : inactiveIcon}
             draggable={!!onParadaLocationChange}
             eventHandlers={{
               dragend: (e) => handleParadaMarkerDragEnd(parada, e),
-              click: () => handleParadaClick(parada) // Added click handler
+              click: () => handleParadaClick(parada)
             }}
           >
             <Popup>
@@ -153,7 +158,7 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
                 <p className="font-bold">{parada.codigo}</p>
                 <p>{parada.nombre}</p>
                 <p className="text-xs mt-1">
-                  {parada.active ? 'Activa' : 'Inactiva'}
+                  {parada.estado}
                 </p>
                 {onParadaLocationChange && (
                   <p className="text-xs mt-1 italic text-blue-500">

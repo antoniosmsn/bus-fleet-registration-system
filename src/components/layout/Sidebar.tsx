@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +23,11 @@ const SidebarComponent = () => {
       title: "Parámetros por Zona Franca", 
       url: "/configuracion/parametros", 
       icon: Settings 
+    },
+    { 
+      title: "Parámetros de Lectura", 
+      url: "/configuracion/parametros-lectura", 
+      icon: Monitor 
     },
     { 
       title: "Perfiles y Permisos", 

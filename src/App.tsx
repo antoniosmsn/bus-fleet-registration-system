@@ -11,6 +11,7 @@ import BusesIndex from "./pages/buses/Index";
 import RegisterBus from "./pages/buses/Register";
 import EditBus from "./pages/buses/Edit";
 import ZoneParametersConfig from "./pages/configuracion/parametros";
+import ParametrosLectura from "./pages/configuracion/ParametrosLectura";
 import PerfilesIndex from "./pages/perfiles/Index";
 import RegisterPerfil from "./pages/perfiles/Register";
 import PerfilPermisos from "./pages/perfiles/Permisos";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/buses/register" element={<RegisterBus />} />
             <Route path="/buses/edit/:id" element={<EditBus />} />
             <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
+            <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
             <Route path="/perfiles" element={<PerfilesIndex />} />
             <Route path="/perfiles/register" element={<RegisterPerfil />} />
             <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
