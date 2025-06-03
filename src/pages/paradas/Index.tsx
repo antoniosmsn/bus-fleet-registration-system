@@ -31,6 +31,20 @@ interface Parada {
   active: boolean;
 }
 
+interface MapParada {
+  id: string;
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
+  lat: number;
+  lng: number;
+}
+
 interface Location {
   lat: number;
   lng: number;
@@ -103,7 +117,7 @@ const paradasMock: Parada[] = [
 ];
 
 // Convert paradas to the format expected by ParadaMap
-const convertToMapParadas = (paradas: Parada[]) => {
+const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
   return paradas.map(parada => ({
     id: parada.id,
     codigo: parada.codigo,
@@ -354,7 +368,7 @@ const ParadasIndex = () => {
   };
 
   // Handle selection of a parada from the map
-  const handleParadaSelect = (mapParada: any) => {
+  const handleParadaSelect = (mapParada: MapParada) => {
     // Convert back from map format to our format
     const parada = paradas.find(p => p.id === mapParada.id);
     if (!parada) return;
@@ -397,7 +411,7 @@ const ParadasIndex = () => {
   };
 
   // Nuevo manejador para cuando se arrastra un pin de parada existente
-  const handleParadaLocationChange = (mapParada: any, newLocation: Location) => {
+  const handleParadaLocationChange = (mapParada: MapParada, newLocation: Location) => {
     // Convert back from map format to our format
     const parada = paradas.find(p => p.id === mapParada.id);
     if (!parada) return;
