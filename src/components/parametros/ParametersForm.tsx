@@ -80,8 +80,8 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Columna izquierda */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Primera columna */}
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="idioma" className="required-field">Idioma</Label>
@@ -97,7 +97,21 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
               </Select>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="temaVisual" className="required-field">Tema visual</Label>
+              <Select value={temaVisual} onValueChange={setTemaVisual}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccione tema" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Oscuro">Oscuro</SelectItem>
+                  <SelectItem value="Claro">Claro</SelectItem>
+                  <SelectItem value="Auto">Automático</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="urlApi" className="required-field">URL del API</Label>
               <Input 
                 id="urlApi" 
@@ -114,6 +128,30 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
                 value={puertoApi} 
                 onChange={(e) => setPuertoApi(e.target.value)}
                 placeholder="31000"
+                type="number"
+              />
+            </div>
+          </div>
+
+          {/* Segunda columna */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="urlServicioMqtt" className="required-field">URL del servicio MQTT</Label>
+              <Input 
+                id="urlServicioMqtt" 
+                value={urlServicioMqtt} 
+                onChange={(e) => setUrlServicioMqtt(e.target.value)}
+                placeholder="ssl://ejemplo.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="puertoServicioMqtt" className="required-field">Puerto del servicio MQTT</Label>
+              <Input 
+                id="puertoServicioMqtt" 
+                value={puertoServicioMqtt} 
+                onChange={(e) => setPuertoServicioMqtt(e.target.value)}
+                placeholder="32505"
                 type="number"
               />
             </div>
@@ -154,80 +192,17 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
                 </Button>
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="volumen" className="required-field">Volumen</Label>
-                <div className="flex items-center space-x-2">
-                  <Input 
-                    id="volumen" 
-                    value={volumen} 
-                    onChange={(e) => setVolumen(e.target.value)}
-                    placeholder="80"
-                    type="number"
-                    className="flex-1"
-                  />
-                  <span className="text-sm text-gray-500">%</span>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="usuarioMqtt" className="required-field">Usuario MQTT</Label>
-                <Input 
-                  id="usuarioMqtt" 
-                  value={usuarioMqtt} 
-                  onChange={(e) => setUsuarioMqtt(e.target.value)}
-                  placeholder="usuario"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 py-3">
-              <Switch 
-                id="usoConexionSegura" 
-                checked={usoConexionSegura} 
-                onCheckedChange={setUsoConexionSegura}
-              />
-              <Label htmlFor="usoConexionSegura" className="required-field">
-                Uso de conexión segura MQTT (SSL)
-              </Label>
-            </div>
           </div>
 
-          {/* Columna derecha */}
+          {/* Tercera columna */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="temaVisual" className="required-field">Tema visual</Label>
-              <Select value={temaVisual} onValueChange={setTemaVisual}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccione tema" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Oscuro">Oscuro</SelectItem>
-                  <SelectItem value="Claro">Claro</SelectItem>
-                  <SelectItem value="Auto">Automático</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="urlServicioMqtt" className="required-field">URL del servicio MQTT</Label>
+              <Label htmlFor="usuarioMqtt" className="required-field">Usuario MQTT</Label>
               <Input 
-                id="urlServicioMqtt" 
-                value={urlServicioMqtt} 
-                onChange={(e) => setUrlServicioMqtt(e.target.value)}
-                placeholder="ssl://ejemplo.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="puertoServicioMqtt" className="required-field">Puerto del servicio MQTT</Label>
-              <Input 
-                id="puertoServicioMqtt" 
-                value={puertoServicioMqtt} 
-                onChange={(e) => setPuertoServicioMqtt(e.target.value)}
-                placeholder="32505"
-                type="number"
+                id="usuarioMqtt" 
+                value={usuarioMqtt} 
+                onChange={(e) => setUsuarioMqtt(e.target.value)}
+                placeholder="usuario"
               />
             </div>
 
@@ -259,6 +234,21 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="volumen" className="required-field">Volumen</Label>
+              <div className="flex items-center space-x-2">
+                <Input 
+                  id="volumen" 
+                  value={volumen} 
+                  onChange={(e) => setVolumen(e.target.value)}
+                  placeholder="80"
+                  type="number"
+                  className="flex-1"
+                />
+                <span className="text-sm text-gray-500">%</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="nivelDetalle" className="required-field">Nivel de detalle de logs (verbose)</Label>
               <Select value={nivelDetalle} onValueChange={setNivelDetalle}>
                 <SelectTrigger>
@@ -274,11 +264,23 @@ const ParametersForm: React.FC<ParametersFormProps> = ({
           </div>
         </div>
 
+        {/* Switch para conexión segura - span completo */}
+        <div className="flex items-center space-x-3 py-6 mt-4 border-t">
+          <Switch 
+            id="usoConexionSegura" 
+            checked={usoConexionSegura} 
+            onCheckedChange={setUsoConexionSegura}
+          />
+          <Label htmlFor="usoConexionSegura" className="required-field">
+            Uso de conexión segura MQTT (SSL)
+          </Label>
+        </div>
+
         {/* Botones de acción */}
-        <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
           <Button variant="outline" onClick={onMostrarParametrosBaseDatos}>
             <Database className="mr-2 h-4 w-4" />
-             Mostrar parámetros base de datos
+            Mostrar parámetros base de datos
           </Button>
           
           <Button onClick={onGuardarConfiguracion}>
