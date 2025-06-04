@@ -109,19 +109,17 @@ const ParametrosLectura = () => {
   return (
     <Layout>
       <div className="w-full max-w-6xl mx-auto">
-         <Card className="mb-6">
-           <CardHeader>
-              <CardTitle>              
+        <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Parámetros de Lectora</h1>          
-               </CardTitle>
-            </CardHeader>
-        </Card>
+        </div>
 
         {autobusSeleccionado && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle> 
-                 <div className="flex items-center gap-4">               
+               </CardTitle>
+            </CardHeader>
+              <div className="flex items-center gap-4">               
                  <Button variant="outline" onClick={abrirModalSeleccion}>
                   Seleccionar autobús
                 </Button>
@@ -130,9 +128,6 @@ const ParametrosLectura = () => {
                     : 'Ningún autobús seleccionado'
                   }
               </div>
-               </CardTitle>
-            </CardHeader>
-             
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Columna izquierda */}
@@ -299,7 +294,7 @@ const ParametrosLectura = () => {
               </div>
 
               {/* Botones de acción */}
-              <div className="flex  gap-3 mt-8 pt-6 border-t">
+              <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
                 <Button variant="outline" onClick={handleMostrarParametrosBaseDatos}>
                   <Database className="mr-2 h-4 w-4" />
                    Mostrar parámetros base de datos
