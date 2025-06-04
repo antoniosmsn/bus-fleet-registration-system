@@ -110,24 +110,24 @@ const ParametrosLectura = () => {
     <Layout>
       <div className="w-full max-w-6xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">Parámetros de Lectora</h1>
-          <div className="flex items-center gap-4">
-            <p className="text-gray-500">
-              {autobusSeleccionado 
-                ? `Autobús seleccionado: ${autobusSeleccionado.id}-${autobusSeleccionado.placa}`
-                : 'Ningún autobús seleccionado'
-              }
-            </p>
-            <Button variant="outline" onClick={abrirModalSeleccion}>
-              Seleccionar autobús
-            </Button>
-          </div>
+          <h1 className="text-2xl font-bold mb-2">Parámetros de Lectora</h1>          
         </div>
 
         {autobusSeleccionado && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Parámetros de Lectora - Autobús {autobusSeleccionado.id}-{autobusSeleccionado.placa}</CardTitle>
+              <div className="flex items-center gap-4">
+                <p className="text-gray-500">
+                  {autobusSeleccionado 
+                    ? `Autobús seleccionado: ${autobusSeleccionado.id}-${autobusSeleccionado.placa}`
+                    : 'Ningún autobús seleccionado'
+                  }
+                </p>
+                <Button variant="outline" onClick={abrirModalSeleccion}>
+                  Seleccionar autobús
+                </Button>
+              </div>
+              <CardTitle>Autobús {autobusSeleccionado.id}-{autobusSeleccionado.placa}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
