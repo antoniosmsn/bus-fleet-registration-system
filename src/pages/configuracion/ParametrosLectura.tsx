@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
@@ -8,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Save, FileText, Database, Search } from 'lucide-react';
+import { Save, FileText, Database, Search, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 interface Bus {
   id: number;
@@ -18,9 +20,13 @@ interface Bus {
 
 const ParametrosLectura = () => {
   const [autobusSeleccionado, setAutobusSeleccionado] = useState<Bus | null>(null);
-  const [modalAbierto, setModalAbierto] = useState(true); // Se abre automáticamente al cargar
+  const [modalAbierto, setModalAbierto] = useState(true);
   const [busquedaAutobus, setBusquedaAutobus] = useState('');
   const [autobusSelecionadoModal, setAutobusSelecionadoModal] = useState<string>('');
+  const [leyendoParametros, setLeyendoParametros] = useState(false);
+  const [parametrosLeidosDesdeDispositivo, setParametrosLeidosDesdeDispositivo] = useState(false);
+  const [mostrarContrasenaWifi, setMostrarContrasenaWifi] = useState(false);
+  const [mostrarContrasenaMqtt, setMostrarContrasenaMqtt] = useState(false);
 
   const [idioma, setIdioma] = useState('Español');
   const [temaVisual, setTemaVisual] = useState('Oscuro');
@@ -60,8 +66,50 @@ const ParametrosLectura = () => {
     toast.info('Función de parámetros de base de datos no implementada aún');
   };
 
-  const handleLeerParametrosLectora = () => {
-    toast.info('Función de lectura de parámetros no implementada aún');
+  const handleLeerParametrosEnLinea = () => {
+    if (!autobusSeleccionado) {
+      toast.error('Debe seleccionar un autobús primero');
+      return;
+    }
+
+    setLeyendoParametros(true);
+    console.log(`Leyendo parámetros en línea del autobús ${autobusSeleccionado.id}-${autobusSeleccionado.placa}`);
+    
+    // Simular lectura MQTT con timeout de 20 segundos
+    setTimeout(() => {
+      const exito = Math.random() > 0.3; // 70% de probabilidad de éxito
+      
+      if (exito) {
+        // Simular parámetros leídos desde la lectora
+        setIdioma('Español');
+        setTemaVisual('Claro');
+        setUrlApi('https://api-lectora.example.com');
+        setUrlServicioMqtt('ssl://mqtt-lectora.example.com');
+        setPuertoApi('31001');
+        setPuertoServicioMqtt('32506');
+        setNombreRedWifi('Lectora-WiFi');
+        setContrasenaRedWifi('●●●●●●●●●●●●●●●');
+        setVolumen('85');
+        setUsuarioMqtt('lectora');
+        setContrasenaMqtt('●●●●●●●●●');
+        setUsoConexionSegura(true);
+        setNivelDetalle('DEBUG');
+        
+        setParametrosLeidosDesdeDispositivo(true);
+        toast.success('Se han leído los parámetros correctamente');
+        console.log('Parámetros leídos exitosamente desde la lectora');
+      } else {
+        const tipoError = Math.random();
+        if (tipoError < 0.5) {
+          toast.error('El autobús seleccionado no respondió cuando se intentó leer los parámetros');
+        } else {
+          toast.error('No fue posible obtener los parámetros. Lectora no disponible');
+        }
+        console.log('Error al leer parámetros de la lectora');
+      }
+      
+      setLeyendoParametros(false);
+    }, 3000); // Simular 3 segundos de espera en lugar de 20 para demo
   };
 
   const abrirModalSeleccion = () => {
@@ -74,7 +122,7 @@ const ParametrosLectura = () => {
     const bus = autobuses.find(b => b.id.toString() === autobusSelecionadoModal);
     if (bus) {
       setAutobusSeleccionado(bus);
-      // Simular carga de parámetros específicos del autobús
+      setParametrosLeidosDesdeDispositivo(false);
       console.log(`Cargando parámetros para el autobús ${bus.id}-${bus.placa}`);
       setModalAbierto(false);
       toast.success(`Autobús ${bus.id}-${bus.placa} seleccionado correctamente`);
@@ -84,7 +132,6 @@ const ParametrosLectura = () => {
   const cancelarSeleccion = () => {
     setModalAbierto(false);
     if (!autobusSeleccionado) {
-      // Si no hay autobús seleccionado y cancela, mantener el modal cerrado pero sin datos
       toast.info('Debe seleccionar un autobús para configurar los parámetros');
     }
   };
@@ -109,26 +156,73 @@ const ParametrosLectura = () => {
   return (
     <Layout>
       <div className="w-full max-w-6xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">Parámetros de Lectora</h1>          
-        </div>
-
-        {autobusSeleccionado && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle> 
-               </CardTitle>
-            </CardHeader>
-              <div className="flex items-center gap-4">               
-                 <Button variant="outline" onClick={abrirModalSeleccion}>
-                  Seleccionar autobús
-                </Button>
-                {autobusSeleccionado 
+        {/* Card con título */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Parámetros de Lectora</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-gray-600 mb-2">
+                  {autobusSeleccionado 
                     ? `Autobús seleccionado: ${autobusSeleccionado.id}-${autobusSeleccionado.placa}`
                     : 'Ningún autobús seleccionado'
                   }
+                </p>
+                {parametrosLeidosDesdeDispositivo && (
+                  <p className="text-green-600 font-medium">
+                    Parámetros leídos desde la lectora del autobús
+                  </p>
+                )}
               </div>
-            <CardContent>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={abrirModalSeleccion}>
+                  Seleccionar autobús
+                </Button>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      disabled={!autobusSeleccionado || leyendoParametros}
+                    >
+                      {leyendoParametros ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Leyendo...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Leer parámetros en línea
+                        </>
+                      )}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirmar lectura de parámetros</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        ¿Desea leer los parámetros de la boletera del autobús seleccionado?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>No</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLeerParametrosEnLinea}>
+                        Sí
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {autobusSeleccionado && (
+          <Card>
+            <CardContent className="pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Columna izquierda */}
                 <div className="space-y-4">
@@ -175,6 +269,33 @@ const ParametrosLectura = () => {
                       onChange={(e) => setNombreRedWifi(e.target.value)}
                       placeholder="Nombre de la red"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="contrasenaRedWifi" className="required-field">Contraseña de red WiFi</Label>
+                    <div className="relative">
+                      <Input 
+                        id="contrasenaRedWifi" 
+                        value={contrasenaRedWifi} 
+                        onChange={(e) => setContrasenaRedWifi(e.target.value)}
+                        placeholder="●●●●●●●●●●●●●●●"
+                        type={mostrarContrasenaWifi ? "text" : "password"}
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setMostrarContrasenaWifi(!mostrarContrasenaWifi)}
+                      >
+                        {mostrarContrasenaWifi ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -254,25 +375,30 @@ const ParametrosLectura = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="contrasenaRedWifi" className="required-field">Contraseña de red WiFi</Label>
-                    <Input 
-                      id="contrasenaRedWifi" 
-                      value={contrasenaRedWifi} 
-                      onChange={(e) => setContrasenaRedWifi(e.target.value)}
-                      placeholder="●●●●●●●●●●●●●●●"
-                      type="password"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="contrasenaMqtt" className="required-field">Contraseña MQTT</Label>
-                    <Input 
-                      id="contrasenaMqtt" 
-                      value={contrasenaMqtt} 
-                      onChange={(e) => setContrasenaMqtt(e.target.value)}
-                      placeholder="●●●●●●●"
-                      type="password"
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="contrasenaMqtt" 
+                        value={contrasenaMqtt} 
+                        onChange={(e) => setContrasenaMqtt(e.target.value)}
+                        placeholder="●●●●●●●"
+                        type={mostrarContrasenaMqtt ? "text" : "password"}
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setMostrarContrasenaMqtt(!mostrarContrasenaMqtt)}
+                      >
+                        {mostrarContrasenaMqtt ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -282,11 +408,9 @@ const ParametrosLectura = () => {
                         <SelectValue placeholder="Seleccione nivel" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="OPTO">OPTO</SelectItem>
                         <SelectItem value="DEBUG">DEBUG</SelectItem>
-                        <SelectItem value="INFO">INFO</SelectItem>
-                        <SelectItem value="WARN">WARN</SelectItem>
-                        <SelectItem value="ERROR">ERROR</SelectItem>
+                        <SelectItem value="OPTO">OPTO</SelectItem>
+                        <SelectItem value="BÁSICO">BÁSICO</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -298,11 +422,6 @@ const ParametrosLectura = () => {
                 <Button variant="outline" onClick={handleMostrarParametrosBaseDatos}>
                   <Database className="mr-2 h-4 w-4" />
                    Mostrar parámetros base de datos
-                </Button>
-                
-                <Button variant="outline" onClick={handleLeerParametrosLectora}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Leer parámetros de la lectora
                 </Button>
                 
                 <Button onClick={handleGuardarConfiguracion}>
