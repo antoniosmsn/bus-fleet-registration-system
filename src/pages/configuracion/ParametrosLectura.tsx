@@ -144,7 +144,7 @@ const ParametrosLectura = () => {
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <Label htmlFor="urlApi" className="required-field">URL del API</Label>
                     <Input 
                       id="urlApi" 
