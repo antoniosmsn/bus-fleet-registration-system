@@ -117,11 +117,13 @@ const ParametrosLectura = () => {
           <Card className="mb-6">
             <CardHeader>
               <div className="flex items-center gap-4">               
+                
+              </div>
+              <CardTitle> 
                 <Button variant="outline" onClick={abrirModalSeleccion}>
                   Seleccionar autobús
                 </Button>
-              </div>
-              <CardTitle> {autobusSeleccionado 
+                {autobusSeleccionado 
                     ? `Autobús seleccionado: ${autobusSeleccionado.id}-${autobusSeleccionado.placa}`
                     : 'Ningún autobús seleccionado'
                   }</CardTitle>
