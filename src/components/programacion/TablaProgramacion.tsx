@@ -111,11 +111,11 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
           </div>
 
           {/* Paginación integrada */}
-          <div className="flex items-center justify-between bg-slate-800 text-white px-4 py-3 rounded-lg">
+          <div className="flex items-center justify-between border-t pt-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm">Registros por página</span>
+              <span className="text-sm text-gray-700">Registros por página</span>
               <Select defaultValue="5">
-                <SelectTrigger className="w-16 h-8 bg-slate-700 border-slate-600 text-white">
+                <SelectTrigger className="w-16 h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -128,20 +128,20 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              <span className="text-sm">1 - 5 de 40</span>
+              <span className="text-sm text-gray-700">1 - 5 de 40</span>
             </div>
 
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+              <Button variant="ghost" size="sm" className="h-8 w-8">
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+              <Button variant="ghost" size="sm" className="h-8 w-8">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+              <Button variant="ghost" size="sm" className="h-8 w-8">
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+              <Button variant="ghost" size="sm" className="h-8 w-8">
                 <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
