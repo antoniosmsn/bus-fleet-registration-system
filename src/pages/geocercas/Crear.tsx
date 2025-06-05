@@ -131,8 +131,8 @@ const CrearGeocerca = () => {
           <p className="text-gray-600 mt-1">Complete el formulario para registrar una nueva geocerca.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
-          {/* Map Section - 75% width */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-200px)]">
+          {/* Map Section - 60% width */}
           <div className="lg:col-span-3">
             <Card className="h-full">
               <CardHeader className="pb-3">
@@ -155,8 +155,8 @@ const CrearGeocerca = () => {
             </Card>
           </div>
           
-          {/* Form Section - 25% width */}
-          <div className="lg:col-span-1">
+          {/* Form Section - 40% width */}
+          <div className="lg:col-span-2">
             <div className="h-full flex flex-col space-y-4">
               <Card className="flex-1">
                 <CardHeader className="pb-3">
