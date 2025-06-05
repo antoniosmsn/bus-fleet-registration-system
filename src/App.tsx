@@ -12,6 +12,7 @@ import RegisterBus from "./pages/buses/Register";
 import EditBus from "./pages/buses/Edit";
 import ZoneParametersConfig from "./pages/configuracion/parametros";
 import ParametrosLectura from "./pages/configuracion/ParametrosLectura";
+import ProgramacionParametros from "./pages/programacion/ProgramacionParametros";
 import PerfilesIndex from "./pages/perfiles/Index";
 import RegisterPerfil from "./pages/perfiles/Register";
 import PerfilPermisos from "./pages/perfiles/Permisos";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/buses/edit/:id" element={<EditBus />} />
             <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
             <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
+            <Route path="/configuracion/programacion-parametros" element={<ProgramacionParametros />} />
             <Route path="/perfiles" element={<PerfilesIndex />} />
             <Route path="/perfiles/register" element={<RegisterPerfil />} />
             <Route path="/perfiles/permisos" element={<PerfilPermisos />} />

@@ -30,6 +30,11 @@ const SidebarComponent = () => {
       icon: Monitor 
     },
     { 
+      title: "Programación de Parámetros", 
+      url: "/configuracion/programacion-parametros", 
+      icon: Settings 
+    },
+    { 
       title: "Perfiles y Permisos", 
       url: "/perfiles", 
       icon: FileText 
