@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -39,8 +40,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-// Custom circular icon with code inside
-const createCircularIcon = (codigo: string, isActive: boolean) => {
+// Custom circular icon with numeric ID inside
+const createCircularIcon = (id: string, isActive: boolean) => {
   const color = isActive ? '#3b82f6' : '#6b7280';
   const bgColor = isActive ? '#3b82f6' : '#6b7280';
   const textColor = '#ffffff';
@@ -62,7 +63,7 @@ const createCircularIcon = (codigo: string, isActive: boolean) => {
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         transform: translate(-50%, -50%);
       ">
-        ${codigo.replace('PARA-', '')}
+        ${id}
       </div>
     `,
     className: 'custom-circular-icon',
@@ -173,12 +174,12 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
       
       <LocationSelector onLocationChange={onLocationChange} />
       
-      {/* Paradas existentes con iconos circulares */}
+      {/* Paradas existentes con iconos circulares numericos */}
       {paradasExistentes.map((parada) => (
         <React.Fragment key={parada.id || parada.codigo}>
           <Marker
             position={[parada.lat, parada.lng]}
-            icon={createCircularIcon(parada.codigo, parada.estado === 'Activo')}
+            icon={createCircularIcon(parada.id, parada.estado === 'Activo')}
             draggable={!!onParadaLocationChange}
             eventHandlers={{
               dragend: (e) => handleParadaMarkerDragEnd(parada, e),
