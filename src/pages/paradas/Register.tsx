@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -17,7 +18,6 @@ interface Parada {
   pais: string;
   provincia: string;
   canton: string;
-  distrito: string;
   sector: string;
   estado: string;
   lat: number;
@@ -38,7 +38,6 @@ const paradasExistentes: Parada[] = [
     pais: 'Costa Rica',
     provincia: 'San José',
     canton: 'San José',
-    distrito: 'El Carmen',
     sector: 'Centro',
     estado: 'Activo',
     lat: 9.932,
@@ -51,7 +50,6 @@ const paradasExistentes: Parada[] = [
     pais: 'Costa Rica',
     provincia: 'San José',
     canton: 'San José',
-    distrito: 'Uruca',
     sector: 'Industrial',
     estado: 'Activo',
     lat: 9.945,
@@ -67,12 +65,6 @@ const provincias = {
 const cantones = {
   'San José': ['San José', 'Escazú', 'Desamparados', 'Puriscal', 'Tarrazú', 'Aserrí', 'Mora']
 };
-const distritos = {
-  'San José': ['El Carmen', 'Merced', 'Hospital', 'Catedral', 'Zapote', 'San Francisco de Dos Ríos']
-};
-const sectores = {
-  'El Carmen': ['Centro', 'Norte', 'Este', 'Oeste', 'Sur']
-};
 
 const DISTANCIA_MINIMA = 25;
 
@@ -84,7 +76,6 @@ const RegisterParada = () => {
   const [pais, setPais] = useState('Costa Rica');
   const [provincia, setProvincia] = useState('');
   const [canton, setCanton] = useState('');
-  const [distrito, setDistrito] = useState('');
   const [sector, setSector] = useState('');
   const [location, setLocation] = useState<Location | null>(null);
   const [active, setActive] = useState(true);
@@ -93,24 +84,11 @@ const RegisterParada = () => {
   useEffect(() => {
     setProvincia('');
     setCanton('');
-    setDistrito('');
-    setSector('');
   }, [pais]);
 
   useEffect(() => {
     setCanton('');
-    setDistrito('');
-    setSector('');
   }, [provincia]);
-
-  useEffect(() => {
-    setDistrito('');
-    setSector('');
-  }, [canton]);
-
-  useEffect(() => {
-    setSector('');
-  }, [distrito]);
 
   const handleLocationChange = (newLocation: Location | null) => {
     setLocation(newLocation);
@@ -153,8 +131,8 @@ const RegisterParada = () => {
       return;
     }
 
-    if (!provincia || !canton || !distrito) {
-      toast.error('Debe completar la información geográfica (provincia, cantón, distrito)');
+    if (!provincia || !canton) {
+      toast.error('Debe completar la información geográfica (provincia, cantón)');
       return;
     }
 
@@ -174,7 +152,6 @@ const RegisterParada = () => {
       pais,
       provincia,
       canton,
-      distrito,
       sector,
       lat: location.lat,
       lng: location.lng,
@@ -231,7 +208,7 @@ const RegisterParada = () => {
                 />
               </div>
 
-              <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="pais" className="required-field">País</Label>
                   <Select value={pais} onValueChange={setPais}>
@@ -273,34 +250,18 @@ const RegisterParada = () => {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="distrito" className="required-field">Distrito</Label>
-                  <Select value={distrito} onValueChange={setDistrito} disabled={!canton}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un distrito" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {canton && distritos[canton]?.map(d => (
-                        <SelectItem key={d} value={d}>{d}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="sector">Sector</Label>
-                  <Select value={sector} onValueChange={setSector} disabled={!distrito}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccione un sector (opcional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {distrito && sectores[distrito]?.map(s => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="sector">Sector</Label>
+                <Input 
+                  id="sector" 
+                  value={sector} 
+                  onChange={(e) => setSector(e.target.value)} 
+                  placeholder="Ingrese el sector (opcional)"
+                  maxLength={100}
+                />
+                <p className="text-xs text-gray-500">Hasta 100 caracteres</p>
               </div>
 
               <div className="space-y-2">

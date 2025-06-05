@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -26,7 +27,6 @@ interface Parada {
   pais: string;
   provincia: string;
   canton: string;
-  distrito: string;
   sector: string;
   lat: number;
   lng: number;
@@ -59,7 +59,6 @@ interface ParadaFormValues {
   pais: string;
   provincia: string;
   canton: string;
-  distrito: string;
   sector: string;
   lat: string;
   lng: string;
@@ -72,7 +71,6 @@ interface ParadaFilterValues {
   pais: string;
   provincia: string;
   canton: string;
-  distrito: string;
   sector: string;
   estado: string;
 }
@@ -86,7 +84,6 @@ const paradasMock: Parada[] = [
     pais: 'Costa Rica',
     provincia: 'San José',
     canton: 'San José',
-    distrito: 'El Carmen',
     sector: 'Centro',
     lat: 9.932,
     lng: -84.079,
@@ -99,7 +96,6 @@ const paradasMock: Parada[] = [
     pais: 'Costa Rica',
     provincia: 'San José',
     canton: 'San José',
-    distrito: 'Uruca',
     sector: 'Industrial',
     lat: 9.945,
     lng: -84.085,
@@ -112,8 +108,7 @@ const paradasMock: Parada[] = [
     pais: 'Costa Rica',
     provincia: 'San José',
     canton: 'San José',
-    distrito: 'Hospital',
-    sector: 'Sur',
+    sector: 'Residencial Sur',
     lat: 9.925,
     lng: -84.082,
     active: false
@@ -129,7 +124,7 @@ const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
     pais: parada.pais,
     provincia: parada.provincia,
     canton: parada.canton,
-    distrito: parada.distrito,
+    distrito: '', // Ya no usamos distrito
     sector: parada.sector || '',
     estado: parada.active ? 'Activo' : 'Inactivo',
     lat: parada.lat,
@@ -144,12 +139,6 @@ const provincias = {
 };
 const cantones = {
   'San José': ['San José', 'Escazú', 'Desamparados', 'Puriscal', 'Tarrazú', 'Aserrí', 'Mora']
-};
-const distritos = {
-  'San José': ['El Carmen', 'Merced', 'Hospital', 'Catedral', 'Zapote', 'San Francisco de Dos Ríos']
-};
-const sectores = {
-  'El Carmen': ['Centro', 'Norte', 'Este', 'Oeste', 'Sur']
 };
 
 // Distancia mínima entre paradas en metros
@@ -181,7 +170,6 @@ const ParadasIndex = () => {
       pais: 'Costa Rica',
       provincia: '',
       canton: '',
-      distrito: '',
       sector: '',
       lat: '',
       lng: '',
@@ -195,7 +183,6 @@ const ParadasIndex = () => {
     pais: '',
     provincia: '',
     canton: '',
-    distrito: '',
     sector: '',
     estado: ''
   });
@@ -251,13 +238,8 @@ const ParadasIndex = () => {
         return false;
       }
       
-      // Filtrar por distrito si se proporciona
-      if (filterValues.distrito && parada.distrito !== filterValues.distrito) {
-        return false;
-      }
-      
       // Filtrar por sector si se proporciona
-      if (filterValues.sector && parada.sector !== filterValues.sector) {
+      if (filterValues.sector && !parada.sector.toLowerCase().includes(filterValues.sector.toLowerCase())) {
         return false;
       }
       
@@ -291,7 +273,6 @@ const ParadasIndex = () => {
       pais: '',
       provincia: '',
       canton: '',
-      distrito: '',
       sector: '',
       estado: ''
     });
@@ -323,43 +304,23 @@ const ParadasIndex = () => {
   const watchPais = form.watch('pais');
   const watchProvincia = form.watch('provincia');
   const watchCanton = form.watch('canton');
-  const watchDistrito = form.watch('distrito');
   const watchLat = form.watch('lat');
   const watchLng = form.watch('lng');
 
   useEffect(() => {
-    // Resetear provincia, cantón, distrito y sector cuando cambia el país
+    // Resetear provincia y cantón cuando cambia el país
     if (form.getValues('pais') !== watchPais) {
       form.setValue('provincia', '');
       form.setValue('canton', '');
-      form.setValue('distrito', '');
-      form.setValue('sector', '');
     }
   }, [watchPais, form]);
 
   useEffect(() => {
-    // Resetear cantón, distrito y sector cuando cambia la provincia
+    // Resetear cantón cuando cambia la provincia
     if (form.getValues('provincia') !== watchProvincia) {
       form.setValue('canton', '');
-      form.setValue('distrito', '');
-      form.setValue('sector', '');
     }
   }, [watchProvincia, form]);
-
-  useEffect(() => {
-    // Resetear distrito y sector cuando cambia el cantón
-    if (form.getValues('canton') !== watchCanton) {
-      form.setValue('distrito', '');
-      form.setValue('sector', '');
-    }
-  }, [watchCanton, form]);
-
-  useEffect(() => {
-    // Resetear sector cuando cambia el distrito
-    if (form.getValues('distrito') !== watchDistrito) {
-      form.setValue('sector', '');
-    }
-  }, [watchDistrito, form]);
 
   // Actualizar mapa cuando se cambian coordenadas manualmente
   useEffect(() => {
@@ -392,7 +353,6 @@ const ParadasIndex = () => {
           pais: 'Costa Rica',
           provincia: '',
           canton: '',
-          distrito: '',
           sector: '',
           lat: newLocation.lat.toFixed(6),
           lng: newLocation.lng.toFixed(6),
@@ -423,7 +383,6 @@ const ParadasIndex = () => {
       pais: parada.pais,
       provincia: parada.provincia,
       canton: parada.canton,
-      distrito: parada.distrito,
       sector: parada.sector || '',
       lat: parada.lat.toFixed(6),
       lng: parada.lng.toFixed(6),
@@ -460,7 +419,6 @@ const ParadasIndex = () => {
       pais: parada.pais,
       provincia: parada.provincia,
       canton: parada.canton,
-      distrito: parada.distrito,
       sector: parada.sector || '',
       lat: newLocation.lat.toFixed(6),
       lng: newLocation.lng.toFixed(6),
@@ -608,7 +566,6 @@ const ParadasIndex = () => {
       pais: parada.pais,
       provincia: parada.provincia,
       canton: parada.canton,
-      distrito: parada.distrito,
       sector: parada.sector || '',
       lat: parada.lat.toFixed(6),
       lng: parada.lng.toFixed(6),
@@ -625,7 +582,6 @@ const ParadasIndex = () => {
       pais: 'Costa Rica',
       provincia: '',
       canton: '',
-      distrito: '',
       sector: '',
       lat: '',
       lng: '',
@@ -717,7 +673,6 @@ const ParadasIndex = () => {
       pais: 'Costa Rica',
       provincia: '',
       canton: '',
-      distrito: '',
       sector: '',
       lat: '',
       lng: '',
@@ -865,8 +820,8 @@ const ParadasIndex = () => {
                 <CardContent>
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleParadaFormSubmit)} className="space-y-3">
-                      {/* Campos básicos */}
-                      <div className="grid grid-cols-2 gap-3">
+                      {/* Campos básicos - 3 columnas */}
+                      <div className="grid grid-cols-3 gap-3">
                         <FormField
                           control={form.control}
                           name="codigo"
@@ -912,10 +867,30 @@ const ParadasIndex = () => {
                             </FormItem>
                           )}
                         />
+                        
+                        <FormField
+                          control={form.control}
+                          name="active"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center">
+                              <FormLabel className="text-xs">Estado</FormLabel>
+                              <FormControl>
+                                <div className="flex items-center space-x-2">
+                                  <Switch 
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="scale-75"
+                                  />
+                                  <span className="text-xs">{field.value ? 'Activa' : 'Inactiva'}</span>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
-                      {/* Ubicación geográfica */}
-                      <div className="grid grid-cols-2 gap-3">
+                      {/* Ubicación geográfica - 3 columnas */}
+                      <div className="grid grid-cols-3 gap-3">
                         <FormField
                           control={form.control}
                           name="pais"
@@ -970,9 +945,7 @@ const ParadasIndex = () => {
                             </FormItem>
                           )}
                         />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
+                        
                         <FormField
                           control={form.control}
                           name="canton"
@@ -1000,36 +973,9 @@ const ParadasIndex = () => {
                             </FormItem>
                           )}
                         />
-                        
-                        <FormField
-                          control={form.control}
-                          name="distrito"
-                          rules={{ required: 'El distrito es obligatorio' }}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs required-field">Distrito</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                value={field.value}
-                                disabled={!watchCanton}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="h-8 text-xs">
-                                    <SelectValue placeholder="Seleccione" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {watchCanton && distritos[watchCanton]?.map(d => (
-                                    <SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage className="text-xs" />
-                            </FormItem>
-                          )}
-                        />
                       </div>
 
+                      {/* Sector y coordenadas - 3 columnas */}
                       <div className="grid grid-cols-3 gap-3">
                         <FormField
                           control={form.control}
@@ -1037,49 +983,18 @@ const ParadasIndex = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-xs">Sector</FormLabel>
-                              <Select 
-                                onValueChange={field.onChange} 
-                                value={field.value}
-                                disabled={!watchDistrito}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="h-8 text-xs">
-                                    <SelectValue placeholder="Opcional" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {watchDistrito && sectores[watchDistrito]?.map(s => (
-                                    <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="active"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-col justify-center">
-                              <FormLabel className="text-xs">Estado</FormLabel>
                               <FormControl>
-                                <div className="flex items-center space-x-2">
-                                  <Switch 
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="scale-75"
-                                  />
-                                  <span className="text-xs">{field.value ? 'Activa' : 'Inactiva'}</span>
-                                </div>
+                                <Input 
+                                  placeholder="Sector (opcional)" 
+                                  maxLength={100} 
+                                  className="h-8 text-xs"
+                                  {...field} 
+                                />
                               </FormControl>
                             </FormItem>
                           )}
                         />
-                      </div>
-
-                      {/* Coordenadas */}
-                      <div className="grid grid-cols-2 gap-3">
+                        
                         <FormField
                           control={form.control}
                           name="lat"

@@ -26,7 +26,6 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
     pais: '',
     provincia: '',
     canton: '',
-    distrito: '',
     sector: '',
     estado: ''
   });
@@ -47,7 +46,6 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
       pais: '',
       provincia: '',
       canton: '',
-      distrito: '',
       sector: '',
       estado: ''
     };
@@ -155,37 +153,12 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
               </div>
 
               <div className="space-y-2">
-                <Label>Distrito</Label>
-                <Select
-                  value={filters.distrito}
-                  onValueChange={(value) => handleInputChange('distrito', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar distrito" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Carmen">Carmen</SelectItem>
-                    <SelectItem value="Merced">Merced</SelectItem>
-                    <SelectItem value="Hospital">Hospital</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
                 <Label>Sector</Label>
-                <Select
+                <Input
+                  placeholder="Buscar por sector"
                   value={filters.sector}
-                  onValueChange={(value) => handleInputChange('sector', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sector" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Centro">Centro</SelectItem>
-                    <SelectItem value="Norte">Norte</SelectItem>
-                    <SelectItem value="Sur">Sur</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(e) => handleInputChange('sector', e.target.value)}
+                />
               </div>
 
               <div className="space-y-2">
