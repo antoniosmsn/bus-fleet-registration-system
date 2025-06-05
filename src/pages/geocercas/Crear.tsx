@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -136,10 +135,29 @@ const CrearGeocerca = () => {
           <div className="lg:col-span-3">
             <Card className="h-full">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Mapa Interactivo</CardTitle>
-                <p className="text-sm text-gray-600">
-                  Haga clic en el mapa para definir los vértices del polígono
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Mapa</CardTitle>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant={isDrawing ? "default" : "outline"} 
+                      size="sm"
+                      onClick={handleToggleDrawing} 
+                    >
+                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleLimpiarGeocerca}
+                      disabled={vertices.length === 0}
+                    >
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Limpiar geocerca
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="p-2 h-[calc(100%-80px)]">
                 <div className="h-full rounded-lg overflow-hidden">
@@ -196,49 +214,6 @@ const CrearGeocerca = () => {
                       Seleccione una geocerca existente para usarla como referencia visual.
                     </p>
                   </div>
-
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium text-gray-700">
-                      Herramientas de dibujo
-                    </Label>
-                    <div className="flex flex-col gap-2">
-                      <Button 
-                        variant={isDrawing ? "default" : "outline"} 
-                        size="sm"
-                        onClick={handleToggleDrawing} 
-                        className="w-full"
-                      >
-                        {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleLimpiarGeocerca}
-                        className="w-full"
-                        disabled={vertices.length === 0}
-                      >
-                        <RotateCcw className="mr-2 h-4 w-4" />
-                        Limpiar geocerca
-                      </Button>
-                    </div>
-                    <p className="text-xs text-gray-500">
-                      Haga clic en el mapa para agregar puntos. Se necesitan al menos 3 puntos.
-                    </p>
-                  </div>
-
-                  {vertices.length > 0 && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Puntos seleccionados: {vertices.length}
-                      </Label>
-                      <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                        {vertices.length < 3 
-                          ? `Faltan ${3 - vertices.length} puntos para formar un polígono válido`
-                          : "Polígono válido formado"
-                        }
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
