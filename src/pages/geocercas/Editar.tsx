@@ -1,14 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import GeocercaSelector from '@/components/geocercas/GeocercaSelector';
 import GeocercaMap from '@/components/geocercas/GeocercaMap';
-import { MapPin, Save, X, Trash2 } from 'lucide-react';
+import { MapPin, Save, X, Trash2, RotateCcw } from 'lucide-react';
 
 interface Vertex {
   lat: number;
@@ -47,60 +48,40 @@ const geocercasExistentes: Geocerca[] = [
   },
   {
     id: '3',
-    nombre: 'PARQUE LOGÍSTICO NORTE',
+    nombre: 'ZONA INDUSTRIAL',
     vertices: [
-      { lat: 9.948, lng: -84.098 },
-      { lat: 9.952, lng: -84.102 },
-      { lat: 9.950, lng: -84.105 },
+      { lat: 9.950, lng: -84.120 },
+      { lat: 9.955, lng: -84.125 },
+      { lat: 9.952, lng: -84.130 },
+      { lat: 9.948, lng: -84.122 },
     ],
     active: true
-  },
-  {
-    id: '4',
-    nombre: 'SECTOR ADMINISTRATIVO',
-    vertices: [
-      { lat: 9.938, lng: -84.095 },
-      { lat: 9.940, lng: -84.092 },
-      { lat: 9.936, lng: -84.090 },
-    ],
-    active: false
   },
 ];
 
 const EditarGeocerca = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const { id } = useParams<{ id: string }>();
   const [nombre, setNombre] = useState('');
   const [vertices, setVertices] = useState<Vertex[]>([]);
-  const [selectedGeocerca, setSelectedGeocerca] = useState<string | null>(null);
+  const [selectedGeocercaIds, setSelectedGeocercaIds] = useState<string[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [geocercaActual, setGeocercaActual] = useState<Geocerca | null>(null);
-  const [originalNombre, setOriginalNombre] = useState('');
+  const [originalGeocerca, setOriginalGeocerca] = useState<Geocerca | null>(null);
   
-  // Fetch geocerca data based on ID
+  // Mock data load - in real app, this would come from an API
   useEffect(() => {
-    // In a real app, this would be an API call
-    setLoading(true);
-    
-    setTimeout(() => {
+    if (id) {
       const geocerca = geocercasExistentes.find(g => g.id === id);
-      
       if (geocerca) {
-        setGeocercaActual(geocerca);
+        setOriginalGeocerca(geocerca);
         setNombre(geocerca.nombre);
-        setOriginalNombre(geocerca.nombre);
-        setVertices([...geocerca.vertices]); // Create a copy of vertices
-        setLoading(false);
+        setVertices([...geocerca.vertices]);
       } else {
-        toast.error('No se encontró la geocerca solicitada');
+        toast.error('Geocerca no encontrada');
         navigate('/geocercas');
       }
-    }, 500); // Simulate loading delay
+    }
   }, [id, navigate]);
-
-  // Filter out current geocerca from the list of existing ones
-  const otherGeocercas = geocercasExistentes.filter(g => g.id !== id);
 
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNombre(e.target.value);
@@ -110,26 +91,34 @@ const EditarGeocerca = () => {
     setVertices(newVertices);
   };
 
-  const handleGeocercaSelect = (geocercaId: string | null) => {
-    setSelectedGeocerca(geocercaId);
+  const handleGeocercaSelect = (geocercaIds: string[]) => {
+    setSelectedGeocercaIds(geocercaIds);
   };
 
   const handleToggleDrawing = () => {
     setIsDrawing(!isDrawing);
   };
 
-  const handleClearVertices = () => {
-    if (geocercaActual) {
-      setVertices([...geocercaActual.vertices]); // Reset to original vertices
-      toast.info('Se han restaurado los vértices originales');
+  const handleLimpiarGeocerca = () => {
+    setVertices([]);
+    toast.info('Puntos de geocerca eliminados');
+  };
+
+  const handleLimpiarFormulario = () => {
+    if (originalGeocerca) {
+      setNombre(originalGeocerca.nombre);
+      setVertices([...originalGeocerca.vertices]);
+      setSelectedGeocercaIds([]);
+      setIsDrawing(false);
+      toast.info('Formulario reiniciado');
     }
   };
 
-  const handleCancel = () => {
+  const handleCancelar = () => {
     navigate('/geocercas');
   };
 
-  const handleUpdate = () => {
+  const handleGuardar = () => {
     // Validate form
     if (!nombre.trim()) {
       toast.error('El nombre de la geocerca es obligatorio');
@@ -137,14 +126,13 @@ const EditarGeocerca = () => {
     }
 
     if (vertices.length < 3) {
-      toast.error('La geocerca debe tener al menos 3 vértices');
+      toast.error('La geocerca debe tener al menos 3 vértices para formar un polígono válido');
       return;
     }
 
-    // Check for duplicate name, but exclude current geocerca
-    if (nombre !== originalNombre && 
-        otherGeocercas.some(g => g.nombre.toLowerCase() === nombre.toLowerCase())) {
-      toast.error('Ya existe una geocerca con este nombre en esta zona franca');
+    // Check for duplicate name (excluding current geocerca)
+    if (geocercasExistentes.some(g => g.id !== id && g.nombre.toLowerCase() === nombre.toLowerCase())) {
+      toast.error('El nombre de la geocerca ya está registrado');
       return;
     }
 
@@ -152,31 +140,25 @@ const EditarGeocerca = () => {
     console.log('Actualizando geocerca:', {
       id,
       nombre,
-      vertices
+      vertices,
+      usuario: 'Usuario actual', // This would come from auth context
+      fechaHora: new Date().toISOString()
     });
 
-    // En una app real, aquí se registraría en la bitácora de auditoría
-    console.log('Audit: Usuario actualizó geocerca', id);
-
-    toast.success('Geocerca actualizada correctamente');
+    toast.success('Geocerca actualizada exitosamente');
     
     // Navigate back to the index page after successful update
     navigate('/geocercas');
   };
 
-  if (loading) {
+  // Check if save button should be enabled
+  const isSaveEnabled = nombre.trim().length > 0 && vertices.length >= 3;
+
+  if (!originalGeocerca) {
     return (
       <Layout>
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold">Editar Geocerca</h1>
-              <p className="text-gray-500">Cargando información...</p>
-            </div>
-          </div>
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+        <div className="flex items-center justify-center h-64">
+          <p>Cargando geocerca...</p>
         </div>
       </Layout>
     );
@@ -184,90 +166,126 @@ const EditarGeocerca = () => {
 
   return (
     <Layout>
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Editar Geocerca</h1>
-            <p className="text-gray-500">Modifique los límites de la geocerca en el mapa</p>
-          </div>
+      <div className="w-full max-w-full mx-auto p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Editar geocerca: {originalGeocerca.nombre}</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-md shadow p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="nombre" className="required-field">Nombre</Label>
-                <Input 
-                  id="nombre" 
-                  value={nombre} 
-                  onChange={handleNombreChange} 
-                  placeholder="Ingrese el nombre de la geocerca"
-                  maxLength={100} 
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Geocercas cercanas</Label>
-                <GeocercaSelector 
-                  geocercas={otherGeocercas}
-                  selectedGeocercaId={selectedGeocerca}
-                  onSelect={handleGeocercaSelect}
-                />
-              </div>
-
-              {/* Removed vertices section */}
-
-              <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-200px)]">
+          {/* Map Section - 60% width */}
+          <div className="lg:col-span-3">
+            <Card className="h-full">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <Label>Dibujar en el mapa</Label>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={handleToggleDrawing} 
-                    className={isDrawing ? "bg-green-100" : ""}
-                  >
-                    {isDrawing ? "Activado" : "Desactivado"}
-                  </Button>
+                  <div>
+                    <CardTitle className="text-lg">Mapa</CardTitle>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant={isDrawing ? "default" : "outline"} 
+                      size="sm"
+                      onClick={handleToggleDrawing} 
+                    >
+                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleLimpiarGeocerca}
+                      disabled={vertices.length === 0}
+                    >
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Limpiar geocerca
+                    </Button>
+                  </div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleClearVertices}
-                  className="w-full"
-                >
-                  Restaurar vértices originales
-                </Button>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" onClick={handleClearVertices}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Restaurar
-                  </Button>
-                  <Button variant="secondary" onClick={handleCancel}>
-                    <X className="mr-2 h-4 w-4" />
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleUpdate}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Actualizar
-                  </Button>
+              </CardHeader>
+              <CardContent className="p-2 h-[calc(100%-80px)]">
+                <div className="h-full rounded-lg overflow-hidden">
+                  <GeocercaMap 
+                    vertices={vertices}
+                    onVerticesChange={handleVerticesChange}
+                    isDrawingEnabled={isDrawing}
+                    existingGeocercas={geocercasExistentes.filter(g => g.id !== id)}
+                    selectedGeocercaIds={selectedGeocercaIds}
+                  />
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
           
+          {/* Form Section - 40% width */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-md shadow p-2 h-[600px]">
-              <GeocercaMap 
-                vertices={vertices}
-                onVerticesChange={handleVerticesChange}
-                isDrawingEnabled={isDrawing}
-                existingGeocercas={otherGeocercas}
-                selectedGeocercaId={selectedGeocerca}
-              />
+            <div className="h-full flex flex-col space-y-4">
+              <Card className="flex-1">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Información de la Geocerca</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 h-[calc(100%-80px)] overflow-y-auto">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      Nombre de la geocerca
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <Input 
+                      id="nombre" 
+                      value={nombre} 
+                      onChange={handleNombreChange} 
+                      placeholder="Ingrese el nombre de la geocerca"
+                      maxLength={100} 
+                      required
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Máximo 100 caracteres. Debe ser único en el sistema.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Geocercas cercanas de referencia
+                    </Label>
+                    <GeocercaSelector 
+                      geocercas={geocercasExistentes.filter(g => g.id !== id)}
+                      selectedGeocercaIds={selectedGeocercaIds}
+                      onSelect={handleGeocercaSelect}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col gap-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleLimpiarFormulario}
+                      className="w-full"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Restaurar Original
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      onClick={handleCancelar}
+                      className="w-full"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={handleGuardar}
+                      disabled={!isSaveEnabled}
+                      className="w-full"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Actualizar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
