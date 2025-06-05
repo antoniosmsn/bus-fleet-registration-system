@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -210,9 +209,6 @@ const CrearGeocerca = () => {
                       selectedGeocercaId={selectedGeocerca}
                       onSelect={handleGeocercaSelect}
                     />
-                    <p className="text-xs text-gray-500">
-                      Seleccione una geocerca existente para usarla como referencia visual.
-                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -246,11 +242,6 @@ const CrearGeocerca = () => {
                       Guardar
                     </Button>
                   </div>
-                  {!isSaveEnabled && (
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Complete el nombre y seleccione al menos 3 puntos para habilitar el guardado
-                    </p>
-                  )}
                 </CardContent>
               </Card>
             </div>
