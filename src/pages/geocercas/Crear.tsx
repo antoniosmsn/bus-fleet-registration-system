@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -51,7 +52,7 @@ const CrearGeocerca = () => {
   const navigate = useNavigate();
   const [nombre, setNombre] = useState('');
   const [vertices, setVertices] = useState<Vertex[]>([]);
-  const [selectedGeocerca, setSelectedGeocerca] = useState<string | null>(null);
+  const [selectedGeocercaIds, setSelectedGeocercaIds] = useState<string[]>([]);
   const [isDrawing, setIsDrawing] = useState(true);
   
   const handleNombreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,8 +63,8 @@ const CrearGeocerca = () => {
     setVertices(newVertices);
   };
 
-  const handleGeocercaSelect = (geocercaId: string | null) => {
-    setSelectedGeocerca(geocercaId);
+  const handleGeocercaSelect = (geocercaIds: string[]) => {
+    setSelectedGeocercaIds(geocercaIds);
   };
 
   const handleToggleDrawing = () => {
@@ -78,7 +79,7 @@ const CrearGeocerca = () => {
   const handleLimpiarFormulario = () => {
     setNombre('');
     setVertices([]);
-    setSelectedGeocerca(null);
+    setSelectedGeocercaIds([]);
     setIsDrawing(true);
     toast.info('Formulario reiniciado');
   };
@@ -165,7 +166,7 @@ const CrearGeocerca = () => {
                     onVerticesChange={handleVerticesChange}
                     isDrawingEnabled={isDrawing}
                     existingGeocercas={geocercasExistentes}
-                    selectedGeocercaId={selectedGeocerca}
+                    selectedGeocercaIds={selectedGeocercaIds}
                   />
                 </div>
               </CardContent>
@@ -206,7 +207,7 @@ const CrearGeocerca = () => {
                     </Label>
                     <GeocercaSelector 
                       geocercas={geocercasExistentes}
-                      selectedGeocercaId={selectedGeocerca}
+                      selectedGeocercaIds={selectedGeocercaIds}
                       onSelect={handleGeocercaSelect}
                     />
                   </div>

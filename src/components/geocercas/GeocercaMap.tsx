@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -21,7 +20,7 @@ interface GeocercaMapProps {
   onVerticesChange: (vertices: Vertex[]) => void;
   isDrawingEnabled: boolean;
   existingGeocercas: Geocerca[];
-  selectedGeocercaId: string | null;
+  selectedGeocercaIds: string[];
 }
 
 // Fix for Leaflet icon issue
@@ -63,7 +62,7 @@ const GeocercaMap: React.FC<GeocercaMapProps> = ({
   onVerticesChange, 
   isDrawingEnabled, 
   existingGeocercas, 
-  selectedGeocercaId 
+  selectedGeocercaIds 
 }) => {
   const polygonRef = useRef<L.Polygon | null>(null);
   const [center, setCenter] = useState<[number, number]>([9.9338, -84.0795]); // San José, Costa Rica
@@ -137,7 +136,7 @@ const GeocercaMap: React.FC<GeocercaMapProps> = ({
       
       {/* Show existing geocercas */}
       {existingGeocercas.map((geocerca) => {
-        const isSelected = geocerca.id === selectedGeocercaId;
+        const isSelected = selectedGeocercaIds.includes(geocerca.id);
         return (
           geocerca.vertices.length >= 3 && (
             <Polygon
