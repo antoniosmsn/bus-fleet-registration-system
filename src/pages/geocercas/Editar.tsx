@@ -217,13 +217,6 @@ const EditarGeocerca = () => {
                     >
                       Limpiar geocerca
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleRestaurarVertices}
-                    >
-                      Restaurar vértices
-                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -308,7 +301,7 @@ const EditarGeocerca = () => {
                       className="w-full"
                     >
                       <Save className="mr-2 h-4 w-4" />
-                      Guardar cambios
+                      Guardar
                     </Button>
                   </div>
                 </CardContent>
