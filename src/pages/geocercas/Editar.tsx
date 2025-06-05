@@ -303,7 +303,7 @@ const EditarGeocerca = () => {
               {/* Action Buttons */}
               <Card>
                 <CardContent className="pt-6">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-3">
                     <Button 
                       variant="outline" 
                       onClick={handleLimpiarFormulario}
