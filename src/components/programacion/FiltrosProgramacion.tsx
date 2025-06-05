@@ -31,7 +31,7 @@ const FiltrosProgramacionComponent: React.FC<FiltrosProgramacionProps> = ({
   return (
     <Card className="mb-6">
       <CardContent className="pt-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div className="space-y-2">
             <Label htmlFor="empresaTransporte">Empresa de transporte</Label>
             <Combobox
@@ -63,13 +63,13 @@ const FiltrosProgramacionComponent: React.FC<FiltrosProgramacionProps> = ({
               onChange={(e) => setFiltros({ ...filtros, identificador: e.target.value })}
             />
           </div>
-        </div>
 
-        <div className="flex justify-end">
-          <Button onClick={onBuscar}>
-            <Search className="mr-2 h-4 w-4" />
-            Buscar
-          </Button>
+          <div>
+            <Button onClick={onBuscar}>
+              <Search className="mr-2 h-4 w-4" />
+              Buscar
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
