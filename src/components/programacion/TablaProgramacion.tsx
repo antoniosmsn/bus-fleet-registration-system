@@ -29,7 +29,7 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
 }) => {
   const getEstadoBadge = (valor: number) => {
     if (valor === 1) {
-      return <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600">PENDIENTE DE ENVÍO</Badge>;
+      return <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600">PENDIENTE</Badge>;
     }
     return <Badge variant="default" className="bg-green-500 hover:bg-green-600">ENVIADO</Badge>;
   };
