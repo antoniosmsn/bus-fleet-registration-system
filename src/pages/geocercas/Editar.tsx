@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -199,16 +198,16 @@ const EditarGeocerca = () => {
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">Mapa</CardTitle>
-                  </div>
                   <div className="flex gap-2">
+                    <Button variant="outline" size="sm" disabled>
+                      Mapa
+                    </Button>
                     <Button 
                       variant={isDrawing ? "default" : "outline"} 
                       size="sm"
                       onClick={handleToggleDrawing} 
                     >
-                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
+                      Activar Dibujo
                     </Button>
                     <Button 
                       variant="outline" 
@@ -216,7 +215,6 @@ const EditarGeocerca = () => {
                       onClick={handleLimpiarGeocerca}
                       disabled={vertices.length === 0}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
                       Limpiar geocerca
                     </Button>
                     <Button 
@@ -224,8 +222,7 @@ const EditarGeocerca = () => {
                       size="sm" 
                       onClick={handleRestaurarVertices}
                     >
-                      <RotateCcw className="mr-2 h-4 w-4" />
-                      Restaurar vértices originales
+                      Restaurar vértices
                     </Button>
                   </div>
                 </div>
