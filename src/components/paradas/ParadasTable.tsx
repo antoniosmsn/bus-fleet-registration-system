@@ -46,6 +46,12 @@ const ParadasTable: React.FC<ParadasTableProps> = ({ paradas }) => {
     // In a real app, this would show confirmation dialog and delete
   };
 
+  const extractNumericCode = (codigo: string) => {
+    // Extract numeric part from codes like "PARA-001" -> "001" -> 1
+    const match = codigo.match(/\d+/);
+    return match ? parseInt(match[0], 10) : codigo;
+  };
+
   return (
     <div className="bg-white rounded-md shadow overflow-x-auto">
       <Table>
@@ -66,7 +72,7 @@ const ParadasTable: React.FC<ParadasTableProps> = ({ paradas }) => {
           {paradas.map((parada) => (
             <TableRow key={parada.id}>
               <TableCell className="text-sm">
-                {parada.codigo}
+                {extractNumericCode(parada.codigo)}
               </TableCell>
               <TableCell className="font-medium">
                 {parada.nombre}
