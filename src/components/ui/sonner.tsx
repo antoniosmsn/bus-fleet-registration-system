@@ -12,7 +12,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="top-right"
-      offset="25vh"
+      offset={80}
       toastOptions={{
         classNames: {
           toast:
@@ -25,6 +25,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           success:
             "group-[.toast]:bg-green-500 group-[.toast]:text-white group-[.toast]:border-green-500",
         },
+        style: {
+          background: 'var(--success-bg, #22c55e)',
+          color: 'var(--success-text, white)',
+          border: '1px solid var(--success-border, #22c55e)',
+        }
       }}
       {...props}
     />
