@@ -1225,14 +1225,25 @@ const ParadasIndex = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-2 h-[calc(100%-4rem)]">
-                <ParadaMap 
-                  paradasExistentes={convertToMapParadas(paradas)}
-                  selectedLocation={selectedLocation}
-                  onLocationChange={handleLocationChange}
-                  isDraggingEnabled={isDraggingEnabled}
-                  onParadaLocationChange={handleParadaLocationChange}
-                  onParadaSelect={handleParadaSelect}
-                />
+                {/* Ocultar el mapa cuando el modal de ubicación está abierto */}
+                {!locationUpdateDialog && (
+                  <ParadaMap 
+                    paradasExistentes={convertToMapParadas(paradas)}
+                    selectedLocation={selectedLocation}
+                    onLocationChange={handleLocationChange}
+                    isDraggingEnabled={isDraggingEnabled}
+                    onParadaLocationChange={handleParadaLocationChange}
+                    onParadaSelect={handleParadaSelect}
+                  />
+                )}
+                {locationUpdateDialog && (
+                  <div className="flex items-center justify-center h-full bg-gray-100 rounded-lg">
+                    <div className="text-center">
+                      <p className="text-gray-600 mb-2">Mapa temporalmente oculto</p>
+                      <p className="text-sm text-gray-500">Se mostrará nuevamente cuando cierres el modal</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
