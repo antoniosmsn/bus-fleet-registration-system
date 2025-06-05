@@ -16,7 +16,7 @@ import ParadaMap from '@/components/paradas/ParadaMap';
 import ParadasExport from '@/components/paradas/ParadasExport';
 import ParadasPagination from '@/components/paradas/ParadasPagination';
 import ParadasFilter from '@/components/paradas/ParadasFilter';
-import { Edit, Trash, Plus, Save, MapPin, RotateCcw, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { Pencil, Plus, Save, MapPin, RotateCcw, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -232,8 +232,6 @@ const ParadasIndex = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [selectedParada, setSelectedParada] = useState<Parada | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [paradaToDelete, setParadaToDelete] = useState<Parada | null>(null);
   const [isDraggingEnabled, setIsDraggingEnabled] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -784,29 +782,11 @@ const ParadasIndex = () => {
   };
 
   const handleDeleteClick = (parada: Parada) => {
-    setParadaToDelete(parada);
-    setDeleteDialogOpen(true);
+    // This function is no longer used since delete button is removed
   };
 
   const confirmDelete = () => {
-    if (paradaToDelete) {
-      setParadas(paradas.filter(p => p.id !== paradaToDelete.id));
-      
-      // Registrar en bitácora de auditoría
-      console.log('Audit: Usuario eliminó parada', {
-        paradaId: paradaToDelete.id,
-        codigo: paradaToDelete.codigo,
-        valoresAnteriores: paradaToDelete,
-        usuario: 'Usuario actual',
-        fecha: new Date().toISOString(),
-        accion: 'eliminar_parada'
-      });
-      
-      toast.success(`Parada ${paradaToDelete.codigo} eliminada correctamente`);
-      
-      setDeleteDialogOpen(false);
-      setParadaToDelete(null);
-    }
+    // This function is no longer used since delete button is removed
   };
 
   // Toggle parada active status
@@ -916,8 +896,7 @@ const ParadasIndex = () => {
                         paginatedParadas.map((parada) => (
                           <TableRow 
                             key={parada.id} 
-                            className={`cursor-pointer hover:bg-gray-50 ${selectedParada?.id === parada.id ? 'bg-blue-50' : ''}`}
-                            onClick={() => handleEditParada(parada)}
+                            className={`hover:bg-gray-50 ${selectedParada?.id === parada.id ? 'bg-blue-50' : ''}`}
                             data-paradaid={parada.id}
                           >
                             <TableCell className="text-xs font-medium">{parada.codigo}</TableCell>
@@ -926,7 +905,6 @@ const ParadasIndex = () => {
                               <Switch 
                                 checked={parada.active}
                                 onCheckedChange={() => handleToggleStatus(parada)}
-                                onClick={(e) => e.stopPropagation()}
                                 className="scale-75"
                               />
                             </TableCell>
@@ -936,23 +914,9 @@ const ParadasIndex = () => {
                                   variant="ghost" 
                                   size="icon" 
                                   className="h-7 w-7"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditParada(parada);
-                                  }}
+                                  onClick={() => handleEditParada(parada)}
                                 >
-                                  <Edit className="h-3 w-3" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-7 w-7"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeleteClick(parada);
-                                  }}
-                                >
-                                  <Trash className="h-3 w-3" />
+                                  <Pencil className="h-3 w-3" />
                                 </Button>
                               </div>
                             </TableCell>
@@ -1288,24 +1252,7 @@ const ParadasIndex = () => {
         </div>
 
         {/* Diálogo de confirmación para eliminar */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Confirmar eliminación</AlertDialogTitle>
-              <AlertDialogDescription>
-                ¿Está seguro que desea eliminar la parada {paradaToDelete?.codigo} - {paradaToDelete?.nombre}?
-                <br />
-                Esta acción no puede deshacerse.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
-                Eliminar
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        {/* Eliminar diálogo y funcionalidad removidos */}
 
         {/* Diálogo de confirmación para actualización de ubicación - Modal más amplio */}
         <Dialog open={locationUpdateDialog} onOpenChange={setLocationUpdateDialog}>
