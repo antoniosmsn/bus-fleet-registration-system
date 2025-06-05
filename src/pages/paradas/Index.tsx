@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -74,6 +75,32 @@ interface ParadaFilterValues {
   estado: string;
 }
 
+// Interfaces para el componente de exportación (que espera distrito)
+interface ExportParada {
+  id: string;
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
+  lat: number;
+  lng: number;
+}
+
+interface ExportFilterValues {
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
+}
+
 // Mock data para paradas - en una app real, esto vendría de una API
 const paradasMock: Parada[] = [
   {
@@ -129,6 +156,37 @@ const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
     lat: parada.lat,
     lng: parada.lng
   }));
+};
+
+// Convert paradas to the format expected by ParadasExport
+const convertToExportParadas = (paradas: Parada[]): ExportParada[] => {
+  return paradas.map(parada => ({
+    id: parada.id,
+    codigo: parada.codigo,
+    nombre: parada.nombre,
+    pais: parada.pais,
+    provincia: parada.provincia,
+    canton: parada.canton,
+    distrito: '', // Empty since we removed distrito
+    sector: parada.sector || '',
+    estado: parada.active ? 'Activo' : 'Inactivo',
+    lat: parada.lat,
+    lng: parada.lng
+  }));
+};
+
+// Convert filter values to the format expected by ParadasExport
+const convertToExportFilters = (filters: ParadaFilterValues): ExportFilterValues => {
+  return {
+    codigo: filters.codigo,
+    nombre: filters.nombre,
+    pais: filters.pais,
+    provincia: filters.provincia,
+    canton: filters.canton,
+    distrito: '', // Empty since we removed distrito
+    sector: filters.sector,
+    estado: filters.estado
+  };
 };
 
 // Datos de catálogos - en una app real, esto vendría de una API
@@ -760,7 +818,10 @@ const ParadasIndex = () => {
               <Plus className="mr-2 h-4 w-4" />
               Nueva Parada
             </Button>
-            <ParadasExport paradas={filteredParadas} filtros={filterValues} />
+            <ParadasExport 
+              paradas={convertToExportParadas(filteredParadas)} 
+              filtros={convertToExportFilters(filterValues)} 
+            />
           </div>
         </div>
         
