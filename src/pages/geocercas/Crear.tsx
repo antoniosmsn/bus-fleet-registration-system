@@ -6,9 +6,10 @@ import Layout from '@/components/layout/Layout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import GeocercaSelector from '@/components/geocercas/GeocercaSelector';
 import GeocercaMap from '@/components/geocercas/GeocercaMap';
-import { MapPin, Save, X, Trash2 } from 'lucide-react';
+import { MapPin, Save, X, Trash2, RotateCcw } from 'lucide-react';
 
 interface Vertex {
   lat: number;
@@ -70,18 +71,24 @@ const CrearGeocerca = () => {
     setIsDrawing(!isDrawing);
   };
 
-  const handleClearVertices = () => {
+  const handleLimpiarGeocerca = () => {
     setVertices([]);
+    toast.info('Puntos de geocerca eliminados');
   };
 
-  const handleClearForm = () => {
+  const handleLimpiarFormulario = () => {
     setNombre('');
     setVertices([]);
     setSelectedGeocerca(null);
     setIsDrawing(true);
+    toast.info('Formulario reiniciado');
   };
 
-  const handleRegister = () => {
+  const handleCancelar = () => {
+    navigate('/geocercas');
+  };
+
+  const handleGuardar = () => {
     // Validate form
     if (!nombre.trim()) {
       toast.error('El nombre de la geocerca es obligatorio');
@@ -89,118 +96,187 @@ const CrearGeocerca = () => {
     }
 
     if (vertices.length < 3) {
-      toast.error('La geocerca debe tener al menos 3 vértices');
+      toast.error('La geocerca debe tener al menos 3 vértices para formar un polígono válido');
       return;
     }
 
     // Check for duplicate name
     if (geocercasExistentes.some(g => g.nombre.toLowerCase() === nombre.toLowerCase())) {
-      toast.error('Ya existe una geocerca con este nombre en esta zona franca');
+      toast.error('El nombre de la geocerca ya está registrado');
       return;
     }
 
     // In a real app, you would send this data to your backend API
     console.log('Registrando geocerca:', {
       nombre,
-      vertices
+      vertices,
+      usuario: 'Usuario actual', // This would come from auth context
+      fechaHora: new Date().toISOString()
     });
 
-    toast.success('Geocerca registrada correctamente');
+    toast.success('Geocerca registrada exitosamente');
     
     // Navigate back to the index page after successful registration
-    // In a real app, you might want to wait for the API response before navigating
     navigate('/geocercas');
   };
 
+  // Check if save button should be enabled
+  const isSaveEnabled = nombre.trim().length > 0 && vertices.length >= 3;
+
   return (
     <Layout>
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Crear Geocerca</h1>
-            <p className="text-gray-500">Defina los límites de la geocerca en el mapa</p>
-          </div>
+      <div className="w-full max-w-7xl mx-auto p-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Registro de nuevas geocercas</h1>
+          <p className="text-gray-600 mt-1">Complete el formulario para registrar una nueva geocerca.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-md shadow p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="nombre" className="required-field">Nombre</Label>
-                <Input 
-                  id="nombre" 
-                  value={nombre} 
-                  onChange={handleNombreChange} 
-                  placeholder="Ingrese el nombre de la geocerca"
-                  maxLength={100} 
-                  required
-                />
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Form Section */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Información de la Geocerca</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
+                    <MapPin className="w-4 h-4 inline mr-1" />
+                    Nombre de la geocerca
+                    <span className="text-red-500 ml-1">*</span>
+                  </Label>
+                  <Input 
+                    id="nombre" 
+                    value={nombre} 
+                    onChange={handleNombreChange} 
+                    placeholder="Ingrese el nombre de la geocerca"
+                    maxLength={100} 
+                    required
+                    className="w-full"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Máximo 100 caracteres. Debe ser único en el sistema.
+                  </p>
+                </div>
 
-              <div className="space-y-2">
-                <Label>Geocercas cercanas</Label>
-                <GeocercaSelector 
-                  geocercas={geocercasExistentes}
-                  selectedGeocercaId={selectedGeocerca}
-                  onSelect={handleGeocercaSelect}
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Geocercas cercanas de referencia
+                  </Label>
+                  <GeocercaSelector 
+                    geocercas={geocercasExistentes}
+                    selectedGeocercaId={selectedGeocerca}
+                    onSelect={handleGeocercaSelect}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Seleccione una geocerca existente para usarla como referencia visual.
+                  </p>
+                </div>
 
-              {/* Removed vertices section */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Herramientas de dibujo
+                  </Label>
+                  <div className="flex flex-col gap-2">
+                    <Button 
+                      variant={isDrawing ? "default" : "outline"} 
+                      size="sm"
+                      onClick={handleToggleDrawing} 
+                      className="w-full"
+                    >
+                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleLimpiarGeocerca}
+                      className="w-full"
+                      disabled={vertices.length === 0}
+                    >
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Limpiar geocerca
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Haga clic en el mapa para agregar puntos. Se necesitan al menos 3 puntos.
+                  </p>
+                </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Dibujar en el mapa</Label>
+                {vertices.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Puntos seleccionados: {vertices.length}
+                    </Label>
+                    <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                      {vertices.length < 3 
+                        ? `Faltan ${3 - vertices.length} puntos para formar un polígono válido`
+                        : "Polígono válido formado"
+                      }
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     variant="outline" 
-                    size="sm"
-                    onClick={handleToggleDrawing} 
-                    className={isDrawing ? "bg-green-100" : ""}
+                    onClick={handleLimpiarFormulario}
+                    className="flex-1"
                   >
-                    {isDrawing ? "Activado" : "Desactivado"}
-                  </Button>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleClearVertices}
-                  className="w-full"
-                >
-                  Limpiar vértices
-                </Button>
-              </div>
-
-              <div className="pt-4 border-t">
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" onClick={handleClearForm}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Limpiar
                   </Button>
-                  <Link to="/geocercas">
-                    <Button variant="secondary">
-                      <X className="mr-2 h-4 w-4" />
-                      Cancelar
-                    </Button>
-                  </Link>
-                  <Button onClick={handleRegister}>
+                  <Button 
+                    variant="secondary" 
+                    onClick={handleCancelar}
+                    className="flex-1"
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Cancelar
+                  </Button>
+                  <Button 
+                    onClick={handleGuardar}
+                    disabled={!isSaveEnabled}
+                    className="flex-1"
+                  >
                     <Save className="mr-2 h-4 w-4" />
-                    Registrar
+                    Guardar
                   </Button>
                 </div>
-              </div>
-            </div>
+                {!isSaveEnabled && (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Complete el nombre y seleccione al menos 3 puntos para habilitar el guardado
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
           
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-md shadow p-2 h-[600px]">
-              <GeocercaMap 
-                vertices={vertices}
-                onVerticesChange={handleVerticesChange}
-                isDrawingEnabled={isDrawing}
-                existingGeocercas={geocercasExistentes}
-                selectedGeocercaId={selectedGeocerca}
-              />
-            </div>
+          {/* Map Section */}
+          <div className="lg:col-span-1">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle className="text-lg">Mapa Interactivo</CardTitle>
+                <p className="text-sm text-gray-600">
+                  Haga clic en el mapa para definir los vértices del polígono
+                </p>
+              </CardHeader>
+              <CardContent className="p-2">
+                <div className="h-[600px] rounded-lg overflow-hidden">
+                  <GeocercaMap 
+                    vertices={vertices}
+                    onVerticesChange={handleVerticesChange}
+                    isDrawingEnabled={isDrawing}
+                    existingGeocercas={geocercasExistentes}
+                    selectedGeocercaId={selectedGeocerca}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
