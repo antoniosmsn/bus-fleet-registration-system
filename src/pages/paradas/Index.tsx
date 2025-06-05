@@ -609,9 +609,9 @@ const ParadasIndex = () => {
     // No hacer nada más, mantener la ubicación original
   };
 
-  // Validar distancia mínima entre paradas
+  // Validar distancia mínima entre paradas - updated to use filteredParadas for validation
   const validarDistanciaMinima = (lat: number, lng: number, paradaId?: string): boolean => {
-    for (const parada of paradas) {
+    for (const parada of filteredParadas) {
       // Ignorar la propia parada si estamos editando
       if (paradaId && parada.id === paradaId) continue;
       
@@ -1229,7 +1229,7 @@ const ParadasIndex = () => {
                 {/* Ocultar el mapa cuando el modal de ubicación está abierto */}
                 {!locationUpdateDialog && (
                   <ParadaMap 
-                    paradasExistentes={convertToMapParadas(paradas)}
+                    paradasExistentes={convertToMapParadas(filteredParadas)}
                     selectedLocation={selectedLocation}
                     onLocationChange={handleLocationChange}
                     isDraggingEnabled={isDraggingEnabled}
