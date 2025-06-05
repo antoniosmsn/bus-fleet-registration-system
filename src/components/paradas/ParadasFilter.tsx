@@ -56,66 +56,68 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
 
   return (
     <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Filtros de búsqueda</h3>
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-base font-medium">Filtros de búsqueda</h3>
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleFilters}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1 h-8"
           >
             {showFilters ? (
               <>
                 Ocultar filtros
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="h-3 w-3" />
               </>
             ) : (
               <>
                 Mostrar filtros
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-3 w-3" />
               </>
             )}
           </Button>
         </div>
 
         {showFilters && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="ubicacion">Ubicación</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 h-8">
+                <TabsTrigger value="general" className="text-xs">General</TabsTrigger>
+                <TabsTrigger value="ubicacion" className="text-xs">Ubicación</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="general" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="codigo">Código de parada</Label>
+              <TabsContent value="general" className="mt-3 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label htmlFor="codigo" className="text-xs">Código de parada</Label>
                     <Input
                       id="codigo"
                       placeholder="Buscar por código"
                       value={filters.codigo}
                       onChange={(e) => handleInputChange('codigo', e.target.value)}
+                      className="h-8 text-xs"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="nombre">Nombre de parada</Label>
+                  <div className="space-y-1">
+                    <Label htmlFor="nombre" className="text-xs">Nombre de parada</Label>
                     <Input
                       id="nombre"
                       placeholder="Buscar por nombre"
                       value={filters.nombre}
                       onChange={(e) => handleInputChange('nombre', e.target.value)}
+                      className="h-8 text-xs"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Estado</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Estado</Label>
                     <Select
                       value={filters.estado}
                       onValueChange={(value) => handleInputChange('estado', value)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Seleccionar estado" />
                       </SelectTrigger>
                       <SelectContent>
@@ -127,15 +129,15 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
                 </div>
               </TabsContent>
 
-              <TabsContent value="ubicacion" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>País</Label>
+              <TabsContent value="ubicacion" className="mt-3 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">País</Label>
                     <Select
                       value={filters.pais}
                       onValueChange={(value) => handleInputChange('pais', value)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Seleccionar país" />
                       </SelectTrigger>
                       <SelectContent>
@@ -144,13 +146,13 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Provincia</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Provincia</Label>
                     <Select
                       value={filters.provincia}
                       onValueChange={(value) => handleInputChange('provincia', value)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Seleccionar provincia" />
                       </SelectTrigger>
                       <SelectContent>
@@ -161,13 +163,13 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Cantón</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Cantón</Label>
                     <Select
                       value={filters.canton}
                       onValueChange={(value) => handleInputChange('canton', value)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Seleccionar cantón" />
                       </SelectTrigger>
                       <SelectContent>
@@ -178,32 +180,33 @@ const ParadasFilter: React.FC<ParadasFilterProps> = ({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Sector</Label>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Sector</Label>
                     <Input
                       placeholder="Buscar por sector"
                       value={filters.sector}
                       onChange={(e) => handleInputChange('sector', e.target.value)}
+                      className="h-8 text-xs"
                     />
                   </div>
                 </div>
               </TabsContent>
             </Tabs>
 
-            <div className="flex gap-2 pt-4 border-t">
+            <div className="flex gap-2 pt-2 border-t">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleClearFilters}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 h-8 text-xs"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
                 Limpiar filtros
               </Button>
               <Button
                 size="sm"
                 onClick={handleApplyFilters}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 h-8 text-xs"
               >
                 Aplicar filtros
               </Button>
