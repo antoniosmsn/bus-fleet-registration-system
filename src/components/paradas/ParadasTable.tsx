@@ -65,7 +65,7 @@ const ParadasTable: React.FC<ParadasTableProps> = ({ paradas }) => {
         <TableBody>
           {paradas.map((parada) => (
             <TableRow key={parada.id}>
-              <TableCell className="font-mono text-sm">
+              <TableCell className="text-sm">
                 {parada.codigo}
               </TableCell>
               <TableCell className="font-medium">
