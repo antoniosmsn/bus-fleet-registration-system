@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -8,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/ui/form';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import ParadaMap from '@/components/paradas/ParadaMap';
 import ParadasExport from '@/components/paradas/ParadasExport';
 import ParadasPagination from '@/components/paradas/ParadasPagination';
 import ParadasFilter from '@/components/paradas/ParadasFilter';
-import { Edit, Trash, Plus, Save, MapPin } from 'lucide-react';
+import { Edit, Trash, Plus, Save, MapPin, RotateCcw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -59,6 +60,8 @@ interface ParadaFormValues {
   canton: string;
   distrito: string;
   sector: string;
+  lat: string;
+  lng: string;
   active: boolean;
 }
 
@@ -179,6 +182,8 @@ const ParadasIndex = () => {
       canton: '',
       distrito: '',
       sector: '',
+      lat: '',
+      lng: '',
       active: true
     }
   });
@@ -193,6 +198,26 @@ const ParadasIndex = () => {
     sector: '',
     estado: ''
   });
+
+  // Validar coordenadas manuales
+  const validateCoordinates = (lat: string, lng: string): { isValid: boolean; error?: string } => {
+    const latNum = parseFloat(lat);
+    const lngNum = parseFloat(lng);
+    
+    if (isNaN(latNum) || isNaN(lngNum)) {
+      return { isValid: false, error: 'Las coordenadas deben ser números válidos' };
+    }
+    
+    if (latNum < -90 || latNum > 90) {
+      return { isValid: false, error: 'La latitud debe estar entre -90.000000 y 90.000000' };
+    }
+    
+    if (lngNum < -180 || lngNum > 180) {
+      return { isValid: false, error: 'La longitud debe estar entre -180.000000 y 180.000000' };
+    }
+    
+    return { isValid: true };
+  };
 
   // Aplicar filtros avanzados
   const handleApplyFilters = (filterValues: ParadaFilterValues) => {
@@ -298,6 +323,8 @@ const ParadasIndex = () => {
   const watchProvincia = form.watch('provincia');
   const watchCanton = form.watch('canton');
   const watchDistrito = form.watch('distrito');
+  const watchLat = form.watch('lat');
+  const watchLng = form.watch('lng');
 
   useEffect(() => {
     // Resetear provincia, cantón, distrito y sector cuando cambia el país
@@ -333,9 +360,25 @@ const ParadasIndex = () => {
     }
   }, [watchDistrito, form]);
 
+  // Actualizar mapa cuando se cambian coordenadas manualmente
+  useEffect(() => {
+    if (watchLat && watchLng) {
+      const validation = validateCoordinates(watchLat, watchLng);
+      if (validation.isValid) {
+        const newLocation = { lat: parseFloat(watchLat), lng: parseFloat(watchLng) };
+        setSelectedLocation(newLocation);
+        setIsDraggingEnabled(true);
+      }
+    }
+  }, [watchLat, watchLng]);
+
   const handleLocationChange = (newLocation: Location | null) => {
     setSelectedLocation(newLocation);
     if (newLocation) {
+      // Actualizar campos de latitud y longitud en el formulario
+      form.setValue('lat', newLocation.lat.toFixed(6));
+      form.setValue('lng', newLocation.lng.toFixed(6));
+      
       // Enable dragging
       setIsDraggingEnabled(true);
       
@@ -350,6 +393,8 @@ const ParadasIndex = () => {
           canton: '',
           distrito: '',
           sector: '',
+          lat: newLocation.lat.toFixed(6),
+          lng: newLocation.lng.toFixed(6),
           active: true
         });
         setEditMode(false);
@@ -387,6 +432,8 @@ const ParadasIndex = () => {
       canton: parada.canton,
       distrito: parada.distrito,
       sector: parada.sector || '',
+      lat: parada.lat.toFixed(6),
+      lng: parada.lng.toFixed(6),
       active: parada.active
     });
     
@@ -439,6 +486,8 @@ const ParadasIndex = () => {
       canton: parada.canton,
       distrito: parada.distrito,
       sector: parada.sector || '',
+      lat: newLocation.lat.toFixed(6),
+      lng: newLocation.lng.toFixed(6),
       active: parada.active
     });
     
@@ -483,12 +532,17 @@ const ParadasIndex = () => {
   };
 
   const handleParadaFormSubmit = (values: ParadaFormValues) => {
-    if (!selectedLocation) {
-      toast.error('Debe seleccionar la ubicación en el mapa');
+    // Validar coordenadas
+    const coordValidation = validateCoordinates(values.lat, values.lng);
+    if (!coordValidation.isValid) {
+      toast.error(coordValidation.error);
       return;
     }
 
-    if (!validarDistanciaMinima(selectedLocation.lat, selectedLocation.lng, values.id)) {
+    const lat = parseFloat(values.lat);
+    const lng = parseFloat(values.lng);
+
+    if (!validarDistanciaMinima(lat, lng, values.id)) {
       toast.error(`La parada debe estar al menos a ${DISTANCIA_MINIMA} metros de otras paradas existentes`);
       return;
     }
@@ -499,43 +553,78 @@ const ParadasIndex = () => {
         toast.error('Ya existe una parada con este código');
         return;
       }
+
+      // Verificar nombre único al crear
+      if (paradas.some(p => p.nombre.toLowerCase() === values.nombre.toLowerCase())) {
+        toast.error('Ya existe una parada con este nombre en la zona franca');
+        return;
+      }
     } else if (values.id) {
       // Verificar código único al editar (excluyendo la parada actual)
       if (paradas.some(p => p.id !== values.id && p.codigo.toLowerCase() === values.codigo.toLowerCase())) {
         toast.error('Ya existe otra parada con este código');
         return;
       }
+
+      // Verificar nombre único al editar (excluyendo la parada actual)
+      if (paradas.some(p => p.id !== values.id && p.nombre.toLowerCase() === values.nombre.toLowerCase())) {
+        toast.error('Ya existe otra parada con este nombre en la zona franca');
+        return;
+      }
     }
 
     if (editMode && values.id) {
       // Actualizar parada existente
+      const paradaAnterior = paradas.find(p => p.id === values.id);
       const updatedParadas = paradas.map(p => 
         p.id === values.id ? 
-        { ...values, lat: selectedLocation.lat, lng: selectedLocation.lng, id: values.id } : 
+        { ...values, lat, lng, id: values.id } : 
         p
       );
       setParadas(updatedParadas);
+      
+      // Registrar en bitácora de auditoría
+      console.log('Audit: Usuario actualizó parada', {
+        paradaId: values.id,
+        codigo: values.codigo,
+        valoresAnteriores: paradaAnterior,
+        valoresNuevos: { ...values, lat, lng },
+        usuario: 'Usuario actual',
+        fecha: new Date().toISOString(),
+        accion: 'actualizar_parada'
+      });
+      
       toast.success('Punto de parada actualizado correctamente');
     } else {
       // Crear nueva parada
       const newParada = {
         ...values,
         id: `${Date.now()}`,
-        lat: selectedLocation.lat,
-        lng: selectedLocation.lng
+        lat,
+        lng
       };
       setParadas([...paradas, newParada]);
+      
+      // Registrar en bitácora de auditoría
+      console.log('Audit: Usuario registró nueva parada', {
+        paradaId: newParada.id,
+        codigo: values.codigo,
+        valoresNuevos: newParada,
+        usuario: 'Usuario actual',
+        fecha: new Date().toISOString(),
+        accion: 'registrar_parada'
+      });
+      
       toast.success('Punto de parada registrado correctamente');
     }
-
-    // En una app real, registraríamos en la bitácora de auditoría
-    console.log('Audit:', editMode ? 'Usuario actualizó parada:' : 'Usuario registró nueva parada:', values.codigo);
 
     // Reset form and state
     setShowForm(false);
     setSelectedLocation(null);
     form.reset();
     setIsDraggingEnabled(false);
+    setSelectedParada(null);
+    setEditMode(false);
   };
 
   const handleEditParada = (parada: Parada) => {
@@ -553,6 +642,8 @@ const ParadasIndex = () => {
       canton: parada.canton,
       distrito: parada.distrito,
       sector: parada.sector || '',
+      lat: parada.lat.toFixed(6),
+      lng: parada.lng.toFixed(6),
       active: parada.active
     });
     
@@ -567,11 +658,33 @@ const ParadasIndex = () => {
     }, 100);
   };
 
+  const handleClearForm = () => {
+    form.reset({
+      codigo: '',
+      nombre: '',
+      pais: 'Costa Rica',
+      provincia: '',
+      canton: '',
+      distrito: '',
+      sector: '',
+      lat: '',
+      lng: '',
+      active: true
+    });
+    setSelectedLocation(null);
+    setIsDraggingEnabled(false);
+    setSelectedParada(null);
+    setEditMode(false);
+    toast.info('Formulario limpiado');
+  };
+
   const handleCancelForm = () => {
     setShowForm(false);
     setSelectedLocation(null);
     setIsDraggingEnabled(false);
     form.reset();
+    setSelectedParada(null);
+    setEditMode(false);
   };
 
   const handleDeleteClick = (parada: Parada) => {
@@ -582,10 +695,18 @@ const ParadasIndex = () => {
   const confirmDelete = () => {
     if (paradaToDelete) {
       setParadas(paradas.filter(p => p.id !== paradaToDelete.id));
-      toast.success(`Parada ${paradaToDelete.codigo} eliminada correctamente`);
       
-      // En una app real, registraríamos en la bitácora de auditoría
-      console.log('Audit: Usuario eliminó parada:', paradaToDelete.codigo);
+      // Registrar en bitácora de auditoría
+      console.log('Audit: Usuario eliminó parada', {
+        paradaId: paradaToDelete.id,
+        codigo: paradaToDelete.codigo,
+        valoresAnteriores: paradaToDelete,
+        usuario: 'Usuario actual',
+        fecha: new Date().toISOString(),
+        accion: 'eliminar_parada'
+      });
+      
+      toast.success(`Parada ${paradaToDelete.codigo} eliminada correctamente`);
       
       setDeleteDialogOpen(false);
       setParadaToDelete(null);
@@ -594,23 +715,64 @@ const ParadasIndex = () => {
 
   // Toggle parada active status
   const handleToggleStatus = (parada: Parada) => {
+    const estadoAnterior = parada.active;
+    const estadoNuevo = !parada.active;
+    
     const updatedParadas = paradas.map(p => 
-      p.id === parada.id ? { ...p, active: !p.active } : p
+      p.id === parada.id ? { ...p, active: estadoNuevo } : p
     );
     
     setParadas(updatedParadas);
     
     // Update filtered paradas to reflect the change
     const updatedFilteredParadas = filteredParadas.map(p => 
-      p.id === parada.id ? { ...p, active: !p.active } : p
+      p.id === parada.id ? { ...p, active: estadoNuevo } : p
     );
     
     setFilteredParadas(updatedFilteredParadas);
     
-    toast.success(`Parada ${parada.codigo} ${!parada.active ? 'activada' : 'desactivada'} correctamente`);
+    // Registrar en bitácora de auditoría
+    console.log('Audit: Usuario cambió estado de parada', {
+      paradaId: parada.id,
+      codigo: parada.codigo,
+      estadoAnterior: estadoAnterior ? 'activo' : 'inactivo',
+      estadoNuevo: estadoNuevo ? 'activo' : 'inactivo',
+      usuario: 'Usuario actual',
+      fecha: new Date().toISOString(),
+      accion: 'cambiar_estado_parada'
+    });
     
-    // In a real app, we would log this in the audit trail
-    console.log('Audit:', `Usuario cambió estado de parada ${parada.codigo} a ${!parada.active ? 'activo' : 'inactivo'}`);
+    toast.success(`Parada ${parada.codigo} ${estadoNuevo ? 'activada' : 'inactivada'} correctamente`);
+  };
+
+  const handleNewParada = () => {
+    setEditMode(false);
+    setSelectedParada(null);
+    setSelectedLocation(null);
+    setIsDraggingEnabled(false);
+    
+    form.reset({
+      codigo: '',
+      nombre: '',
+      pais: 'Costa Rica',
+      provincia: '',
+      canton: '',
+      distrito: '',
+      sector: '',
+      lat: '',
+      lng: '',
+      active: true
+    });
+    
+    setShowForm(true);
+    
+    // Scroll to the form
+    setTimeout(() => {
+      const formElement = document.getElementById('parada-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   return (
@@ -618,13 +780,19 @@ const ParadasIndex = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Puntos de Parada</h1>
-            <p className="text-gray-500">Administración de puntos de parada</p>
+            <h1 className="text-2xl font-bold">Gestión Integral de Puntos de Parada</h1>
+            <p className="text-gray-500">Registro, edición, listado y activación/inactivación desde una interfaz única</p>
           </div>
-          <ParadasExport paradas={filteredParadas} filtros={filterValues} />
+          <div className="flex gap-2">
+            <Button onClick={handleNewParada}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nueva Parada
+            </Button>
+            <ParadasExport paradas={filteredParadas} filtros={filterValues} />
+          </div>
         </div>
         
-        {/* Nuevo componente de filtros */}
+        {/* Componente de filtros */}
         <ParadasFilter
           onFilter={handleApplyFilters}
           onClearFilters={handleClearFilters}
@@ -635,8 +803,6 @@ const ParadasIndex = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Panel izquierdo - Lista de paradas */}
           <div className="bg-white shadow rounded-lg p-6">
-            
-            
             <div className="overflow-auto mt-4">
               <Table>
                 <TableHeader>
@@ -744,7 +910,7 @@ const ParadasIndex = () => {
           </div>
         </div>
         
-        {/* Formulario en la página principal en lugar de modal */}
+        {/* Formulario en la página principal */}
         {showForm && (
           <div id="parada-form" className="bg-white shadow rounded-lg p-6 mb-8 border-t-2 border-primary">
             <h2 className="text-xl font-semibold mb-4">{editMode ? 'Editar Parada' : 'Nueva Parada'}</h2>
@@ -755,16 +921,21 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="codigo"
+                    rules={{ 
+                      required: 'El código de parada es obligatorio',
+                      maxLength: { value: 20, message: 'El código no puede exceder 20 caracteres' }
+                    }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Código de parada</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="Ingrese el código único" 
+                            placeholder="Ingrese el código único (máx. 20 caracteres)" 
                             maxLength={20} 
                             {...field} 
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -772,16 +943,21 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="nombre"
+                    rules={{ 
+                      required: 'El nombre de la parada es obligatorio',
+                      maxLength: { value: 100, message: 'El nombre no puede exceder 100 caracteres' }
+                    }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Nombre</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="Ingrese el nombre de la parada" 
+                            placeholder="Ingrese el nombre de la parada (máx. 100 caracteres)" 
                             maxLength={100} 
                             {...field} 
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -791,6 +967,7 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="pais"
+                    rules={{ required: 'El país es obligatorio' }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">País</FormLabel>
@@ -810,6 +987,7 @@ const ParadasIndex = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -817,6 +995,7 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="provincia"
+                    rules={{ required: 'La provincia es obligatoria' }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Provincia</FormLabel>
@@ -837,6 +1016,7 @@ const ParadasIndex = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -846,6 +1026,7 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="canton"
+                    rules={{ required: 'El cantón es obligatorio' }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Cantón</FormLabel>
@@ -866,6 +1047,7 @@ const ParadasIndex = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -873,6 +1055,7 @@ const ParadasIndex = () => {
                   <FormField
                     control={form.control}
                     name="distrito"
+                    rules={{ required: 'El distrito es obligatorio' }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Distrito</FormLabel>
@@ -893,6 +1076,7 @@ const ParadasIndex = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -943,19 +1127,76 @@ const ParadasIndex = () => {
                   />
                 </div>
 
+                {/* Campos de coordenadas manuales */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="lat"
+                    rules={{ 
+                      required: 'La latitud es obligatoria',
+                      validate: (value) => {
+                        const validation = validateCoordinates(value, form.getValues('lng'));
+                        return validation.isValid || validation.error;
+                      }
+                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="required-field">Latitud</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: 9.932000 (rango: -90.000000 a 90.000000)" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-gray-500">Puede seleccionar en el mapa o ingresar manualmente</p>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="lng"
+                    rules={{ 
+                      required: 'La longitud es obligatoria',
+                      validate: (value) => {
+                        const validation = validateCoordinates(form.getValues('lat'), value);
+                        return validation.isValid || validation.error;
+                      }
+                    }}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="required-field">Longitud</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ej: -84.079000 (rango: -180.000000 a 180.000000)" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <p className="text-xs text-gray-500">Puede seleccionar en el mapa o ingresar manualmente</p>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 {selectedLocation && (
                   <div className="bg-gray-50 p-3 rounded-md">
-                    <Label>Ubicación seleccionada:</Label>
+                    <Label>Ubicación actual:</Label>
                     <div className="text-sm font-mono mt-1">
                       {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
                     </div>
                     <div className="text-xs text-blue-500 mt-1">
-                      Para ajustar la posición, arrastra el pin en el mapa.
+                      Para ajustar la posición, arrastra el pin en el mapa o modifica las coordenadas arriba.
                     </div>
                   </div>
                 )}
                 
                 <div className="flex justify-end space-x-3 pt-2">
+                  <Button variant="outline" type="button" onClick={handleClearForm}>
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    Limpiar
+                  </Button>
                   <Button variant="secondary" type="button" onClick={handleCancelForm}>
                     Cancelar
                   </Button>
@@ -969,7 +1210,7 @@ const ParadasIndex = () => {
           </div>
         )}
 
-        {/* Diálogo de confirmación para eliminar (mantenido como modal) */}
+        {/* Diálogo de confirmación para eliminar */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
