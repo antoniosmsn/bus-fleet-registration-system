@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -88,6 +87,7 @@ interface ExportParada {
   estado: string;
   lat: number;
   lng: number;
+  active: boolean;
 }
 
 interface ExportFilterValues {
@@ -158,8 +158,20 @@ const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
   }));
 };
 
-// Convert paradas to the format expected by ParadasExport
-const convertToExportParadas = (paradas: Parada[]): ExportParada[] => {
+// Convert paradas to the format expected by ParadasExport (with active property and distrito)
+const convertToExportParadas = (paradas: Parada[]): Array<{
+  id: string;
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  lat: number;
+  lng: number;
+  active: boolean;
+}> => {
   return paradas.map(parada => ({
     id: parada.id,
     codigo: parada.codigo,
@@ -169,14 +181,23 @@ const convertToExportParadas = (paradas: Parada[]): ExportParada[] => {
     canton: parada.canton,
     distrito: '', // Empty since we removed distrito
     sector: parada.sector || '',
-    estado: parada.active ? 'Activo' : 'Inactivo',
     lat: parada.lat,
-    lng: parada.lng
+    lng: parada.lng,
+    active: parada.active
   }));
 };
 
 // Convert filter values to the format expected by ParadasExport
-const convertToExportFilters = (filters: ParadaFilterValues): ExportFilterValues => {
+const convertToExportFilters = (filters: ParadaFilterValues): {
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
+  sector: string;
+  estado: string;
+} => {
   return {
     codigo: filters.codigo,
     nombre: filters.nombre,
