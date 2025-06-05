@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -18,6 +17,20 @@ interface Parada {
   pais: string;
   provincia: string;
   canton: string;
+  sector: string;
+  estado: string;
+  lat: number;
+  lng: number;
+}
+
+interface MapParada {
+  id: string;
+  codigo: string;
+  nombre: string;
+  pais: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
   sector: string;
   estado: string;
   lat: number;
@@ -56,6 +69,23 @@ const paradasExistentes: Parada[] = [
     lng: -84.085
   }
 ];
+
+// Convert to map format
+const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
+  return paradas.map(parada => ({
+    id: parada.id,
+    codigo: parada.codigo,
+    nombre: parada.nombre,
+    pais: parada.pais,
+    provincia: parada.provincia,
+    canton: parada.canton,
+    distrito: '', // Empty since we removed distrito
+    sector: parada.sector || '',
+    estado: parada.estado,
+    lat: parada.lat,
+    lng: parada.lng
+  }));
+};
 
 // Datos de catálogos - en una app real, esto vendría de una API
 const paises = ['Costa Rica'];
@@ -307,7 +337,7 @@ const RegisterParada = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-md shadow p-2 h-[600px]">
               <ParadaMap 
-                paradasExistentes={paradasExistentes}
+                paradasExistentes={convertToMapParadas(paradasExistentes)}
                 selectedLocation={location}
                 onLocationChange={handleLocationChange}
               />

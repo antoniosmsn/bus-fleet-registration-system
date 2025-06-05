@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -124,7 +123,7 @@ const convertToMapParadas = (paradas: Parada[]): MapParada[] => {
     pais: parada.pais,
     provincia: parada.provincia,
     canton: parada.canton,
-    distrito: '', // Ya no usamos distrito
+    distrito: '', // Empty since we removed distrito
     sector: parada.sector || '',
     estado: parada.active ? 'Activo' : 'Inactivo',
     lat: parada.lat,
