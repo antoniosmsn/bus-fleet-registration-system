@@ -8,9 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { MapPin, Edit } from 'lucide-react';
+import { MapPin, Pencil, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 
 interface Vertex {
   lat: number;
@@ -61,14 +60,6 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
     );
   }
 
-  const handleToggleChange = (id: string, newActive: boolean) => {
-    if (onToggleActive) {
-      onToggleActive(id, newActive);
-      // En una app real, aquí se registraría en la bitácora de auditoría
-      console.log('Audit: Usuario cambió estado de geocerca', id, newActive ? 'activo' : 'inactivo');
-    }
-  };
-
   const handleEditClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation(); // Evita que se active onSelectGeocerca
     if (onEditGeocerca) {
@@ -85,7 +76,7 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
           <TableRow>
             <TableHead>Nombre</TableHead>
             <TableHead>Estado</TableHead>
-            <TableHead className="w-24">Acciones</TableHead>
+            <TableHead className="w-24">Opciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -97,12 +88,23 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
             >
               <TableCell className="font-medium">{geocerca.nombre}</TableCell>
               <TableCell>
-                <Switch
-                  checked={geocerca.active}
-                  onCheckedChange={(checked) => handleToggleChange(geocerca.id, checked)}
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={geocerca.active ? "Desactivar geocerca" : "Activar geocerca"}
-                />
+                <div className="flex items-center gap-2">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                    geocerca.active 
+                      ? 'bg-blue-500 text-white' 
+                      : 'bg-gray-300 text-gray-500'
+                  }`}>
+                    {geocerca.active && <Check className="h-4 w-4" />}
+                    {!geocerca.active && <span className="text-xs">-</span>}
+                  </div>
+                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                    geocerca.active 
+                      ? 'bg-green-100 text-green-700' 
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {geocerca.active ? 'Activo' : 'Inactivo'}
+                  </span>
+                </div>
               </TableCell>
               <TableCell>
                 <Button
@@ -111,7 +113,7 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
                   onClick={(e) => handleEditClick(e, geocerca.id)}
                   aria-label="Editar geocerca"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Pencil className="h-4 w-4" />
                 </Button>
               </TableCell>
             </TableRow>

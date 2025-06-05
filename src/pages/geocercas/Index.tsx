@@ -201,7 +201,7 @@ const GeocercasIndex = () => {
           <Link to="/geocercas/crear">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Crear Geocerca
+              Registrar
             </Button>
           </Link>
         </div>
