@@ -154,6 +154,7 @@ const ProgramacionParametros = () => {
     toast({
       title: "Éxito",
       description: "Los parámetros han sido programados para envío exitosamente.",
+      variant: "success",
     });
 
     // Limpiar selecciones
@@ -179,6 +180,7 @@ const ProgramacionParametros = () => {
     toast({
       title: "Éxito",
       description: "Los parámetros han sido desprogramados exitosamente.",
+      variant: "success",
     });
 
     // Limpiar selecciones
