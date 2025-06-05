@@ -61,10 +61,7 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={todosSeleccionados}
-                  ref={(el) => {
-                    if (el) el.indeterminate = algunosSeleccionados;
-                  }}
+                  checked={todosSeleccionados || algunosSeleccionados}
                   onCheckedChange={todosSeleccionados ? onDeseleccionarTodos : onSeleccionarTodos}
                 />
               </TableHead>
