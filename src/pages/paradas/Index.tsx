@@ -413,13 +413,43 @@ const ParadasIndex = () => {
     if (watchLat && watchLng) {
       const validation = validateCoordinates(watchLat, watchLng);
       if (validation.isValid) {
-        const newLocation = { lat: parseFloat(watchLat), lng: parseFloat(watchLng) };
+        const lat = parseFloat(watchLat);
+        const lng = parseFloat(watchLng);
+        const newLocation = { lat, lng };
+        
+        // Actualizar la ubicación seleccionada en el mapa
         setSelectedLocation(newLocation);
+        
+        // Si estamos editando una parada existente, actualizar temporalmente su ubicación
+        if (editMode && selectedParada) {
+          const updatedParada = { ...selectedParada, lat, lng };
+          setSelectedParada(updatedParada);
+          
+          // Actualizar temporalmente la lista de paradas para que el mapa se refleje correctamente
+          const updatedParadas = paradas.map(p => 
+            p.id === selectedParada.id ? updatedParada : p
+          );
+          setParadas(updatedParadas);
+          
+          // También actualizar las paradas filtradas
+          const updatedFilteredParadas = filteredParadas.map(p => 
+            p.id === selectedParada.id ? updatedParada : p
+          );
+          setFilteredParadas(updatedFilteredParadas);
+        }
+        
+        // Habilitar el arrastre
         setIsDraggingEnabled(true);
+        
+        // Mostrar el formulario si no está visible
+        if (!showForm) {
+          setShowForm(true);
+        }
       }
     }
-  }, [watchLat, watchLng]);
+  }, [watchLat, watchLng, editMode, selectedParada, paradas, filteredParadas, showForm]);
 
+  // Manejar el cambio de ubicación seleccionada
   const handleLocationChange = (newLocation: Location | null) => {
     setSelectedLocation(newLocation);
     if (newLocation) {
