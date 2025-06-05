@@ -40,6 +40,48 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
+// Custom icon with divIcon for showing code labels
+const createLabeledIcon = (codigo: string, isActive: boolean) => {
+  const color = isActive ? '#22c55e' : '#6b7280';
+  const bgColor = isActive ? '#dcfce7' : '#f3f4f6';
+  
+  return L.divIcon({
+    html: `
+      <div style="
+        background-color: ${bgColor}; 
+        border: 2px solid ${color}; 
+        border-radius: 8px; 
+        padding: 2px 6px; 
+        font-size: 10px; 
+        font-weight: bold; 
+        color: ${color};
+        text-align: center;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transform: translate(-50%, -100%);
+        margin-top: -5px;
+      ">
+        ${codigo}
+      </div>
+      <div style="
+        width: 0; 
+        height: 0; 
+        border-left: 4px solid transparent; 
+        border-right: 4px solid transparent; 
+        border-top: 6px solid ${color}; 
+        margin: 0 auto;
+        transform: translateX(-50%);
+        margin-left: 50%;
+        margin-top: -1px;
+      "></div>
+    `,
+    className: 'custom-div-icon',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+    popupAnchor: [0, -10]
+  });
+};
+
 // Iconos personalizados para diferentes estados
 const activeIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -141,12 +183,12 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
       
       <LocationSelector onLocationChange={onLocationChange} />
       
-      {/* Paradas existentes */}
+      {/* Paradas existentes con etiquetas de código */}
       {paradasExistentes.map((parada) => (
         <React.Fragment key={parada.id || parada.codigo}>
           <Marker
             position={[parada.lat, parada.lng]}
-            icon={parada.estado === 'Activo' ? activeIcon : inactiveIcon}
+            icon={createLabeledIcon(parada.codigo, parada.estado === 'Activo')}
             draggable={!!onParadaLocationChange}
             eventHandlers={{
               dragend: (e) => handleParadaMarkerDragEnd(parada, e),
