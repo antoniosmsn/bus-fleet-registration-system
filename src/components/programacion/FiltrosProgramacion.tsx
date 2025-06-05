@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Combobox } from '@/components/ui/combobox';
 import { Search } from 'lucide-react';
 import { FiltrosProgramacion } from '@/types/programacion-parametros';
 
@@ -12,6 +13,15 @@ interface FiltrosProgramacionProps {
   setFiltros: (filtros: FiltrosProgramacion) => void;
   onBuscar: () => void;
 }
+
+// Lista de empresas de transporte de ejemplo
+const empresasTransporte = [
+  { value: 'Transportes A', label: 'Transportes A' },
+  { value: 'Transportes B', label: 'Transportes B' },
+  { value: 'Transportes C', label: 'Transportes C' },
+  { value: 'Transportes D', label: 'Transportes D' },
+  { value: 'Transportes E', label: 'Transportes E' },
+];
 
 const FiltrosProgramacionComponent: React.FC<FiltrosProgramacionProps> = ({
   filtros,
@@ -24,11 +34,13 @@ const FiltrosProgramacionComponent: React.FC<FiltrosProgramacionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="space-y-2">
             <Label htmlFor="empresaTransporte">Empresa de transporte</Label>
-            <Input
-              id="empresaTransporte"
-              placeholder="Buscar por empresa"
+            <Combobox
+              options={empresasTransporte}
               value={filtros.empresaTransporte}
-              onChange={(e) => setFiltros({ ...filtros, empresaTransporte: e.target.value })}
+              onValueChange={(value) => setFiltros({ ...filtros, empresaTransporte: value })}
+              placeholder="Seleccionar empresa"
+              searchPlaceholder="Buscar empresa..."
+              emptyText="No se encontró la empresa"
             />
           </div>
 
