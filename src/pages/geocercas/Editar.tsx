@@ -207,7 +207,7 @@ const EditarGeocerca = () => {
     <Layout>
       <div className="w-full max-w-full mx-auto p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Editar geocerca: {originalGeocerca.nombre}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Edición de geocercas existentes: {originalGeocerca.nombre}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-200px)]">
@@ -216,16 +216,16 @@ const EditarGeocerca = () => {
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">Mapa</CardTitle>
+                  </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" disabled>
-                      Mapa
-                    </Button>
                     <Button 
                       variant={isDrawing ? "default" : "outline"} 
                       size="sm"
                       onClick={handleToggleDrawing} 
                     >
-                      {isDrawing ? "Dibujo Activado" : "Dibujo Activado"}
+                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -233,6 +233,7 @@ const EditarGeocerca = () => {
                       onClick={handleLimpiarGeocerca}
                       disabled={vertices.length === 0}
                     >
+                      <RotateCcw className="mr-2 h-4 w-4" />
                       Limpiar geocerca
                     </Button>
                   </div>
@@ -262,7 +263,9 @@ const EditarGeocerca = () => {
                 <CardContent className="space-y-4 h-[calc(100%-80px)] overflow-y-auto">
                   <div className="space-y-2">
                     <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
+                      <MapPin className="w-4 h-4 inline mr-1" />
                       Nombre de la geocerca
+                      <span className="text-red-500 ml-1">*</span>
                     </Label>
                     <Input 
                       id="nombre" 
@@ -292,40 +295,44 @@ const EditarGeocerca = () => {
               </Card>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={handleLimpiarFormulario}
-                  className="w-full"
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Limpiar
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleCancelar}
-                  className="w-full"
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancelar
-                </Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={handleEliminarGeocerca}
-                  className="w-full"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Eliminar
-                </Button>
-                <Button 
-                  onClick={handleGuardarCambios}
-                  disabled={!isSaveEnabled}
-                  className="w-full"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Guardar
-                </Button>
-              </div>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col gap-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleLimpiarFormulario}
+                      className="w-full"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Limpiar
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      onClick={handleCancelar}
+                      className="w-full"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancelar
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={handleEliminarGeocerca}
+                      className="w-full"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Eliminar
+                    </Button>
+                    <Button 
+                      onClick={handleGuardarCambios}
+                      disabled={!isSaveEnabled}
+                      className="w-full"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Guardar cambios
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
