@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1269,30 +1270,30 @@ const ParadasIndex = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Diálogo de confirmación para actualización de ubicación */}
-        <AlertDialog open={locationUpdateDialog} onOpenChange={setLocationUpdateDialog}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Actualizar ubicación de parada</AlertDialogTitle>
-              <AlertDialogDescription>
+        {/* Diálogo de confirmación para actualización de ubicación - Modal más amplio */}
+        <Dialog open={locationUpdateDialog} onOpenChange={setLocationUpdateDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Actualizar ubicación de parada</DialogTitle>
+              <DialogDescription>
                 Has movido la parada <strong>{pendingLocationUpdate?.parada.codigo}</strong> a una nueva ubicación.
                 <br /><br />
                 ¿Qué deseas hacer?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-              <AlertDialogCancel onClick={handleCancelLocationUpdate}>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:gap-3">
+              <Button variant="outline" onClick={handleCancelLocationUpdate}>
                 Cancelar
-              </AlertDialogCancel>
+              </Button>
               <Button onClick={handleUpdateLocationOnly} variant="outline">
                 Solo actualizar ubicación
               </Button>
-              <AlertDialogAction onClick={handleEditFullParada}>
+              <Button onClick={handleEditFullParada} className="bg-primary hover:bg-primary/90">
                 Editar todas las propiedades
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
