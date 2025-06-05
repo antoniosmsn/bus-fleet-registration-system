@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -125,7 +126,7 @@ const MapCenterController = ({ centerLocation }: { centerLocation: Location | nu
   
   useEffect(() => {
     if (centerLocation) {
-      map.setView([centerLocation.lat, centerLocation.lng], 16, {
+      map.setView([centerLocation.lat, centerLocation.lng], 14, {
         animate: true,
         duration: 1
       });
