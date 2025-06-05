@@ -125,148 +125,24 @@ const CrearGeocerca = () => {
 
   return (
     <Layout>
-      <div className="w-full max-w-7xl mx-auto p-6">
+      <div className="w-full max-w-full mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Registro de nuevas geocercas</h1>
           <p className="text-gray-600 mt-1">Complete el formulario para registrar una nueva geocerca.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Form Section */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Información de la Geocerca</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
-                    <MapPin className="w-4 h-4 inline mr-1" />
-                    Nombre de la geocerca
-                    <span className="text-red-500 ml-1">*</span>
-                  </Label>
-                  <Input 
-                    id="nombre" 
-                    value={nombre} 
-                    onChange={handleNombreChange} 
-                    placeholder="Ingrese el nombre de la geocerca"
-                    maxLength={100} 
-                    required
-                    className="w-full"
-                  />
-                  <p className="text-xs text-gray-500">
-                    Máximo 100 caracteres. Debe ser único en el sistema.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Geocercas cercanas de referencia
-                  </Label>
-                  <GeocercaSelector 
-                    geocercas={geocercasExistentes}
-                    selectedGeocercaId={selectedGeocerca}
-                    onSelect={handleGeocercaSelect}
-                  />
-                  <p className="text-xs text-gray-500">
-                    Seleccione una geocerca existente para usarla como referencia visual.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-700">
-                    Herramientas de dibujo
-                  </Label>
-                  <div className="flex flex-col gap-2">
-                    <Button 
-                      variant={isDrawing ? "default" : "outline"} 
-                      size="sm"
-                      onClick={handleToggleDrawing} 
-                      className="w-full"
-                    >
-                      {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleLimpiarGeocerca}
-                      className="w-full"
-                      disabled={vertices.length === 0}
-                    >
-                      <RotateCcw className="mr-2 h-4 w-4" />
-                      Limpiar geocerca
-                    </Button>
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Haga clic en el mapa para agregar puntos. Se necesitan al menos 3 puntos.
-                  </p>
-                </div>
-
-                {vertices.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">
-                      Puntos seleccionados: {vertices.length}
-                    </Label>
-                    <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
-                      {vertices.length < 3 
-                        ? `Faltan ${3 - vertices.length} puntos para formar un polígono válido`
-                        : "Polígono válido formado"
-                      }
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleLimpiarFormulario}
-                    className="flex-1"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Limpiar
-                  </Button>
-                  <Button 
-                    variant="secondary" 
-                    onClick={handleCancelar}
-                    className="flex-1"
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Cancelar
-                  </Button>
-                  <Button 
-                    onClick={handleGuardar}
-                    disabled={!isSaveEnabled}
-                    className="flex-1"
-                  >
-                    <Save className="mr-2 h-4 w-4" />
-                    Guardar
-                  </Button>
-                </div>
-                {!isSaveEnabled && (
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    Complete el nombre y seleccione al menos 3 puntos para habilitar el guardado
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Map Section */}
-          <div className="lg:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
+          {/* Map Section - 75% width */}
+          <div className="lg:col-span-3">
             <Card className="h-full">
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Mapa Interactivo</CardTitle>
                 <p className="text-sm text-gray-600">
                   Haga clic en el mapa para definir los vértices del polígono
                 </p>
               </CardHeader>
-              <CardContent className="p-2">
-                <div className="h-[600px] rounded-lg overflow-hidden">
+              <CardContent className="p-2 h-[calc(100%-80px)]">
+                <div className="h-full rounded-lg overflow-hidden">
                   <GeocercaMap 
                     vertices={vertices}
                     onVerticesChange={handleVerticesChange}
@@ -277,6 +153,132 @@ const CrearGeocerca = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
+          
+          {/* Form Section - 25% width */}
+          <div className="lg:col-span-1">
+            <div className="h-full flex flex-col space-y-4">
+              <Card className="flex-1">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Información de la Geocerca</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 h-[calc(100%-80px)] overflow-y-auto">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      Nombre de la geocerca
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <Input 
+                      id="nombre" 
+                      value={nombre} 
+                      onChange={handleNombreChange} 
+                      placeholder="Ingrese el nombre de la geocerca"
+                      maxLength={100} 
+                      required
+                      className="w-full"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Máximo 100 caracteres. Debe ser único en el sistema.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Geocercas cercanas de referencia
+                    </Label>
+                    <GeocercaSelector 
+                      geocercas={geocercasExistentes}
+                      selectedGeocercaId={selectedGeocerca}
+                      onSelect={handleGeocercaSelect}
+                    />
+                    <p className="text-xs text-gray-500">
+                      Seleccione una geocerca existente para usarla como referencia visual.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Herramientas de dibujo
+                    </Label>
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        variant={isDrawing ? "default" : "outline"} 
+                        size="sm"
+                        onClick={handleToggleDrawing} 
+                        className="w-full"
+                      >
+                        {isDrawing ? "Dibujo Activado" : "Activar Dibujo"}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleLimpiarGeocerca}
+                        className="w-full"
+                        disabled={vertices.length === 0}
+                      >
+                        <RotateCcw className="mr-2 h-4 w-4" />
+                        Limpiar geocerca
+                      </Button>
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Haga clic en el mapa para agregar puntos. Se necesitan al menos 3 puntos.
+                    </p>
+                  </div>
+
+                  {vertices.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700">
+                        Puntos seleccionados: {vertices.length}
+                      </Label>
+                      <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                        {vertices.length < 3 
+                          ? `Faltan ${3 - vertices.length} puntos para formar un polígono válido`
+                          : "Polígono válido formado"
+                        }
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Action Buttons */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex flex-col gap-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleLimpiarFormulario}
+                      className="w-full"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Limpiar
+                    </Button>
+                    <Button 
+                      variant="secondary" 
+                      onClick={handleCancelar}
+                      className="w-full"
+                    >
+                      <X className="mr-2 h-4 w-4" />
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={handleGuardar}
+                      disabled={!isSaveEnabled}
+                      className="w-full"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Guardar
+                    </Button>
+                  </div>
+                  {!isSaveEnabled && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      Complete el nombre y seleccione al menos 3 puntos para habilitar el guardado
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
