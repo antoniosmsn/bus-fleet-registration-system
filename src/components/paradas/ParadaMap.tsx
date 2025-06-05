@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -40,45 +39,36 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-// Custom icon with divIcon for showing code labels
-const createLabeledIcon = (codigo: string, isActive: boolean) => {
-  const color = isActive ? '#22c55e' : '#6b7280';
-  const bgColor = isActive ? '#dcfce7' : '#f3f4f6';
+// Custom circular icon with code inside
+const createCircularIcon = (codigo: string, isActive: boolean) => {
+  const color = isActive ? '#3b82f6' : '#6b7280';
+  const bgColor = isActive ? '#3b82f6' : '#6b7280';
+  const textColor = '#ffffff';
   
   return L.divIcon({
     html: `
       <div style="
         background-color: ${bgColor}; 
         border: 2px solid ${color}; 
-        border-radius: 8px; 
-        padding: 2px 6px; 
+        border-radius: 50%; 
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 10px; 
         font-weight: bold; 
-        color: ${color};
-        text-align: center;
-        white-space: nowrap;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transform: translate(-50%, -100%);
-        margin-top: -5px;
+        color: ${textColor};
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        transform: translate(-50%, -50%);
       ">
-        ${codigo}
+        ${codigo.replace('PARA-', '')}
       </div>
-      <div style="
-        width: 0; 
-        height: 0; 
-        border-left: 4px solid transparent; 
-        border-right: 4px solid transparent; 
-        border-top: 6px solid ${color}; 
-        margin: 0 auto;
-        transform: translateX(-50%);
-        margin-left: 50%;
-        margin-top: -1px;
-      "></div>
     `,
-    className: 'custom-div-icon',
-    iconSize: [0, 0],
-    iconAnchor: [0, 0],
-    popupAnchor: [0, -10]
+    className: 'custom-circular-icon',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15]
   });
 };
 
@@ -183,12 +173,12 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
       
       <LocationSelector onLocationChange={onLocationChange} />
       
-      {/* Paradas existentes con etiquetas de código */}
+      {/* Paradas existentes con iconos circulares */}
       {paradasExistentes.map((parada) => (
         <React.Fragment key={parada.id || parada.codigo}>
           <Marker
             position={[parada.lat, parada.lng]}
-            icon={createLabeledIcon(parada.codigo, parada.estado === 'Activo')}
+            icon={createCircularIcon(parada.codigo, parada.estado === 'Activo')}
             draggable={!!onParadaLocationChange}
             eventHandlers={{
               dragend: (e) => handleParadaMarkerDragEnd(parada, e),
