@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -10,11 +9,13 @@ import { Switch } from '@/components/ui/switch';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import ParadaMap from '@/components/paradas/ParadaMap';
 import ParadasExport from '@/components/paradas/ParadasExport';
 import ParadasPagination from '@/components/paradas/ParadasPagination';
 import ParadasFilter from '@/components/paradas/ParadasFilter';
-import { Edit, Trash, Plus, Save, MapPin, RotateCcw } from 'lucide-react';
+import { Edit, Trash, Plus, Save, MapPin, RotateCcw, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -155,7 +156,7 @@ const sectores = {
 const DISTANCIA_MINIMA = 25;
 
 // Cantidad de filas a mostrar por página
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 8;
 
 const ParadasIndex = () => {
   const [paradas, setParadas] = useState<Parada[]>(paradasMock);
@@ -400,14 +401,6 @@ const ParadasIndex = () => {
         setEditMode(false);
         setShowForm(true);
         setSelectedParada(null); // Clear any selected parada
-        
-        // Scroll to the form
-        setTimeout(() => {
-          const formElement = document.getElementById('parada-form');
-          if (formElement) {
-            formElement.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 100);
       }
     }
   };
@@ -438,23 +431,6 @@ const ParadasIndex = () => {
     });
     
     setShowForm(true);
-    
-    // Scroll to the form
-    setTimeout(() => {
-      const formElement = document.getElementById('parada-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-    
-    // Scroll to ensure the selected row is visible
-    setTimeout(() => {
-      // Find the table row for the selected parada
-      const tableRow = document.querySelector(`tr[data-paradaid="${parada.id}"]`);
-      if (tableRow) {
-        tableRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 200);
   };
 
   // Nuevo manejador para cuando se arrastra un pin de parada existente
@@ -492,14 +468,6 @@ const ParadasIndex = () => {
     });
     
     setShowForm(true);
-    
-    // Scroll to the form
-    setTimeout(() => {
-      const formElement = document.getElementById('parada-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
     
     // Mostrar notificación al usuario
     toast.info("Arrastraste la parada. Confirma los cambios para guardar la nueva ubicación.");
@@ -648,14 +616,6 @@ const ParadasIndex = () => {
     });
     
     setShowForm(true);
-    
-    // Scroll to the form
-    setTimeout(() => {
-      const formElement = document.getElementById('parada-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
   };
 
   const handleClearForm = () => {
@@ -765,26 +725,19 @@ const ParadasIndex = () => {
     });
     
     setShowForm(true);
-    
-    // Scroll to the form
-    setTimeout(() => {
-      const formElement = document.getElementById('parada-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
   };
 
   return (
     <Layout>
-      <div className="w-full">
-        <div className="flex justify-between items-center mb-6">
+      <div className="w-full max-w-7xl mx-auto p-4 space-y-4">
+        {/* Header compacto */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold">Gestión Integral de Puntos de Parada</h1>
-            <p className="text-gray-500">Registro, edición, listado y activación/inactivación desde una interfaz única</p>
+            <h1 className="text-xl font-bold">Gestión de Paradas</h1>
+            <p className="text-sm text-gray-500">Administra los puntos de parada de la zona franca</p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={handleNewParada}>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleNewParada} size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Nueva Parada
             </Button>
@@ -792,7 +745,7 @@ const ParadasIndex = () => {
           </div>
         </div>
         
-        {/* Componente de filtros */}
+        {/* Filtros colapsables */}
         <ParadasFilter
           onFilter={handleApplyFilters}
           onClearFilters={handleClearFilters}
@@ -800,415 +753,438 @@ const ParadasIndex = () => {
           onToggleFilters={handleToggleFilters}
         />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Panel izquierdo - Lista de paradas */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="overflow-auto mt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Código</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>País</TableHead>
-                    <TableHead>Provincia</TableHead>
-                    <TableHead>Cantón</TableHead>
-                    <TableHead>Distrito</TableHead>
-                    <TableHead>Sector</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedParadas.length > 0 ? (
-                    paginatedParadas.map((parada) => (
-                      <TableRow 
-                        key={parada.id} 
-                        className={`cursor-pointer hover:bg-gray-50 ${selectedParada?.id === parada.id ? 'bg-blue-50' : ''}`}
-                        onClick={() => handleEditParada(parada)}
-                        data-paradaid={parada.id}
-                      >
-                        <TableCell className="font-medium">{parada.codigo}</TableCell>
-                        <TableCell>{parada.nombre}</TableCell>
-                        <TableCell>{parada.pais}</TableCell>
-                        <TableCell>{parada.provincia}</TableCell>
-                        <TableCell>{parada.canton}</TableCell>
-                        <TableCell>{parada.distrito}</TableCell>
-                        <TableCell>{parada.sector || '-'}</TableCell>
-                        <TableCell>
-                          <Switch 
-                            checked={parada.active}
-                            onCheckedChange={() => handleToggleStatus(parada)}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditParada(parada);
-                              }}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteClick(parada);
-                              }}
-                            >
-                              <Trash className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+        {/* Layout principal en grid responsivo */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+          {/* Columna izquierda - Lista y Formulario */}
+          <div className="xl:col-span-2 space-y-4">
+            {/* Lista de paradas */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Lista de Paradas ({filteredParadas.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-auto max-h-80">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs">Código</TableHead>
+                        <TableHead className="text-xs">Nombre</TableHead>
+                        <TableHead className="text-xs">Estado</TableHead>
+                        <TableHead className="text-xs text-right">Acciones</TableHead>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={9} className="text-center py-4 text-gray-500">
-                        No se encontraron paradas
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              
-              {/* Paginación */}
-              {filteredParadas.length > 0 && (
-                <ParadasPagination 
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </div>
-          </div>
-          
-          {/* Panel derecho - Mapa */}
-          <div className="lg:col-span-2">
-            <div className="bg-white shadow rounded-lg p-4 h-[450px]">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Mapa de Paradas</h2>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <MapPin className="h-4 w-4" />
-                  <span>Haz clic en el mapa para agregar o arrastra pins para editarlos</span>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedParadas.length > 0 ? (
+                        paginatedParadas.map((parada) => (
+                          <TableRow 
+                            key={parada.id} 
+                            className={`cursor-pointer hover:bg-gray-50 ${selectedParada?.id === parada.id ? 'bg-blue-50' : ''}`}
+                            onClick={() => handleEditParada(parada)}
+                            data-paradaid={parada.id}
+                          >
+                            <TableCell className="text-xs font-medium">{parada.codigo}</TableCell>
+                            <TableCell className="text-xs">{parada.nombre}</TableCell>
+                            <TableCell>
+                              <Switch 
+                                checked={parada.active}
+                                onCheckedChange={() => handleToggleStatus(parada)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="scale-75"
+                              />
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditParada(parada);
+                                  }}
+                                >
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClick(parada);
+                                  }}
+                                >
+                                  <Trash className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-4 text-gray-500 text-sm">
+                            No se encontraron paradas
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
-              </div>
-              <ParadaMap 
-                paradasExistentes={convertToMapParadas(paradas)}
-                selectedLocation={selectedLocation}
-                onLocationChange={handleLocationChange}
-                isDraggingEnabled={isDraggingEnabled}
-                onParadaLocationChange={handleParadaLocationChange}
-                onParadaSelect={handleParadaSelect}
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Formulario en la página principal */}
-        {showForm && (
-          <div id="parada-form" className="bg-white shadow rounded-lg p-6 mb-8 border-t-2 border-primary">
-            <h2 className="text-xl font-semibold mb-4">{editMode ? 'Editar Parada' : 'Nueva Parada'}</h2>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleParadaFormSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="codigo"
-                    rules={{ 
-                      required: 'El código de parada es obligatorio',
-                      maxLength: { value: 20, message: 'El código no puede exceder 20 caracteres' }
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Código de parada</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ingrese el código único (máx. 20 caracteres)" 
-                            maxLength={20} 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="nombre"
-                    rules={{ 
-                      required: 'El nombre de la parada es obligatorio',
-                      maxLength: { value: 100, message: 'El nombre no puede exceder 100 caracteres' }
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Nombre</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ingrese el nombre de la parada (máx. 100 caracteres)" 
-                            maxLength={100} 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="pais"
-                    rules={{ required: 'El país es obligatorio' }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">País</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccione un país" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {paises.map(p => (
-                              <SelectItem key={p} value={p}>{p}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="provincia"
-                    rules={{ required: 'La provincia es obligatoria' }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Provincia</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          value={field.value}
-                          disabled={!watchPais}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccione una provincia" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {watchPais && provincias[watchPais]?.map(p => (
-                              <SelectItem key={p} value={p}>{p}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="canton"
-                    rules={{ required: 'El cantón es obligatorio' }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Cantón</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          value={field.value}
-                          disabled={!watchProvincia}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccione un cantón" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {watchProvincia && cantones[watchProvincia]?.map(c => (
-                              <SelectItem key={c} value={c}>{c}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="distrito"
-                    rules={{ required: 'El distrito es obligatorio' }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Distrito</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          value={field.value}
-                          disabled={!watchCanton}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccione un distrito" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {watchCanton && distritos[watchCanton]?.map(d => (
-                              <SelectItem key={d} value={d}>{d}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="sector"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sector</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                          value={field.value}
-                          disabled={!watchDistrito}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccione un sector (opcional)" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {watchDistrito && sectores[watchDistrito]?.map(s => (
-                              <SelectItem key={s} value={s}>{s}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="active"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-end space-x-2">
-                        <FormControl>
-                          <Switch 
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel className="pt-2">Parada activa</FormLabel>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Campos de coordenadas manuales */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="lat"
-                    rules={{ 
-                      required: 'La latitud es obligatoria',
-                      validate: (value) => {
-                        const validation = validateCoordinates(value, form.getValues('lng'));
-                        return validation.isValid || validation.error;
-                      }
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Latitud</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: 9.932000 (rango: -90.000000 a 90.000000)" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        <p className="text-xs text-gray-500">Puede seleccionar en el mapa o ingresar manualmente</p>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="lng"
-                    rules={{ 
-                      required: 'La longitud es obligatoria',
-                      validate: (value) => {
-                        const validation = validateCoordinates(form.getValues('lat'), value);
-                        return validation.isValid || validation.error;
-                      }
-                    }}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="required-field">Longitud</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Ej: -84.079000 (rango: -180.000000 a 180.000000)" 
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        <p className="text-xs text-gray-500">Puede seleccionar en el mapa o ingresar manualmente</p>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {selectedLocation && (
-                  <div className="bg-gray-50 p-3 rounded-md">
-                    <Label>Ubicación actual:</Label>
-                    <div className="text-sm font-mono mt-1">
-                      {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
-                    </div>
-                    <div className="text-xs text-blue-500 mt-1">
-                      Para ajustar la posición, arrastra el pin en el mapa o modifica las coordenadas arriba.
-                    </div>
+                
+                {/* Paginación compacta */}
+                {filteredParadas.length > 0 && (
+                  <div className="p-3 border-t">
+                    <ParadasPagination 
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                    />
                   </div>
                 )}
-                
-                <div className="flex justify-end space-x-3 pt-2">
-                  <Button variant="outline" type="button" onClick={handleClearForm}>
-                    <RotateCcw className="mr-2 h-4 w-4" />
-                    Limpiar
-                  </Button>
-                  <Button variant="secondary" type="button" onClick={handleCancelForm}>
-                    Cancelar
-                  </Button>
-                  <Button type="submit">
-                    <Save className="mr-2 h-4 w-4" />
-                    {editMode ? 'Actualizar' : 'Registrar'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
+              </CardContent>
+            </Card>
+
+            {/* Formulario colapsable */}
+            {showForm && (
+              <Card className="border-l-4 border-l-primary">
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg">
+                      {editMode ? 'Editar Parada' : 'Nueva Parada'}
+                    </CardTitle>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={handleCancelForm}
+                      className="h-6 w-6"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleParadaFormSubmit)} className="space-y-3">
+                      {/* Campos básicos */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="codigo"
+                          rules={{ 
+                            required: 'El código es obligatorio',
+                            maxLength: { value: 20, message: 'Máx. 20 caracteres' }
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Código</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="PARA-001" 
+                                  maxLength={20} 
+                                  className="h-8 text-xs"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="nombre"
+                          rules={{ 
+                            required: 'El nombre es obligatorio',
+                            maxLength: { value: 100, message: 'Máx. 100 caracteres' }
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Nombre</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Terminal Central" 
+                                  maxLength={100} 
+                                  className="h-8 text-xs"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Ubicación geográfica */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="pais"
+                          rules={{ required: 'El país es obligatorio' }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">País</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                value={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="Seleccione" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {paises.map(p => (
+                                    <SelectItem key={p} value={p} className="text-xs">{p}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="provincia"
+                          rules={{ required: 'La provincia es obligatoria' }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Provincia</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                value={field.value}
+                                disabled={!watchPais}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="Seleccione" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {watchPais && provincias[watchPais]?.map(p => (
+                                    <SelectItem key={p} value={p} className="text-xs">{p}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="canton"
+                          rules={{ required: 'El cantón es obligatorio' }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Cantón</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                value={field.value}
+                                disabled={!watchProvincia}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="Seleccione" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {watchProvincia && cantones[watchProvincia]?.map(c => (
+                                    <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="distrito"
+                          rules={{ required: 'El distrito es obligatorio' }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Distrito</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                value={field.value}
+                                disabled={!watchCanton}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="Seleccione" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {watchCanton && distritos[watchCanton]?.map(d => (
+                                    <SelectItem key={d} value={d} className="text-xs">{d}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="sector"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs">Sector</FormLabel>
+                              <Select 
+                                onValueChange={field.onChange} 
+                                value={field.value}
+                                disabled={!watchDistrito}
+                              >
+                                <FormControl>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue placeholder="Opcional" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {watchDistrito && sectores[watchDistrito]?.map(s => (
+                                    <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="active"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col justify-center">
+                              <FormLabel className="text-xs">Estado</FormLabel>
+                              <FormControl>
+                                <div className="flex items-center space-x-2">
+                                  <Switch 
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="scale-75"
+                                  />
+                                  <span className="text-xs">{field.value ? 'Activa' : 'Inactiva'}</span>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Coordenadas */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="lat"
+                          rules={{ 
+                            required: 'La latitud es obligatoria',
+                            validate: (value) => {
+                              const validation = validateCoordinates(value, form.getValues('lng'));
+                              return validation.isValid || validation.error;
+                            }
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Latitud</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="9.932000" 
+                                  className="h-8 text-xs"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="lng"
+                          rules={{ 
+                            required: 'La longitud es obligatoria',
+                            validate: (value) => {
+                              const validation = validateCoordinates(form.getValues('lat'), value);
+                              return validation.isValid || validation.error;
+                            }
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs required-field">Longitud</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="-84.079000" 
+                                  className="h-8 text-xs"
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage className="text-xs" />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {selectedLocation && (
+                        <div className="bg-gray-50 p-2 rounded text-xs">
+                          <strong>Ubicación:</strong> {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                          <div className="text-blue-600 mt-1">
+                            Arrastra el pin en el mapa para ajustar la posición
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex justify-end space-x-2 pt-2">
+                        <Button variant="outline" type="button" onClick={handleClearForm} size="sm">
+                          <RotateCcw className="mr-1 h-3 w-3" />
+                          Limpiar
+                        </Button>
+                        <Button variant="secondary" type="button" onClick={handleCancelForm} size="sm">
+                          Cancelar
+                        </Button>
+                        <Button type="submit" size="sm">
+                          <Save className="mr-1 h-3 w-3" />
+                          {editMode ? 'Actualizar' : 'Registrar'}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            )}
           </div>
-        )}
+          
+          {/* Columna derecha - Mapa */}
+          <div className="xl:col-span-3">
+            <Card className="h-[600px]">
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Mapa de Paradas</CardTitle>
+                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                    <MapPin className="h-3 w-3" />
+                    <span>Clic para agregar | Arrastra para editar</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-2 h-[calc(100%-4rem)]">
+                <ParadaMap 
+                  paradasExistentes={convertToMapParadas(paradas)}
+                  selectedLocation={selectedLocation}
+                  onLocationChange={handleLocationChange}
+                  isDraggingEnabled={isDraggingEnabled}
+                  onParadaLocationChange={handleParadaLocationChange}
+                  onParadaSelect={handleParadaSelect}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         {/* Diálogo de confirmación para eliminar */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
