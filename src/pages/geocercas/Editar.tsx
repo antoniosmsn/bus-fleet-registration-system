@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -103,13 +104,6 @@ const EditarGeocerca = () => {
     toast.info('Puntos de geocerca eliminados');
   };
 
-  const handleRestaurarVertices = () => {
-    if (originalGeocerca) {
-      setVertices([...originalGeocerca.vertices]);
-      toast.info('Vértices originales restaurados');
-    }
-  };
-
   const handleLimpiarFormulario = () => {
     if (originalGeocerca) {
       setNombre(originalGeocerca.nombre);
@@ -117,6 +111,30 @@ const EditarGeocerca = () => {
       setSelectedGeocercaIds([]);
       setIsDrawing(false);
       toast.info('Formulario reiniciado');
+    }
+  };
+
+  const handleEliminarGeocerca = () => {
+    if (originalGeocerca) {
+      // In a real app, you would send this data to your backend API
+      console.log('Eliminando geocerca:', {
+        id,
+        nombre: originalGeocerca.nombre,
+        usuario: 'Usuario actual',
+        fechaHora: new Date().toISOString()
+      });
+
+      // Mock audit log entry
+      console.log('Bitácora de auditoría:', {
+        accion: 'Eliminación de geocerca',
+        geocercaId: id,
+        nombreEliminado: originalGeocerca.nombre,
+        usuario: 'Usuario actual',
+        fechaHora: new Date().toISOString()
+      });
+
+      toast.success('Geocerca eliminada exitosamente');
+      navigate('/geocercas');
     }
   };
 
@@ -207,7 +225,7 @@ const EditarGeocerca = () => {
                       size="sm"
                       onClick={handleToggleDrawing} 
                     >
-                      Activar Dibujo
+                      {isDrawing ? "Dibujo Activado" : "Dibujo Activado"}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -244,9 +262,7 @@ const EditarGeocerca = () => {
                 <CardContent className="space-y-4 h-[calc(100%-80px)] overflow-y-auto">
                   <div className="space-y-2">
                     <Label htmlFor="nombre" className="text-sm font-medium text-gray-700">
-                      <MapPin className="w-4 h-4 inline mr-1" />
                       Nombre de la geocerca
-                      <span className="text-red-500 ml-1">*</span>
                     </Label>
                     <Input 
                       id="nombre" 
@@ -258,7 +274,7 @@ const EditarGeocerca = () => {
                       className="w-full"
                     />
                     <p className="text-xs text-gray-500">
-                      Máximo 100 caracteres. Debe ser único por zona franca.
+                      Máximo 100 caracteres. Debe ser único en el sistema.
                     </p>
                   </div>
 
@@ -276,36 +292,40 @@ const EditarGeocerca = () => {
               </Card>
 
               {/* Action Buttons */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex flex-col gap-3">
-                    <Button 
-                      variant="outline" 
-                      onClick={handleLimpiarFormulario}
-                      className="w-full"
-                    >
-                      <RotateCcw className="mr-2 h-4 w-4" />
-                      Restaurar Original
-                    </Button>
-                    <Button 
-                      variant="secondary" 
-                      onClick={handleCancelar}
-                      className="w-full"
-                    >
-                      <X className="mr-2 h-4 w-4" />
-                      Cancelar
-                    </Button>
-                    <Button 
-                      onClick={handleGuardarCambios}
-                      disabled={!isSaveEnabled}
-                      className="w-full"
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Guardar
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="flex flex-col gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={handleLimpiarFormulario}
+                  className="w-full"
+                >
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Limpiar
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCancelar}
+                  className="w-full"
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Cancelar
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={handleEliminarGeocerca}
+                  className="w-full"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Eliminar
+                </Button>
+                <Button 
+                  onClick={handleGuardarCambios}
+                  disabled={!isSaveEnabled}
+                  className="w-full"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Guardar
+                </Button>
+              </div>
             </div>
           </div>
         </div>
