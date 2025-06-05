@@ -888,7 +888,7 @@ const ParadasIndex = () => {
                         <TableHead className="text-xs">Código</TableHead>
                         <TableHead className="text-xs">Nombre</TableHead>
                         <TableHead className="text-xs">Estado</TableHead>
-                        <TableHead className="text-xs text-right">Acciones</TableHead>
+                        <TableHead className="text-xs text-right">Opciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
