@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -135,6 +134,13 @@ const EditarGeocerca = () => {
 
       toast.success('Geocerca eliminada exitosamente');
       navigate('/geocercas');
+    }
+  };
+
+  const handleRestaurarVerticesOriginales = () => {
+    if (originalGeocerca) {
+      setVertices([...originalGeocerca.vertices]);
+      toast.info('Vértices originales restaurados');
     }
   };
 
@@ -297,7 +303,7 @@ const EditarGeocerca = () => {
               {/* Action Buttons */}
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex flex-col gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <Button 
                       variant="outline" 
                       onClick={handleLimpiarFormulario}
@@ -315,12 +321,13 @@ const EditarGeocerca = () => {
                       Cancelar
                     </Button>
                     <Button 
-                      variant="destructive" 
-                      onClick={handleEliminarGeocerca}
+                      variant="outline" 
+                      onClick={handleRestaurarVerticesOriginales}
                       className="w-full"
+                      disabled={!originalGeocerca || JSON.stringify(vertices) === JSON.stringify(originalGeocerca.vertices)}
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Eliminar
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Restaurar vértices originales
                     </Button>
                     <Button 
                       onClick={handleGuardarCambios}
