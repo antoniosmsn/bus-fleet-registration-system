@@ -29,9 +29,9 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
 }) => {
   const getEstadoBadge = (valor: number) => {
     if (valor === 1) {
-      return <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600">PENDIENTE</Badge>;
+      return <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 w-20 justify-center">PENDIENTE</Badge>;
     }
-    return <Badge variant="default" className="bg-green-500 hover:bg-green-600">ENVIADO</Badge>;
+    return <Badge variant="default" className="bg-green-500 hover:bg-green-600 w-20 justify-center">ENVIADO</Badge>;
   };
 
   const todosSeleccionados = autobuses.length > 0 && autobusesSeleccionados.length === autobuses.length;
@@ -67,6 +67,7 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
               </TableHead>
               <TableHead>Placa</TableHead>
               <TableHead>Identificador del autobús</TableHead>
+              <TableHead>Empresa de transporte</TableHead>
               <TableHead>Conductores</TableHead>
               <TableHead>Geocercas</TableHead>
               <TableHead>Paradas</TableHead>
@@ -88,6 +89,7 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
                 </TableCell>
                 <TableCell className="font-medium">{autobus.placa}</TableCell>
                 <TableCell>{autobus.identificador}</TableCell>
+                <TableCell>{autobus.empresaTransporte}</TableCell>
                 <TableCell>{getEstadoBadge(autobus.conductores)}</TableCell>
                 <TableCell>{getEstadoBadge(autobus.geocercas)}</TableCell>
                 <TableCell>{getEstadoBadge(autobus.paradas)}</TableCell>
