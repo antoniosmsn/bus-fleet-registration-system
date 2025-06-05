@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -30,6 +29,7 @@ interface ParadaMapProps {
   isDraggingEnabled?: boolean;
   onParadaLocationChange?: (parada: Parada, newLocation: Location) => void;
   onParadaSelect?: (parada: Parada) => void;
+  centerLocation?: Location | null;
 }
 
 // Fix for Leaflet icon issue
@@ -119,6 +119,22 @@ const LocationSelector = ({
   return null;
 };
 
+// Componente para centrar el mapa
+const MapCenterController = ({ centerLocation }: { centerLocation: Location | null }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (centerLocation) {
+      map.setView([centerLocation.lat, centerLocation.lng], 16, {
+        animate: true,
+        duration: 1
+      });
+    }
+  }, [centerLocation, map]);
+  
+  return null;
+};
+
 // Distancia mínima entre paradas en metros (para visualizar círculo en mapa)
 const DISTANCIA_MINIMA = 25;
 
@@ -128,7 +144,8 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
   onLocationChange,
   isDraggingEnabled = false,
   onParadaLocationChange,
-  onParadaSelect
+  onParadaSelect,
+  centerLocation
 }) => {
   const center: [number, number] = [9.9338, -84.0795]; // San José, Costa Rica
 
@@ -173,6 +190,7 @@ const ParadaMap: React.FC<ParadaMapProps> = ({
       />
       
       <LocationSelector onLocationChange={onLocationChange} />
+      <MapCenterController centerLocation={centerLocation} />
       
       {/* Paradas existentes con iconos circulares numericos */}
       {paradasExistentes.map((parada) => (

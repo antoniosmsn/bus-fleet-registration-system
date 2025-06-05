@@ -238,6 +238,9 @@ const ParadasIndex = () => {
   const [showForm, setShowForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   
+  // Estado para centrar el mapa
+  const [mapCenterLocation, setMapCenterLocation] = useState<Location | null>(null);
+  
   // Estado para el diálogo de confirmación de ubicación
   const [locationUpdateDialog, setLocationUpdateDialog] = useState(false);
   const [pendingLocationUpdate, setPendingLocationUpdate] = useState<{
@@ -419,6 +422,9 @@ const ParadasIndex = () => {
         
         // Actualizar la ubicación seleccionada en el mapa
         setSelectedLocation(newLocation);
+        
+        // Centrar el mapa en la nueva ubicación
+        setMapCenterLocation(newLocation);
         
         // Si estamos editando una parada existente, actualizar temporalmente su ubicación
         if (editMode && selectedParada) {
@@ -1265,6 +1271,7 @@ const ParadasIndex = () => {
                     isDraggingEnabled={isDraggingEnabled}
                     onParadaLocationChange={handleParadaLocationChange}
                     onParadaSelect={handleParadaSelect}
+                    centerLocation={mapCenterLocation}
                   />
                 )}
                 {locationUpdateDialog && (
