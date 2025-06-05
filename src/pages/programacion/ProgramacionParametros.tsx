@@ -12,14 +12,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
 import Layout from '@/components/layout/Layout';
 import FiltrosProgramacionComponent from '@/components/programacion/FiltrosProgramacion';
 import TablaProgramacion from '@/components/programacion/TablaProgramacion';
@@ -219,25 +211,6 @@ const ProgramacionParametros = () => {
           onSeleccionarTodos={onSeleccionarTodos}
           onDeseleccionarTodos={onDeseleccionarTodos}
         />
-
-        <div className="flex justify-between items-center py-2">
-          <span className="text-sm text-gray-700">
-            1 - 10 de {autobuses.length}
-          </span>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
 
         <SeleccionTiposDatos
           tiposSeleccionados={tiposSeleccionados}

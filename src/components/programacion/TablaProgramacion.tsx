@@ -3,6 +3,9 @@ import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -105,6 +108,43 @@ const TablaProgramacion: React.FC<TablaProgramacionProps> = ({
                 ))}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Paginación integrada */}
+          <div className="flex items-center justify-between bg-slate-800 text-white px-4 py-3 rounded-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Registros por página</span>
+              <Select defaultValue="5">
+                <SelectTrigger className="w-16 h-8 bg-slate-700 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span className="text-sm">1 - 5 de 40</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-slate-700 p-1 h-8 w-8">
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
