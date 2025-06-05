@@ -158,6 +158,13 @@ const ParadasIndex = () => {
   const [showForm, setShowForm] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   
+  // Estado para el diálogo de confirmación de ubicación
+  const [locationUpdateDialog, setLocationUpdateDialog] = useState(false);
+  const [pendingLocationUpdate, setPendingLocationUpdate] = useState<{
+    parada: Parada;
+    newLocation: Location;
+  } | null>(null);
+  
   // Estado de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [paginatedParadas, setPaginatedParadas] = useState<Parada[]>([]);
@@ -397,11 +404,59 @@ const ParadasIndex = () => {
     const parada = paradas.find(p => p.id === mapParada.id);
     if (!parada) return;
 
+    // Mostrar el diálogo de confirmación
+    setPendingLocationUpdate({ parada, newLocation });
+    setLocationUpdateDialog(true);
+  };
+
+  // Actualizar solo la ubicación de la parada
+  const handleUpdateLocationOnly = () => {
+    if (!pendingLocationUpdate) return;
+
+    const { parada, newLocation } = pendingLocationUpdate;
+    
     const updatedParadas = paradas.map(p => 
       p.id === parada.id ? { ...p, lat: newLocation.lat, lng: newLocation.lng } : p
     );
     
-    // Actualizar el estado de paradas
+    setParadas(updatedParadas);
+    
+    // Update filtered paradas to reflect the change
+    const updatedFilteredParadas = filteredParadas.map(p => 
+      p.id === parada.id ? { ...p, lat: newLocation.lat, lng: newLocation.lng } : p
+    );
+    
+    setFilteredParadas(updatedFilteredParadas);
+    
+    // Registrar en bitácora de auditoría
+    console.log('Audit: Usuario actualizó ubicación de parada', {
+      paradaId: parada.id,
+      codigo: parada.codigo,
+      ubicacionAnterior: { lat: parada.lat, lng: parada.lng },
+      ubicacionNueva: newLocation,
+      usuario: 'Usuario actual',
+      fecha: new Date().toISOString(),
+      accion: 'actualizar_ubicacion_parada'
+    });
+    
+    toast.success(`Ubicación de la parada ${parada.codigo} actualizada correctamente`);
+    
+    // Limpiar estado
+    setLocationUpdateDialog(false);
+    setPendingLocationUpdate(null);
+  };
+
+  // Mostrar formulario completo para editar la parada
+  const handleEditFullParada = () => {
+    if (!pendingLocationUpdate) return;
+
+    const { parada, newLocation } = pendingLocationUpdate;
+    
+    // Actualizar temporalmente la ubicación en la lista
+    const updatedParadas = paradas.map(p => 
+      p.id === parada.id ? { ...p, lat: newLocation.lat, lng: newLocation.lng } : p
+    );
+    
     setParadas(updatedParadas);
     
     // Preparar el formulario con los datos actualizados
@@ -426,8 +481,18 @@ const ParadasIndex = () => {
     
     setShowForm(true);
     
-    // Mostrar notificación al usuario
-    toast.info("Arrastraste la parada. Confirma los cambios para guardar la nueva ubicación.");
+    // Limpiar estado del diálogo
+    setLocationUpdateDialog(false);
+    setPendingLocationUpdate(null);
+    
+    toast.info("Arrastraste la parada. Ahora puedes editar todas sus propiedades.");
+  };
+
+  // Cancelar actualización de ubicación
+  const handleCancelLocationUpdate = () => {
+    setLocationUpdateDialog(false);
+    setPendingLocationUpdate(null);
+    // No hacer nada más, mantener la ubicación original
   };
 
   // Validar distancia mínima entre paradas
@@ -1044,15 +1109,6 @@ const ParadasIndex = () => {
                           )}
                         />
                       </div>
-
-                      {selectedLocation && (
-                        <div className="bg-gray-50 p-2 rounded text-xs">
-                          <strong>Ubicación:</strong> {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
-                          <div className="text-blue-600 mt-1">
-                            Arrastra el pin en el mapa para ajustar la posición
-                          </div>
-                        </div>
-                      )}
                       
                       <div className="flex justify-end space-x-2 pt-2">
                         <Button variant="outline" type="button" onClick={handleClearForm} size="sm">
@@ -1115,6 +1171,31 @@ const ParadasIndex = () => {
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
               <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
                 Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Diálogo de confirmación para actualización de ubicación */}
+        <AlertDialog open={locationUpdateDialog} onOpenChange={setLocationUpdateDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Actualizar ubicación de parada</AlertDialogTitle>
+              <AlertDialogDescription>
+                Has movido la parada <strong>{pendingLocationUpdate?.parada.codigo}</strong> a una nueva ubicación.
+                <br /><br />
+                ¿Qué deseas hacer?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel onClick={handleCancelLocationUpdate}>
+                Cancelar
+              </AlertDialogCancel>
+              <Button onClick={handleUpdateLocationOnly} variant="outline">
+                Solo actualizar ubicación
+              </Button>
+              <AlertDialogAction onClick={handleEditFullParada}>
+                Editar todas las propiedades
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
