@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -219,7 +218,7 @@ const ProgramacionParametros = () => {
           onDeseleccionarTodos={onDeseleccionarTodos}
         />
 
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center py-2">
           <span className="text-sm text-gray-700">
             1 - 10 de {autobuses.length}
           </span>
