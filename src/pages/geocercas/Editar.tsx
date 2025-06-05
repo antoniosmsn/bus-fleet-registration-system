@@ -104,6 +104,13 @@ const EditarGeocerca = () => {
     toast.info('Puntos de geocerca eliminados');
   };
 
+  const handleRestaurarVertices = () => {
+    if (originalGeocerca) {
+      setVertices([...originalGeocerca.vertices]);
+      toast.info('Vértices originales restaurados');
+    }
+  };
+
   const handleLimpiarFormulario = () => {
     if (originalGeocerca) {
       setNombre(originalGeocerca.nombre);
@@ -118,7 +125,7 @@ const EditarGeocerca = () => {
     navigate('/geocercas');
   };
 
-  const handleGuardar = () => {
+  const handleGuardarCambios = () => {
     // Validate form
     if (!nombre.trim()) {
       toast.error('El nombre de la geocerca es obligatorio');
@@ -139,10 +146,25 @@ const EditarGeocerca = () => {
     // In a real app, you would send this data to your backend API
     console.log('Actualizando geocerca:', {
       id,
-      nombre,
+      nombreAnterior: originalGeocerca?.nombre,
+      nombreNuevo: nombre,
       vertices,
       usuario: 'Usuario actual', // This would come from auth context
       fechaHora: new Date().toISOString()
+    });
+
+    // Mock audit log entry
+    console.log('Bitácora de auditoría:', {
+      accion: 'Edición de geocerca',
+      geocercaId: id,
+      nombreAnterior: originalGeocerca?.nombre,
+      nombreNuevo: nombre,
+      usuario: 'Usuario actual',
+      fechaHora: new Date().toISOString(),
+      cambiosRealizados: {
+        nombre: originalGeocerca?.nombre !== nombre,
+        vertices: JSON.stringify(originalGeocerca?.vertices) !== JSON.stringify(vertices)
+      }
     });
 
     toast.success('Geocerca actualizada exitosamente');
@@ -194,8 +216,16 @@ const EditarGeocerca = () => {
                       onClick={handleLimpiarGeocerca}
                       disabled={vertices.length === 0}
                     >
-                      <RotateCcw className="mr-2 h-4 w-4" />
+                      <Trash2 className="mr-2 h-4 w-4" />
                       Limpiar geocerca
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleRestaurarVertices}
+                    >
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Restaurar vértices originales
                     </Button>
                   </div>
                 </div>
@@ -238,7 +268,7 @@ const EditarGeocerca = () => {
                       className="w-full"
                     />
                     <p className="text-xs text-gray-500">
-                      Máximo 100 caracteres. Debe ser único en el sistema.
+                      Máximo 100 caracteres. Debe ser único por zona franca.
                     </p>
                   </div>
 
@@ -264,7 +294,7 @@ const EditarGeocerca = () => {
                       onClick={handleLimpiarFormulario}
                       className="w-full"
                     >
-                      <Trash2 className="mr-2 h-4 w-4" />
+                      <RotateCcw className="mr-2 h-4 w-4" />
                       Restaurar Original
                     </Button>
                     <Button 
@@ -276,12 +306,12 @@ const EditarGeocerca = () => {
                       Cancelar
                     </Button>
                     <Button 
-                      onClick={handleGuardar}
+                      onClick={handleGuardarCambios}
                       disabled={!isSaveEnabled}
                       className="w-full"
                     >
                       <Save className="mr-2 h-4 w-4" />
-                      Actualizar
+                      Guardar cambios
                     </Button>
                   </div>
                 </CardContent>
