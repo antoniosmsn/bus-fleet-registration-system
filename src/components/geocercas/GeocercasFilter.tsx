@@ -18,7 +18,6 @@ const GeocercasFilter: React.FC<GeocercasFilterProps> = ({ onFilterChange }) => 
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded-md shadow mb-6">
-      <h3 className="font-medium mb-4">Filtros</h3>
       <div className="grid gap-4 md:grid-cols-3">
         <div>
           <label htmlFor="nombre" className="block text-sm font-medium mb-1">
