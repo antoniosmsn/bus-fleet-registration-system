@@ -170,6 +170,8 @@ const GeocercasIndex = () => {
 
   // Handle toggling a geocerca's active status
   const handleToggleActive = (id: string, active: boolean) => {
+    const geocerca = geocercas.find(g => g.id === id);
+    
     const updatedGeocercas = geocercas.map(g => 
       g.id === id ? { ...g, active } : g
     );
@@ -181,14 +183,22 @@ const GeocercasIndex = () => {
     );
     setFilteredGeocercas(updatedFiltered);
     
-    // Show toast notification
-    toast(active ? 'Geocerca activada' : 'Geocerca desactivada', {
-      description: `La geocerca "${updatedGeocercas.find(g => g.id === id)?.nombre}" ha sido ${active ? 'activada' : 'desactivada'}.`,
+    // Show toast notification with specific success message
+    const mensaje = active ? 'Geocerca activada correctamente' : 'Geocerca inactivada correctamente';
+    toast.success(mensaje, {
+      description: `La geocerca "${geocerca?.nombre}" ha sido ${active ? 'activada' : 'inactivada'}.`,
       duration: 3000,
     });
     
     // En una app real, aquí se registraría en la bitácora de auditoría
-    console.log('Audit: Usuario cambió estado de geocerca', id, active ? 'activo' : 'inactivo');
+    console.log('Audit: Usuario cambió estado de geocerca', {
+      geocercaId: id,
+      geocercaNombre: geocerca?.nombre,
+      estadoPrevio: active ? 'inactivo' : 'activo',
+      estadoNuevo: active ? 'activo' : 'inactivo',
+      usuario: 'Usuario actual',
+      fecha: new Date().toISOString()
+    });
   };
 
   return (

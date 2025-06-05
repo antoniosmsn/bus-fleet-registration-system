@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -11,6 +10,7 @@ import {
 import { MapPin, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';
 
 interface Vertex {
   lat: number;
@@ -39,6 +39,20 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
   onToggleActive,
   onEditGeocerca
 }) => {
+  const [dialogState, setDialogState] = useState<{
+    open: boolean;
+    geocercaId: string;
+    geocercaNombre: string;
+    estadoActual: boolean;
+    nuevoEstado: boolean;
+  }>({
+    open: false,
+    geocercaId: '',
+    geocercaNombre: '',
+    estadoActual: false,
+    nuevoEstado: false
+  });
+
   if (loading) {
     return (
       <div className="bg-white rounded-md shadow p-6">
@@ -61,12 +75,38 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
     );
   }
 
-  const handleToggleChange = (id: string, newActive: boolean) => {
+  const handleSwitchClick = (e: React.MouseEvent, geocerca: Geocerca) => {
+    e.stopPropagation();
+    const nuevoEstado = !geocerca.active;
+    
+    setDialogState({
+      open: true,
+      geocercaId: geocerca.id,
+      geocercaNombre: geocerca.nombre,
+      estadoActual: geocerca.active,
+      nuevoEstado
+    });
+  };
+
+  const handleConfirmarCambio = () => {
     if (onToggleActive) {
-      onToggleActive(id, newActive);
-      // En una app real, aquí se registraría en la bitácora de auditoría
-      console.log('Audit: Usuario cambió estado de geocerca', id, newActive ? 'activo' : 'inactivo');
+      const estadoPrevio = dialogState.estadoActual ? 'activo' : 'inactivo';
+      const estadoNuevo = dialogState.nuevoEstado ? 'activo' : 'inactivo';
+      
+      // Registrar en bitácora de auditoría
+      console.log('Audit: Usuario cambió estado de geocerca', {
+        geocercaId: dialogState.geocercaId,
+        geocercaNombre: dialogState.geocercaNombre,
+        estadoPrevio,
+        estadoNuevo,
+        usuario: 'Usuario actual', // En una app real, esto vendría del contexto de autenticación
+        fecha: new Date().toISOString()
+      });
+      
+      onToggleActive(dialogState.geocercaId, dialogState.nuevoEstado);
     }
+    
+    setDialogState(prev => ({ ...prev, open: false }));
   };
 
   const handleEditClick = (e: React.MouseEvent, id: string) => {
@@ -79,55 +119,65 @@ const GeocercasTable: React.FC<GeocercasTableProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-md shadow overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="w-24">Opciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {geocercas.map((geocerca) => (
-            <TableRow 
-              key={geocerca.id}
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => onSelectGeocerca && onSelectGeocerca(geocerca.id)}
-            >
-              <TableCell className="font-medium">{geocerca.nombre}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={geocerca.active}
-                    onCheckedChange={(checked) => handleToggleChange(geocerca.id, checked)}
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={geocerca.active ? "Desactivar geocerca" : "Activar geocerca"}
-                  />
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    geocerca.active 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {geocerca.active ? 'Activo' : 'Inactivo'}
-                  </span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Button
-                  variant="ghost" 
-                  size="sm"
-                  onClick={(e) => handleEditClick(e, geocerca.id)}
-                  aria-label="Editar geocerca"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </TableCell>
+    <>
+      <div className="bg-white rounded-md shadow overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="w-24">Opciones</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {geocercas.map((geocerca) => (
+              <TableRow 
+                key={geocerca.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => onSelectGeocerca && onSelectGeocerca(geocerca.id)}
+              >
+                <TableCell className="font-medium">{geocerca.nombre}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={geocerca.active}
+                      onCheckedChange={() => {}} // Manejado por onClick
+                      onClick={(e) => handleSwitchClick(e, geocerca)}
+                      aria-label={geocerca.active ? "Desactivar geocerca" : "Activar geocerca"}
+                    />
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      geocerca.active 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {geocerca.active ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => handleEditClick(e, geocerca.id)}
+                    aria-label="Editar geocerca"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <ConfirmarCambioEstadoDialog
+        open={dialogState.open}
+        onOpenChange={(open) => setDialogState(prev => ({ ...prev, open }))}
+        geocercaNombre={dialogState.geocercaNombre}
+        estadoActual={dialogState.estadoActual}
+        onConfirmar={handleConfirmarCambio}
+      />
+    </>
   );
 };
 
