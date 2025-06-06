@@ -13,7 +13,6 @@ const RegisterRuta = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold">Registrar Nueva Ruta</h1>
-            <p className="text-gray-500">Complete el formulario para registrar una nueva ruta en el sistema</p>
           </div>
           <Link to="/rutas">
             <Button variant="outline">
