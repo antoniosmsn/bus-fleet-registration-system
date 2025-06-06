@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -523,34 +524,34 @@ const RutaRegistrationForm = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Paradas Lists - Takes up 50% on large screens */}
-                  <div className="space-y-6">
+                  {/* Paradas Lists - Compact Layout */}
+                  <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Paradas Asignadas */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
-                        <div className="border rounded-lg p-4 h-[500px] overflow-y-auto">
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-3 h-[350px] overflow-y-auto">
                           {paradasAsignadas.length === 0 ? (
-                            <p className="text-center text-muted-foreground py-8">
+                            <p className="text-center text-muted-foreground py-6 text-sm">
                               No hay paradas asignadas
                             </p>
                           ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                               {paradasAsignadas.map((parada, index) => (
                                 <div
                                   key={parada.id}
                                   className="flex items-center justify-between p-2 bg-muted rounded-md"
                                 >
-                                  <div className="flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
                                       {index + 1}
                                     </div>
-                                    <div className="min-w-0">
-                                      <p className="font-medium text-sm truncate">{parada.nombre}</p>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-xs truncate">{parada.nombre}</p>
                                       <p className="text-xs text-muted-foreground">{parada.codigo}</p>
                                     </div>
                                   </div>
-                                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-0.5 flex-shrink-0">
                                     <Button
                                       type="button"
                                       variant="ghost"
@@ -589,26 +590,26 @@ const RutaRegistrationForm = () => {
                       </div>
 
                       {/* Paradas Disponibles */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Paradas Disponibles</h3>
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Paradas Disponibles</h3>
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
                           <Input
                             placeholder="Buscar paradas..."
                             value={busquedaParadas}
                             onChange={(e) => setBusquedaParadas(e.target.value)}
-                            className="pl-10"
+                            className="pl-8 h-8 text-sm"
                           />
                         </div>
-                        <div className="border rounded-lg p-4 h-[450px] overflow-y-auto">
-                          <div className="space-y-2">
+                        <div className="border rounded-lg p-3 h-[310px] overflow-y-auto">
+                          <div className="space-y-1.5">
                             {paradasFiltradas.map((parada) => (
                               <div
                                 key={parada.id}
                                 className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
                               >
-                                <div className="min-w-0">
-                                  <p className="font-medium text-sm truncate">{parada.nombre}</p>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-xs truncate">{parada.nombre}</p>
                                   <p className="text-xs text-muted-foreground">{parada.codigo}</p>
                                 </div>
                                 <Button
@@ -616,14 +617,14 @@ const RutaRegistrationForm = () => {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => agregarParada(parada)}
-                                  className="h-8 w-8 p-0"
+                                  className="h-6 w-6 p-0 flex-shrink-0"
                                 >
                                   <Plus className="h-3 w-3" />
                                 </Button>
                               </div>
                             ))}
                             {paradasFiltradas.length === 0 && (
-                              <p className="text-center text-muted-foreground py-8">
+                              <p className="text-center text-muted-foreground py-6 text-sm">
                                 No se encontraron paradas disponibles
                               </p>
                             )}
@@ -633,10 +634,10 @@ const RutaRegistrationForm = () => {
                     </div>
                   </div>
 
-                  {/* Map - Takes up 50% on large screens */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Mapa de Ruta</h3>
-                    <div className="border rounded-lg h-[500px]">
+                  {/* Map - Compact height */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-medium">Mapa de Ruta</h3>
+                    <div className="border rounded-lg h-[350px]">
                       <RutaMap 
                         paradas={paradasAsignadas}
                         geocercas={geocercasAsignadas}
@@ -671,34 +672,34 @@ const RutaRegistrationForm = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Geocercas Lists - Takes up 50% on large screens */}
-                  <div className="space-y-6">
+                  {/* Geocercas Lists - Compact Layout */}
+                  <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Geocercas Asignadas */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
-                        <div className="border rounded-lg p-4 h-[500px] overflow-y-auto">
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-3 h-[350px] overflow-y-auto">
                           {geocercasAsignadas.length === 0 ? (
-                            <p className="text-center text-muted-foreground py-8">
+                            <p className="text-center text-muted-foreground py-6 text-sm">
                               No hay geocercas asignadas
                             </p>
                           ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                               {geocercasAsignadas.map((geocerca, index) => (
                                 <div
                                   key={geocerca.id}
                                   className="flex items-center justify-between p-2 bg-muted rounded-md"
                                 >
-                                  <div className="flex items-center space-x-2">
-                                    <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
                                       {index + 1}
                                     </div>
-                                    <div className="min-w-0">
-                                      <p className="font-medium text-sm truncate">{geocerca.nombre}</p>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-xs truncate">{geocerca.nombre}</p>
                                       <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
                                     </div>
                                   </div>
-                                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-0.5 flex-shrink-0">
                                     <Button
                                       type="button"
                                       variant="ghost"
@@ -746,29 +747,29 @@ const RutaRegistrationForm = () => {
                       </div>
 
                       {/* Geocercas Disponibles */}
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-medium">Geocercas Disponibles</h3>
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Geocercas Disponibles</h3>
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
                           <Input
                             placeholder="Buscar geocercas..."
                             value={busquedaGeocercas}
                             onChange={(e) => setBusquedaGeocercas(e.target.value)}
-                            className="pl-10"
+                            className="pl-8 h-8 text-sm"
                           />
                         </div>
-                        <div className="border rounded-lg p-4 h-[450px] overflow-y-auto">
-                          <div className="space-y-2">
+                        <div className="border rounded-lg p-3 h-[310px] overflow-y-auto">
+                          <div className="space-y-1.5">
                             {geocercasFiltradas.map((geocerca) => (
                               <div
                                 key={geocerca.id}
                                 className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
                               >
-                                <div className="min-w-0">
-                                  <p className="font-medium text-sm truncate">{geocerca.nombre}</p>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-xs truncate">{geocerca.nombre}</p>
                                   <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
                                 </div>
-                                <div className="flex items-center space-x-1">
+                                <div className="flex items-center space-x-0.5 flex-shrink-0">
                                   <Button
                                     type="button"
                                     variant="ghost"
@@ -783,7 +784,7 @@ const RutaRegistrationForm = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => agregarGeocerca(geocerca)}
-                                    className="h-8 w-8 p-0"
+                                    className="h-6 w-6 p-0"
                                   >
                                     <Plus className="h-3 w-3" />
                                   </Button>
@@ -791,7 +792,7 @@ const RutaRegistrationForm = () => {
                               </div>
                             ))}
                             {geocercasFiltradas.length === 0 && (
-                              <p className="text-center text-muted-foreground py-8">
+                              <p className="text-center text-muted-foreground py-6 text-sm">
                                 No se encontraron geocercas disponibles
                               </p>
                             )}
@@ -801,10 +802,10 @@ const RutaRegistrationForm = () => {
                     </div>
                   </div>
 
-                  {/* Map - Takes up 50% on large screens */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Mapa de Ruta</h3>
-                    <div className="border rounded-lg h-[500px]">
+                  {/* Map - Compact height */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-medium">Mapa de Ruta</h3>
+                    <div className="border rounded-lg h-[350px]">
                       <RutaMap 
                         paradas={paradasAsignadas}
                         geocercas={geocercasAsignadas}
