@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -522,117 +523,119 @@ const RutaRegistrationForm = () => {
                 <CardDescription>Seleccione y ordene las paradas de la ruta (mínimo 2)</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                  {/* Paradas Lists */}
-                  <div className="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Paradas Asignadas (Izquierda) */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
-                      <div className="border rounded-lg p-4 min-h-[400px]">
-                        {paradasAsignadas.length === 0 ? (
-                          <p className="text-center text-muted-foreground py-8">
-                            No hay paradas asignadas
-                          </p>
-                        ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Paradas Lists - Takes up 50% on large screens */}
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Paradas Asignadas */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                          {paradasAsignadas.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-8">
+                              No hay paradas asignadas
+                            </p>
+                          ) : (
+                            <div className="space-y-2">
+                              {paradasAsignadas.map((parada, index) => (
+                                <div
+                                  key={parada.id}
+                                  className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                                      {index + 1}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="font-medium text-sm truncate">{parada.nombre}</p>
+                                      <p className="text-xs text-muted-foreground">{parada.codigo}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => subirParada(index)}
+                                      disabled={index === 0}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => bajarParada(index)}
+                                      disabled={index === paradasAsignadas.length - 1}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronDown className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => eliminarParada(parada.id)}
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Paradas Disponibles */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium">Paradas Disponibles</h3>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                          <Input
+                            placeholder="Buscar paradas..."
+                            value={busquedaParadas}
+                            onChange={(e) => setBusquedaParadas(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
                           <div className="space-y-2">
-                            {paradasAsignadas.map((parada, index) => (
+                            {paradasFiltradas.map((parada) => (
                               <div
                                 key={parada.id}
-                                className="flex items-center justify-between p-3 bg-muted rounded-md"
+                                className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
                               >
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                                    {index + 1}
-                                  </div>
-                                  <div>
-                                    <p className="font-medium">{parada.nombre}</p>
-                                    <p className="text-sm text-muted-foreground">{parada.codigo}</p>
-                                  </div>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-sm truncate">{parada.nombre}</p>
+                                  <p className="text-xs text-muted-foreground">{parada.codigo}</p>
                                 </div>
-                                <div className="flex items-center space-x-1">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => subirParada(index)}
-                                    disabled={index === 0}
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <ChevronUp className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => bajarParada(index)}
-                                    disabled={index === paradasAsignadas.length - 1}
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <ChevronDown className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => eliminarParada(parada.id)}
-                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => agregarParada(parada)}
+                                  className="h-8 text-xs"
+                                >
+                                  <Plus className="h-3 w-3 mr-1" />
+                                  Agregar
+                                </Button>
                               </div>
                             ))}
+                            {paradasFiltradas.length === 0 && (
+                              <p className="text-center text-muted-foreground py-8">
+                                No se encontraron paradas disponibles
+                              </p>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Paradas Disponibles (Derecha) */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Paradas Disponibles</h3>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                        <Input
-                          placeholder="Buscar paradas..."
-                          value={busquedaParadas}
-                          onChange={(e) => setBusquedaParadas(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      <div className="border rounded-lg p-4 min-h-[400px] max-h-[400px] overflow-y-auto">
-                        <div className="space-y-2">
-                          {paradasFiltradas.map((parada) => (
-                            <div
-                              key={parada.id}
-                              className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50"
-                            >
-                              <div>
-                                <p className="font-medium">{parada.nombre}</p>
-                                <p className="text-sm text-muted-foreground">{parada.codigo}</p>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => agregarParada(parada)}
-                                className="h-8"
-                              >
-                                <Plus className="h-4 w-4 mr-1" />
-                                Agregar
-                              </Button>
-                            </div>
-                          ))}
-                          {paradasFiltradas.length === 0 && (
-                            <p className="text-center text-muted-foreground py-8">
-                              No se encontraron paradas disponibles
-                            </p>
-                          )}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Map */}
+                  {/* Map - Takes up 50% on large screens */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[500px]">
@@ -669,32 +672,103 @@ const RutaRegistrationForm = () => {
                 <CardDescription>Seleccione las geocercas para la ruta (mínimo 2)</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                  {/* Geocercas Lists */}
-                  <div className="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Geocercas Asignadas (Izquierda) */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
-                      <div className="border rounded-lg p-4 min-h-[400px]">
-                        {geocercasAsignadas.length === 0 ? (
-                          <p className="text-center text-muted-foreground py-8">
-                            No hay geocercas asignadas
-                          </p>
-                        ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Geocercas Lists - Takes up 50% on large screens */}
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Geocercas Asignadas */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                          {geocercasAsignadas.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-8">
+                              No hay geocercas asignadas
+                            </p>
+                          ) : (
+                            <div className="space-y-2">
+                              {geocercasAsignadas.map((geocerca, index) => (
+                                <div
+                                  key={geocerca.id}
+                                  className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                                      {index + 1}
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="font-medium text-sm truncate">{geocerca.nombre}</p>
+                                      <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => verGeocerca(geocerca)}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <Eye className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => subirGeocerca(index)}
+                                      disabled={index === 0}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => bajarGeocerca(index)}
+                                      disabled={index === geocercasAsignadas.length - 1}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronDown className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => eliminarGeocerca(geocerca.id)}
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Geocercas Disponibles */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-medium">Geocercas Disponibles</h3>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                          <Input
+                            placeholder="Buscar geocercas..."
+                            value={busquedaGeocercas}
+                            onChange={(e) => setBusquedaGeocercas(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
                           <div className="space-y-2">
-                            {geocercasAsignadas.map((geocerca, index) => (
+                            {geocercasFiltradas.map((geocerca) => (
                               <div
                                 key={geocerca.id}
-                                className="flex items-center justify-between p-3 bg-muted rounded-md"
+                                className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
                               >
-                                <div className="flex items-center space-x-3">
-                                  <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                                    {index + 1}
-                                  </div>
-                                  <div>
-                                    <p className="font-medium">{geocerca.nombre}</p>
-                                    <p className="text-sm text-muted-foreground">{geocerca.codigo}</p>
-                                  </div>
+                                <div className="min-w-0">
+                                  <p className="font-medium text-sm truncate">{geocerca.nombre}</p>
+                                  <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <Button
@@ -702,104 +776,35 @@ const RutaRegistrationForm = () => {
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => verGeocerca(geocerca)}
-                                    className="h-8 w-8 p-0"
+                                    className="h-6 w-6 p-0"
                                   >
-                                    <Eye className="h-4 w-4" />
+                                    <Eye className="h-3 w-3" />
                                   </Button>
                                   <Button
                                     type="button"
-                                    variant="ghost"
+                                    variant="outline"
                                     size="sm"
-                                    onClick={() => subirGeocerca(index)}
-                                    disabled={index === 0}
-                                    className="h-8 w-8 p-0"
+                                    onClick={() => agregarGeocerca(geocerca)}
+                                    className="h-8 text-xs"
                                   >
-                                    <ChevronUp className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => bajarGeocerca(index)}
-                                    disabled={index === geocercasAsignadas.length - 1}
-                                    className="h-8 w-8 p-0"
-                                  >
-                                    <ChevronDown className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => eliminarGeocerca(geocerca.id)}
-                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Plus className="h-3 w-3 mr-1" />
+                                    Agregar
                                   </Button>
                                 </div>
                               </div>
                             ))}
+                            {geocercasFiltradas.length === 0 && (
+                              <p className="text-center text-muted-foreground py-8">
+                                No se encontraron geocercas disponibles
+                              </p>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Geocercas Disponibles (Derecha) */}
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Geocercas Disponibles</h3>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                        <Input
-                          placeholder="Buscar geocercas..."
-                          value={busquedaGeocercas}
-                          onChange={(e) => setBusquedaGeocercas(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      <div className="border rounded-lg p-4 min-h-[400px] max-h-[400px] overflow-y-auto">
-                        <div className="space-y-2">
-                          {geocercasFiltradas.map((geocerca) => (
-                            <div
-                              key={geocerca.id}
-                              className="flex items-center justify-between p-3 border rounded-md hover:bg-muted/50"
-                            >
-                              <div>
-                                <p className="font-medium">{geocerca.nombre}</p>
-                                <p className="text-sm text-muted-foreground">{geocerca.codigo}</p>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => verGeocerca(geocerca)}
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => agregarGeocerca(geocerca)}
-                                  className="h-8"
-                                >
-                                  <Plus className="h-4 w-4 mr-1" />
-                                  Agregar
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                          {geocercasFiltradas.length === 0 && (
-                            <p className="text-center text-muted-foreground py-8">
-                              No se encontraron geocercas disponibles
-                            </p>
-                          )}
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Map */}
+                  {/* Map - Takes up 50% on large screens */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[500px]">
