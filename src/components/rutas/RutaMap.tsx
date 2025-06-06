@@ -43,8 +43,8 @@ const getRandomColor = (id: string) => {
   return colors[index];
 };
 
-// Create icons with better error handling
-const createCustomIcon = (color: string) => {
+// Create safe custom icons with proper error handling
+const createSafeIcon = (color: string) => {
   try {
     return new L.Icon({
       iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
@@ -56,8 +56,34 @@ const createCustomIcon = (color: string) => {
     });
   } catch (error) {
     console.warn(`Failed to create custom icon for color ${color}, using default`);
-    return new L.Icon.Default();
+    // Return a safe default icon
+    return new L.Icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
   }
+};
+
+// Create icons with lazy initialization and fallbacks
+let startIcon: L.Icon | null = null;
+let endIcon: L.Icon | null = null;
+
+const getStartIcon = () => {
+  if (!startIcon) {
+    startIcon = createSafeIcon('green');
+  }
+  return startIcon;
+};
+
+const getEndIcon = () => {
+  if (!endIcon) {
+    endIcon = createSafeIcon('red');
+  }
+  return endIcon;
 };
 
 export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
@@ -73,17 +99,18 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
     
     if (points.length === 0) return null;
     
-    return L.latLngBounds(points);
+    try {
+      return L.latLngBounds(points);
+    } catch (error) {
+      console.warn('Error creating bounds:', error);
+      return null;
+    }
   };
 
   // Create polyline from stops in order
   const rutaPolyline = paradas.length >= 2 ? 
     paradas.map(p => [p.lat, p.lng] as [number, number]) : 
     [];
-
-  // Create icons with lazy initialization
-  const getStartIcon = () => createCustomIcon('green');
-  const getEndIcon = () => createCustomIcon('red');
 
   return (
     <MapContainer 
@@ -133,12 +160,17 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
         const isEnd = index === paradas.length - 1;
         
         let icon;
-        if (isStart) {
-          icon = getStartIcon();
-        } else if (isEnd) {
-          icon = getEndIcon();
-        } else {
-          icon = undefined; // Use default icon
+        try {
+          if (isStart) {
+            icon = getStartIcon();
+          } else if (isEnd) {
+            icon = getEndIcon();
+          } else {
+            icon = undefined; // Use default icon
+          }
+        } catch (error) {
+          console.warn('Error creating icon for parada:', parada.nombre, error);
+          icon = undefined; // Fallback to default
         }
         
         return (
