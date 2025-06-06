@@ -125,14 +125,18 @@ const ramales = [
   { value: 'R3', label: 'Ramal 3' },
 ];
 
-// Define el esquema de validación para el formulario (sin estado)
+// Define el esquema de validación para el formulario
 const formSchema = z.object({
   pais: z.string({ required_error: 'El país es obligatorio' }),
   provincia: z.string({ required_error: 'La provincia es obligatoria' }),
   canton: z.string({ required_error: 'El cantón es obligatorio' }),
   distrito: z.string({ required_error: 'El distrito es obligatorio' }),
-  sector: z.string().max(100, 'El sector no puede exceder 100 caracteres').min(1, 'El sector es obligatorio'),
-  ramal: z.string().max(100, 'El ramal no puede exceder 100 caracteres').min(1, 'El ramal es obligatorio'),
+  sector: z.string()
+    .min(1, 'El sector es obligatorio')
+    .max(100, 'El sector no puede exceder 100 caracteres'),
+  ramal: z.string()
+    .min(1, 'El ramal es obligatorio')
+    .max(100, 'El ramal no puede exceder 100 caracteres'),
   tipoRuta: z.string({ required_error: 'El tipo de ruta es obligatorio' }),
 });
 
@@ -146,7 +150,7 @@ const RutaRegistrationForm = () => {
   const [busquedaParadas, setBusquedaParadas] = useState('');
   const [busquedaGeocercas, setBusquedaGeocercas] = useState('');
 
-  // Inicializar el formulario (sin estado)
+  // Inicializar el formulario
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -240,7 +244,14 @@ const RutaRegistrationForm = () => {
 
   // Manejar el envío del formulario
   const onSubmit = (data: FormValues) => {
-    // Validaciones según criterios de aceptación
+    // Validar que todos los campos estén completos
+    if (!data.pais || !data.provincia || !data.canton || !data.distrito || 
+        !data.sector || !data.ramal || !data.tipoRuta) {
+      toast.error('Todos los campos son obligatorios');
+      return;
+    }
+
+    // Validar al menos 2 paradas y 2 geocercas
     if (paradasAsignadas.length < 2) {
       toast.error('Debe agregar al menos 2 paradas');
       return;
@@ -258,22 +269,33 @@ const RutaRegistrationForm = () => {
       paradaInicial: paradasAsignadas[0],
       paradaFinal: paradasAsignadas[paradasAsignadas.length - 1],
       geocercas: geocercasAsignadas,
+      fechaRegistro: new Date().toISOString(),
     };
 
     // En una aplicación real, aquí se enviaría a la API
     console.log('Nueva ruta a registrar:', nuevaRuta);
     
     // Registrar en bitácora de auditoría
-    console.log('Audit: Usuario registró una nueva ruta', {
+    const auditLog = {
       accion: 'Registro de ruta',
       usuario: 'Usuario actual', // En una app real, obtener del contexto
       fecha: new Date().toISOString(),
-      datos: data,
-      paradas: paradasAsignadas.map(p => p.nombre),
-      geocercas: geocercasAsignadas.map(g => g.nombre)
-    });
+      datosIngresados: {
+        ubicacion: `${data.pais}/${data.provincia}/${data.canton}/${data.distrito}`,
+        sector: data.sector,
+        ramal: data.ramal,
+        tipoRuta: data.tipoRuta
+      },
+      nombresParadas: paradasAsignadas.map(p => p.nombre),
+      nombresGeocercas: geocercasAsignadas.map(g => g.nombre)
+    };
+    
+    console.log('Registro en bitácora de auditoría:', auditLog);
 
+    // Mostrar mensaje de éxito
     toast.success('Ruta registrada correctamente');
+    
+    // Navegar de regreso al listado
     navigate('/rutas');
   };
 
@@ -414,23 +436,13 @@ const RutaRegistrationForm = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Sector</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar sector" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {sectores.map((sector) => (
-                              <SelectItem key={sector.value} value={sector.value}>
-                                {sector.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ingrese el sector"
+                            maxLength={100}
+                            {...field}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -441,23 +453,13 @@ const RutaRegistrationForm = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Ramal</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar ramal" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {ramales.map((ramal) => (
-                              <SelectItem key={ramal.value} value={ramal.value}>
-                                {ramal.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ingrese el ramal"
+                            maxLength={100}
+                            {...field}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -819,7 +821,7 @@ const RutaRegistrationForm = () => {
                 </Button>
                 <Button type="submit">
                   <Save className="mr-2 h-4 w-4" />
-                  Guardar Ruta
+                  Guardar
                 </Button>
               </CardFooter>
             </Card>
