@@ -304,7 +304,7 @@ const RutaRegistrationForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Tabs defaultValue="general" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-4 w-full sm:w-auto">
+          <TabsList className="mb-4 grid grid-cols-3 w-full max-w-md">
             <TabsTrigger value="general">Información General</TabsTrigger>
             <TabsTrigger value="paradas">Paradas</TabsTrigger>
             <TabsTrigger value="geocercas">Geocercas</TabsTrigger>
