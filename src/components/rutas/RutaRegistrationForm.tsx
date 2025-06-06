@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -530,7 +529,7 @@ const RutaRegistrationForm = () => {
                       {/* Paradas Asignadas */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
-                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                        <div className="border rounded-lg p-4 h-[500px] overflow-y-auto">
                           {paradasAsignadas.length === 0 ? (
                             <p className="text-center text-muted-foreground py-8">
                               No hay paradas asignadas
@@ -601,7 +600,7 @@ const RutaRegistrationForm = () => {
                             className="pl-10"
                           />
                         </div>
-                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                        <div className="border rounded-lg p-4 h-[450px] overflow-y-auto">
                           <div className="space-y-2">
                             {paradasFiltradas.map((parada) => (
                               <div
@@ -679,7 +678,7 @@ const RutaRegistrationForm = () => {
                       {/* Geocercas Asignadas */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
-                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                        <div className="border rounded-lg p-4 h-[500px] overflow-y-auto">
                           {geocercasAsignadas.length === 0 ? (
                             <p className="text-center text-muted-foreground py-8">
                               No hay geocercas asignadas
@@ -759,7 +758,7 @@ const RutaRegistrationForm = () => {
                             className="pl-10"
                           />
                         </div>
-                        <div className="border rounded-lg p-4 min-h-[300px] max-h-[400px] overflow-y-auto">
+                        <div className="border rounded-lg p-4 h-[450px] overflow-y-auto">
                           <div className="space-y-2">
                             {geocercasFiltradas.map((geocerca) => (
                               <div
