@@ -43,28 +43,6 @@ const getRandomColor = (id: string) => {
   return colors[index];
 };
 
-// Create safe icons with proper error handling - simplified approach
-const createSafeIcon = (color: string) => {
-  try {
-    return new L.Icon({
-      iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
-      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
-  } catch (error) {
-    console.warn(`Failed to create custom icon for color ${color}, using default`);
-    // Return undefined to use default icon
-    return undefined;
-  }
-};
-
-// Pre-create icons safely
-const startIcon = createSafeIcon('green');
-const endIcon = createSafeIcon('red');
-
 export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
   // Center the map initially on Costa Rica
   const center: [number, number] = [9.9333, -84.0833];
@@ -133,29 +111,15 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
         />
       )}
       
-      {/* Render paradas markers */}
+      {/* Render paradas markers - using only default icons to avoid errors */}
       {paradas.map((parada, index) => {
         const isStart = index === 0;
         const isEnd = index === paradas.length - 1;
-        
-        let icon = undefined; // Default to undefined for default icon
-        
-        try {
-          if (isStart && startIcon) {
-            icon = startIcon;
-          } else if (isEnd && endIcon) {
-            icon = endIcon;
-          }
-        } catch (error) {
-          console.warn('Error assigning icon for parada:', parada.nombre, error);
-          icon = undefined; // Fallback to default
-        }
         
         return (
           <Marker
             key={parada.id}
             position={[parada.lat, parada.lng]}
-            icon={icon}
           >
             <Popup>
               <div className="text-sm">
