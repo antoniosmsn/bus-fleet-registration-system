@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -769,26 +768,15 @@ const RutaRegistrationForm = () => {
                                   <p className="font-medium text-xs truncate">{geocerca.nombre}</p>
                                   <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
                                 </div>
-                                <div className="flex items-center space-x-0.5 flex-shrink-0">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => verGeocerca(geocerca)}
-                                    className="h-6 w-6 p-0"
-                                  >
-                                    <Eye className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => agregarGeocerca(geocerca)}
-                                    className="h-6 w-6 p-0"
-                                  >
-                                    <Plus className="h-3 w-3" />
-                                  </Button>
-                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => agregarGeocerca(geocerca)}
+                                  className="h-6 w-6 p-0 flex-shrink-0"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
                               </div>
                             ))}
                             {geocercasFiltradas.length === 0 && (
