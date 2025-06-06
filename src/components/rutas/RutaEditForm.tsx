@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, Map } from 'lucide-react';
+import { Save, ChevronUp, ChevronDown, Plus, Trash2, Search } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,17 +23,20 @@ const tiposRuta = [
 
 // Mock data para paradas
 const paradasDisponibles = [
-  { id: '1', nombre: 'Parada Principal', lat: 9.932, lng: -84.079 },
-  { id: '2', nombre: 'Terminal Norte', lat: 9.938, lng: -84.083 },
-  { id: '3', nombre: 'Sector A', lat: 9.935, lng: -84.076 },
-  { id: '4', nombre: 'Sector B', lat: 9.931, lng: -84.071 },
-  { id: '5', nombre: 'Terminal Sur', lat: 9.928, lng: -84.080 },
+  { id: '1', codigo: 'PARA-001', nombre: 'Parada Principal', lat: 9.932, lng: -84.079 },
+  { id: '2', codigo: 'PARA-002', nombre: 'Terminal Norte', lat: 9.938, lng: -84.083 },
+  { id: '3', codigo: 'PARA-003', nombre: 'Sector A', lat: 9.935, lng: -84.076 },
+  { id: '4', codigo: 'PARA-004', nombre: 'Sector B', lat: 9.931, lng: -84.071 },
+  { id: '5', codigo: 'PARA-005', nombre: 'Terminal Sur', lat: 9.928, lng: -84.080 },
+  { id: '6', codigo: 'PARA-006', nombre: 'Centro Comercial', lat: 9.925, lng: -84.085 },
+  { id: '7', codigo: 'PARA-007', nombre: 'Universidad', lat: 9.940, lng: -84.070 },
 ];
 
 // Mock data para geocercas
 const geocercasDisponibles = [
   {
     id: '1',
+    codigo: 'GEO-001',
     nombre: 'LLANO ARRIBA',
     vertices: [
       { lat: 9.935, lng: -84.105 },
@@ -44,6 +47,7 @@ const geocercasDisponibles = [
   },
   {
     id: '2',
+    codigo: 'GEO-002',
     nombre: 'LLANO DE CONE',
     vertices: [
       { lat: 9.940, lng: -84.110 },
@@ -55,11 +59,23 @@ const geocercasDisponibles = [
   },
   {
     id: '3',
+    codigo: 'GEO-003',
     nombre: 'PARQUE LOGÍSTICO NORTE',
     vertices: [
       { lat: 9.948, lng: -84.098 },
       { lat: 9.952, lng: -84.102 },
       { lat: 9.950, lng: -84.105 },
+    ],
+    active: true
+  },
+  {
+    id: '4',
+    codigo: 'GEO-004',
+    nombre: 'ZONA INDUSTRIAL',
+    vertices: [
+      { lat: 9.920, lng: -84.095 },
+      { lat: 9.925, lng: -84.090 },
+      { lat: 9.922, lng: -84.087 },
     ],
     active: true
   },
@@ -116,11 +132,13 @@ const formSchema = z.object({
   provincia: z.string({ required_error: 'La provincia es obligatoria' }),
   canton: z.string({ required_error: 'El cantón es obligatorio' }),
   distrito: z.string({ required_error: 'El distrito es obligatorio' }),
-  sector: z.string({ required_error: 'El sector es obligatorio' }),
-  ramal: z.string({ required_error: 'El ramal es obligatorio' }),
+  sector: z.string()
+    .min(1, 'El sector es obligatorio')
+    .max(100, 'El sector no puede exceder 100 caracteres'),
+  ramal: z.string()
+    .min(1, 'El ramal es obligatorio')
+    .max(100, 'El ramal no puede exceder 100 caracteres'),
   tipoRuta: z.string({ required_error: 'El tipo de ruta es obligatorio' }),
-  paradas: z.array(z.string()).min(2, 'Debe seleccionar al menos 2 paradas'),
-  geocercas: z.array(z.string()).min(1, 'Debe seleccionar al menos una geocerca')
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -132,123 +150,176 @@ interface RutaEditFormProps {
 const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
-  const [paradasSeleccionadas, setParadasSeleccionadas] = useState<string[]>([]);
-  const [geocercasSeleccionadas, setGeocercasSeleccionadas] = useState<string[]>([]);
-  const [paradasOrdenadas, setParadasOrdenadas] = useState<any[]>([]);
+  const [paradasAsignadas, setParadasAsignadas] = useState<any[]>([]);
+  const [geocercasAsignadas, setGeocercasAsignadas] = useState<any[]>([]);
+  const [busquedaParadas, setBusquedaParadas] = useState('');
+  const [busquedaGeocercas, setBusquedaGeocercas] = useState('');
 
   // Inicializar el formulario con los datos de la ruta
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       pais: rutaData.pais === 'Costa Rica' ? 'CR' : '',
-      provincia: 'SJ',
-      canton: 'SJ',
-      distrito: 'CA',
-      sector: 'ZF',
-      ramal: 'R1',
+      provincia: rutaData.provincia === 'San José' ? 'SJ' : '',
+      canton: rutaData.canton === 'San José' ? 'SJ' : '',
+      distrito: rutaData.distrito === 'El Carmen' ? 'CA' : '',
+      sector: rutaData.sector || '',
+      ramal: rutaData.ramal || '',
       tipoRuta: rutaData.tipoRuta || 'privada',
-      paradas: [],
-      geocercas: []
     }
   });
 
-  // Cargar paradas y geocercas seleccionadas inicialmente
+  // Cargar paradas y geocercas asignadas inicialmente
   useEffect(() => {
     if (rutaData.paradas && rutaData.paradas.length > 0) {
-      const paradasIds = rutaData.paradas.map((p: any) => p.id);
-      setParadasSeleccionadas(paradasIds);
-      setParadasOrdenadas(rutaData.paradas);
+      setParadasAsignadas(rutaData.paradas);
     }
 
     if (rutaData.geocercas && rutaData.geocercas.length > 0) {
-      const geocercasIds = rutaData.geocercas.map((g: any) => g.id);
-      setGeocercasSeleccionadas(geocercasIds);
+      setGeocercasAsignadas(rutaData.geocercas);
     }
   }, [rutaData]);
 
-  // Actualizar paradas ordenadas cuando cambie la selección
-  useEffect(() => {
-    const paradas = paradasSeleccionadas.map(id => 
-      paradasDisponibles.find(parada => parada.id === id)
-    ).filter(Boolean);
-    setParadasOrdenadas(paradas as any[]);
-  }, [paradasSeleccionadas]);
+  // Filtrar paradas disponibles
+  const paradasFiltradas = paradasDisponibles.filter(parada => 
+    !paradasAsignadas.find(p => p.id === parada.id) &&
+    (parada.nombre.toLowerCase().includes(busquedaParadas.toLowerCase()) ||
+     parada.codigo.toLowerCase().includes(busquedaParadas.toLowerCase()))
+  );
 
-  // Actualizar el formulario cuando cambian las selecciones
-  useEffect(() => {
-    form.setValue('paradas', paradasSeleccionadas);
-  }, [paradasSeleccionadas, form]);
+  // Filtrar geocercas disponibles
+  const geocercasFiltradas = geocercasDisponibles.filter(geocerca => 
+    !geocercasAsignadas.find(g => g.id === geocerca.id) &&
+    (geocerca.nombre.toLowerCase().includes(busquedaGeocercas.toLowerCase()) ||
+     geocerca.codigo.toLowerCase().includes(busquedaGeocercas.toLowerCase()))
+  );
 
-  useEffect(() => {
-    form.setValue('geocercas', geocercasSeleccionadas);
-  }, [geocercasSeleccionadas, form]);
+  // Funciones para manejar paradas
+  const agregarParada = (parada: any) => {
+    setParadasAsignadas(prev => [...prev, parada]);
+  };
+
+  const eliminarParada = (paradaId: string) => {
+    setParadasAsignadas(prev => prev.filter(p => p.id !== paradaId));
+  };
+
+  const subirParada = (index: number) => {
+    if (index > 0) {
+      setParadasAsignadas(prev => {
+        const newList = [...prev];
+        [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
+        return newList;
+      });
+    }
+  };
+
+  const bajarParada = (index: number) => {
+    if (index < paradasAsignadas.length - 1) {
+      setParadasAsignadas(prev => {
+        const newList = [...prev];
+        [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+        return newList;
+      });
+    }
+  };
+
+  // Funciones para manejar geocercas
+  const agregarGeocerca = (geocerca: any) => {
+    setGeocercasAsignadas(prev => [...prev, geocerca]);
+  };
+
+  const eliminarGeocerca = (geocercaId: string) => {
+    setGeocercasAsignadas(prev => prev.filter(g => g.id !== geocercaId));
+  };
+
+  const subirGeocerca = (index: number) => {
+    if (index > 0) {
+      setGeocercasAsignadas(prev => {
+        const newList = [...prev];
+        [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
+        return newList;
+      });
+    }
+  };
+
+  const bajarGeocerca = (index: number) => {
+    if (index < geocercasAsignadas.length - 1) {
+      setGeocercasAsignadas(prev => {
+        const newList = [...prev];
+        [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+        return newList;
+      });
+    }
+  };
 
   // Manejar el envío del formulario
   const onSubmit = (data: FormValues) => {
-    if (paradasSeleccionadas.length < 2) {
-      toast.error('Debe seleccionar al menos 2 paradas');
+    // Validar que todos los campos estén completos
+    if (!data.pais || !data.provincia || !data.canton || !data.distrito || 
+        !data.sector || !data.ramal || !data.tipoRuta) {
+      toast.error('Todos los campos son obligatorios');
       return;
     }
 
-    if (geocercasSeleccionadas.length < 1) {
-      toast.error('Debe seleccionar al menos una geocerca');
+    // Validar al menos 2 paradas y 2 geocercas
+    if (paradasAsignadas.length < 2) {
+      toast.error('Debe agregar al menos 2 paradas');
       return;
     }
 
-    // Construir la ruta con todos los datos actualizados
+    if (geocercasAsignadas.length < 2) {
+      toast.error('Debe agregar al menos 2 geocercas');
+      return;
+    }
+
+    // Construir la ruta actualizada con todos los datos
     const rutaActualizada = {
       id: rutaData.id,
       ...data,
-      estado: rutaData.estado, // Mantener el estado actual de la ruta
-      paradas: paradasOrdenadas,
-      paradaInicial: paradasOrdenadas[0],
-      paradaFinal: paradasOrdenadas[paradasOrdenadas.length - 1],
-      geocercas: geocercasSeleccionadas.map(id => 
-        geocercasDisponibles.find(geo => geo.id === id)
-      ),
+      estado: rutaData.estado, // Mantener el estado actual
+      paradas: paradasAsignadas,
+      paradaInicial: paradasAsignadas[0],
+      paradaFinal: paradasAsignadas[paradasAsignadas.length - 1],
+      geocercas: geocercasAsignadas,
+      fechaModificacion: new Date().toISOString(),
     };
 
     // En una aplicación real, aquí se enviaría a la API
     console.log('Ruta actualizada:', rutaActualizada);
     
-    // En una app real, aquí se registraría en la bitácora de auditoría
-    console.log('Audit: Usuario actualizó la ruta con ID:', rutaData.id);
+    // Registrar en bitácora de auditoría
+    const auditLog = {
+      accion: 'Edición de ruta',
+      usuario: 'Usuario actual', // En una app real, obtener del contexto
+      fecha: new Date().toISOString(),
+      rutaId: rutaData.id,
+      datosModificados: {
+        ubicacion: `${data.pais}/${data.provincia}/${data.canton}/${data.distrito}`,
+        sector: data.sector,
+        ramal: data.ramal,
+        tipoRuta: data.tipoRuta
+      },
+      nombresParadas: paradasAsignadas.map(p => p.nombre),
+      nombresGeocercas: geocercasAsignadas.map(g => g.nombre)
+    };
+    
+    console.log('Registro en bitácora de auditoría:', auditLog);
 
+    // Mostrar mensaje de éxito
     toast.success('Ruta actualizada correctamente');
+    
+    // Navegar de regreso al listado
     navigate('/rutas');
-  };
-
-  // Manejar selección de paradas
-  const handleParadaToggle = (paradaId: string) => {
-    setParadasSeleccionadas(prev => {
-      const isSelected = prev.includes(paradaId);
-      if (isSelected) {
-        return prev.filter(id => id !== paradaId);
-      } else {
-        return [...prev, paradaId];
-      }
-    });
-  };
-
-  // Manejar selección de geocercas
-  const handleGeocercaToggle = (geocercaId: string) => {
-    setGeocercasSeleccionadas(prev => {
-      const isSelected = prev.includes(geocercaId);
-      if (isSelected) {
-        return prev.filter(id => id !== geocercaId);
-      } else {
-        return [...prev, geocercaId];
-      }
-    });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Tabs defaultValue="general" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 grid grid-cols-3 w-full max-w-md">
             <TabsTrigger value="general">Información General</TabsTrigger>
-            <TabsTrigger value="mapa">Paradas</TabsTrigger>
+            <TabsTrigger value="paradas">Paradas</TabsTrigger>
+            <TabsTrigger value="geocercas">Geocercas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general">
@@ -378,23 +449,13 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Sector</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar sector" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {sectores.map((sector) => (
-                              <SelectItem key={sector.value} value={sector.value}>
-                                {sector.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ingrese el sector"
+                            maxLength={100}
+                            {...field}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -405,23 +466,13 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="required-field">Ramal</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Seleccionar ramal" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {ramales.map((ramal) => (
-                              <SelectItem key={ramal.value} value={ramal.value}>
-                                {ramal.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input 
+                            placeholder="Ingrese el ramal"
+                            maxLength={100}
+                            {...field}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -429,7 +480,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                 </div>
                 
                 {/* Tercera fila: Tipo de Ruta */}
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="tipoRuta"
@@ -459,7 +510,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                   />
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
+              <CardFooter className="flex justify-end space-x-2">
                 <Button
                   type="button"
                   variant="secondary"
@@ -469,117 +520,306 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                 </Button>
                 <Button
                   type="button"
-                  onClick={() => setActiveTab('mapa')}
+                  onClick={() => setActiveTab('paradas')}
                 >
-                  Continuar <Map className="ml-2 h-4 w-4" />
+                  Continuar
                 </Button>
               </CardFooter>
             </Card>
           </TabsContent>
 
-          <TabsContent value="mapa">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-1">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Paradas</CardTitle>
-                    <CardDescription>Editar las paradas asignadas a la ruta</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Paradas Disponibles</h3>
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {paradasDisponibles.map((parada) => (
-                          <div
-                            key={parada.id}
-                            className={`flex items-center p-2 rounded-md cursor-pointer ${
-                              paradasSeleccionadas.includes(parada.id) ? 'bg-primary/10' : 'hover:bg-muted'
-                            }`}
-                            onClick={() => handleParadaToggle(parada.id)}
-                          >
-                            <div className={`w-4 h-4 mr-2 rounded-full ${
-                              paradasSeleccionadas.includes(parada.id) ? 'bg-primary' : 'border border-gray-400'
-                            }`} />
-                            <span>{parada.nombre}</span>
-                          </div>
-                        ))}
+          <TabsContent value="paradas">
+            <Card>
+              <CardHeader>
+                <CardTitle>Asignación de Paradas</CardTitle>
+                <CardDescription>Seleccione y ordene las paradas de la ruta (mínimo 2)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Paradas Lists - Compact Layout */}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Paradas Asignadas */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Paradas Asignadas ({paradasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-3 h-[350px] overflow-y-auto">
+                          {paradasAsignadas.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-6 text-sm">
+                              No hay paradas asignadas
+                            </p>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {paradasAsignadas.map((parada, index) => (
+                                <div
+                                  key={parada.id}
+                                  className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                >
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                      {index + 1}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-xs truncate">{parada.nombre}</p>
+                                      <p className="text-xs text-muted-foreground">{parada.codigo}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-0.5 flex-shrink-0">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => subirParada(index)}
+                                      disabled={index === 0}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => bajarParada(index)}
+                                      disabled={index === paradasAsignadas.length - 1}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronDown className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => eliminarParada(parada.id)}
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
-                      <h3 className="text-sm font-medium pt-4">Paradas Seleccionadas (Orden)</h3>
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {paradasOrdenadas.length === 0 ? (
-                          <p className="text-sm text-muted-foreground">No hay paradas seleccionadas</p>
-                        ) : (
-                          paradasOrdenadas.map((parada, index) => (
-                            <div
-                              key={parada.id}
-                              className="flex items-center justify-between p-2 rounded-md bg-muted"
-                            >
-                              <div className="flex items-center">
-                                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs mr-2">
-                                  {index + 1}
+                      {/* Paradas Disponibles */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Paradas Disponibles</h3>
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
+                          <Input
+                            placeholder="Buscar paradas..."
+                            value={busquedaParadas}
+                            onChange={(e) => setBusquedaParadas(e.target.value)}
+                            className="pl-8 h-8 text-sm"
+                          />
+                        </div>
+                        <div className="border rounded-lg p-3 h-[310px] overflow-y-auto">
+                          <div className="space-y-1.5">
+                            {paradasFiltradas.map((parada) => (
+                              <div
+                                key={parada.id}
+                                className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-xs truncate">{parada.nombre}</p>
+                                  <p className="text-xs text-muted-foreground">{parada.codigo}</p>
                                 </div>
-                                <span>{parada.nombre}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => agregarParada(parada)}
+                                  className="h-6 w-6 p-0 flex-shrink-0"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
                               </div>
-                              {index === 0 && <span className="text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded-full">Inicial</span>}
-                              {index === paradasOrdenadas.length - 1 && <span className="text-xs bg-green-100 text-green-800 py-1 px-2 rounded-full">Final</span>}
-                            </div>
-                          ))
-                        )}
-                      </div>
-                      
-                      <h3 className="text-sm font-medium pt-4">Geocercas</h3>
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {geocercasDisponibles.map((geocerca) => (
-                          <div
-                            key={geocerca.id}
-                            className={`flex items-center p-2 rounded-md cursor-pointer ${
-                              geocercasSeleccionadas.includes(geocerca.id) ? 'bg-primary/10' : 'hover:bg-muted'
-                            }`}
-                            onClick={() => handleGeocercaToggle(geocerca.id)}
-                          >
-                            <div className={`w-4 h-4 mr-2 rounded-full ${
-                              geocercasSeleccionadas.includes(geocerca.id) ? 'bg-primary' : 'border border-gray-400'
-                            }`} />
-                            <span>{geocerca.nombre}</span>
+                            ))}
+                            {paradasFiltradas.length === 0 && (
+                              <p className="text-center text-muted-foreground py-6 text-sm">
+                                No se encontraron paradas disponibles
+                              </p>
+                            )}
                           </div>
-                        ))}
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setActiveTab('general')}
-                    >
-                      Anterior
-                    </Button>
-                    <Button type="submit">
-                      <Save className="mr-2 h-4 w-4" />
-                      Guardar Cambios
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </div>
-              
-              <div className="lg:col-span-2">
-                <Card className="h-full">
-                  <CardHeader>
-                    <CardTitle>Mapa de Ruta</CardTitle>
-                    <CardDescription>Visualización de paradas y geocercas</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-0 h-[500px]">
-                    <RutaMap 
-                      paradas={paradasOrdenadas}
-                      geocercas={geocercasDisponibles.filter(geo => 
-                        geocercasSeleccionadas.includes(geo.id)
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  </div>
+
+                  {/* Map - Compact height */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-medium">Mapa de Ruta</h3>
+                    <div className="border rounded-lg h-[350px]">
+                      <RutaMap 
+                        paradas={paradasAsignadas}
+                        geocercas={geocercasAsignadas}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setActiveTab('general')}
+                >
+                  Anterior
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setActiveTab('geocercas')}
+                >
+                  Continuar
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="geocercas">
+            <Card>
+              <CardHeader>
+                <CardTitle>Asignación de Geocercas</CardTitle>
+                <CardDescription>Seleccione las geocercas para la ruta (mínimo 2)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Geocercas Lists - Compact Layout */}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Geocercas Asignadas */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Geocercas Asignadas ({geocercasAsignadas.length})</h3>
+                        <div className="border rounded-lg p-3 h-[350px] overflow-y-auto">
+                          {geocercasAsignadas.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-6 text-sm">
+                              No hay geocercas asignadas
+                            </p>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {geocercasAsignadas.map((geocerca, index) => (
+                                <div
+                                  key={geocerca.id}
+                                  className="flex items-center justify-between p-2 bg-muted rounded-md"
+                                >
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                      {index + 1}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-xs truncate">{geocerca.nombre}</p>
+                                      <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-0.5 flex-shrink-0">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => subirGeocerca(index)}
+                                      disabled={index === 0}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => bajarGeocerca(index)}
+                                      disabled={index === geocercasAsignadas.length - 1}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronDown className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => eliminarGeocerca(geocerca.id)}
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Geocercas Disponibles */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Geocercas Disponibles</h3>
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
+                          <Input
+                            placeholder="Buscar geocercas..."
+                            value={busquedaGeocercas}
+                            onChange={(e) => setBusquedaGeocercas(e.target.value)}
+                            className="pl-8 h-8 text-sm"
+                          />
+                        </div>
+                        <div className="border rounded-lg p-3 h-[310px] overflow-y-auto">
+                          <div className="space-y-1.5">
+                            {geocercasFiltradas.map((geocerca) => (
+                              <div
+                                key={geocerca.id}
+                                className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-xs truncate">{geocerca.nombre}</p>
+                                  <p className="text-xs text-muted-foreground">{geocerca.codigo}</p>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => agregarGeocerca(geocerca)}
+                                  className="h-6 w-6 p-0 flex-shrink-0"
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))}
+                            {geocercasFiltradas.length === 0 && (
+                              <p className="text-center text-muted-foreground py-6 text-sm">
+                                No se encontraron geocercas disponibles
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Map - Compact height */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-medium">Mapa de Ruta</h3>
+                    <div className="border rounded-lg h-[350px]">
+                      <RutaMap 
+                        paradas={paradasAsignadas}
+                        geocercas={geocercasAsignadas}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-end space-x-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setActiveTab('paradas')}
+                >
+                  Anterior
+                </Button>
+                <Button type="submit">
+                  <Save className="mr-2 h-4 w-4" />
+                  Guardar Cambios
+                </Button>
+              </CardFooter>
+            </Card>
           </TabsContent>
         </Tabs>
       </form>
