@@ -43,12 +43,12 @@ const getRandomColor = (id: string) => {
   return colors[index];
 };
 
-// Create safe custom icons with proper error handling
+// Create safe icons with proper error handling - simplified approach
 const createSafeIcon = (color: string) => {
   try {
     return new L.Icon({
       iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
@@ -56,35 +56,14 @@ const createSafeIcon = (color: string) => {
     });
   } catch (error) {
     console.warn(`Failed to create custom icon for color ${color}, using default`);
-    // Return a safe default icon
-    return new L.Icon({
-      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    });
+    // Return undefined to use default icon
+    return undefined;
   }
 };
 
-// Create icons with lazy initialization and fallbacks
-let startIcon: L.Icon | null = null;
-let endIcon: L.Icon | null = null;
-
-const getStartIcon = () => {
-  if (!startIcon) {
-    startIcon = createSafeIcon('green');
-  }
-  return startIcon;
-};
-
-const getEndIcon = () => {
-  if (!endIcon) {
-    endIcon = createSafeIcon('red');
-  }
-  return endIcon;
-};
+// Pre-create icons safely
+const startIcon = createSafeIcon('green');
+const endIcon = createSafeIcon('red');
 
 export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
   // Center the map initially on Costa Rica
@@ -159,17 +138,16 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
         const isStart = index === 0;
         const isEnd = index === paradas.length - 1;
         
-        let icon;
+        let icon = undefined; // Default to undefined for default icon
+        
         try {
-          if (isStart) {
-            icon = getStartIcon();
-          } else if (isEnd) {
-            icon = getEndIcon();
-          } else {
-            icon = undefined; // Use default icon
+          if (isStart && startIcon) {
+            icon = startIcon;
+          } else if (isEnd && endIcon) {
+            icon = endIcon;
           }
         } catch (error) {
-          console.warn('Error creating icon for parada:', parada.nombre, error);
+          console.warn('Error assigning icon for parada:', parada.nombre, error);
           icon = undefined; // Fallback to default
         }
         
