@@ -616,10 +616,9 @@ const RutaRegistrationForm = () => {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => agregarParada(parada)}
-                                  className="h-8 text-xs"
+                                  className="h-8 w-8 p-0"
                                 >
-                                  <Plus className="h-3 w-3 mr-1" />
-                                  Agregar
+                                  <Plus className="h-3 w-3" />
                                 </Button>
                               </div>
                             ))}
@@ -784,10 +783,9 @@ const RutaRegistrationForm = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => agregarGeocerca(geocerca)}
-                                    className="h-8 text-xs"
+                                    className="h-8 w-8 p-0"
                                   >
-                                    <Plus className="h-3 w-3 mr-1" />
-                                    Agregar
+                                    <Plus className="h-3 w-3" />
                                   </Button>
                                 </div>
                               </div>
