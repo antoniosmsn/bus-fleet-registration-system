@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon, Polyline } from 'react
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Fix for Leaflet icon issue
+// Fix for Leaflet icon issue - more comprehensive fix
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -36,30 +36,28 @@ interface RutaMapProps {
   geocercas: Geocerca[];
 }
 
-// Custom icons for start, end and intermediate stops
-const startIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-const endIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
 // Helper function to get random color for polygons
 const getRandomColor = (id: string) => {
   const colors = ['#3388ff', '#ff3333', '#33ff33', '#ff33ff', '#ffff33', '#33ffff'];
   const index = id.charCodeAt(0) % colors.length;
   return colors[index];
+};
+
+// Create icons with better error handling
+const createCustomIcon = (color: string) => {
+  try {
+    return new L.Icon({
+      iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-${color}.png`,
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+  } catch (error) {
+    console.warn(`Failed to create custom icon for color ${color}, using default`);
+    return new L.Icon.Default();
+  }
 };
 
 export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
@@ -82,6 +80,10 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
   const rutaPolyline = paradas.length >= 2 ? 
     paradas.map(p => [p.lat, p.lng] as [number, number]) : 
     [];
+
+  // Create icons with lazy initialization
+  const getStartIcon = () => createCustomIcon('green');
+  const getEndIcon = () => createCustomIcon('red');
 
   return (
     <MapContainer 
@@ -129,7 +131,15 @@ export const RutaMap: React.FC<RutaMapProps> = ({ paradas, geocercas }) => {
       {paradas.map((parada, index) => {
         const isStart = index === 0;
         const isEnd = index === paradas.length - 1;
-        const icon = isStart ? startIcon : isEnd ? endIcon : undefined;
+        
+        let icon;
+        if (isStart) {
+          icon = getStartIcon();
+        } else if (isEnd) {
+          icon = getEndIcon();
+        } else {
+          icon = undefined; // Use default icon
+        }
         
         return (
           <Marker
