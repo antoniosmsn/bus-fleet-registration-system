@@ -8,6 +8,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { AsignacionRuta } from '@/types/asignacion-ruta';
@@ -77,101 +78,105 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
 
   return (
     <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Ramal</TableHead>
-            <TableHead>Tipo de Ruta</TableHead>
-            <TableHead className="w-80">Empresa Cliente</TableHead>
-            <TableHead className="w-80">Empresa Transporte</TableHead>
-            <TableHead>Tipo de Unidad</TableHead>
-            <TableHead className="w-96">Ubicación</TableHead>
-            <TableHead className="w-72">Sector/Ramal</TableHead>
-            <TableHead>Tarifa Pasajero</TableHead>
-            <TableHead>Tarifa Servicio</TableHead>
-            <TableHead>Fecha Vigencia</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead className="w-64">Fecha Creación</TableHead>
-            <TableHead>Usuario Creación</TableHead>
-            <TableHead className="w-64">Fecha Modificación</TableHead>
-            <TableHead>Usuario Modificación</TableHead>
-            <TableHead>Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {asignaciones.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={16} className="text-center py-6 text-muted-foreground">
-                No hay asignaciones de rutas que coincidan con los criterios de búsqueda
-              </TableCell>
-            </TableRow>
-          ) : (
-            asignaciones.map((asignacion) => (
-              <TableRow key={asignacion.id}>
-                <TableCell className="font-medium">{asignacion.ramal}</TableCell>
-                <TableCell>
-                  <Badge className={getTipoBadgeColor(asignacion.tipoRuta)}>
-                    {asignacion.tipoRuta === 'privada' ? 'Privada' : 
-                     asignacion.tipoRuta === 'parque' ? 'Parque' : 'Especial'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="w-80">{asignacion.empresaCliente}</TableCell>
-                <TableCell className="w-80">{asignacion.empresaTransporte}</TableCell>
-                <TableCell>
-                  <Badge className={getTipoUnidadBadgeColor(asignacion.tipoUnidad)}>
-                    {asignacion.tipoUnidad === 'autobus' ? 'Autobús' :
-                     asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="w-96">
-                  <div className="text-sm whitespace-nowrap">
-                    {asignacion.pais}, {asignacion.provincia}, {asignacion.canton}, {asignacion.distrito}
-                  </div>
-                </TableCell>
-                <TableCell className="w-72">
-                  <div className="text-sm whitespace-nowrap">
-                    {asignacion.sector}, {asignacion.ramal}
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {formatCurrency(asignacion.tarifaVigentePasajero)}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {formatCurrency(asignacion.tarifaVigenteServicio)}
-                </TableCell>
-                <TableCell>{formatDateOnly(asignacion.fechaInicioVigencia)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={asignacion.estado === 'activo'}
-                      onCheckedChange={() => onChangeStatus(asignacion.id)}
-                    />
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      asignacion.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      {asignacion.estado === 'activo' ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="w-64 whitespace-nowrap">{formatDate(asignacion.fechaCreacion)}</TableCell>
-                <TableCell>{asignacion.usuarioCreacion}</TableCell>
-                <TableCell className="w-64 whitespace-nowrap">{formatDate(asignacion.fechaModificacion)}</TableCell>
-                <TableCell>{asignacion.usuarioModificacion || 'N/A'}</TableCell>
-                <TableCell>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleEdit(asignacion.id)}
-                  >
-                    <Edit className="mr-2 h-4 w-4" />
-                    Editar
-                  </Button>
-                </TableCell>
+      <ScrollArea className="w-full">
+        <div className="min-w-[1800px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-32">Ramal</TableHead>
+                <TableHead className="min-w-32">Tipo de Ruta</TableHead>
+                <TableHead className="min-w-64">Empresa Cliente</TableHead>
+                <TableHead className="min-w-64">Empresa Transporte</TableHead>
+                <TableHead className="min-w-32">Tipo de Unidad</TableHead>
+                <TableHead className="min-w-80">Ubicación</TableHead>
+                <TableHead className="min-w-56">Sector/Ramal</TableHead>
+                <TableHead className="min-w-32">Tarifa Pasajero</TableHead>
+                <TableHead className="min-w-32">Tarifa Servicio</TableHead>
+                <TableHead className="min-w-32">Fecha Vigencia</TableHead>
+                <TableHead className="min-w-32">Estado</TableHead>
+                <TableHead className="min-w-48">Fecha Creación</TableHead>
+                <TableHead className="min-w-40">Usuario Creación</TableHead>
+                <TableHead className="min-w-48">Fecha Modificación</TableHead>
+                <TableHead className="min-w-40">Usuario Modificación</TableHead>
+                <TableHead className="min-w-32">Acciones</TableHead>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {asignaciones.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={16} className="text-center py-6 text-muted-foreground">
+                    No hay asignaciones de rutas que coincidan con los criterios de búsqueda
+                  </TableCell>
+                </TableRow>
+              ) : (
+                asignaciones.map((asignacion) => (
+                  <TableRow key={asignacion.id}>
+                    <TableCell className="font-medium min-w-32">{asignacion.ramal}</TableCell>
+                    <TableCell className="min-w-32">
+                      <Badge className={getTipoBadgeColor(asignacion.tipoRuta)}>
+                        {asignacion.tipoRuta === 'privada' ? 'Privada' : 
+                         asignacion.tipoRuta === 'parque' ? 'Parque' : 'Especial'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="min-w-64">{asignacion.empresaCliente}</TableCell>
+                    <TableCell className="min-w-64">{asignacion.empresaTransporte}</TableCell>
+                    <TableCell className="min-w-32">
+                      <Badge className={getTipoUnidadBadgeColor(asignacion.tipoUnidad)}>
+                        {asignacion.tipoUnidad === 'autobus' ? 'Autobús' :
+                         asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="min-w-80">
+                      <div className="text-sm whitespace-nowrap">
+                        {asignacion.pais}, {asignacion.provincia}, {asignacion.canton}, {asignacion.distrito}
+                      </div>
+                    </TableCell>
+                    <TableCell className="min-w-56">
+                      <div className="text-sm whitespace-nowrap">
+                        {asignacion.sector}, {asignacion.ramal}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium min-w-32">
+                      {formatCurrency(asignacion.tarifaVigentePasajero)}
+                    </TableCell>
+                    <TableCell className="font-medium min-w-32">
+                      {formatCurrency(asignacion.tarifaVigenteServicio)}
+                    </TableCell>
+                    <TableCell className="min-w-32">{formatDateOnly(asignacion.fechaInicioVigencia)}</TableCell>
+                    <TableCell className="min-w-32">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={asignacion.estado === 'activo'}
+                          onCheckedChange={() => onChangeStatus(asignacion.id)}
+                        />
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          asignacion.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                          {asignacion.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="min-w-48 whitespace-nowrap">{formatDate(asignacion.fechaCreacion)}</TableCell>
+                    <TableCell className="min-w-40">{asignacion.usuarioCreacion}</TableCell>
+                    <TableCell className="min-w-48 whitespace-nowrap">{formatDate(asignacion.fechaModificacion)}</TableCell>
+                    <TableCell className="min-w-40">{asignacion.usuarioModificacion || 'N/A'}</TableCell>
+                    <TableCell className="min-w-32">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => handleEdit(asignacion.id)}
+                      >
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </ScrollArea>
     </div>
   );
 };
