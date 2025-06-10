@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import AsignacionesFilter from '@/components/asignaciones/AsignacionesFilter';
 import AsignacionesTable from '@/components/asignaciones/AsignacionesTable';
@@ -76,6 +76,76 @@ const AsignacionesIndex = () => {
   const [filtros, setFiltros] = useState<AsignacionRutaFilter>({});
   const [asignaciones, setAsignaciones] = useState<AsignacionRuta[]>(mockAsignaciones);
 
+  const asignacionesFiltradas = useMemo(() => {
+    return mockAsignaciones.filter(asignacion => {
+      // Filtro por ramal
+      if (filtros.ramal && !asignacion.ramal.toLowerCase().includes(filtros.ramal.toLowerCase())) {
+        return false;
+      }
+
+      // Filtro por tipo de ruta
+      if (filtros.tipoRuta && filtros.tipoRuta !== 'todos' && asignacion.tipoRuta !== filtros.tipoRuta) {
+        return false;
+      }
+
+      // Filtro por empresa cliente
+      if (filtros.empresaCliente && filtros.empresaCliente !== 'todas' && asignacion.empresaCliente !== filtros.empresaCliente) {
+        return false;
+      }
+
+      // Filtro por empresa transporte
+      if (filtros.empresaTransporte && filtros.empresaTransporte !== 'todas' && asignacion.empresaTransporte !== filtros.empresaTransporte) {
+        return false;
+      }
+
+      // Filtro por tipo de unidad
+      if (filtros.tipoUnidad && filtros.tipoUnidad !== 'todos' && asignacion.tipoUnidad !== filtros.tipoUnidad) {
+        return false;
+      }
+
+      // Filtro por provincia
+      if (filtros.provincia && filtros.provincia !== 'todas' && asignacion.provincia !== filtros.provincia) {
+        return false;
+      }
+
+      // Filtro por cantón
+      if (filtros.canton && filtros.canton !== 'todos' && asignacion.canton !== filtros.canton) {
+        return false;
+      }
+
+      // Filtro por sector
+      if (filtros.sector && filtros.sector !== 'todos' && asignacion.sector !== filtros.sector) {
+        return false;
+      }
+
+      // Filtro por estado
+      if (filtros.estado && filtros.estado !== 'ambos' && asignacion.estado !== filtros.estado) {
+        return false;
+      }
+
+      // Filtro por fecha de inicio de vigencia
+      if (filtros.habilitarFiltroFecha) {
+        const fechaVigencia = new Date(asignacion.fechaInicioVigencia);
+        
+        if (filtros.fechaInicioVigenciaStart) {
+          const fechaInicio = new Date(filtros.fechaInicioVigenciaStart);
+          if (fechaVigencia < fechaInicio) {
+            return false;
+          }
+        }
+        
+        if (filtros.fechaInicioVigenciaEnd) {
+          const fechaFin = new Date(filtros.fechaInicioVigenciaEnd);
+          if (fechaVigencia > fechaFin) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    });
+  }, [filtros]);
+
   const handleFilter = (newFilters: any) => {
     setFiltros(newFilters);
     console.log('Filtros aplicados:', newFilters);
@@ -101,7 +171,7 @@ const AsignacionesIndex = () => {
         </div>
 
         <AsignacionesFilter onFilter={handleFilter} />
-        <AsignacionesTable asignaciones={asignaciones} onChangeStatus={handleChangeStatus} />
+        <AsignacionesTable asignaciones={asignacionesFiltradas} onChangeStatus={handleChangeStatus} />
       </div>
     </Layout>
   );
