@@ -76,9 +76,9 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
   };
 
   return (
-    <div className="w-full rounded-md border">
+    <div className="rounded-md border">
       <ScrollArea className="w-full">
-        <div className="min-w-[1800px] w-full">
+        <div className="min-w-[1800px]">
           <Table>
             <TableHeader>
               <TableRow>
