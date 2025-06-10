@@ -25,13 +25,13 @@ export interface AsignacionRutaFilter {
   ramal?: string;
   empresaTransporte?: string;
   empresaCliente?: string;
-  tipoRuta?: 'privada' | 'parque' | 'especial' | '';
+  tipoRuta?: 'privada' | 'parque' | 'especial' | 'todos' | '';
   provincia?: string;
   canton?: string;
   sector?: string;
-  tipoUnidad?: 'autobus' | 'buseta' | 'microbus' | '';
+  tipoUnidad?: 'autobus' | 'buseta' | 'microbus' | 'todos' | '';
   fechaInicioVigenciaStart?: string;
   fechaInicioVigenciaEnd?: string;
   habilitarFiltroFecha?: boolean;
-  estado?: 'activo' | 'inactivo' | '';
+  estado?: 'activo' | 'inactivo' | 'ambos' | '';
 }
