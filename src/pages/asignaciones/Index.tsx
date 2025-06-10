@@ -164,14 +164,19 @@ const AsignacionesIndex = () => {
 
   return (
     <Layout>
-      <div className="w-full">
+      <div className="w-full max-w-full">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Asignaciones de Rutas</h1>
           <p className="text-gray-500">Gestione las asignaciones de rutas del sistema</p>
         </div>
 
-        <AsignacionesFilter onFilter={handleFilter} />
-        <AsignacionesTable asignaciones={asignacionesFiltradas} onChangeStatus={handleChangeStatus} />
+        <div className="w-full">
+          <AsignacionesFilter onFilter={handleFilter} />
+        </div>
+        
+        <div className="w-full overflow-hidden">
+          <AsignacionesTable asignaciones={asignacionesFiltradas} onChangeStatus={handleChangeStatus} />
+        </div>
       </div>
     </Layout>
   );
