@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +26,9 @@ import RegisterRuta from "./pages/rutas/Register";
 import EditRuta from "./pages/rutas/Edit";
 import ParadasIndex from "./pages/paradas/Index";
 import RegisterParada from "./pages/paradas/Register";
+import AsignacionesIndex from "./pages/asignaciones/Index";
+import RegisterAsignacion from "./pages/asignaciones/Register";
+import EditAsignacion from "./pages/asignaciones/Edit";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -62,6 +64,9 @@ const App = () => (
             <Route path="/rutas/edit/:id" element={<EditRuta />} />
             <Route path="/paradas" element={<ParadasIndex />} />
             <Route path="/paradas/register" element={<RegisterParada />} />
+            <Route path="/asignaciones" element={<AsignacionesIndex />} />
+            <Route path="/asignaciones/register" element={<RegisterAsignacion />} />
+            <Route path="/asignaciones/edit/:id" element={<EditAsignacion />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
