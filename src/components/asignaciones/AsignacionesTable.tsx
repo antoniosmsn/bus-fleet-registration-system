@@ -82,18 +82,18 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
           <TableRow>
             <TableHead>Ramal</TableHead>
             <TableHead>Tipo de Ruta</TableHead>
-            <TableHead className="w-56">Empresa Cliente</TableHead>
-            <TableHead className="w-56">Empresa Transporte</TableHead>
+            <TableHead className="w-80">Empresa Cliente</TableHead>
+            <TableHead className="w-80">Empresa Transporte</TableHead>
             <TableHead>Tipo de Unidad</TableHead>
-            <TableHead className="w-80">Ubicación</TableHead>
-            <TableHead className="w-48">Sector/Ramal</TableHead>
+            <TableHead className="w-96">Ubicación</TableHead>
+            <TableHead className="w-72">Sector/Ramal</TableHead>
             <TableHead>Tarifa Pasajero</TableHead>
             <TableHead>Tarifa Servicio</TableHead>
             <TableHead>Fecha Vigencia</TableHead>
             <TableHead>Estado</TableHead>
-            <TableHead className="w-44">Fecha Creación</TableHead>
+            <TableHead className="w-64">Fecha Creación</TableHead>
             <TableHead>Usuario Creación</TableHead>
-            <TableHead className="w-44">Fecha Modificación</TableHead>
+            <TableHead className="w-64">Fecha Modificación</TableHead>
             <TableHead>Usuario Modificación</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
@@ -115,21 +115,21 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                      asignacion.tipoRuta === 'parque' ? 'Parque' : 'Especial'}
                   </Badge>
                 </TableCell>
-                <TableCell className="w-56">{asignacion.empresaCliente}</TableCell>
-                <TableCell className="w-56">{asignacion.empresaTransporte}</TableCell>
+                <TableCell className="w-80">{asignacion.empresaCliente}</TableCell>
+                <TableCell className="w-80">{asignacion.empresaTransporte}</TableCell>
                 <TableCell>
                   <Badge className={getTipoUnidadBadgeColor(asignacion.tipoUnidad)}>
                     {asignacion.tipoUnidad === 'autobus' ? 'Autobús' :
                      asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
                   </Badge>
                 </TableCell>
-                <TableCell className="w-80">
-                  <div className="text-sm">
+                <TableCell className="w-96">
+                  <div className="text-sm whitespace-nowrap">
                     {asignacion.pais}, {asignacion.provincia}, {asignacion.canton}, {asignacion.distrito}
                   </div>
                 </TableCell>
-                <TableCell className="w-48">
-                  <div className="text-sm">
+                <TableCell className="w-72">
+                  <div className="text-sm whitespace-nowrap">
                     {asignacion.sector}, {asignacion.ramal}
                   </div>
                 </TableCell>
@@ -153,9 +153,9 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="w-44">{formatDate(asignacion.fechaCreacion)}</TableCell>
+                <TableCell className="w-64 whitespace-nowrap">{formatDate(asignacion.fechaCreacion)}</TableCell>
                 <TableCell>{asignacion.usuarioCreacion}</TableCell>
-                <TableCell className="w-44">{formatDate(asignacion.fechaModificacion)}</TableCell>
+                <TableCell className="w-64 whitespace-nowrap">{formatDate(asignacion.fechaModificacion)}</TableCell>
                 <TableCell>{asignacion.usuarioModificacion || 'N/A'}</TableCell>
                 <TableCell>
                   <Button 
