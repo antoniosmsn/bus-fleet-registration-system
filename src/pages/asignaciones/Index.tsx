@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import AsignacionesFilter from '@/components/asignaciones/AsignacionesFilter';
@@ -164,29 +163,25 @@ const AsignacionesIndex = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50">
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Asignaciones de Rutas</h1>
-              <p className="text-gray-600">Gestione las asignaciones de rutas del sistema</p>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Asignaciones de Rutas</h1>
+          <p className="text-gray-600">Gestione las asignaciones de rutas del sistema</p>
+        </div>
+        
+        <AsignacionesFilter onFilter={handleFilter} />
+        
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6">
+            <div className="mb-4">
+              <h2 className="text-lg font-medium">Asignaciones Registradas</h2>
+              <p className="text-gray-600">
+                {asignacionesFiltradas.length} asignaciones encontradas
+              </p>
             </div>
+            <AsignacionesTable asignaciones={asignacionesFiltradas} onChangeStatus={handleChangeStatus} />
           </div>
-          
-          <AsignacionesFilter onFilter={handleFilter} />
-          
-          <div className="bg-white rounded-lg shadow">
-            <div className="p-6">
-              <div className="mb-4">
-                <h2 className="text-lg font-medium">Asignaciones Registradas</h2>
-                <p className="text-gray-600">
-                  {asignacionesFiltradas.length} asignaciones encontradas
-                </p>
-              </div>
-              <AsignacionesTable asignaciones={asignacionesFiltradas} onChangeStatus={handleChangeStatus} />
-            </div>
-          </div>
-        </main>
+        </div>
       </div>
     </Layout>
   );
