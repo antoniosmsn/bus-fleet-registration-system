@@ -60,6 +60,49 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
   const [isExpanded, setIsExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("general");
 
+  // Mock data for dropdowns - estas listas deberían venir de una API
+  const empresasTransporte = [
+    "Transportes Unidos",
+    "Transportes del Sur", 
+    "Transportes Rápidos",
+    "Autobuses Costa Rica",
+    "Transportes San José"
+  ];
+
+  const empresasCliente = [
+    "Empresa ABC S.A.",
+    "Compañía XYZ",
+    "Industrias RST",
+    "Corporación DEF",
+    "Servicios GHI Ltda."
+  ];
+
+  const provincias = [
+    "San José",
+    "Alajuela", 
+    "Cartago",
+    "Heredia",
+    "Guanacaste",
+    "Puntarenas",
+    "Limón"
+  ];
+
+  const cantones = [
+    "Central",
+    "San Ramón",
+    "Alajuela",
+    "Cartago",
+    "Heredia"
+  ];
+
+  const sectores = [
+    "Centro",
+    "Rural",
+    "Industrial",
+    "Comercial",
+    "Residencial"
+  ];
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -71,6 +114,14 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
 
   const handleCheckboxChange = (checked: boolean) => {
     setFilters(prev => ({ ...prev, habilitarFiltroFecha: checked }));
+    if (!checked) {
+      // Limpiar las fechas si se deshabilita el filtro
+      setFilters(prev => ({ 
+        ...prev, 
+        fechaInicioVigenciaStart: '',
+        fechaInicioVigenciaEnd: ''
+      }));
+    }
   };
 
   const handleApplyFilters = () => {
@@ -138,10 +189,10 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                     onValueChange={(value) => handleSelectChange('tipoRuta', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Todos los tipos" />
+                      <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos los tipos</SelectItem>
+                      <SelectItem value="">Todos los tipos</SelectItem>
                       <SelectItem value="privada">Privada</SelectItem>
                       <SelectItem value="parque">Parque</SelectItem>
                       <SelectItem value="especial">Especial</SelectItem>
@@ -156,10 +207,10 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                     onValueChange={(value) => handleSelectChange('tipoUnidad', value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Todos los tipos" />
+                      <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos los tipos</SelectItem>
+                      <SelectItem value="">Todos los tipos</SelectItem>
                       <SelectItem value="autobus">Autobús</SelectItem>
                       <SelectItem value="buseta">Buseta</SelectItem>
                       <SelectItem value="microbus">Microbús</SelectItem>
@@ -169,110 +220,145 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
 
                 <div className="space-y-2">
                   <Label htmlFor="sector">Sector</Label>
-                  <Input
-                    id="sector"
-                    name="sector"
-                    placeholder="Buscar por sector"
-                    value={filters.sector}
-                    onChange={handleInputChange}
-                  />
+                  <Select 
+                    value={filters.sector} 
+                    onValueChange={(value) => handleSelectChange('sector', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar sector" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todos los sectores</SelectItem>
+                      {sectores.map(sector => (
+                        <SelectItem key={sector} value={sector}>{sector}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </TabsContent>
             
             {/* Empresas */}
             <TabsContent value="empresas" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
-                  <Input
-                    id="empresaTransporte"
-                    name="empresaTransporte"
-                    placeholder="Nombre de empresa transportista"
-                    value={filters.empresaTransporte}
-                    onChange={handleInputChange}
-                  />
+                  <Select 
+                    value={filters.empresaTransporte} 
+                    onValueChange={(value) => handleSelectChange('empresaTransporte', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar empresa transportista" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todas las empresas</SelectItem>
+                      {empresasTransporte.map(empresa => (
+                        <SelectItem key={empresa} value={empresa}>{empresa}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="empresaCliente">Empresa Cliente</Label>
-                  <Input
-                    id="empresaCliente"
-                    name="empresaCliente"
-                    placeholder="Nombre de empresa cliente"
-                    value={filters.empresaCliente}
-                    onChange={handleInputChange}
-                  />
+                  <Select 
+                    value={filters.empresaCliente} 
+                    onValueChange={(value) => handleSelectChange('empresaCliente', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar empresa cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todas las empresas</SelectItem>
+                      {empresasCliente.map(empresa => (
+                        <SelectItem key={empresa} value={empresa}>{empresa}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </TabsContent>
             
             {/* Ubicación */}
             <TabsContent value="ubicacion" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="provincia">Provincia</Label>
-                  <Input
-                    id="provincia"
-                    name="provincia"
-                    placeholder="Buscar por provincia"
-                    value={filters.provincia}
-                    onChange={handleInputChange}
-                  />
+                  <Select 
+                    value={filters.provincia} 
+                    onValueChange={(value) => handleSelectChange('provincia', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar provincia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todas las provincias</SelectItem>
+                      {provincias.map(provincia => (
+                        <SelectItem key={provincia} value={provincia}>{provincia}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="canton">Cantón</Label>
-                  <Input
-                    id="canton"
-                    name="canton"
-                    placeholder="Buscar por cantón"
-                    value={filters.canton}
-                    onChange={handleInputChange}
-                  />
+                  <Select 
+                    value={filters.canton} 
+                    onValueChange={(value) => handleSelectChange('canton', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar cantón" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Todos los cantones</SelectItem>
+                      {cantones.map(canton => (
+                        <SelectItem key={canton} value={canton}>{canton}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </TabsContent>
             
             {/* Fechas y Estado */}
             <TabsContent value="fechas" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div className="space-y-2">
+              <div className="space-y-6">
+                <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox 
                       id="habilitarFiltroFecha"
                       checked={filters.habilitarFiltroFecha}
                       onCheckedChange={handleCheckboxChange}
                     />
-                    <Label htmlFor="habilitarFiltroFecha">Filtrar por fecha de vigencia</Label>
+                    <Label htmlFor="habilitarFiltroFecha">Filtrar por fecha de inicio de vigencia</Label>
                   </div>
+                  
+                  {filters.habilitarFiltroFecha && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="fechaInicioVigenciaStart">Fecha inicio desde</Label>
+                        <Input
+                          id="fechaInicioVigenciaStart"
+                          name="fechaInicioVigenciaStart"
+                          type="date"
+                          value={filters.fechaInicioVigenciaStart}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="fechaInicioVigenciaEnd">Fecha inicio hasta</Label>
+                        <Input
+                          id="fechaInicioVigenciaEnd"
+                          name="fechaInicioVigenciaEnd"
+                          type="date"
+                          value={filters.fechaInicioVigenciaEnd}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {filters.habilitarFiltroFecha && (
-                  <>
-                    <div className="space-y-2">
-                      <Label htmlFor="fechaInicioVigenciaStart">Fecha inicio desde</Label>
-                      <Input
-                        id="fechaInicioVigenciaStart"
-                        name="fechaInicioVigenciaStart"
-                        type="date"
-                        value={filters.fechaInicioVigenciaStart}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="fechaInicioVigenciaEnd">Fecha inicio hasta</Label>
-                      <Input
-                        id="fechaInicioVigenciaEnd"
-                        name="fechaInicioVigenciaEnd"
-                        type="date"
-                        value={filters.fechaInicioVigenciaEnd}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </>
-                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="estado">Estado</Label>
@@ -280,11 +366,11 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                     value={filters.estado} 
                     onValueChange={(value) => handleSelectChange('estado', value)}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Todos los estados" />
+                    <SelectTrigger className="w-full md:w-48">
+                      <SelectValue placeholder="Seleccionar estado" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos los estados</SelectItem>
+                      <SelectItem value="">Ambos estados</SelectItem>
                       <SelectItem value="activo">Activo</SelectItem>
                       <SelectItem value="inactivo">Inactivo</SelectItem>
                     </SelectContent>
