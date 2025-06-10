@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Table, 
@@ -76,8 +77,8 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
   };
 
   return (
-    <div className="rounded-md border">
-      <ScrollArea className="w-full">
+    <div className="h-full border rounded-md">
+      <ScrollArea className="h-full w-full">
         <div className="min-w-[1800px]">
           <Table>
             <TableHeader>
