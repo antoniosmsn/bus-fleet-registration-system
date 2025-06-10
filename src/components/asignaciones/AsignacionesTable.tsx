@@ -85,7 +85,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
             <TableHead>Empresa Cliente</TableHead>
             <TableHead>Empresa Transporte</TableHead>
             <TableHead>Tipo de Unidad</TableHead>
-            <TableHead>Ubicación</TableHead>
+            <TableHead className="w-80">Ubicación</TableHead>
             <TableHead>Sector/Ramal</TableHead>
             <TableHead>Tarifa Pasajero</TableHead>
             <TableHead>Tarifa Servicio</TableHead>
@@ -123,7 +123,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                      asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-80">
                   <div className="text-sm">
                     {asignacion.pais}, {asignacion.provincia}, {asignacion.canton}, {asignacion.distrito}
                   </div>
