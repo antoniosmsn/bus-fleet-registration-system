@@ -192,7 +192,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos los tipos</SelectItem>
+                      <SelectItem value="todos">Todos los tipos</SelectItem>
                       <SelectItem value="privada">Privada</SelectItem>
                       <SelectItem value="parque">Parque</SelectItem>
                       <SelectItem value="especial">Especial</SelectItem>
@@ -210,7 +210,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos los tipos</SelectItem>
+                      <SelectItem value="todos">Todos los tipos</SelectItem>
                       <SelectItem value="autobus">Autobús</SelectItem>
                       <SelectItem value="buseta">Buseta</SelectItem>
                       <SelectItem value="microbus">Microbús</SelectItem>
@@ -228,7 +228,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar sector" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos los sectores</SelectItem>
+                      <SelectItem value="todos">Todos los sectores</SelectItem>
                       {sectores.map(sector => (
                         <SelectItem key={sector} value={sector}>{sector}</SelectItem>
                       ))}
@@ -251,7 +251,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar empresa transportista" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas las empresas</SelectItem>
+                      <SelectItem value="todas">Todas las empresas</SelectItem>
                       {empresasTransporte.map(empresa => (
                         <SelectItem key={empresa} value={empresa}>{empresa}</SelectItem>
                       ))}
@@ -269,7 +269,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar empresa cliente" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas las empresas</SelectItem>
+                      <SelectItem value="todas">Todas las empresas</SelectItem>
                       {empresasCliente.map(empresa => (
                         <SelectItem key={empresa} value={empresa}>{empresa}</SelectItem>
                       ))}
@@ -292,7 +292,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar provincia" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas las provincias</SelectItem>
+                      <SelectItem value="todas">Todas las provincias</SelectItem>
                       {provincias.map(provincia => (
                         <SelectItem key={provincia} value={provincia}>{provincia}</SelectItem>
                       ))}
@@ -310,7 +310,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar cantón" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos los cantones</SelectItem>
+                      <SelectItem value="todos">Todos los cantones</SelectItem>
                       {cantones.map(canton => (
                         <SelectItem key={canton} value={canton}>{canton}</SelectItem>
                       ))}
@@ -370,7 +370,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
                       <SelectValue placeholder="Seleccionar estado" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Ambos estados</SelectItem>
+                      <SelectItem value="ambos">Ambos estados</SelectItem>
                       <SelectItem value="activo">Activo</SelectItem>
                       <SelectItem value="inactivo">Inactivo</SelectItem>
                     </SelectContent>
