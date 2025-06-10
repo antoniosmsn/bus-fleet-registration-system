@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import AsignacionesFilter from '@/components/asignaciones/AsignacionesFilter';
@@ -73,11 +74,22 @@ const mockAsignaciones: AsignacionRuta[] = [
 
 const AsignacionesIndex = () => {
   const [filtros, setFiltros] = useState<AsignacionRutaFilter>({});
-  const [asignaciones] = useState<AsignacionRuta[]>(mockAsignaciones);
+  const [asignaciones, setAsignaciones] = useState<AsignacionRuta[]>(mockAsignaciones);
 
-  const handleFilterChange = (newFilters: AsignacionRutaFilter) => {
+  const handleFilter = (newFilters: any) => {
     setFiltros(newFilters);
     console.log('Filtros aplicados:', newFilters);
+  };
+
+  const handleChangeStatus = (id: number) => {
+    setAsignaciones(prevAsignaciones => 
+      prevAsignaciones.map(asignacion => 
+        asignacion.id === id 
+          ? { ...asignacion, estado: asignacion.estado === 'activo' ? 'inactivo' : 'activo' }
+          : asignacion
+      )
+    );
+    console.log('Cambiando estado de asignación:', id);
   };
 
   return (
@@ -88,8 +100,8 @@ const AsignacionesIndex = () => {
           <p className="text-gray-500">Gestione las asignaciones de rutas del sistema</p>
         </div>
 
-        <AsignacionesFilter onFilterChange={handleFilterChange} />
-        <AsignacionesTable asignaciones={asignaciones} />
+        <AsignacionesFilter onFilter={handleFilter} />
+        <AsignacionesTable asignaciones={asignaciones} onChangeStatus={handleChangeStatus} />
       </div>
     </Layout>
   );
