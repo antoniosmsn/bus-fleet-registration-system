@@ -222,13 +222,6 @@ const PasajerosIndex = () => {
         
         <div className="bg-white rounded-lg shadow">
           <div className="p-6">
-            <div className="mb-4">
-              <h2 className="text-lg font-medium">Pasajeros Registrados</h2>
-              <p className="text-gray-600">
-                {pasajerosFiltrados.length} pasajeros encontrados - Página {currentPage} de {totalPages}
-              </p>
-            </div>
-            
             <PasajerosTable 
               pasajeros={pasajerosPaginados} 
               onChangeStatus={handleChangeStatus}
