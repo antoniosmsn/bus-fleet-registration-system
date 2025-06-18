@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Table, 
@@ -76,7 +77,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
   };
 
   return (
-    <div className="px-6 pb-6">
+    <div>
       <div className="overflow-x-auto">
         <Table className="min-w-[1600px]">
           <TableHeader>
@@ -174,11 +175,15 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
         </Table>
       </div>
       
-      <PasajerosPagination 
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-center">
+          <PasajerosPagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 };

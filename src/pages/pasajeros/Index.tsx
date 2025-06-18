@@ -222,21 +222,22 @@ const PasajerosIndex = () => {
         <PasajerosFilter onFilter={handleFilter} />
         
         <div className="bg-white rounded-lg shadow">
-          <div className="p-6 pb-0">
+          <div className="p-6">
             <div className="mb-4">
               <h2 className="text-lg font-medium">Pasajeros Registrados</h2>
               <p className="text-gray-600">
                 {pasajerosFiltrados.length} pasajeros encontrados
               </p>
             </div>
+            
+            <PasajerosTable 
+              pasajeros={pasajerosPaginados} 
+              onChangeStatus={handleChangeStatus}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
-          <PasajerosTable 
-            pasajeros={pasajerosPaginados} 
-            onChangeStatus={handleChangeStatus}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
         </div>
       </div>
     </Layout>
