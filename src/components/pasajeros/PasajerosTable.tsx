@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Table, 
@@ -13,14 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Pasajero } from '@/types/pasajero';
 import { Edit, Eye, UserX, UserCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+import PasajerosPagination from './PasajerosPagination';
 
 interface PasajerosTableProps {
   pasajeros: Pasajero[];
@@ -81,41 +73,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
 
   const handleView = (id: number) => {
     navigate(`/pasajeros/view/${id}`);
-  };
-
-  const getPageNumbers = () => {
-    const pages: number[] = [];
-    const maxPagesToShow = 5;
-
-    if (totalPages <= maxPagesToShow) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-
-      let start = Math.max(2, currentPage - 1);
-      let end = Math.min(totalPages - 1, currentPage + 1);
-
-      if (start === 2) {
-        end = Math.min(totalPages - 1, start + 2);
-      }
-      if (end === totalPages - 1) {
-        start = Math.max(2, end - 2);
-      }
-
-      if (start > 2) pages.push(-1);
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
-      if (end < totalPages - 1) pages.push(-2);
-
-      pages.push(totalPages);
-    }
-
-    return pages;
   };
 
   return (
@@ -217,41 +174,11 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
         </Table>
       </div>
       
-      {totalPages > 1 && (
-        <Pagination className="mt-6">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-                className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} 
-              />
-            </PaginationItem>
-            
-            {getPageNumbers().map((pageNum, idx) => (
-              <PaginationItem key={`page-${idx}`}>
-                {pageNum < 0 ? (
-                  <span className="px-2">...</span>
-                ) : (
-                  <PaginationLink 
-                    isActive={pageNum === currentPage}
-                    onClick={() => onPageChange(pageNum)}
-                    className="cursor-pointer"
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                )}
-              </PaginationItem>
-            ))}
-            
-            <PaginationItem>
-              <PaginationNext 
-                onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-                className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} 
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      <PasajerosPagination 
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
