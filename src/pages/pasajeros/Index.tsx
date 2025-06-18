@@ -105,6 +105,8 @@ const mockPasajeros: Pasajero[] = [
 const PasajerosIndex = () => {
   const [filtros, setFiltros] = useState<PasajeroFilter>({});
   const [pasajeros, setPasajeros] = useState<Pasajero[]>(mockPasajeros);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const pasajerosFiltrados = useMemo(() => {
     return mockPasajeros.filter(pasajero => {
@@ -167,8 +169,17 @@ const PasajerosIndex = () => {
     });
   }, [filtros]);
 
+  const totalPages = Math.ceil(pasajerosFiltrados.length / itemsPerPage);
+  
+  const pasajerosPaginados = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return pasajerosFiltrados.slice(startIndex, endIndex);
+  }, [pasajerosFiltrados, currentPage]);
+
   const handleFilter = (newFilters: PasajeroFilter) => {
     setFiltros(newFilters);
+    setCurrentPage(1); // Reset to first page when filtering
     console.log('Filtros aplicados:', newFilters);
   };
 
@@ -186,6 +197,10 @@ const PasajerosIndex = () => {
       )
     );
     console.log('Cambiando estado de pasajero:', id);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -215,7 +230,13 @@ const PasajerosIndex = () => {
               </p>
             </div>
           </div>
-          <PasajerosTable pasajeros={pasajerosFiltrados} onChangeStatus={handleChangeStatus} />
+          <PasajerosTable 
+            pasajeros={pasajerosPaginados} 
+            onChangeStatus={handleChangeStatus}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </Layout>
