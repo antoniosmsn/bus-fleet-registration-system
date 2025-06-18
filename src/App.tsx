@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +30,7 @@ import RegisterParada from "./pages/paradas/Register";
 import AsignacionesIndex from "./pages/asignaciones/Index";
 import RegisterAsignacion from "./pages/asignaciones/Register";
 import EditAsignacion from "./pages/asignaciones/Edit";
+import PasajerosIndex from "./pages/pasajeros/Index";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -67,6 +69,10 @@ const App = () => (
             <Route path="/asignaciones" element={<AsignacionesIndex />} />
             <Route path="/asignaciones/register" element={<RegisterAsignacion />} />
             <Route path="/asignaciones/edit/:id" element={<EditAsignacion />} />
+            <Route path="/pasajeros" element={<PasajerosIndex />} />
+            <Route path="/pasajeros/register" element={<PlaceholderPage title="Registrar Pasajero" />} />
+            <Route path="/pasajeros/edit/:id" element={<PlaceholderPage title="Editar Pasajero" />} />
+            <Route path="/pasajeros/view/:id" element={<PlaceholderPage title="Ver Pasajero" />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
