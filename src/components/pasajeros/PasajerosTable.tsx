@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Table, 
@@ -77,7 +76,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <div className="overflow-x-auto">
         <Table className="min-w-[1600px]">
           <TableHeader>
@@ -175,8 +174,9 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
         </Table>
       </div>
       
+      {/* Pagination component - always visible when totalPages > 1 */}
       {totalPages > 1 && (
-        <div className="mt-6 flex justify-center">
+        <div className="flex justify-center">
           <PasajerosPagination 
             currentPage={currentPage}
             totalPages={totalPages}

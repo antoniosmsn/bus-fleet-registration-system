@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import PasajerosFilter from '@/components/pasajeros/PasajerosFilter';
@@ -106,7 +105,7 @@ const PasajerosIndex = () => {
   const [filtros, setFiltros] = useState<PasajeroFilter>({});
   const [pasajeros, setPasajeros] = useState<Pasajero[]>(mockPasajeros);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 2; // Changed to 2 to force pagination for testing
 
   const pasajerosFiltrados = useMemo(() => {
     return mockPasajeros.filter(pasajero => {
@@ -226,7 +225,7 @@ const PasajerosIndex = () => {
             <div className="mb-4">
               <h2 className="text-lg font-medium">Pasajeros Registrados</h2>
               <p className="text-gray-600">
-                {pasajerosFiltrados.length} pasajeros encontrados
+                {pasajerosFiltrados.length} pasajeros encontrados - Página {currentPage} de {totalPages}
               </p>
             </div>
             
