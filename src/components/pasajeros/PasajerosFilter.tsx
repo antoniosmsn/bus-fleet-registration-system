@@ -64,76 +64,82 @@ const PasajerosFilter: React.FC<PasajerosFilterProps> = ({ onFilter }) => {
           </TabsList>
 
           <TabsContent value="datos-pasajero" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cedula">Cédula</Label>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="cedula" className="text-xs">Cédula</Label>
                 <Input
                   id="cedula"
-                  placeholder="Número de cédula..."
+                  placeholder="Cédula..."
                   value={filtros.cedula || ''}
                   onChange={(e) => handleInputChange('cedula', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="nombres">Nombres</Label>
+              <div className="space-y-1">
+                <Label htmlFor="nombres" className="text-xs">Nombres</Label>
                 <Input
                   id="nombres"
-                  placeholder="Nombres del pasajero..."
+                  placeholder="Nombres..."
                   value={filtros.nombres || ''}
                   onChange={(e) => handleInputChange('nombres', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="primerApellido">Primer Apellido</Label>
+              <div className="space-y-1">
+                <Label htmlFor="primerApellido" className="text-xs">Primer Apellido</Label>
                 <Input
                   id="primerApellido"
                   placeholder="Primer apellido..."
                   value={filtros.primerApellido || ''}
                   onChange={(e) => handleInputChange('primerApellido', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="segundoApellido">Segundo Apellido</Label>
+              <div className="space-y-1">
+                <Label htmlFor="segundoApellido" className="text-xs">Segundo Apellido</Label>
                 <Input
                   id="segundoApellido"
                   placeholder="Segundo apellido..."
                   value={filtros.segundoApellido || ''}
                   onChange={(e) => handleInputChange('segundoApellido', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="correo">Correo</Label>
+              <div className="space-y-1">
+                <Label htmlFor="correo" className="text-xs">Correo</Label>
                 <Input
                   id="correo"
-                  placeholder="Correo electrónico..."
+                  placeholder="Correo..."
                   value={filtros.correo || ''}
                   onChange={(e) => handleInputChange('correo', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="datos-empresa" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="empresaCliente">Empresa Cliente</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="empresaCliente" className="text-xs">Empresa Cliente</Label>
                 <Input
                   id="empresaCliente"
-                  placeholder="Buscar empresa..."
+                  placeholder="Empresa..."
                   value={filtros.empresaCliente || ''}
                   onChange={(e) => handleInputChange('empresaCliente', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="tipoPago">Tipo de Pago</Label>
+              <div className="space-y-1">
+                <Label htmlFor="tipoPago" className="text-xs">Tipo de Pago</Label>
                 <Select onValueChange={(value) => handleSelectChange('tipoPago', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar tipo..." />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Tipo..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
@@ -143,35 +149,37 @@ const PasajerosFilter: React.FC<PasajerosFilterProps> = ({ onFilter }) => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="badgeInterno">Badge Interno</Label>
+              <div className="space-y-1">
+                <Label htmlFor="badgeInterno" className="text-xs">Badge Interno</Label>
                 <Input
                   id="badgeInterno"
-                  placeholder="Badge interno..."
+                  placeholder="Badge..."
                   value={filtros.badgeInterno || ''}
                   onChange={(e) => handleInputChange('badgeInterno', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="numeroEmpleado">Número de Empleado</Label>
+              <div className="space-y-1">
+                <Label htmlFor="numeroEmpleado" className="text-xs">Número de Empleado</Label>
                 <Input
                   id="numeroEmpleado"
-                  placeholder="Número de empleado..."
+                  placeholder="No. empleado..."
                   value={filtros.numeroEmpleado || ''}
                   onChange={(e) => handleInputChange('numeroEmpleado', e.target.value)}
+                  className="h-8 text-sm"
                 />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="datos-estado" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="estado">Estado del Pasajero</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="estado" className="text-xs">Estado del Pasajero</Label>
                 <Select onValueChange={(value) => handleSelectChange('estado', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar estado..." />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Estado..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
@@ -185,15 +193,15 @@ const PasajerosFilter: React.FC<PasajerosFilterProps> = ({ onFilter }) => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>Solicitud de Ruta</Label>
-                <div className="flex items-center space-x-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Solicitud de Ruta</Label>
+                <div className="flex items-center space-x-2 h-8">
                   <Checkbox
                     id="solicitudRuta"
                     checked={filtros.solicitudRuta === true}
                     onCheckedChange={handleCheckboxChange}
                   />
-                  <Label htmlFor="solicitudRuta" className="text-sm font-normal">
+                  <Label htmlFor="solicitudRuta" className="text-xs font-normal">
                     Con solicitud de ruta
                   </Label>
                 </div>
@@ -203,12 +211,12 @@ const PasajerosFilter: React.FC<PasajerosFilterProps> = ({ onFilter }) => {
         </Tabs>
 
         <div className="flex gap-2 mt-6">
-          <Button onClick={aplicarFiltros} className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
+          <Button onClick={aplicarFiltros} className="flex items-center gap-2 h-8 px-3 text-sm">
+            <Search className="h-3 w-3" />
             Buscar
           </Button>
-          <Button variant="outline" onClick={limpiarFiltros} className="flex items-center gap-2">
-            <X className="h-4 w-4" />
+          <Button variant="outline" onClick={limpiarFiltros} className="flex items-center gap-2 h-8 px-3 text-sm">
+            <X className="h-3 w-3" />
             Limpiar Filtros
           </Button>
         </div>
