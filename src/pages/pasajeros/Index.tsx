@@ -108,7 +108,7 @@ const PasajerosIndex = () => {
   const itemsPerPage = 2; // Changed to 2 to force pagination for testing
 
   const pasajerosFiltrados = useMemo(() => {
-    return mockPasajeros.filter(pasajero => {
+    return pasajeros.filter(pasajero => {
       // Filtro por empresa cliente
       if (filtros.empresaCliente && !pasajero.empresaCliente.toLowerCase().includes(filtros.empresaCliente.toLowerCase())) {
         return false;
@@ -166,7 +166,7 @@ const PasajerosIndex = () => {
 
       return true;
     });
-  }, [filtros]);
+  }, [pasajeros, filtros]);
 
   const totalPages = Math.ceil(pasajerosFiltrados.length / itemsPerPage);
   
