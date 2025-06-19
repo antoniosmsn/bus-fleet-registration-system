@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -143,18 +141,6 @@ const PasajeroForm = () => {
           <Card>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
               <div>
-                <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
-                <Input
-                  id="empresaCliente"
-                  {...register('empresaCliente')}
-                  placeholder="Ingrese la empresa cliente"
-                />
-                {errors.empresaCliente && (
-                  <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
-                )}
-              </div>
-
-              <div>
                 <Label htmlFor="cedula">Número de Cédula o Dimex *</Label>
                 <Input
                   id="cedula"
@@ -232,7 +218,7 @@ const PasajeroForm = () => {
           <div className="flex justify-end mt-6">
             <Button 
               type="button" 
-              onClick={() => handleContinue('pago', ['empresaCliente', 'cedula', 'nombres', 'primerApellido', 'segundoApellido', 'correoElectronico', 'telefono'])}
+              onClick={() => handleContinue('pago', ['cedula', 'nombres', 'primerApellido', 'segundoApellido', 'correoElectronico', 'telefono'])}
             >
               Continuar
             </Button>
@@ -464,6 +450,18 @@ const PasajeroForm = () => {
             <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
+                  <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
+                  <Input
+                    id="empresaCliente"
+                    {...register('empresaCliente')}
+                    placeholder="Ingrese la empresa cliente"
+                  />
+                  {errors.empresaCliente && (
+                    <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
+                  )}
+                </div>
+
+                <div>
                   <Label htmlFor="numeroEmpleadoInterno">Número de Empleado Interno</Label>
                   <Input
                     id="numeroEmpleadoInterno"
@@ -523,4 +521,3 @@ const PasajeroForm = () => {
 };
 
 export default PasajeroForm;
-
