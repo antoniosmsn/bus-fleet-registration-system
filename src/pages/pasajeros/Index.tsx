@@ -1,7 +1,9 @@
+
 import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import PasajerosFilter from '@/components/pasajeros/PasajerosFilter';
 import PasajerosTable from '@/components/pasajeros/PasajerosTable';
+import PasajerosExport from '@/components/pasajeros/PasajerosExport';
 import { Pasajero, PasajeroFilter } from '@/types/pasajero';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -210,12 +212,15 @@ const PasajerosIndex = () => {
             <h1 className="text-2xl font-bold text-gray-900">Usuarios Pasajeros</h1>
             <p className="text-gray-600">Gestione los pasajeros registrados en el sistema</p>
           </div>
-          <Link to="/pasajeros/register">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <PasajerosExport pasajeros={pasajerosFiltrados} />
+            <Link to="/pasajeros/register">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Nuevo
+              </Button>
+            </Link>
+          </div>
         </div>
         
         <PasajerosFilter onFilter={handleFilter} />

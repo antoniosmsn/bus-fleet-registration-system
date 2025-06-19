@@ -1,8 +1,8 @@
-
 import { Conductor } from "@/types/conductor";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Bus } from "@/types/bus";
+import { Pasajero } from "@/types/pasajero";
 
 export const exportConductoresToPDF = async (conductores: Conductor[]) => {
   // Aquí iría la lógica real de exportación a PDF
@@ -101,7 +101,59 @@ const formatBusesForExport = (buses: Bus[]) => {
   }));
 };
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' = 'conductores') => {
+// Nueva función para exportar pasajeros a PDF
+export const exportPasajerosToPDF = async (pasajeros: Pasajero[]) => {
+  // Aquí iría la lógica real de exportación a PDF
+  // Por ahora simulamos la exportación
+  console.log('Exportando pasajeros a PDF:', formatPasajerosForExport(pasajeros));
+  
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  const fileName = `Pasajeros_${timestamp}.pdf`;
+  
+  // Simular la descarga
+  alert(`Se generaría el archivo ${fileName} con los pasajeros filtrados.`);
+  
+  // Log para auditoría
+  logExportAction('PDF', 'pasajeros');
+};
+
+// Nueva función para exportar pasajeros a Excel
+export const exportPasajerosToExcel = async (pasajeros: Pasajero[]) => {
+  // Aquí iría la lógica real de exportación a Excel
+  // Por ahora simulamos la exportación
+  console.log('Exportando pasajeros a Excel:', formatPasajerosForExport(pasajeros));
+  
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  const fileName = `Pasajeros_${timestamp}.xlsx`;
+  
+  // Simular la descarga
+  alert(`Se generaría el archivo ${fileName} con los pasajeros filtrados.`);
+  
+  // Log para auditoría
+  logExportAction('Excel', 'pasajeros');
+};
+
+const formatPasajerosForExport = (pasajeros: Pasajero[]) => {
+  return pasajeros.map(pasajero => ({
+    cedula: pasajero.cedula,
+    nombreCompleto: `${pasajero.nombres} ${pasajero.primerApellido} ${pasajero.segundoApellido}`,
+    correoElectronico: pasajero.correoElectronico,
+    telefono: pasajero.telefono,
+    empresaCliente: pasajero.empresaCliente,
+    tipoPago: pasajero.tipoPago === 'prepago' ? 'Prepago' : 'Postpago',
+    numeroEmpleadoInterno: pasajero.numeroEmpleadoInterno || 'N/A',
+    badgeInterno: pasajero.badgeInterno || 'N/A',
+    subsidioPorcentual: `${pasajero.subsidioPorcentual}%`,
+    subsidioMonto: pasajero.subsidioMonto,
+    saldoPrepago: pasajero.saldoPrepago || 0,
+    saldoPostpago: pasajero.saldoPostpago || 0,
+    estado: pasajero.estado,
+    solicitudRuta: pasajero.solicitudRuta ? 'Sí' : 'No',
+    fechaCreacion: new Date(pasajero.fechaCreacion).toLocaleDateString()
+  }));
+};
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación
