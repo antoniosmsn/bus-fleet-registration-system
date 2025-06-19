@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -175,7 +174,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                           onClick={() => handleSolicitudTraslado(pasajero.id)}
                         >
                           <ArrowRightLeft className="h-4 w-4" />
-                          <span className="ml-1 text-xs">Solicitud de traslado</span>
+                          <span className="ml-1 text-xs">Enviar solicitud de traslado</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -186,7 +185,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
           </Table>
         </ScrollArea>
         
-        {/* Pagination component - always visible when totalPages > 1 */}
         {totalPages > 1 && (
           <div className="flex justify-center">
             <PasajerosPagination 
