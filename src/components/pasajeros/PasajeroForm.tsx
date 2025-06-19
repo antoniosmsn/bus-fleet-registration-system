@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import MultiSelectZonasFrancas from './MultiSelectZonasFrancas';
@@ -44,12 +45,14 @@ type PasajeroFormData = z.infer<typeof pasajeroSchema>;
 const PasajeroForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [currentTab, setCurrentTab] = useState('personal');
   
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors, isSubmitting }
   } = useForm<PasajeroFormData>({
     resolver: zodResolver(pasajeroSchema),
@@ -66,6 +69,13 @@ const PasajeroForm = () => {
   });
 
   const tipoSubsidio = watch('tipoSubsidio');
+
+  const handleContinue = async (nextTab: string, fieldsToValidate: (keyof PasajeroFormData)[]) => {
+    const isValid = await trigger(fieldsToValidate);
+    if (isValid) {
+      setCurrentTab(nextTab);
+    }
+  };
 
   const onSubmit = async (data: PasajeroFormData) => {
     try {
@@ -91,320 +101,371 @@ const PasajeroForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Información Personal */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información Personal</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
-            <Input
-              id="empresaCliente"
-              {...register('empresaCliente')}
-              placeholder="Ingrese la empresa cliente"
-            />
-            {errors.empresaCliente && (
-              <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
-            )}
-          </div>
+      <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="personal">Información Personal</TabsTrigger>
+          <TabsTrigger value="pago">Pago y Contrato</TabsTrigger>
+          <TabsTrigger value="subsidio">Subsidio</TabsTrigger>
+          <TabsTrigger value="adicional">Información Adicional</TabsTrigger>
+        </TabsList>
 
-          <div>
-            <Label htmlFor="cedula">Número de Cédula o Dimex *</Label>
-            <Input
-              id="cedula"
-              {...register('cedula')}
-              placeholder="Ingrese la cédula o Dimex"
-            />
-            {errors.cedula && (
-              <p className="text-sm text-red-500 mt-1">{errors.cedula.message}</p>
-            )}
-          </div>
+        <TabsContent value="personal" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información Personal</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
+                <Input
+                  id="empresaCliente"
+                  {...register('empresaCliente')}
+                  placeholder="Ingrese la empresa cliente"
+                />
+                {errors.empresaCliente && (
+                  <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="nombres">Nombres *</Label>
-            <Input
-              id="nombres"
-              {...register('nombres')}
-              placeholder="Ingrese los nombres"
-            />
-            {errors.nombres && (
-              <p className="text-sm text-red-500 mt-1">{errors.nombres.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="cedula">Número de Cédula o Dimex *</Label>
+                <Input
+                  id="cedula"
+                  {...register('cedula')}
+                  placeholder="Ingrese la cédula o Dimex"
+                />
+                {errors.cedula && (
+                  <p className="text-sm text-red-500 mt-1">{errors.cedula.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="primerApellido">Primer Apellido *</Label>
-            <Input
-              id="primerApellido"
-              {...register('primerApellido')}
-              placeholder="Ingrese el primer apellido"
-            />
-            {errors.primerApellido && (
-              <p className="text-sm text-red-500 mt-1">{errors.primerApellido.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="nombres">Nombres *</Label>
+                <Input
+                  id="nombres"
+                  {...register('nombres')}
+                  placeholder="Ingrese los nombres"
+                />
+                {errors.nombres && (
+                  <p className="text-sm text-red-500 mt-1">{errors.nombres.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="segundoApellido">Segundo Apellido *</Label>
-            <Input
-              id="segundoApellido"
-              {...register('segundoApellido')}
-              placeholder="Ingrese el segundo apellido"
-            />
-            {errors.segundoApellido && (
-              <p className="text-sm text-red-500 mt-1">{errors.segundoApellido.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="primerApellido">Primer Apellido *</Label>
+                <Input
+                  id="primerApellido"
+                  {...register('primerApellido')}
+                  placeholder="Ingrese el primer apellido"
+                />
+                {errors.primerApellido && (
+                  <p className="text-sm text-red-500 mt-1">{errors.primerApellido.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="correoElectronico">Correo Electrónico *</Label>
-            <Input
-              id="correoElectronico"
-              type="email"
-              {...register('correoElectronico')}
-              placeholder="ejemplo@correo.com"
-            />
-            {errors.correoElectronico && (
-              <p className="text-sm text-red-500 mt-1">{errors.correoElectronico.message}</p>
-            )}
-          </div>
+              <div>
+                <Label htmlFor="segundoApellido">Segundo Apellido *</Label>
+                <Input
+                  id="segundoApellido"
+                  {...register('segundoApellido')}
+                  placeholder="Ingrese el segundo apellido"
+                />
+                {errors.segundoApellido && (
+                  <p className="text-sm text-red-500 mt-1">{errors.segundoApellido.message}</p>
+                )}
+              </div>
 
-          <div>
-            <Label htmlFor="telefono">Teléfono *</Label>
-            <Input
-              id="telefono"
-              {...register('telefono')}
-              placeholder="8888-8888"
-            />
-            {errors.telefono && (
-              <p className="text-sm text-red-500 mt-1">{errors.telefono.message}</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <div>
+                <Label htmlFor="correoElectronico">Correo Electrónico *</Label>
+                <Input
+                  id="correoElectronico"
+                  type="email"
+                  {...register('correoElectronico')}
+                  placeholder="ejemplo@correo.com"
+                />
+                {errors.correoElectronico && (
+                  <p className="text-sm text-red-500 mt-1">{errors.correoElectronico.message}</p>
+                )}
+              </div>
 
-      {/* Información de Pago y Contrato */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información de Pago y Contrato</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Tipo de Pago *</Label>
-            <RadioGroup
-              value={watch('tipoPago')}
-              onValueChange={(value) => setValue('tipoPago', value as 'prepago' | 'postpago')}
-              className="flex space-x-4 mt-2"
+              <div>
+                <Label htmlFor="telefono">Teléfono *</Label>
+                <Input
+                  id="telefono"
+                  {...register('telefono')}
+                  placeholder="8888-8888"
+                />
+                {errors.telefono && (
+                  <p className="text-sm text-red-500 mt-1">{errors.telefono.message}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-end mt-6">
+            <Button 
+              type="button" 
+              onClick={() => handleContinue('pago', ['empresaCliente', 'cedula', 'nombres', 'primerApellido', 'segundoApellido', 'correoElectronico', 'telefono'])}
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="prepago" id="prepago" />
-                <Label htmlFor="prepago">Prepago</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="postpago" id="postpago" />
-                <Label htmlFor="postpago">Postpago</Label>
-              </div>
-            </RadioGroup>
+              Continuar
+            </Button>
           </div>
+        </TabsContent>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="empresaSubcontratista">Empresa Subcontratista</Label>
-              <Input
-                id="empresaSubcontratista"
-                {...register('empresaSubcontratista')}
-                placeholder="Ingrese la empresa subcontratista"
-              />
-            </div>
+        <TabsContent value="pago" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información de Pago y Contrato</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Tipo de Pago *</Label>
+                <RadioGroup
+                  value={watch('tipoPago')}
+                  onValueChange={(value) => setValue('tipoPago', value as 'prepago' | 'postpago')}
+                  className="flex space-x-4 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="prepago" id="prepago" />
+                    <Label htmlFor="prepago">Prepago</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="postpago" id="postpago" />
+                    <Label htmlFor="postpago">Postpago</Label>
+                  </div>
+                </RadioGroup>
+              </div>
 
-            <div>
-              <Label>Tipo de Contrato *</Label>
-              <Select
-                value={watch('tipoContrato')}
-                onValueChange={(value) => setValue('tipoContrato', value as 'directo' | 'indirecto')}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="directo">Directo</SelectItem>
-                  <SelectItem value="indirecto">Indirecto</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="empresaSubcontratista">Empresa Subcontratista</Label>
+                  <Input
+                    id="empresaSubcontratista"
+                    {...register('empresaSubcontratista')}
+                    placeholder="Ingrese la empresa subcontratista"
+                  />
+                </div>
 
-            <div>
-              <Label>Planilla *</Label>
-              <Select
-                value={watch('planilla')}
-                onValueChange={(value) => setValue('planilla', value as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bisemanal">Bisemanal</SelectItem>
-                  <SelectItem value="contratista">Contratista</SelectItem>
-                  <SelectItem value="mensual">Mensual</SelectItem>
-                  <SelectItem value="quincenal">Quincenal</SelectItem>
-                  <SelectItem value="semanal">Semanal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div>
+                  <Label>Tipo de Contrato *</Label>
+                  <Select
+                    value={watch('tipoContrato')}
+                    onValueChange={(value) => setValue('tipoContrato', value as 'directo' | 'indirecto')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="directo">Directo</SelectItem>
+                      <SelectItem value="indirecto">Indirecto</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label>Límite de Viajes por Semana *</Label>
-              <Select
-                value={watch('limiteViajesSemana')?.toString()}
-                onValueChange={(value) => setValue('limiteViajesSemana', value === 'sin_limite' ? 'sin_limite' : parseInt(value) as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="12">12</SelectItem>
-                  <SelectItem value="14">14</SelectItem>
-                  <SelectItem value="sin_limite">Sin límite</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div>
+                  <Label>Planilla *</Label>
+                  <Select
+                    value={watch('planilla')}
+                    onValueChange={(value) => setValue('planilla', value as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bisemanal">Bisemanal</SelectItem>
+                      <SelectItem value="contratista">Contratista</SelectItem>
+                      <SelectItem value="mensual">Mensual</SelectItem>
+                      <SelectItem value="quincenal">Quincenal</SelectItem>
+                      <SelectItem value="semanal">Semanal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div>
-              <Label>Límite Diario *</Label>
-              <Select
-                value={watch('limiteDiario')?.toString()}
-                onValueChange={(value) => setValue('limiteDiario', value === 'sin_limite' ? 'sin_limite' : parseInt(value) as any)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2">2 viajes diarios</SelectItem>
-                  <SelectItem value="sin_limite">Sin límite diario</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                <div>
+                  <Label>Límite de Viajes por Semana *</Label>
+                  <Select
+                    value={watch('limiteViajesSemana')?.toString()}
+                    onValueChange={(value) => setValue('limiteViajesSemana', value === 'sin_limite' ? 'sin_limite' : parseInt(value) as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="12">12</SelectItem>
+                      <SelectItem value="14">14</SelectItem>
+                      <SelectItem value="sin_limite">Sin límite</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Información de Subsidio */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información de Subsidio</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Tipo de Subsidio *</Label>
-            <RadioGroup
-              value={watch('tipoSubsidio')}
-              onValueChange={(value) => setValue('tipoSubsidio', value as 'por_monto' | 'porcentual')}
-              className="flex space-x-4 mt-2"
+                <div>
+                  <Label>Límite Diario *</Label>
+                  <Select
+                    value={watch('limiteDiario')?.toString()}
+                    onValueChange={(value) => setValue('limiteDiario', value === 'sin_limite' ? 'sin_limite' : parseInt(value) as any)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2">2 viajes diarios</SelectItem>
+                      <SelectItem value="sin_limite">Sin límite diario</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between mt-6">
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('personal')}>
+              Anterior
+            </Button>
+            <Button 
+              type="button" 
+              onClick={() => handleContinue('subsidio', ['tipoPago', 'tipoContrato', 'planilla', 'limiteViajesSemana', 'limiteDiario'])}
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="porcentual" id="porcentual" />
-                <Label htmlFor="porcentual">Porcentual</Label>
+              Continuar
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="subsidio" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información de Subsidio</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Tipo de Subsidio *</Label>
+                <RadioGroup
+                  value={watch('tipoSubsidio')}
+                  onValueChange={(value) => setValue('tipoSubsidio', value as 'por_monto' | 'porcentual')}
+                  className="flex space-x-4 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="porcentual" id="porcentual" />
+                    <Label htmlFor="porcentual">Porcentual</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="por_monto" id="por_monto" />
+                    <Label htmlFor="por_monto">Por Monto</Label>
+                  </div>
+                </RadioGroup>
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="por_monto" id="por_monto" />
-                <Label htmlFor="por_monto">Por Monto</Label>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="subsidioPorcentual">
+                    Subsidio Porcentual {tipoSubsidio === 'porcentual' && '*'}
+                  </Label>
+                  <Input
+                    id="subsidioPorcentual"
+                    type="number"
+                    min="0"
+                    max="100"
+                    {...register('subsidioPorcentual', { valueAsNumber: true })}
+                    disabled={tipoSubsidio !== 'porcentual'}
+                    placeholder="0-100"
+                  />
+                  {errors.subsidioPorcentual && (
+                    <p className="text-sm text-red-500 mt-1">{errors.subsidioPorcentual.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="subsidioMonto">
+                    Subsidio por Monto {tipoSubsidio === 'por_monto' && '*'}
+                  </Label>
+                  <Input
+                    id="subsidioMonto"
+                    type="number"
+                    min="0"
+                    {...register('subsidioMonto', { valueAsNumber: true })}
+                    disabled={tipoSubsidio !== 'por_monto'}
+                    placeholder="0.00"
+                  />
+                  {errors.subsidioMonto && (
+                    <p className="text-sm text-red-500 mt-1">{errors.subsidioMonto.message}</p>
+                  )}
+                </div>
               </div>
-            </RadioGroup>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="subsidioPorcentual">
-                Subsidio Porcentual {tipoSubsidio === 'porcentual' && '*'}
-              </Label>
-              <Input
-                id="subsidioPorcentual"
-                type="number"
-                min="0"
-                max="100"
-                {...register('subsidioPorcentual', { valueAsNumber: true })}
-                disabled={tipoSubsidio !== 'porcentual'}
-                placeholder="0-100"
-              />
-              {errors.subsidioPorcentual && (
-                <p className="text-sm text-red-500 mt-1">{errors.subsidioPorcentual.message}</p>
-              )}
+          <div className="flex justify-between mt-6">
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('pago')}>
+              Anterior
+            </Button>
+            <Button 
+              type="button" 
+              onClick={() => handleContinue('adicional', ['tipoSubsidio', 'subsidioPorcentual', 'subsidioMonto'])}
+            >
+              Continuar
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="adicional" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información Adicional</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="numeroEmpleadoInterno">Número de Empleado Interno</Label>
+                  <Input
+                    id="numeroEmpleadoInterno"
+                    {...register('numeroEmpleadoInterno')}
+                    placeholder="Ingrese el número de empleado"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="badgeInterno">Badge Interno</Label>
+                  <Input
+                    id="badgeInterno"
+                    {...register('badgeInterno')}
+                    placeholder="Ingrese el badge interno"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Zonas Francas</Label>
+                <MultiSelectZonasFrancas
+                  value={watch('zonasFrancas') || []}
+                  onChange={(value) => setValue('zonasFrancas', value)}
+                />
+              </div>
+
+              <div>
+                <Label>Tag de Residencia</Label>
+                <TagResidenciaMap
+                  value={watch('tagResidencia')}
+                  onChange={(value) => setValue('tagResidencia', value)}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between mt-6">
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('subsidio')}>
+              Anterior
+            </Button>
+            <div className="flex space-x-4">
+              <Button type="button" variant="outline" onClick={() => navigate('/pasajeros')}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Guardando...' : 'Guardar Pasajero'}
+              </Button>
             </div>
-
-            <div>
-              <Label htmlFor="subsidioMonto">
-                Subsidio por Monto {tipoSubsidio === 'por_monto' && '*'}
-              </Label>
-              <Input
-                id="subsidioMonto"
-                type="number"
-                min="0"
-                {...register('subsidioMonto', { valueAsNumber: true })}
-                disabled={tipoSubsidio !== 'por_monto'}
-                placeholder="0.00"
-              />
-              {errors.subsidioMonto && (
-                <p className="text-sm text-red-500 mt-1">{errors.subsidioMonto.message}</p>
-              )}
-            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Información Adicional */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información Adicional</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="numeroEmpleadoInterno">Número de Empleado Interno</Label>
-              <Input
-                id="numeroEmpleadoInterno"
-                {...register('numeroEmpleadoInterno')}
-                placeholder="Ingrese el número de empleado"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="badgeInterno">Badge Interno</Label>
-              <Input
-                id="badgeInterno"
-                {...register('badgeInterno')}
-                placeholder="Ingrese el badge interno"
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label>Zonas Francas</Label>
-            <MultiSelectZonasFrancas
-              value={watch('zonasFrancas') || []}
-              onChange={(value) => setValue('zonasFrancas', value)}
-            />
-          </div>
-
-          <div>
-            <Label>Tag de Residencia</Label>
-            <TagResidenciaMap
-              value={watch('tagResidencia')}
-              onChange={(value) => setValue('tagResidencia', value)}
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-end space-x-4">
-        <Button type="button" variant="outline" onClick={() => navigate('/pasajeros')}>
-          Cancelar
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Guardando...' : 'Guardar Pasajero'}
-        </Button>
-      </div>
+        </TabsContent>
+      </Tabs>
     </form>
   );
 };
