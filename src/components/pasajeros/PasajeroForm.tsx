@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import MultiSelectZonasFrancas from './MultiSelectZonasFrancas';
-import TagResidenciaMap from './TagResidenciaMap';
+import ResidenciaMap from './ResidenciaMap';
 
 const pasajeroSchema = z.object({
   empresaCliente: z.string().min(1, 'La empresa cliente es requerida'),
@@ -77,6 +77,22 @@ const PasajeroForm = () => {
     }
   };
 
+  const handleResidenciaPositionChange = (position: [number, number]) => {
+    const locationString = `${position[0]},${position[1]}`;
+    setValue('tagResidencia', locationString);
+  };
+
+  const getResidenciaPosition = (): [number, number] | undefined => {
+    const tagResidencia = watch('tagResidencia');
+    if (tagResidencia && tagResidencia.includes(',')) {
+      const [lat, lng] = tagResidencia.split(',').map(Number);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        return [lat, lng];
+      }
+    }
+    return undefined;
+  };
+
   const onSubmit = async (data: PasajeroFormData) => {
     try {
       console.log('Datos del formulario:', data);
@@ -102,10 +118,11 @@ const PasajeroForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="personal">Información Personal</TabsTrigger>
           <TabsTrigger value="pago">Pago y Contrato</TabsTrigger>
           <TabsTrigger value="subsidio">Subsidio</TabsTrigger>
+          <TabsTrigger value="residencia">Residencia</TabsTrigger>
           <TabsTrigger value="adicional">Información Adicional</TabsTrigger>
         </TabsList>
 
@@ -398,6 +415,37 @@ const PasajeroForm = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="residencia" className="mt-6">
+          <Card>
+            <CardContent className="space-y-4 pt-6">
+              <div>
+                <Label>Ubicación de Residencia</Label>
+                <ResidenciaMap
+                  position={getResidenciaPosition()}
+                  onPositionChange={handleResidenciaPositionChange}
+                />
+                {watch('tagResidencia') && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Coordenadas: {watch('tagResidencia')}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between mt-6">
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('subsidio')}>
+              Anterior
+            </Button>
+            <Button 
+              type="button" 
+              onClick={() => handleContinue('adicional', [])}
+            >
+              Continuar
+            </Button>
+          </div>
+        </TabsContent>
+
         <TabsContent value="adicional" className="mt-6">
           <Card>
             <CardContent className="space-y-4 pt-6">
@@ -428,19 +476,11 @@ const PasajeroForm = () => {
                   onChange={(value) => setValue('zonasFrancas', value)}
                 />
               </div>
-
-              <div>
-                <Label>Tag de Residencia</Label>
-                <TagResidenciaMap
-                  value={watch('tagResidencia')}
-                  onChange={(value) => setValue('tagResidencia', value)}
-                />
-              </div>
             </CardContent>
           </Card>
 
           <div className="flex justify-between mt-6">
-            <Button type="button" variant="outline" onClick={() => setCurrentTab('subsidio')}>
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('residencia')}>
               Anterior
             </Button>
             <div className="flex space-x-4">
