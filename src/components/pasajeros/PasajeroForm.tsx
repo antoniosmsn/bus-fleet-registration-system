@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import MultiSelectZonasFrancas from './MultiSelectZonasFrancas';
 import ResidenciaMap from './ResidenciaMap';
+import AsignacionRutas from './AsignacionRutas';
 
 const pasajeroSchema = z.object({
   empresaCliente: z.string().min(1, 'La empresa cliente es requerida'),
@@ -36,7 +38,8 @@ const pasajeroSchema = z.object({
   numeroEmpleadoInterno: z.string().optional(),
   badgeInterno: z.string().optional(),
   tagResidencia: z.string().optional(),
-  zonasFrancas: z.array(z.string()).optional()
+  zonasFrancas: z.array(z.string()).optional(),
+  rutasAsignadas: z.array(z.string()).optional()
 });
 
 type PasajeroFormData = z.infer<typeof pasajeroSchema>;
@@ -64,7 +67,8 @@ const PasajeroForm = () => {
       tipoSubsidio: 'porcentual',
       subsidioPorcentual: 0,
       subsidioMonto: 0,
-      zonasFrancas: []
+      zonasFrancas: [],
+      rutasAsignadas: []
     }
   });
 
@@ -118,11 +122,12 @@ const PasajeroForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="personal">Información Personal</TabsTrigger>
           <TabsTrigger value="pago">Pago y Contrato</TabsTrigger>
           <TabsTrigger value="subsidio">Subsidio</TabsTrigger>
           <TabsTrigger value="residencia">Residencia</TabsTrigger>
+          <TabsTrigger value="rutas">Asignación de Rutas</TabsTrigger>
           <TabsTrigger value="adicional">Información Adicional</TabsTrigger>
         </TabsList>
 
@@ -439,6 +444,32 @@ const PasajeroForm = () => {
             </Button>
             <Button 
               type="button" 
+              onClick={() => handleContinue('rutas', [])}
+            >
+              Continuar
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rutas" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Asignación de Rutas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AsignacionRutas
+                rutasAsignadas={watch('rutasAsignadas') || []}
+                onChange={(rutas) => setValue('rutasAsignadas', rutas)}
+              />
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between mt-6">
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('residencia')}>
+              Anterior
+            </Button>
+            <Button 
+              type="button" 
               onClick={() => handleContinue('adicional', [])}
             >
               Continuar
@@ -480,7 +511,7 @@ const PasajeroForm = () => {
           </Card>
 
           <div className="flex justify-between mt-6">
-            <Button type="button" variant="outline" onClick={() => setCurrentTab('residencia')}>
+            <Button type="button" variant="outline" onClick={() => setCurrentTab('rutas')}>
               Anterior
             </Button>
             <div className="flex space-x-4">
