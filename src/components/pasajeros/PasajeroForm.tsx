@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -130,7 +131,7 @@ const PasajeroForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="personal">Información Personal</TabsTrigger>
           <TabsTrigger value="pago">Pago y Contrato</TabsTrigger>
           <TabsTrigger value="subsidio">Subsidio</TabsTrigger>
@@ -522,3 +523,4 @@ const PasajeroForm = () => {
 };
 
 export default PasajeroForm;
+
