@@ -213,13 +213,13 @@ const PasajerosIndex = () => {
             <p className="text-gray-600">Gestione los pasajeros registrados en el sistema</p>
           </div>
           <div className="flex items-center gap-4">
-            <PasajerosExport pasajeros={pasajerosFiltrados} />
             <Link to="/pasajeros/register">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Nuevo
+                Nuevo Pasajero
               </Button>
             </Link>
+            <PasajerosExport pasajeros={pasajerosFiltrados} />
           </div>
         </div>
         
