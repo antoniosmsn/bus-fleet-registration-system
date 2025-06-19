@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -111,10 +110,7 @@ const PasajeroForm = () => {
 
         <TabsContent value="personal" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Información Personal</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
               <div>
                 <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
                 <Input
@@ -214,10 +210,7 @@ const PasajeroForm = () => {
 
         <TabsContent value="pago" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Información de Pago y Contrato</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <Label>Tipo de Pago *</Label>
                 <RadioGroup
@@ -333,10 +326,7 @@ const PasajeroForm = () => {
 
         <TabsContent value="subsidio" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Información de Subsidio</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div>
                 <Label>Tipo de Subsidio *</Label>
                 <RadioGroup
@@ -409,10 +399,7 @@ const PasajeroForm = () => {
 
         <TabsContent value="adicional" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Información Adicional</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="numeroEmpleadoInterno">Número de Empleado Interno</Label>
