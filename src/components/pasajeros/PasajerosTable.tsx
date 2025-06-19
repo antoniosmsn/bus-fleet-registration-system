@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Table, 
@@ -9,8 +10,9 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { Pasajero } from '@/types/pasajero';
-import { Edit, Eye, UserX, UserCheck } from 'lucide-react';
+import { Edit, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PasajerosPagination from './PasajerosPagination';
 
@@ -37,30 +39,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
       style: 'currency',
       currency: 'CRC'
     }).format(amount);
-  };
-
-  const getEstadoBadgeColor = (estado: string) => {
-    switch (estado) {
-      case 'activo': return 'bg-green-100 text-green-800';
-      case 'inactivo': return 'bg-red-100 text-red-800';
-      case 'cambio_password': return 'bg-yellow-100 text-yellow-800';
-      case 'dado_de_baja': return 'bg-gray-100 text-gray-800';
-      case 'solicitud_traslado': return 'bg-blue-100 text-blue-800';
-      case 'traslado_rechazado': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getEstadoText = (estado: string) => {
-    switch (estado) {
-      case 'activo': return 'Activo';
-      case 'inactivo': return 'Inactivo';
-      case 'cambio_password': return 'Cambio Password';
-      case 'dado_de_baja': return 'Dado de Baja';
-      case 'solicitud_traslado': return 'Solicitud Traslado';
-      case 'traslado_rechazado': return 'Traslado Rechazado';
-      default: return estado;
-    }
   };
 
   const getTipoPagoBadgeColor = (tipo: string) => {
@@ -127,9 +105,10 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                   <TableCell className="w-32">{formatCurrency(pasajero.saldoPostpago)}</TableCell>
                   <TableCell className="w-64">{pasajero.empresaCliente}</TableCell>
                   <TableCell className="w-32">
-                    <Badge className={getEstadoBadgeColor(pasajero.estado)}>
-                      {getEstadoText(pasajero.estado)}
-                    </Badge>
+                    <Switch
+                      checked={pasajero.estado === 'activo'}
+                      onCheckedChange={() => onChangeStatus(pasajero.id)}
+                    />
                   </TableCell>
                   <TableCell className="w-32">
                     <Badge className={pasajero.solicitudRuta ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
@@ -152,18 +131,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                         onClick={() => handleEdit(pasajero.id)}
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => onChangeStatus(pasajero.id)}
-                      >
-                        {pasajero.estado === 'activo' ? (
-                          <UserX className="h-4 w-4" />
-                        ) : (
-                          <UserCheck className="h-4 w-4" />
-                        )}
                       </Button>
                     </div>
                   </TableCell>
