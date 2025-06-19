@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Pasajero } from '@/types/pasajero';
-import { Edit, Eye } from 'lucide-react';
+import { Edit, Eye, ArrowRightLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PasajerosPagination from './PasajerosPagination';
 import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';
@@ -81,6 +81,11 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
     setDialogState(prev => ({ ...prev, open: false }));
   };
 
+  const handleSolicitudTraslado = (id: number) => {
+    console.log('Solicitud de traslado para pasajero:', id);
+    // Aquí se implementaría la lógica para la solicitud de traslado
+  };
+
   return (
     <>
       <div className="space-y-4">
@@ -102,7 +107,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                 <TableHead className="w-64">Empresa</TableHead>
                 <TableHead className="w-32">Estado</TableHead>
                 <TableHead className="w-32">Solicitud Ruta</TableHead>
-                <TableHead className="w-40">Acciones</TableHead>
+                <TableHead className="w-48">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -144,7 +149,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                         {pasajero.solicitudRuta ? 'Sí' : 'No'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="w-40">
+                    <TableCell className="w-48">
                       <div className="flex space-x-2">
                         <Button 
                           variant="outline" 
@@ -160,6 +165,15 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                           onClick={() => handleEdit(pasajero.id)}
                         >
                           <Edit className="h-4 w-4" />
+                        </Button>
+
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleSolicitudTraslado(pasajero.id)}
+                        >
+                          <ArrowRightLeft className="h-4 w-4" />
+                          <span className="ml-1 text-xs">Solicitud de traslado</span>
                         </Button>
                       </div>
                     </TableCell>
