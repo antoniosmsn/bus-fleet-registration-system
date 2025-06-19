@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import MultiSelectZonasFrancas from './MultiSelectZonasFrancas';
 import TagResidenciaMap from './TagResidenciaMap';
 
 const pasajeroSchema = z.object({
@@ -36,23 +36,10 @@ const pasajeroSchema = z.object({
   numeroEmpleadoInterno: z.string().optional(),
   badgeInterno: z.string().optional(),
   tagResidencia: z.string().optional(),
-  zonaFranca: z.string().optional()
+  zonasFrancas: z.array(z.string()).optional()
 });
 
 type PasajeroFormData = z.infer<typeof pasajeroSchema>;
-
-const zonasFrancas = [
-  'Zona Franca Cartago',
-  'Zona Franca Coyol',
-  'Zona Franca El Coyol',
-  'Zona Franca Belén',
-  'Zona Franca Metropolitana',
-  'Zona Franca Pavas',
-  'Zona Franca San José',
-  'Zona Franca Heredia',
-  'Zona Franca Alajuela',
-  'Zona Franca Puntarenas',
-];
 
 const PasajeroForm = () => {
   const navigate = useNavigate();
@@ -76,7 +63,8 @@ const PasajeroForm = () => {
       limiteDiario: 2,
       tipoSubsidio: 'porcentual',
       subsidioPorcentual: 0,
-      subsidioMonto: 0
+      subsidioMonto: 0,
+      zonasFrancas: []
     }
   });
 
@@ -434,22 +422,11 @@ const PasajeroForm = () => {
               </div>
 
               <div>
-                <Label>Zona Franca</Label>
-                <Select
-                  value={watch('zonaFranca')}
-                  onValueChange={(value) => setValue('zonaFranca', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar zona franca..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {zonasFrancas.map((zona) => (
-                      <SelectItem key={zona} value={zona}>
-                        {zona}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Zonas Francas</Label>
+                <MultiSelectZonasFrancas
+                  value={watch('zonasFrancas') || []}
+                  onChange={(value) => setValue('zonasFrancas', value)}
+                />
               </div>
 
               <div>
