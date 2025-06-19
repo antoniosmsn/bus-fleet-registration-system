@@ -206,7 +206,7 @@ const PasajerosIndex = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Usuarios Pasajeros</h1>
@@ -225,7 +225,7 @@ const PasajerosIndex = () => {
         
         <PasajerosFilter onFilter={handleFilter} />
         
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
             <PasajerosTable 
               pasajeros={pasajerosPaginados} 

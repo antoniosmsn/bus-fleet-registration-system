@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -90,100 +91,102 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
   return (
     <>
       <div className="space-y-4">
-        <ScrollArea className="w-full whitespace-nowrap rounded-md border">
-          <Table className="min-w-[1600px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-32">Cédula</TableHead>
-                <TableHead className="w-48">Nombres</TableHead>
-                <TableHead className="w-48">Apellidos</TableHead>
-                <TableHead className="w-32">Tipo de Pago</TableHead>
-                <TableHead className="w-64">Correo</TableHead>
-                <TableHead className="w-32">Badge Interno</TableHead>
-                <TableHead className="w-32"># Empleado</TableHead>
-                <TableHead className="w-32">Subsidio %</TableHead>
-                <TableHead className="w-32">Subsidio Monto</TableHead>
-                <TableHead className="w-32">Saldo Prepago</TableHead>
-                <TableHead className="w-32">Saldo Postpago</TableHead>
-                <TableHead className="w-64">Empresa</TableHead>
-                <TableHead className="w-32">Estado</TableHead>
-                <TableHead className="w-32">Solicitud Ruta</TableHead>
-                <TableHead className="w-48">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pasajeros.length === 0 ? (
+        <div className="overflow-x-auto">
+          <ScrollArea className="w-full">
+            <Table className="min-w-[1600px]">
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={15} className="text-center py-6 text-muted-foreground">
-                    No hay pasajeros que coincidan con los criterios de búsqueda
-                  </TableCell>
+                  <TableHead className="w-32">Cédula</TableHead>
+                  <TableHead className="w-48">Nombres</TableHead>
+                  <TableHead className="w-48">Apellidos</TableHead>
+                  <TableHead className="w-32">Tipo de Pago</TableHead>
+                  <TableHead className="w-64">Correo</TableHead>
+                  <TableHead className="w-32">Badge Interno</TableHead>
+                  <TableHead className="w-32"># Empleado</TableHead>
+                  <TableHead className="w-32">Subsidio %</TableHead>
+                  <TableHead className="w-32">Subsidio Monto</TableHead>
+                  <TableHead className="w-32">Saldo Prepago</TableHead>
+                  <TableHead className="w-32">Saldo Postpago</TableHead>
+                  <TableHead className="w-64">Empresa</TableHead>
+                  <TableHead className="w-32">Estado</TableHead>
+                  <TableHead className="w-32">Solicitud Ruta</TableHead>
+                  <TableHead className="w-48">Acciones</TableHead>
                 </TableRow>
-              ) : (
-                pasajeros.map((pasajero) => (
-                  <TableRow key={pasajero.id}>
-                    <TableCell className="font-medium w-32">{pasajero.cedula}</TableCell>
-                    <TableCell className="w-48">{pasajero.nombres}</TableCell>
-                    <TableCell className="w-48">
-                      {pasajero.primerApellido} {pasajero.segundoApellido}
-                    </TableCell>
-                    <TableCell className="w-32">
-                      <Badge className={getTipoPagoBadgeColor(pasajero.tipoPago)}>
-                        {pasajero.tipoPago === 'prepago' ? 'Prepago' : 'Postpago'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="w-64">{pasajero.correoElectronico}</TableCell>
-                    <TableCell className="w-32">{pasajero.badgeInterno || 'N/A'}</TableCell>
-                    <TableCell className="w-32">{pasajero.numeroEmpleadoInterno || 'N/A'}</TableCell>
-                    <TableCell className="w-32">{pasajero.subsidioPorcentual}%</TableCell>
-                    <TableCell className="w-32">{formatCurrency(pasajero.subsidioMonto)}</TableCell>
-                    <TableCell className="w-32">{formatCurrency(pasajero.saldoPrepago)}</TableCell>
-                    <TableCell className="w-32">{formatCurrency(pasajero.saldoPostpago)}</TableCell>
-                    <TableCell className="w-64">{pasajero.empresaCliente}</TableCell>
-                    <TableCell className="w-32">
-                      <Switch
-                        checked={pasajero.estado === 'activo'}
-                        onCheckedChange={() => handleSwitchClick(pasajero)}
-                      />
-                    </TableCell>
-                    <TableCell className="w-32">
-                      <Badge className={pasajero.solicitudRuta ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                        {pasajero.solicitudRuta ? 'Sí' : 'No'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="w-48">
-                      <div className="flex space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleView(pasajero.id)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleEdit(pasajero.id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleSolicitudTraslado(pasajero.id)}
-                        >
-                          <ArrowRightLeft className="h-4 w-4" />
-                          <span className="ml-1 text-xs">Enviar solicitud de traslado</span>
-                        </Button>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {pasajeros.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={15} className="text-center py-6 text-muted-foreground">
+                      No hay pasajeros que coincidan con los criterios de búsqueda
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+                ) : (
+                  pasajeros.map((pasajero) => (
+                    <TableRow key={pasajero.id}>
+                      <TableCell className="font-medium w-32">{pasajero.cedula}</TableCell>
+                      <TableCell className="w-48">{pasajero.nombres}</TableCell>
+                      <TableCell className="w-48">
+                        {pasajero.primerApellido} {pasajero.segundoApellido}
+                      </TableCell>
+                      <TableCell className="w-32">
+                        <Badge className={getTipoPagoBadgeColor(pasajero.tipoPago)}>
+                          {pasajero.tipoPago === 'prepago' ? 'Prepago' : 'Postpago'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="w-64">{pasajero.correoElectronico}</TableCell>
+                      <TableCell className="w-32">{pasajero.badgeInterno || 'N/A'}</TableCell>
+                      <TableCell className="w-32">{pasajero.numeroEmpleadoInterno || 'N/A'}</TableCell>
+                      <TableCell className="w-32">{pasajero.subsidioPorcentual}%</TableCell>
+                      <TableCell className="w-32">{formatCurrency(pasajero.subsidioMonto)}</TableCell>
+                      <TableCell className="w-32">{formatCurrency(pasajero.saldoPrepago)}</TableCell>
+                      <TableCell className="w-32">{formatCurrency(pasajero.saldoPostpago)}</TableCell>
+                      <TableCell className="w-64">{pasajero.empresaCliente}</TableCell>
+                      <TableCell className="w-32">
+                        <Switch
+                          checked={pasajero.estado === 'activo'}
+                          onCheckedChange={() => handleSwitchClick(pasajero)}
+                        />
+                      </TableCell>
+                      <TableCell className="w-32">
+                        <Badge className={pasajero.solicitudRuta ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                          {pasajero.solicitudRuta ? 'Sí' : 'No'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="w-48">
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleView(pasajero.id)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEdit(pasajero.id)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleSolicitudTraslado(pasajero.id)}
+                          >
+                            <ArrowRightLeft className="h-4 w-4" />
+                            <span className="ml-1 text-xs">Enviar solicitud de traslado</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </div>
         
         {totalPages > 1 && (
           <div className="flex justify-center">
