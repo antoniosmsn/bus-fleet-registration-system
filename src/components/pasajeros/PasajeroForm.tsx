@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -127,7 +126,7 @@ const PasajeroForm = () => {
           <TabsTrigger value="pago">Pago y Contrato</TabsTrigger>
           <TabsTrigger value="subsidio">Subsidio</TabsTrigger>
           <TabsTrigger value="residencia">Residencia</TabsTrigger>
-          <TabsTrigger value="rutas">Asignación de Rutas</TabsTrigger>
+          <TabsTrigger value="rutas">Rutas</TabsTrigger>
           <TabsTrigger value="adicional">Información Adicional</TabsTrigger>
         </TabsList>
 
@@ -453,9 +452,6 @@ const PasajeroForm = () => {
 
         <TabsContent value="rutas" className="mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Asignación de Rutas</CardTitle>
-            </CardHeader>
             <CardContent>
               <AsignacionRutas
                 rutasAsignadas={watch('rutasAsignadas') || []}
