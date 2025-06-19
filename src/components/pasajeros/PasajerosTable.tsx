@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -7,6 +8,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -89,7 +91,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
   return (
     <>
       <div className="space-y-4">
-        <div className="overflow-x-auto">
+        <ScrollArea className="w-full whitespace-nowrap rounded-md border">
           <Table className="min-w-[1600px]">
             <TableHeader>
               <TableRow>
@@ -182,7 +184,7 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollArea>
         
         {/* Pagination component - always visible when totalPages > 1 */}
         {totalPages > 1 && (
