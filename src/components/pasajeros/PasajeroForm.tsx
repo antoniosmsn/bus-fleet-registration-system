@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -229,6 +230,18 @@ const PasajeroForm = () => {
           <Card>
             <CardContent className="space-y-4 pt-6">
               <div>
+                <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
+                <Input
+                  id="empresaCliente"
+                  {...register('empresaCliente')}
+                  placeholder="Ingrese la empresa cliente"
+                />
+                {errors.empresaCliente && (
+                  <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
+                )}
+              </div>
+
+              <div>
                 <Label>Tipo de Pago *</Label>
                 <RadioGroup
                   value={watch('tipoPago')}
@@ -334,7 +347,7 @@ const PasajeroForm = () => {
             </Button>
             <Button 
               type="button" 
-              onClick={() => handleContinue('subsidio', ['tipoPago', 'tipoContrato', 'planilla', 'limiteViajesSemana', 'limiteDiario'])}
+              onClick={() => handleContinue('subsidio', ['empresaCliente', 'tipoPago', 'tipoContrato', 'planilla', 'limiteViajesSemana', 'limiteDiario'])}
             >
               Continuar
             </Button>
@@ -449,18 +462,6 @@ const PasajeroForm = () => {
           <Card>
             <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
-                  <Input
-                    id="empresaCliente"
-                    {...register('empresaCliente')}
-                    placeholder="Ingrese la empresa cliente"
-                  />
-                  {errors.empresaCliente && (
-                    <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
-                  )}
-                </div>
-
                 <div>
                   <Label htmlFor="numeroEmpleadoInterno">Número de Empleado Interno</Label>
                   <Input
