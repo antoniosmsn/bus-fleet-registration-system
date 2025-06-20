@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Pasajero } from '@/types/pasajero';
-import { Edit, Eye, ArrowRightLeft } from 'lucide-react';
+import { Edit, ArrowRightLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PasajerosPagination from './PasajerosPagination';
 import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';
@@ -60,10 +60,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
 
   const handleEdit = (id: number) => {
     navigate(`/pasajeros/edit/${id}`);
-  };
-
-  const handleView = (id: number) => {
-    navigate(`/pasajeros/view/${id}`);
   };
 
   const handleSwitchClick = (pasajero: Pasajero) => {
@@ -154,14 +150,6 @@ const PasajerosTable: React.FC<PasajerosTableProps> = ({
                       </TableCell>
                       <TableCell className="w-48">
                         <div className="flex space-x-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleView(pasajero.id)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          
                           <Button 
                             variant="outline" 
                             size="sm" 
