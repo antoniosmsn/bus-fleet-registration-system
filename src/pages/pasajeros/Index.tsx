@@ -215,7 +215,7 @@ const PasajerosIndex = () => {
             <Link to="/pasajeros/register">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
-                Nuevo Pasajero
+                Registrar
               </Button>
             </Link>
             <PasajerosExport pasajeros={pasajerosFiltrados} />
