@@ -54,6 +54,24 @@ const zonasFrancas = [
   'Zona Franca Puntarenas',
 ];
 
+const empresasClientes = [
+  'Intel Corporation',
+  'Microsoft Costa Rica',
+  'Amazon Web Services',
+  'Google Costa Rica',
+  'Hewlett Packard Enterprise',
+  'Oracle Corporation',
+  'IBM Costa Rica',
+  'Cisco Systems',
+  'Dell Technologies',
+  'Accenture',
+  'SAP Costa Rica',
+  'VMware',
+  'Salesforce',
+  'Adobe Systems',
+  'Autodesk'
+];
+
 const PasajeroForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -230,12 +248,22 @@ const PasajeroForm = () => {
           <Card>
             <CardContent className="space-y-4 pt-6">
               <div>
-                <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
-                <Input
-                  id="empresaCliente"
-                  {...register('empresaCliente')}
-                  placeholder="Ingrese la empresa cliente"
-                />
+                <Label>Empresa Cliente *</Label>
+                <Select
+                  value={watch('empresaCliente')}
+                  onValueChange={(value) => setValue('empresaCliente', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar empresa cliente..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {empresasClientes.map((empresa) => (
+                      <SelectItem key={empresa} value={empresa}>
+                        {empresa}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {errors.empresaCliente && (
                   <p className="text-sm text-red-500 mt-1">{errors.empresaCliente.message}</p>
                 )}
