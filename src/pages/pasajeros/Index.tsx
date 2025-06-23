@@ -106,7 +106,7 @@ const PasajerosIndex = () => {
   const [filtros, setFiltros] = useState<PasajeroFilter>({});
   const [pasajeros, setPasajeros] = useState<Pasajero[]>(mockPasajeros);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Changed from 2 to 5
+  const itemsPerPage = 8; // Changed from 5 to 8
 
   const pasajerosFiltrados = useMemo(() => {
     return pasajeros.filter(pasajero => {

@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,13 +48,7 @@ const PasajerosFilter: React.FC<PasajerosFilterProps> = ({ onFilter }) => {
 
   return (
     <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
-          Filtros de Búsqueda
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Tabs defaultValue="datos-pasajero" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="datos-pasajero">Datos Pasajero</TabsTrigger>
