@@ -15,10 +15,10 @@ import { toast } from '@/hooks/use-toast';
 import { RegistroServicioForm, Turno, Transportista, Ramal } from '@/types/servicio';
 
 const servicioSchema = z.object({
-  turno: z.string().min(1, 'Turno es requerido'),
-  transportista: z.string().min(1, 'Transportista es requerido'),
-  ramal: z.string().min(1, 'Ramal es requerido'),
   servicios: z.array(z.object({
+    turno: z.string().min(1, 'Turno es requerido'),
+    transportista: z.string().min(1, 'Transportista es requerido'),
+    ramal: z.string().min(1, 'Ramal es requerido'),
     horario: z.string().min(1, 'Horario es requerido'),
     diasSemana: z.array(z.string()).min(1, 'Debe seleccionar al menos un día'),
     sentido: z.enum(['ingreso', 'salida'], { required_error: 'Sentido es requerido' }),
@@ -52,22 +52,22 @@ const ServicioRegistrationForm = () => {
   ];
 
   const diasSemana = [
-    { id: 'lunes', label: 'Lunes' },
-    { id: 'martes', label: 'Martes' },
-    { id: 'miercoles', label: 'Miércoles' },
-    { id: 'jueves', label: 'Jueves' },
-    { id: 'viernes', label: 'Viernes' },
-    { id: 'sabado', label: 'Sábado' },
-    { id: 'domingo', label: 'Domingo' }
+    { id: 'lunes', label: 'L' },
+    { id: 'martes', label: 'M' },
+    { id: 'miercoles', label: 'X' },
+    { id: 'jueves', label: 'J' },
+    { id: 'viernes', label: 'V' },
+    { id: 'sabado', label: 'S' },
+    { id: 'domingo', label: 'D' }
   ];
 
-  const form = useForm<RegistroServicioForm>({
+  const form = useForm<{ servicios: any[] }>({
     resolver: zodResolver(servicioSchema),
     defaultValues: {
-      turno: '',
-      transportista: '',
-      ramal: '',
       servicios: [{
+        turno: '',
+        transportista: '',
+        ramal: '',
         horario: '',
         diasSemana: [],
         sentido: 'ingreso',
@@ -85,17 +85,13 @@ const ServicioRegistrationForm = () => {
 
   const validarDuplicados = () => {
     const servicios = form.getValues('servicios');
-    const turno = form.getValues('turno');
-    const transportista = form.getValues('transportista');
-    const ramal = form.getValues('ramal');
-    
     const duplicadosEncontrados: number[] = [];
     const combinaciones = new Set<string>();
 
     servicios.forEach((servicio, index) => {
       if (!servicio.agregarCapacidadAdicional) {
-        servicio.diasSemana.forEach(dia => {
-          const clave = `${turno}-${transportista}-${ramal}-${servicio.horario}-${dia}-${servicio.sentido}`;
+        servicio.diasSemana.forEach((dia: string) => {
+          const clave = `${servicio.turno}-${servicio.transportista}-${servicio.ramal}-${servicio.horario}-${dia}-${servicio.sentido}`;
           if (combinaciones.has(clave)) {
             duplicadosEncontrados.push(index);
           } else {
@@ -109,7 +105,7 @@ const ServicioRegistrationForm = () => {
     return duplicadosEncontrados.length === 0;
   };
 
-  const onSubmit = async (data: RegistroServicioForm) => {
+  const onSubmit = async (data: { servicios: any[] }) => {
     console.log('Validando duplicados...');
     
     if (!validarDuplicados()) {
@@ -148,6 +144,9 @@ const ServicioRegistrationForm = () => {
 
   const agregarServicio = () => {
     append({
+      turno: '',
+      transportista: '',
+      ramal: '',
       horario: '',
       diasSemana: [],
       sentido: 'ingreso',
@@ -165,184 +164,125 @@ const ServicioRegistrationForm = () => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      {/* Datos Generales */}
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      {/* Servicios Compactos */}
       <Card>
-        <CardHeader>
-          <CardTitle>Datos Generales del Servicio</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Servicios</CardTitle>
+            <Button type="button" onClick={agregarServicio} size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              Agregar
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="turno" className="required-field">Turno</Label>
-            <Select
-              value={form.watch('turno')}
-              onValueChange={(value) => form.setValue('turno', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar turno" />
-              </SelectTrigger>
-              <SelectContent>
-                {turnos.map((turno) => (
-                  <SelectItem key={turno.id} value={turno.id}>
-                    {turno.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {form.formState.errors.turno && (
-              <p className="text-sm text-destructive">{form.formState.errors.turno.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="transportista" className="required-field">Transportista</Label>
-            <Combobox
-              options={transportistas.map(t => ({ value: t.id, label: `${t.nombre} (${t.codigo})` }))}
-              value={form.watch('transportista')}
-              onValueChange={(value) => form.setValue('transportista', value)}
-              placeholder="Buscar transportista..."
-              searchPlaceholder="Buscar transportista..."
-              emptyText="No se encontraron transportistas."
-            />
-            {form.formState.errors.transportista && (
-              <p className="text-sm text-destructive">{form.formState.errors.transportista.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ramal" className="required-field">Ramal</Label>
-            <Combobox
-              options={ramales.map(r => ({ value: r.id, label: formatRamalLabel(r) }))}
-              value={form.watch('ramal')}
-              onValueChange={(value) => form.setValue('ramal', value)}
-              placeholder="Buscar ramal..."
-              searchPlaceholder="Buscar ramal..."
-              emptyText="No se encontraron ramales."
-            />
-            {form.formState.errors.ramal && (
-              <p className="text-sm text-destructive">{form.formState.errors.ramal.message}</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Servicios */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Detalle de Servicios</CardTitle>
-          <Button type="button" onClick={agregarServicio} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Agregar Servicio
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           {fields.map((field, index) => (
-            <Card key={field.id} className={duplicados.includes(index) ? 'border-destructive' : ''}>
-              <CardHeader className="pb-3">
+            <Card key={field.id} className={`${duplicados.includes(index) ? 'border-destructive' : ''} border-l-4 ${duplicados.includes(index) ? 'border-l-destructive' : 'border-l-blue-500'}`}>
+              <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Servicio {index + 1}</CardTitle>
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                {duplicados.includes(index) && (
-                  <div className="flex items-center gap-2 text-destructive text-sm">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span>Combinación duplicada detectada</span>
+                  <span className="text-sm font-medium">Servicio {index + 1}</span>
+                  <div className="flex items-center gap-2">
+                    {duplicados.includes(index) && (
+                      <div className="flex items-center gap-1 text-destructive text-xs">
+                        <AlertTriangle className="h-3 w-3" />
+                        <span>Duplicado</span>
+                      </div>
+                    )}
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => remove(index)}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
                   </div>
-                )}
+                </div>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor={`horario-${index}`} className="required-field">Horario</Label>
+              <CardContent className="grid grid-cols-12 gap-2 pt-0">
+                {/* Turno */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs font-medium">Turno*</Label>
+                  <Select
+                    value={form.watch(`servicios.${index}.turno`)}
+                    onValueChange={(value) => form.setValue(`servicios.${index}.turno`, value)}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Turno" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {turnos.map((turno) => (
+                        <SelectItem key={turno.id} value={turno.id}>
+                          {turno.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Transportista */}
+                <div className="col-span-3 space-y-1">
+                  <Label className="text-xs font-medium">Transportista*</Label>
+                  <Combobox
+                    options={transportistas.map(t => ({ value: t.id, label: `${t.nombre} (${t.codigo})` }))}
+                    value={form.watch(`servicios.${index}.transportista`)}
+                    onValueChange={(value) => form.setValue(`servicios.${index}.transportista`, value)}
+                    placeholder="Transportista..."
+                    className="h-8 text-xs"
+                  />
+                </div>
+
+                {/* Ramal */}
+                <div className="col-span-3 space-y-1">
+                  <Label className="text-xs font-medium">Ramal*</Label>
+                  <Combobox
+                    options={ramales.map(r => ({ value: r.id, label: formatRamalLabel(r) }))}
+                    value={form.watch(`servicios.${index}.ramal`)}
+                    onValueChange={(value) => form.setValue(`servicios.${index}.ramal`, value)}
+                    placeholder="Ramal..."
+                    className="h-8 text-xs"
+                  />
+                </div>
+
+                {/* Horario */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs font-medium">Horario*</Label>
                   <Input
-                    id={`horario-${index}`}
                     type="time"
+                    className="h-8 text-xs"
                     {...form.register(`servicios.${index}.horario`)}
                   />
-                  {form.formState.errors.servicios?.[index]?.horario && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.servicios[index]?.horario?.message}
-                    </p>
-                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="required-field">Sentido</Label>
+                {/* Sentido */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs font-medium">Sentido*</Label>
                   <Select
                     value={form.watch(`servicios.${index}.sentido`)}
                     onValueChange={(value: 'ingreso' | 'salida') => 
                       form.setValue(`servicios.${index}.sentido`, value)
                     }
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar sentido" />
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ingreso">Ingreso</SelectItem>
                       <SelectItem value="salida">Salida</SelectItem>
                     </SelectContent>
                   </Select>
-                  {form.formState.errors.servicios?.[index]?.sentido && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.servicios[index]?.sentido?.message}
-                    </p>
-                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor={`cantidadUnidades-${index}`} className="required-field">
-                    Cantidad de Unidades
-                  </Label>
-                  <Input
-                    id={`cantidadUnidades-${index}`}
-                    type="number"
-                    min="1"
-                    max="20"
-                    {...form.register(`servicios.${index}.cantidadUnidades`, { 
-                      valueAsNumber: true 
-                    })}
-                  />
-                  {form.formState.errors.servicios?.[index]?.cantidadUnidades && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.servicios[index]?.cantidadUnidades?.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor={`porcentajeFee-${index}`} className="required-field">
-                    Porcentaje Fee (%)
-                  </Label>
-                  <Input
-                    id={`porcentajeFee-${index}`}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.01"
-                    {...form.register(`servicios.${index}.porcentajeFee`, { 
-                      valueAsNumber: true 
-                    })}
-                  />
-                  {form.formState.errors.servicios?.[index]?.porcentajeFee && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.servicios[index]?.porcentajeFee?.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="md:col-span-2 space-y-2">
-                  <Label className="required-field">Días de la Semana</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {/* Días de la semana */}
+                <div className="col-span-7 space-y-1">
+                  <Label className="text-xs font-medium">Días*</Label>
+                  <div className="flex gap-1">
                     {diasSemana.map((dia) => (
-                      <div key={dia.id} className="flex items-center space-x-2">
+                      <div key={dia.id} className="flex flex-col items-center">
                         <Checkbox
                           id={`${index}-${dia.id}`}
                           checked={(form.watch(`servicios.${index}.diasSemana`) || []).includes(dia.id)}
@@ -357,21 +297,47 @@ const ServicioRegistrationForm = () => {
                               );
                             }
                           }}
+                          className="h-4 w-4"
                         />
-                        <Label htmlFor={`${index}-${dia.id}`} className="text-sm">
+                        <Label htmlFor={`${index}-${dia.id}`} className="text-xs mt-1">
                           {dia.label}
                         </Label>
                       </div>
                     ))}
                   </div>
-                  {form.formState.errors.servicios?.[index]?.diasSemana && (
-                    <p className="text-sm text-destructive">
-                      {form.formState.errors.servicios[index]?.diasSemana?.message}
-                    </p>
-                  )}
                 </div>
 
-                <div className="md:col-span-full">
+                {/* Cantidad */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs font-medium">Unidades*</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="20"
+                    className="h-8 text-xs"
+                    {...form.register(`servicios.${index}.cantidadUnidades`, { 
+                      valueAsNumber: true 
+                    })}
+                  />
+                </div>
+
+                {/* Fee */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-xs font-medium">Fee (%)*</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    className="h-8 text-xs"
+                    {...form.register(`servicios.${index}.porcentajeFee`, { 
+                      valueAsNumber: true 
+                    })}
+                  />
+                </div>
+
+                {/* Capacidad adicional */}
+                <div className="col-span-12 mt-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id={`agregarCapacidad-${index}`}
@@ -379,8 +345,9 @@ const ServicioRegistrationForm = () => {
                       onCheckedChange={(checked) => 
                         form.setValue(`servicios.${index}.agregarCapacidadAdicional`, !!checked)
                       }
+                      className="h-4 w-4"
                     />
-                    <Label htmlFor={`agregarCapacidad-${index}`} className="text-sm">
+                    <Label htmlFor={`agregarCapacidad-${index}`} className="text-xs">
                       Agregar capacidad adicional (permite duplicados)
                     </Label>
                   </div>
@@ -392,7 +359,7 @@ const ServicioRegistrationForm = () => {
       </Card>
 
       {/* Botones de Acción */}
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4 pt-4">
         <Button type="button" variant="outline" onClick={() => form.reset()}>
           Cancelar
         </Button>
