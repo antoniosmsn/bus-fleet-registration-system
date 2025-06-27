@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -175,10 +176,10 @@ const ServicioRegistrationForm = () => {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-3">
           {fields.map((field, index) => (
             <Card key={field.id} className={`${duplicados.includes(index) ? 'border-destructive' : ''} border-l-4 ${duplicados.includes(index) ? 'border-l-destructive' : 'border-l-blue-500'}`}>
-              <CardHeader className="pb-1">
+              <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Servicio {index + 1}</span>
                   <div className="flex items-center gap-2">
@@ -202,16 +203,16 @@ const ServicioRegistrationForm = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="grid grid-cols-16 gap-1 pt-0">
-                {/* Turno - más angosto */}
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs font-medium">Turno*</Label>
+              <CardContent className="grid grid-cols-12 gap-3 pt-0">
+                {/* Turno */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-sm font-medium">Turno*</Label>
                   <Select
                     value={form.watch(`servicios.${index}.turno`)}
                     onValueChange={(value) => form.setValue(`servicios.${index}.turno`, value)}
                   >
-                    <SelectTrigger className="h-7 text-xs">
-                      <SelectValue placeholder="T" />
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
                     <SelectContent>
                       {turnos.map((turno) => (
@@ -225,61 +226,61 @@ const ServicioRegistrationForm = () => {
 
                 {/* Transportista */}
                 <div className="col-span-3 space-y-1">
-                  <Label className="text-xs font-medium">Transportista*</Label>
+                  <Label className="text-sm font-medium">Transportista*</Label>
                   <Combobox
                     options={transportistas.map(t => ({ value: t.id, label: `${t.nombre} (${t.codigo})` }))}
                     value={form.watch(`servicios.${index}.transportista`)}
                     onValueChange={(value) => form.setValue(`servicios.${index}.transportista`, value)}
-                    placeholder="Transportista..."
-                    className="h-7 text-xs"
+                    placeholder="Seleccionar transportista..."
+                    className="h-8"
                   />
                 </div>
 
                 {/* Ramal */}
                 <div className="col-span-3 space-y-1">
-                  <Label className="text-xs font-medium">Ramal*</Label>
+                  <Label className="text-sm font-medium">Ramal*</Label>
                   <Combobox
                     options={ramales.map(r => ({ value: r.id, label: formatRamalLabel(r) }))}
                     value={form.watch(`servicios.${index}.ramal`)}
                     onValueChange={(value) => form.setValue(`servicios.${index}.ramal`, value)}
-                    placeholder="Ramal..."
-                    className="h-7 text-xs"
+                    placeholder="Seleccionar ramal..."
+                    className="h-8"
                   />
                 </div>
 
-                {/* Horario - más angosto */}
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs font-medium">Hora*</Label>
+                {/* Horario */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-sm font-medium">Horario*</Label>
                   <Input
                     type="time"
-                    className="h-7 text-xs"
+                    className="h-8"
                     {...form.register(`servicios.${index}.horario`)}
                   />
                 </div>
 
-                {/* Sentido - más angosto */}
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs font-medium">Sent*</Label>
+                {/* Sentido */}
+                <div className="col-span-2 space-y-1">
+                  <Label className="text-sm font-medium">Sentido*</Label>
                   <Select
                     value={form.watch(`servicios.${index}.sentido`)}
                     onValueChange={(value: 'ingreso' | 'salida') => 
                       form.setValue(`servicios.${index}.sentido`, value)
                     }
                   >
-                    <SelectTrigger className="h-7 text-xs">
+                    <SelectTrigger className="h-8">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ingreso">In</SelectItem>
-                      <SelectItem value="salida">Out</SelectItem>
+                      <SelectItem value="ingreso">Ingreso</SelectItem>
+                      <SelectItem value="salida">Salida</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Días de la semana */}
-                <div className="col-span-5 space-y-1">
-                  <Label className="text-xs font-medium">Días*</Label>
-                  <div className="flex gap-1">
+                <div className="col-span-6 space-y-1">
+                  <Label className="text-sm font-medium">Días de la semana*</Label>
+                  <div className="flex gap-2">
                     {diasSemana.map((dia) => (
                       <div key={dia.id} className="flex flex-col items-center">
                         <Checkbox
@@ -296,7 +297,6 @@ const ServicioRegistrationForm = () => {
                               );
                             }
                           }}
-                          className="h-3 w-3"
                         />
                         <Label htmlFor={`${index}-${dia.id}`} className="text-xs mt-1">
                           {dia.label}
@@ -306,29 +306,29 @@ const ServicioRegistrationForm = () => {
                   </div>
                 </div>
 
-                {/* Cantidad */}
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs font-medium">Uni*</Label>
+                {/* Cantidad de unidades */}
+                <div className="col-span-3 space-y-1">
+                  <Label className="text-sm font-medium">Cantidad de unidades*</Label>
                   <Input
                     type="number"
                     min="1"
                     max="20"
-                    className="h-7 text-xs"
+                    className="h-8"
                     {...form.register(`servicios.${index}.cantidadUnidades`, { 
                       valueAsNumber: true 
                     })}
                   />
                 </div>
 
-                {/* Fee */}
-                <div className="col-span-1 space-y-1">
-                  <Label className="text-xs font-medium">Fee%*</Label>
+                {/* Porcentaje Fee */}
+                <div className="col-span-3 space-y-1">
+                  <Label className="text-sm font-medium">Porcentaje Fee*</Label>
                   <Input
                     type="number"
                     min="0"
                     max="100"
                     step="0.01"
-                    className="h-7 text-xs"
+                    className="h-8"
                     {...form.register(`servicios.${index}.porcentajeFee`, { 
                       valueAsNumber: true 
                     })}
@@ -336,7 +336,7 @@ const ServicioRegistrationForm = () => {
                 </div>
 
                 {/* Capacidad adicional */}
-                <div className="col-span-16 mt-1">
+                <div className="col-span-12 mt-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id={`agregarCapacidad-${index}`}
@@ -344,9 +344,8 @@ const ServicioRegistrationForm = () => {
                       onCheckedChange={(checked) => 
                         form.setValue(`servicios.${index}.agregarCapacidadAdicional`, !!checked)
                       }
-                      className="h-3 w-3"
                     />
-                    <Label htmlFor={`agregarCapacidad-${index}`} className="text-xs">
+                    <Label htmlFor={`agregarCapacidad-${index}`} className="text-sm">
                       Agregar capacidad adicional (permite duplicados)
                     </Label>
                   </div>
