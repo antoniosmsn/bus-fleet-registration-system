@@ -15,6 +15,14 @@ export interface Servicio {
   fechaModificacion?: string;
   usuarioModificacion?: string;
   estado?: 'activo' | 'inactivo';
+  // Campos adicionales para el listado
+  empresaTransporte?: string;
+  tipoUnidad?: string;
+  tipoRuta?: string;
+  tarifaPasajero?: number;
+  tarifaServicio?: number;
+  empresaCliente?: string;
+  numeroServicio?: string;
 }
 
 export interface RegistroServicioForm {
@@ -29,6 +37,20 @@ export interface RegistroServicioForm {
     porcentajeFee: number;
     agregarCapacidadAdicional: boolean;
   }[];
+}
+
+export interface ServiciosFiltros {
+  empresaCliente: string;
+  transportista: string;
+  tipoUnidad: string;
+  diasSemana: string[];
+  horarioInicio: string;
+  horarioFin: string;
+  ramal: string;
+  tipoRuta: string;
+  sentido: string;
+  turno: string;
+  estado: string;
 }
 
 export interface Turno {
