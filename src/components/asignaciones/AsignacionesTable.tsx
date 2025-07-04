@@ -81,7 +81,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
               
               <TableHead className="w-32">Tipo de Unidad</TableHead>
               <TableHead className="w-80">Ubicación</TableHead>
-              <TableHead className="w-56">Sector/Ramal</TableHead>
+              <TableHead className="w-56">Sector</TableHead>
               <TableHead className="w-32">Tarifa Pasajero</TableHead>
               <TableHead className="w-32">Tarifa Servicio</TableHead>
               <TableHead className="w-32">Fecha Vigencia</TableHead>
@@ -119,7 +119,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                   </TableCell>
                   <TableCell className="w-56">
                     <div className="text-sm whitespace-nowrap">
-                      {asignacion.sector}, {asignacion.ramal}
+                      {asignacion.sector}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium w-32">
