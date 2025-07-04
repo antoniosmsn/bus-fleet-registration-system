@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Trash2, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, ArrowLeft, Edit, Check, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { 
   AsignacionRegistroForm, 
@@ -86,6 +86,10 @@ const AsignacionRegistrationForm = () => {
     fechaInicioVigencia: '',
     estado: 'activo'
   });
+  const [editandoTarifaPasajero, setEditandoTarifaPasajero] = useState<string | null>(null);
+  const [editandoTarifaServicio, setEditandoTarifaServicio] = useState<string | null>(null);
+  const [tarifaPasajeroEditando, setTarifaPasajeroEditando] = useState<Partial<TarifaPasajero>>({});
+  const [tarifaServicioEditando, setTarifaServicioEditando] = useState<Partial<TarifaServicio>>({});
 
   const form = useForm<AsignacionRegistroForm>({
     resolver: zodResolver(asignacionSchema),
@@ -190,6 +194,130 @@ const AsignacionRegistrationForm = () => {
 
   const eliminarTarifaServicio = (id: string) => {
     form.setValue('tarifasServicio', tarifasServicio.filter(t => t.id !== id));
+  };
+
+  // Funciones para edición de tarifas de pasajero
+  const iniciarEdicionTarifaPasajero = (tarifa: TarifaPasajero) => {
+    setEditandoTarifaPasajero(tarifa.id!);
+    setTarifaPasajeroEditando({
+      monto: tarifa.monto,
+      fechaInicioVigencia: tarifa.fechaInicioVigencia,
+      estado: tarifa.estado
+    });
+  };
+
+  const cancelarEdicionTarifaPasajero = () => {
+    setEditandoTarifaPasajero(null);
+    setTarifaPasajeroEditando({});
+  };
+
+  const guardarEdicionTarifaPasajero = () => {
+    if (!tarifaPasajeroEditando.monto || !tarifaPasajeroEditando.fechaInicioVigencia) {
+      toast({
+        title: "Error",
+        description: "Complete todos los campos de la tarifa",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Verificar duplicados excluyendo la tarifa actual
+    const tarifasExistentes = tarifasPasajero.filter(t => t.id !== editandoTarifaPasajero);
+    const duplicada = tarifasExistentes.some(t => 
+      t.monto === tarifaPasajeroEditando.monto && 
+      t.fechaInicioVigencia === tarifaPasajeroEditando.fechaInicioVigencia
+    );
+
+    if (duplicada) {
+      toast({
+        title: "Error",
+        description: "Ya existe una tarifa con el mismo monto y fecha",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const tarifasActualizadas = tarifasPasajero.map(t => 
+      t.id === editandoTarifaPasajero 
+        ? { 
+            ...t, 
+            monto: tarifaPasajeroEditando.monto!,
+            fechaInicioVigencia: tarifaPasajeroEditando.fechaInicioVigencia!,
+            estado: tarifaPasajeroEditando.estado || 'activo'
+          }
+        : t
+    );
+
+    form.setValue('tarifasPasajero', tarifasActualizadas);
+    setEditandoTarifaPasajero(null);
+    setTarifaPasajeroEditando({});
+
+    toast({
+      title: "Éxito",
+      description: "Tarifa de pasajero actualizada correctamente"
+    });
+  };
+
+  // Funciones para edición de tarifas de servicio
+  const iniciarEdicionTarifaServicio = (tarifa: TarifaServicio) => {
+    setEditandoTarifaServicio(tarifa.id!);
+    setTarifaServicioEditando({
+      monto: tarifa.monto,
+      fechaInicioVigencia: tarifa.fechaInicioVigencia,
+      estado: tarifa.estado
+    });
+  };
+
+  const cancelarEdicionTarifaServicio = () => {
+    setEditandoTarifaServicio(null);
+    setTarifaServicioEditando({});
+  };
+
+  const guardarEdicionTarifaServicio = () => {
+    if (!tarifaServicioEditando.monto || !tarifaServicioEditando.fechaInicioVigencia) {
+      toast({
+        title: "Error",
+        description: "Complete todos los campos de la tarifa",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Verificar duplicados excluyendo la tarifa actual
+    const tarifasExistentes = tarifasServicio.filter(t => t.id !== editandoTarifaServicio);
+    const duplicada = tarifasExistentes.some(t => 
+      t.monto === tarifaServicioEditando.monto && 
+      t.fechaInicioVigencia === tarifaServicioEditando.fechaInicioVigencia
+    );
+
+    if (duplicada) {
+      toast({
+        title: "Error",
+        description: "Ya existe una tarifa con el mismo monto y fecha",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const tarifasActualizadas = tarifasServicio.map(t => 
+      t.id === editandoTarifaServicio 
+        ? { 
+            ...t, 
+            monto: tarifaServicioEditando.monto!,
+            fechaInicioVigencia: tarifaServicioEditando.fechaInicioVigencia!,
+            estado: tarifaServicioEditando.estado || 'activo'
+          }
+        : t
+    );
+
+    form.setValue('tarifasServicio', tarifasActualizadas);
+    setEditandoTarifaServicio(null);
+    setTarifaServicioEditando({});
+
+    toast({
+      title: "Éxito",
+      description: "Tarifa de servicio actualizada correctamente"
+    });
   };
 
   const onSubmit = async (data: AsignacionRegistroForm) => {
@@ -424,26 +552,106 @@ const AsignacionRegistrationForm = () => {
                 <TableBody>
                   {tarifasPasajero.map((tarifa) => (
                     <TableRow key={tarifa.id}>
-                      <TableCell>₡{tarifa.monto.toFixed(2)}</TableCell>
-                      <TableCell>{tarifa.fechaInicioVigencia}</TableCell>
                       <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          tarifa.estado === 'activo' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
-                        </span>
+                        {editandoTarifaPasajero === tarifa.id ? (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                            value={tarifaPasajeroEditando.monto || ''}
+                            onChange={(e) => setTarifaPasajeroEditando(prev => ({
+                              ...prev,
+                              monto: parseFloat(e.target.value) || 0
+                            }))}
+                            className="w-24"
+                          />
+                        ) : (
+                          `₡${tarifa.monto.toFixed(2)}`
+                        )}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => eliminarTarifaPasajero(tarifa.id!)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {editandoTarifaPasajero === tarifa.id ? (
+                          <Input
+                            type="date"
+                            value={tarifaPasajeroEditando.fechaInicioVigencia || ''}
+                            onChange={(e) => setTarifaPasajeroEditando(prev => ({
+                              ...prev,
+                              fechaInicioVigencia: e.target.value
+                            }))}
+                            className="w-36"
+                          />
+                        ) : (
+                          tarifa.fechaInicioVigencia
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {editandoTarifaPasajero === tarifa.id ? (
+                          <Select
+                            value={tarifaPasajeroEditando.estado || 'activo'}
+                            onValueChange={(value: 'activo' | 'inactivo') =>
+                              setTarifaPasajeroEditando(prev => ({ ...prev, estado: value }))
+                            }
+                          >
+                            <SelectTrigger className="w-28">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="activo">Activo</SelectItem>
+                              <SelectItem value="inactivo">Inactivo</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            tarifa.estado === 'activo' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          {editandoTarifaPasajero === tarifa.id ? (
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={guardarEdicionTarifaPasajero}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={cancelarEdicionTarifaPasajero}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => iniciarEdicionTarifaPasajero(tarifa)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => eliminarTarifaPasajero(tarifa.id!)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -530,26 +738,106 @@ const AsignacionRegistrationForm = () => {
                   <TableBody>
                     {tarifasServicio.map((tarifa) => (
                       <TableRow key={tarifa.id}>
-                        <TableCell>₡{tarifa.monto.toFixed(2)}</TableCell>
-                        <TableCell>{tarifa.fechaInicioVigencia}</TableCell>
                         <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            tarifa.estado === 'activo' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
-                          </span>
+                          {editandoTarifaServicio === tarifa.id ? (
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0.01"
+                              value={tarifaServicioEditando.monto || ''}
+                              onChange={(e) => setTarifaServicioEditando(prev => ({
+                                ...prev,
+                                monto: parseFloat(e.target.value) || 0
+                              }))}
+                              className="w-24"
+                            />
+                          ) : (
+                            `₡${tarifa.monto.toFixed(2)}`
+                          )}
                         </TableCell>
                         <TableCell>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => eliminarTarifaServicio(tarifa.id!)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {editandoTarifaServicio === tarifa.id ? (
+                            <Input
+                              type="date"
+                              value={tarifaServicioEditando.fechaInicioVigencia || ''}
+                              onChange={(e) => setTarifaServicioEditando(prev => ({
+                                ...prev,
+                                fechaInicioVigencia: e.target.value
+                              }))}
+                              className="w-36"
+                            />
+                          ) : (
+                            tarifa.fechaInicioVigencia
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editandoTarifaServicio === tarifa.id ? (
+                            <Select
+                              value={tarifaServicioEditando.estado || 'activo'}
+                              onValueChange={(value: 'activo' | 'inactivo') =>
+                                setTarifaServicioEditando(prev => ({ ...prev, estado: value }))
+                              }
+                            >
+                              <SelectTrigger className="w-28">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="activo">Activo</SelectItem>
+                                <SelectItem value="inactivo">Inactivo</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              tarifa.estado === 'activo' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            {editandoTarifaServicio === tarifa.id ? (
+                              <>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={guardarEdicionTarifaServicio}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={cancelarEdicionTarifaServicio}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => iniciarEdicionTarifaServicio(tarifa)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => eliminarTarifaServicio(tarifa.id!)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
