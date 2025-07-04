@@ -231,7 +231,7 @@ const ServicioRegistrationForm = () => {
                     options={transportistas.map(t => ({ value: t.id, label: `${t.nombre} (${t.codigo})` }))}
                     value={form.watch(`servicios.${index}.transportista`)}
                     onValueChange={(value) => form.setValue(`servicios.${index}.transportista`, value)}
-                    placeholder="Seleccionar transportista..."
+                    placeholder="Transportista"
                     className="h-8"
                   />
                 </div>
