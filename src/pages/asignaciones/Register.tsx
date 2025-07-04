@@ -9,7 +9,6 @@ const RegisterAsignacion = () => {
       <div className="w-full">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Registrar Nueva Asignación de Ruta</h1>
-          <p className="text-gray-500">Registre una nueva asignación de ruta en el sistema</p>
         </div>
         
         <AsignacionRegistrationForm />
