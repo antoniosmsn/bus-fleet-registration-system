@@ -170,7 +170,7 @@ const ServicioRegistrationForm = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[80px]">#</TableHead>
-                  <TableHead className="w-[100px]">Turno</TableHead>
+                  <TableHead className="w-[120px]">Turno</TableHead>
                   <TableHead className="w-[180px]">Transportista</TableHead>
                   <TableHead className="w-[200px]">Ramal</TableHead>
                   <TableHead className="w-[100px]">Horario</TableHead>
