@@ -238,7 +238,8 @@ const ServicioRegistrationForm = () => {
                     {/* Horario */}
                     <TableCell className="p-2">
                       <Input
-                        type="time"
+                        type="text"
+                        placeholder="HH:MM"
                         className="h-8 text-xs"
                         {...form.register(`servicios.${index}.horario`)}
                       />
@@ -449,7 +450,8 @@ const ServicioRegistrationForm = () => {
                     <div className="space-y-1">
                       <Label className="text-xs font-medium">Horario*</Label>
                       <Input
-                        type="time"
+                        type="text"
+                        placeholder="HH:MM"
                         className="h-8"
                         {...form.register(`servicios.${index}.horario`)}
                       />
