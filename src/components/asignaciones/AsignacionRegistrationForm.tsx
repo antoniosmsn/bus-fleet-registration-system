@@ -25,7 +25,7 @@ const asignacionSchema = z.object({
   empresaCliente: z.string().optional(),
   cuentaPO: z.string().optional(),
   tipoUnidad: z.enum(['autobus', 'buseta', 'microbus'], { required_error: 'Tipo de unidad es requerido' }),
-  montoFee: z.number().min(0, 'Monto fee debe ser mayor o igual a 0'),
+  montoFee: z.number().min(0, 'Porcentaje fee debe ser mayor o igual a 0').max(100, 'Porcentaje fee no puede ser mayor a 100'),
   tarifasPasajero: z.array(z.object({
     monto: z.number().min(0.01, 'Monto debe ser mayor a 0'),
     fechaInicioVigencia: z.string().min(1, 'Fecha es requerida'),
@@ -335,15 +335,19 @@ const AsignacionRegistrationForm = () => {
             )}
           </div>
 
-          {/* Monto Fee */}
+          {/* Porcentaje Fee */}
           <div className="space-y-2">
-            <Label htmlFor="montoFee">Monto Fee</Label>
+            <Label htmlFor="montoFee">Porcentaje Fee a la Ruta (%)</Label>
             <Input
               type="number"
               step="0.01"
               min="0"
+              max="100"
               {...form.register('montoFee', { valueAsNumber: true })}
             />
+            {form.formState.errors.montoFee && (
+              <p className="text-sm text-destructive">{form.formState.errors.montoFee.message}</p>
+            )}
           </div>
         </CardContent>
       </Card>
