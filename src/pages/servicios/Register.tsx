@@ -20,9 +20,6 @@ const RegisterServicio = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Registro de Servicios</h1>
-            <p className="text-gray-600">
-              Registrar múltiples servicios de transporte para un transportista
-            </p>
           </div>
         </div>
 
