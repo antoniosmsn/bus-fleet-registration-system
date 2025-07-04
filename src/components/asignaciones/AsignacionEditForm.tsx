@@ -572,12 +572,11 @@ const AsignacionEditForm: React.FC<AsignacionEditFormProps> = ({ asignacionId })
         </CardContent>
       </Card>
 
-      {/* Filtros de Tarifas */}
+
+      {/* Tarifas de Pasajero */}
       <Card>
-        <CardHeader>
-          <CardTitle>Opciones de Visualización</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Tarifas de Pasajero *</CardTitle>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="ocultarTarifasPasadas"
@@ -586,17 +585,10 @@ const AsignacionEditForm: React.FC<AsignacionEditFormProps> = ({ asignacionId })
                 form.setValue('ocultarTarifasPasadas', checked as boolean)
               }
             />
-            <Label htmlFor="ocultarTarifasPasadas" className="text-sm">
-              Ocultar tarifas pasadas (anteriores a hoy)
+            <Label htmlFor="ocultarTarifasPasadas" className="text-xs text-muted-foreground">
+              Ocultar tarifas pasadas
             </Label>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Tarifas de Pasajero */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Tarifas de Pasajero *</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Agregar nueva tarifa */}
