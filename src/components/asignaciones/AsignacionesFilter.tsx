@@ -240,25 +240,7 @@ const AsignacionesFilter: React.FC<AsignacionesFilterProps> = ({ onFilter }) => 
             
             {/* Empresas */}
             <TabsContent value="empresas" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
-                  <Select 
-                    value={filters.empresaTransporte} 
-                    onValueChange={(value) => handleSelectChange('empresaTransporte', value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar empresa transportista" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todas">Todas las empresas</SelectItem>
-                      {empresasTransporte.map(empresa => (
-                        <SelectItem key={empresa} value={empresa}>{empresa}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="empresaCliente">Empresa Cliente</Label>
                   <Select 
