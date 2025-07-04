@@ -241,7 +241,11 @@ const ServicioRegistrationForm = () => {
                         type="text"
                         placeholder="HH:MM"
                         className="h-8 text-xs"
-                        {...form.register(`servicios.${index}.horario`)}
+                        value={form.watch(`servicios.${index}.horario`) || ''}
+                        onChange={(e) => {
+                          console.log('Horario change:', e.target.value);
+                          form.setValue(`servicios.${index}.horario`, e.target.value);
+                        }}
                       />
                     </TableCell>
 
@@ -453,7 +457,11 @@ const ServicioRegistrationForm = () => {
                         type="text"
                         placeholder="HH:MM"
                         className="h-8"
-                        {...form.register(`servicios.${index}.horario`)}
+                        value={form.watch(`servicios.${index}.horario`) || ''}
+                        onChange={(e) => {
+                          console.log('Horario change mobile:', e.target.value);
+                          form.setValue(`servicios.${index}.horario`, e.target.value);
+                        }}
                       />
                     </div>
 
