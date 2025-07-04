@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 import { mockTurnos } from '@/data/mockTurnos';
 import { mockTransportistas } from '@/data/mockTransportistas';
 import { mockRamales } from '@/data/mockRamales';
+import { TimePicker } from '@/components/ui/time-picker';
 
 const servicioSchema = z.object({
   servicios: z.array(z.object({
@@ -237,15 +238,10 @@ const ServicioRegistrationForm = () => {
 
                     {/* Horario */}
                     <TableCell className="p-2">
-                      <Input
-                        type="text"
-                        placeholder="HH:MM"
+                      <TimePicker
                         className="h-8 text-xs"
                         value={form.watch(`servicios.${index}.horario`) || ''}
-                        onChange={(e) => {
-                          console.log('Horario change:', e.target.value);
-                          form.setValue(`servicios.${index}.horario`, e.target.value);
-                        }}
+                        onValueChange={(value) => form.setValue(`servicios.${index}.horario`, value)}
                       />
                     </TableCell>
 
@@ -453,15 +449,10 @@ const ServicioRegistrationForm = () => {
                     {/* Horario */}
                     <div className="space-y-1">
                       <Label className="text-xs font-medium">Horario*</Label>
-                      <Input
-                        type="text"
-                        placeholder="HH:MM"
+                      <TimePicker
                         className="h-8"
                         value={form.watch(`servicios.${index}.horario`) || ''}
-                        onChange={(e) => {
-                          console.log('Horario change mobile:', e.target.value);
-                          form.setValue(`servicios.${index}.horario`, e.target.value);
-                        }}
+                        onValueChange={(value) => form.setValue(`servicios.${index}.horario`, value)}
                       />
                     </div>
 
