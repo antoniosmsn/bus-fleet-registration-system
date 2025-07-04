@@ -1,13 +1,5 @@
-
 import React from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { AsignacionRuta } from '@/types/asignacion-ruta';
@@ -16,67 +8,69 @@ import { es } from 'date-fns/locale';
 import { Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
-
 interface AsignacionesTableProps {
   asignaciones: AsignacionRuta[];
   onChangeStatus: (id: number) => void;
 }
-
-const AsignacionesTable: React.FC<AsignacionesTableProps> = ({ 
-  asignaciones, 
+const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
+  asignaciones,
   onChangeStatus
 }) => {
   const navigate = useNavigate();
-
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'No especificado';
     try {
-      return format(new Date(dateString), 'dd/MM/yyyy HH:mm', { locale: es });
+      return format(new Date(dateString), 'dd/MM/yyyy HH:mm', {
+        locale: es
+      });
     } catch (error) {
       return 'Fecha inválida';
     }
   };
-
   const formatDateOnly = (dateString: string | null) => {
     if (!dateString) return 'No especificado';
     try {
-      return format(new Date(dateString), 'dd/MM/yyyy', { locale: es });
+      return format(new Date(dateString), 'dd/MM/yyyy', {
+        locale: es
+      });
     } catch (error) {
       return 'Fecha inválida';
     }
   };
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CR', {
       style: 'currency',
       currency: 'CRC'
     }).format(amount);
   };
-
   const getTipoBadgeColor = (tipo: string) => {
     switch (tipo) {
-      case 'privada': return 'bg-blue-100 text-blue-800';
-      case 'parque': return 'bg-green-100 text-green-800';
-      case 'especial': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'privada':
+        return 'bg-blue-100 text-blue-800';
+      case 'parque':
+        return 'bg-green-100 text-green-800';
+      case 'especial':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const getTipoUnidadBadgeColor = (tipo: string) => {
     switch (tipo) {
-      case 'autobus': return 'bg-indigo-100 text-indigo-800';
-      case 'buseta': return 'bg-orange-100 text-orange-800';
-      case 'microbus': return 'bg-teal-100 text-teal-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'autobus':
+        return 'bg-indigo-100 text-indigo-800';
+      case 'buseta':
+        return 'bg-orange-100 text-orange-800';
+      case 'microbus':
+        return 'bg-teal-100 text-teal-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
-
   const handleEdit = (id: number) => {
     navigate(`/asignaciones/edit/${id}`);
   };
-
-  return (
-    <div className="px-6 pb-6">
+  return <div className="px-6 pb-6">
       <div className="overflow-x-auto">
         <Table className="min-w-[1800px]">
           <TableHeader>
@@ -100,28 +94,22 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {asignaciones.length === 0 ? (
-              <TableRow>
+            {asignaciones.length === 0 ? <TableRow>
                 <TableCell colSpan={16} className="text-center py-6 text-muted-foreground">
                   No hay asignaciones de rutas que coincidan con los criterios de búsqueda
                 </TableCell>
-              </TableRow>
-            ) : (
-              asignaciones.map((asignacion) => (
-                <TableRow key={asignacion.id}>
+              </TableRow> : asignaciones.map(asignacion => <TableRow key={asignacion.id}>
                   <TableCell className="font-medium w-32">{asignacion.ramal}</TableCell>
                   <TableCell className="w-32">
                     <Badge className={getTipoBadgeColor(asignacion.tipoRuta)}>
-                      {asignacion.tipoRuta === 'privada' ? 'Privada' : 
-                       asignacion.tipoRuta === 'parque' ? 'Parque' : 'Especial'}
+                      {asignacion.tipoRuta === 'privada' ? 'Privada' : asignacion.tipoRuta === 'parque' ? 'Parque' : 'Especial'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="w-64">{asignacion.empresaCliente}</TableCell>
+                  <TableCell className="w-90">{asignacion.empresaCliente}</TableCell>
                   <TableCell className="w-64">{asignacion.empresaTransporte}</TableCell>
                   <TableCell className="w-32">
                     <Badge className={getTipoUnidadBadgeColor(asignacion.tipoUnidad)}>
-                      {asignacion.tipoUnidad === 'autobus' ? 'Autobús' :
-                       asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
+                      {asignacion.tipoUnidad === 'autobus' ? 'Autobús' : asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
                     </Badge>
                   </TableCell>
                   <TableCell className="w-80">
@@ -143,13 +131,8 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                   <TableCell className="w-32">{formatDateOnly(asignacion.fechaInicioVigencia)}</TableCell>
                   <TableCell className="w-32">
                     <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={asignacion.estado === 'activo'}
-                        onCheckedChange={() => onChangeStatus(asignacion.id)}
-                      />
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        asignacion.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <Switch checked={asignacion.estado === 'activo'} onCheckedChange={() => onChangeStatus(asignacion.id)} />
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${asignacion.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                         {asignacion.estado === 'activo' ? 'Activo' : 'Inactivo'}
                       </span>
                     </div>
@@ -159,23 +142,15 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                   <TableCell className="w-48 whitespace-nowrap">{formatDate(asignacion.fechaModificacion)}</TableCell>
                   <TableCell className="w-40">{asignacion.usuarioModificacion || 'N/A'}</TableCell>
                   <TableCell className="w-32">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEdit(asignacion.id)}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(asignacion.id)}>
                       <Edit className="mr-2 h-4 w-4" />
                       Editar
                     </Button>
                   </TableCell>
-                </TableRow>
-              ))
-            )}
+                </TableRow>)}
           </TableBody>
         </Table>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default AsignacionesTable;
