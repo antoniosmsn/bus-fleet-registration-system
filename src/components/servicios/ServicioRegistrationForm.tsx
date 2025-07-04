@@ -243,7 +243,7 @@ const ServicioRegistrationForm = () => {
                     options={ramales.map(r => ({ value: r.id, label: formatRamalLabel(r) }))}
                     value={form.watch(`servicios.${index}.ramal`)}
                     onValueChange={(value) => form.setValue(`servicios.${index}.ramal`, value)}
-                    placeholder="Seleccionar ramal..."
+                    placeholder="Ramal"
                     className="h-8"
                   />
                 </div>
