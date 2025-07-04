@@ -1,5 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import AsignacionesFilter from '@/components/asignaciones/AsignacionesFilter';
 import AsignacionesTable from '@/components/asignaciones/AsignacionesTable';
@@ -165,9 +167,18 @@ const AsignacionesIndex = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Asignaciones de Rutas</h1>
-          <p className="text-gray-600">Gestione las asignaciones de rutas del sistema</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Asignaciones de Rutas</h1>
+            <p className="text-gray-600">Gestione las asignaciones de rutas del sistema</p>
+          </div>
+          <Link 
+            to="/asignaciones/register" 
+            className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Registrar
+          </Link>
         </div>
         
         <AsignacionesFilter onFilter={handleFilter} />
