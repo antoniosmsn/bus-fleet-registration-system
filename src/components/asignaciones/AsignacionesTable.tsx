@@ -72,13 +72,13 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
   };
   return <div className="px-6 pb-6">
       <div className="overflow-x-auto">
-        <Table className="min-w-[1800px]">
+        <Table className="min-w-[1600px]">
           <TableHeader>
             <TableRow>
               <TableHead className="w-32">Ramal</TableHead>
               <TableHead className="w-32">Tipo de Ruta</TableHead>
               <TableHead className="w-64">Empresa Cliente</TableHead>
-              <TableHead className="w-64">Empresa Transporte</TableHead>
+              
               <TableHead className="w-32">Tipo de Unidad</TableHead>
               <TableHead className="w-80">Ubicación</TableHead>
               <TableHead className="w-56">Sector/Ramal</TableHead>
@@ -95,7 +95,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
           </TableHeader>
           <TableBody>
             {asignaciones.length === 0 ? <TableRow>
-                <TableCell colSpan={16} className="text-center py-6 text-muted-foreground">
+                <TableCell colSpan={15} className="text-center py-6 text-muted-foreground">
                   No hay asignaciones de rutas que coincidan con los criterios de búsqueda
                 </TableCell>
               </TableRow> : asignaciones.map(asignacion => <TableRow key={asignacion.id}>
@@ -106,7 +106,7 @@ const AsignacionesTable: React.FC<AsignacionesTableProps> = ({
                     </Badge>
                   </TableCell>
                   <TableCell className="w-90">{asignacion.empresaCliente}</TableCell>
-                  <TableCell className="w-64">{asignacion.empresaTransporte}</TableCell>
+                  
                   <TableCell className="w-32">
                     <Badge className={getTipoUnidadBadgeColor(asignacion.tipoUnidad)}>
                       {asignacion.tipoUnidad === 'autobus' ? 'Autobús' : asignacion.tipoUnidad === 'buseta' ? 'Buseta' : 'Microbús'}
