@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({
       <SidebarComponent />
       <div className="flex-1 flex flex-col">
         <Navbar />
-        <main className="flex-1 p-6 overflow-x-auto max-w-screen-lg">
+        <main className="flex-1 p-6 overflow-x-auto">
           {children}
         </main>
       </div>
