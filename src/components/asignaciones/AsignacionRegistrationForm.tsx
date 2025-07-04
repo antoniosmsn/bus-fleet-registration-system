@@ -243,225 +243,120 @@ const AsignacionRegistrationForm = () => {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-      {/* Información Básica */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Información Básica</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Ramal */}
-          <div className="space-y-2">
-            <Label htmlFor="ramal">Ramal *</Label>
-            <Combobox
-              options={mockRamales.map(r => ({ 
-                value: r.id, 
-                label: `${r.nombre} - ${r.tipoRuta.charAt(0).toUpperCase() + r.tipoRuta.slice(1)}` 
-              }))}
-              value={form.watch('ramal')}
-              onValueChange={(value) => {
-                form.setValue('ramal', value);
-                // Limpiar empresa cliente si cambia el tipo de ruta
-                form.setValue('empresaCliente', '');
-                form.setValue('cuentaPO', '');
-              }}
-              placeholder="Seleccionar ramal..."
-            />
-            {form.formState.errors.ramal && (
-              <p className="text-sm text-destructive">{form.formState.errors.ramal.message}</p>
-            )}
-          </div>
-
-          {/* Empresa Cliente - Solo para rutas privadas y especiales */}
-          {requiereEmpresaCliente && (
+      <div className={`grid gap-6 ${!requiereTarifasServicio ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
+        {/* Información Básica */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Básica</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Ramal */}
             <div className="space-y-2">
-              <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
+              <Label htmlFor="ramal">Ramal *</Label>
               <Combobox
-                options={mockEmpresasCliente.map(e => ({ value: e.id, label: e.nombre }))}
-                value={form.watch('empresaCliente')}
+                options={mockRamales.map(r => ({ 
+                  value: r.id, 
+                  label: `${r.nombre} - ${r.tipoRuta.charAt(0).toUpperCase() + r.tipoRuta.slice(1)}` 
+                }))}
+                value={form.watch('ramal')}
                 onValueChange={(value) => {
-                  form.setValue('empresaCliente', value);
-                  form.setValue('cuentaPO', ''); // Limpiar cuenta PO
+                  form.setValue('ramal', value);
+                  // Limpiar empresa cliente si cambia el tipo de ruta
+                  form.setValue('empresaCliente', '');
+                  form.setValue('cuentaPO', '');
                 }}
-                placeholder="Seleccionar empresa cliente..."
+                placeholder="Seleccionar ramal..."
               />
-              {form.formState.errors.empresaCliente && (
-                <p className="text-sm text-destructive">{form.formState.errors.empresaCliente.message}</p>
+              {form.formState.errors.ramal && (
+                <p className="text-sm text-destructive">{form.formState.errors.ramal.message}</p>
               )}
             </div>
-          )}
 
-          {/* Cuenta PO - Solo si hay empresa cliente seleccionada */}
-          {empresaClienteInfo && empresaClienteInfo.cuentasPO.length > 0 && (
-            <div className="space-y-2">
-              <Label htmlFor="cuentaPO">Cuenta PO (Opcional)</Label>
-              <Select
-                value={form.watch('cuentaPO')}
-                onValueChange={(value) => form.setValue('cuentaPO', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar cuenta PO (por defecto: cuenta principal)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {empresaClienteInfo.cuentasPO.map((cuenta) => (
-                    <SelectItem key={cuenta.id} value={cuenta.id}>
-                      {cuenta.nombre} ({cuenta.codigo}) {cuenta.esPrincipal && '- Principal'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {/* Tipo de Unidad */}
-          <div className="space-y-2">
-            <Label htmlFor="tipoUnidad">Tipo de Unidad *</Label>
-            <Select
-              value={form.watch('tipoUnidad')}
-              onValueChange={(value: 'autobus' | 'buseta' | 'microbus') => 
-                form.setValue('tipoUnidad', value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar tipo de unidad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="autobus">Autobús</SelectItem>
-                <SelectItem value="buseta">Buseta</SelectItem>
-                <SelectItem value="microbus">Microbús</SelectItem>
-              </SelectContent>
-            </Select>
-            {form.formState.errors.tipoUnidad && (
-              <p className="text-sm text-destructive">{form.formState.errors.tipoUnidad.message}</p>
+            {/* Empresa Cliente - Solo para rutas privadas y especiales */}
+            {requiereEmpresaCliente && (
+              <div className="space-y-2">
+                <Label htmlFor="empresaCliente">Empresa Cliente *</Label>
+                <Combobox
+                  options={mockEmpresasCliente.map(e => ({ value: e.id, label: e.nombre }))}
+                  value={form.watch('empresaCliente')}
+                  onValueChange={(value) => {
+                    form.setValue('empresaCliente', value);
+                    form.setValue('cuentaPO', ''); // Limpiar cuenta PO
+                  }}
+                  placeholder="Seleccionar empresa cliente..."
+                />
+                {form.formState.errors.empresaCliente && (
+                  <p className="text-sm text-destructive">{form.formState.errors.empresaCliente.message}</p>
+                )}
+              </div>
             )}
-          </div>
 
-          {/* Porcentaje Fee */}
-          <div className="space-y-2">
-            <Label htmlFor="montoFee">Porcentaje Fee a la Ruta (%)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              min="0"
-              max="100"
-              {...form.register('montoFee', { valueAsNumber: true })}
-            />
-            {form.formState.errors.montoFee && (
-              <p className="text-sm text-destructive">{form.formState.errors.montoFee.message}</p>
+            {/* Cuenta PO - Solo si hay empresa cliente seleccionada */}
+            {empresaClienteInfo && empresaClienteInfo.cuentasPO.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="cuentaPO">Cuenta PO (Opcional)</Label>
+                <Select
+                  value={form.watch('cuentaPO')}
+                  onValueChange={(value) => form.setValue('cuentaPO', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar cuenta PO (por defecto: cuenta principal)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {empresaClienteInfo.cuentasPO.map((cuenta) => (
+                      <SelectItem key={cuenta.id} value={cuenta.id}>
+                        {cuenta.nombre} ({cuenta.codigo}) {cuenta.esPrincipal && '- Principal'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Tarifas de Pasajero */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Tarifas de Pasajero *</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Agregar nueva tarifa */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
+            {/* Tipo de Unidad */}
             <div className="space-y-2">
-              <Label>Monto *</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0.01"
-                value={nuevaTarifaPasajero.monto || ''}
-                onChange={(e) => setNuevaTarifaPasajero(prev => ({ 
-                  ...prev, 
-                  monto: parseFloat(e.target.value) || 0 
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Fecha de Inicio *</Label>
-              <Input
-                type="date"
-                value={nuevaTarifaPasajero.fechaInicioVigencia || ''}
-                onChange={(e) => setNuevaTarifaPasajero(prev => ({ 
-                  ...prev, 
-                  fechaInicioVigencia: e.target.value 
-                }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Estado</Label>
+              <Label htmlFor="tipoUnidad">Tipo de Unidad *</Label>
               <Select
-                value={nuevaTarifaPasajero.estado || 'activo'}
-                onValueChange={(value: 'activo' | 'inactivo') => 
-                  setNuevaTarifaPasajero(prev => ({ ...prev, estado: value }))
+                value={form.watch('tipoUnidad')}
+                onValueChange={(value: 'autobus' | 'buseta' | 'microbus') => 
+                  form.setValue('tipoUnidad', value)
                 }
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Seleccionar tipo de unidad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="activo">Activo</SelectItem>
-                  <SelectItem value="inactivo">Inactivo</SelectItem>
+                  <SelectItem value="autobus">Autobús</SelectItem>
+                  <SelectItem value="buseta">Buseta</SelectItem>
+                  <SelectItem value="microbus">Microbús</SelectItem>
                 </SelectContent>
               </Select>
+              {form.formState.errors.tipoUnidad && (
+                <p className="text-sm text-destructive">{form.formState.errors.tipoUnidad.message}</p>
+              )}
             </div>
-            <div className="flex items-end">
-              <Button type="button" onClick={agregarTarifaPasajero} className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Agregar
-              </Button>
-            </div>
-          </div>
 
-          {/* Tabla de tarifas */}
-          {tarifasPasajero.length > 0 && (
-            <div className="border rounded-lg">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Monto</TableHead>
-                    <TableHead>Fecha de Inicio</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="w-20">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tarifasPasajero.map((tarifa) => (
-                    <TableRow key={tarifa.id}>
-                      <TableCell>₡{tarifa.monto.toFixed(2)}</TableCell>
-                      <TableCell>{tarifa.fechaInicioVigencia}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          tarifa.estado === 'activo' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => eliminarTarifaPasajero(tarifa.id!)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            {/* Porcentaje Fee */}
+            <div className="space-y-2">
+              <Label htmlFor="montoFee">Porcentaje Fee a la Ruta (%)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                {...form.register('montoFee', { valueAsNumber: true })}
+              />
+              {form.formState.errors.montoFee && (
+                <p className="text-sm text-destructive">{form.formState.errors.montoFee.message}</p>
+              )}
             </div>
-          )}
-          {form.formState.errors.tarifasPasajero && (
-            <p className="text-sm text-destructive">{form.formState.errors.tarifasPasajero.message}</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* Tarifas de Servicio - Solo para rutas privadas y especiales */}
-      {requiereTarifasServicio && (
+        {/* Tarifas de Pasajero */}
         <Card>
           <CardHeader>
-            <CardTitle>Tarifas de Servicio *</CardTitle>
+            <CardTitle>Tarifas de Pasajero *</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Agregar nueva tarifa */}
@@ -472,8 +367,8 @@ const AsignacionRegistrationForm = () => {
                   type="number"
                   step="0.01"
                   min="0.01"
-                  value={nuevaTarifaServicio.monto || ''}
-                  onChange={(e) => setNuevaTarifaServicio(prev => ({ 
+                  value={nuevaTarifaPasajero.monto || ''}
+                  onChange={(e) => setNuevaTarifaPasajero(prev => ({ 
                     ...prev, 
                     monto: parseFloat(e.target.value) || 0 
                   }))}
@@ -483,8 +378,8 @@ const AsignacionRegistrationForm = () => {
                 <Label>Fecha de Inicio *</Label>
                 <Input
                   type="date"
-                  value={nuevaTarifaServicio.fechaInicioVigencia || ''}
-                  onChange={(e) => setNuevaTarifaServicio(prev => ({ 
+                  value={nuevaTarifaPasajero.fechaInicioVigencia || ''}
+                  onChange={(e) => setNuevaTarifaPasajero(prev => ({ 
                     ...prev, 
                     fechaInicioVigencia: e.target.value 
                   }))}
@@ -493,9 +388,9 @@ const AsignacionRegistrationForm = () => {
               <div className="space-y-2">
                 <Label>Estado</Label>
                 <Select
-                  value={nuevaTarifaServicio.estado || 'activo'}
+                  value={nuevaTarifaPasajero.estado || 'activo'}
                   onValueChange={(value: 'activo' | 'inactivo') => 
-                    setNuevaTarifaServicio(prev => ({ ...prev, estado: value }))
+                    setNuevaTarifaPasajero(prev => ({ ...prev, estado: value }))
                   }
                 >
                   <SelectTrigger>
@@ -508,7 +403,7 @@ const AsignacionRegistrationForm = () => {
                 </Select>
               </div>
               <div className="flex items-end">
-                <Button type="button" onClick={agregarTarifaServicio} className="w-full">
+                <Button type="button" onClick={agregarTarifaPasajero} className="w-full">
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar
                 </Button>
@@ -516,7 +411,7 @@ const AsignacionRegistrationForm = () => {
             </div>
 
             {/* Tabla de tarifas */}
-            {tarifasServicio.length > 0 && (
+            {tarifasPasajero.length > 0 && (
               <div className="border rounded-lg">
                 <Table>
                   <TableHeader>
@@ -528,7 +423,7 @@ const AsignacionRegistrationForm = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tarifasServicio.map((tarifa) => (
+                    {tarifasPasajero.map((tarifa) => (
                       <TableRow key={tarifa.id}>
                         <TableCell>₡{tarifa.monto.toFixed(2)}</TableCell>
                         <TableCell>{tarifa.fechaInicioVigencia}</TableCell>
@@ -546,7 +441,7 @@ const AsignacionRegistrationForm = () => {
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => eliminarTarifaServicio(tarifa.id!)}
+                            onClick={() => eliminarTarifaPasajero(tarifa.id!)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -557,8 +452,120 @@ const AsignacionRegistrationForm = () => {
                 </Table>
               </div>
             )}
+            {form.formState.errors.tarifasPasajero && (
+              <p className="text-sm text-destructive">{form.formState.errors.tarifasPasajero.message}</p>
+            )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Tarifas de Servicio - Solo para rutas privadas y especiales */}
+      {requiereTarifasServicio && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Espaciador para mantener el layout */}
+          <div></div>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Tarifas de Servicio *</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Agregar nueva tarifa */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg">
+                <div className="space-y-2">
+                  <Label>Monto *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={nuevaTarifaServicio.monto || ''}
+                    onChange={(e) => setNuevaTarifaServicio(prev => ({ 
+                      ...prev, 
+                      monto: parseFloat(e.target.value) || 0 
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Fecha de Inicio *</Label>
+                  <Input
+                    type="date"
+                    value={nuevaTarifaServicio.fechaInicioVigencia || ''}
+                    onChange={(e) => setNuevaTarifaServicio(prev => ({ 
+                      ...prev, 
+                      fechaInicioVigencia: e.target.value 
+                    }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Estado</Label>
+                  <Select
+                    value={nuevaTarifaServicio.estado || 'activo'}
+                    onValueChange={(value: 'activo' | 'inactivo') => 
+                      setNuevaTarifaServicio(prev => ({ ...prev, estado: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="activo">Activo</SelectItem>
+                      <SelectItem value="inactivo">Inactivo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-end">
+                  <Button type="button" onClick={agregarTarifaServicio} className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar
+                  </Button>
+                </div>
+              </div>
+
+              {/* Tabla de tarifas */}
+              {tarifasServicio.length > 0 && (
+                <div className="border rounded-lg">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Monto</TableHead>
+                        <TableHead>Fecha de Inicio</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead className="w-20">Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {tarifasServicio.map((tarifa) => (
+                        <TableRow key={tarifa.id}>
+                          <TableCell>₡{tarifa.monto.toFixed(2)}</TableCell>
+                          <TableCell>{tarifa.fechaInicioVigencia}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              tarifa.estado === 'activo' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {tarifa.estado.charAt(0).toUpperCase() + tarifa.estado.slice(1)}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => eliminarTarifaServicio(tarifa.id!)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Botones de Acción */}
