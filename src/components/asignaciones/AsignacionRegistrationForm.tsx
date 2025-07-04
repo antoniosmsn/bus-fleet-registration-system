@@ -38,41 +38,10 @@ const asignacionSchema = z.object({
   })).optional()
 });
 
-// Mock data - Reemplazar con datos reales de API
-const mockRamales: Ramal[] = [
-  { id: '1', nombre: 'San José - Cartago', tipoRuta: 'publica' as 'privada' },
-  { id: '2', nombre: 'Heredia - Alajuela', tipoRuta: 'publica' as 'privada' },
-  { id: '3', nombre: 'Zona Franca Intel', tipoRuta: 'privada' },
-  { id: '4', nombre: 'Campus Tecnológico', tipoRuta: 'especial' },
-  { id: '5', nombre: 'Parque Industrial', tipoRuta: 'parque' }
-];
-
-const mockEmpresasCliente: EmpresaCliente[] = [
-  {
-    id: '1',
-    nombre: 'Intel Corporation',
-    cuentasPO: [
-      { id: '1', nombre: 'Cuenta Principal', codigo: 'MAIN001', esPrincipal: true },
-      { id: '2', nombre: 'Desarrollo R&D', codigo: 'RD001', esPrincipal: false },
-      { id: '3', nombre: 'Manufactura', codigo: 'MFG001', esPrincipal: false }
-    ]
-  },
-  {
-    id: '2',
-    nombre: 'Universidad Nacional',
-    cuentasPO: [
-      { id: '4', nombre: 'Cuenta Principal', codigo: 'UNA001', esPrincipal: true },
-      { id: '5', nombre: 'Campus Tecnológico', codigo: 'TECH001', esPrincipal: false }
-    ]
-  },
-  {
-    id: '3',
-    nombre: 'Compañía Manufacturera XYZ',
-    cuentasPO: [
-      { id: '6', nombre: 'Cuenta Principal', codigo: 'XYZ001', esPrincipal: true }
-    ]
-  }
-];
+import { 
+  mockRamales, 
+  mockEmpresasCliente 
+} from '@/data/mockAsignaciones';
 
 const AsignacionRegistrationForm = () => {
   const navigate = useNavigate();

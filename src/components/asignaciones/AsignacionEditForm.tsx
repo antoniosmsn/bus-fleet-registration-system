@@ -21,9 +21,10 @@ import {
   TarifaNueva 
 } from '@/types/asignacion-edicion';
 import { 
-  EmpresaCliente, 
-  Ramal 
-} from '@/types/asignacion-registro';
+  mockRamales, 
+  mockEmpresasCliente, 
+  getAsignacionEdicionData 
+} from '@/data/mockAsignaciones';
 
 const asignacionEditSchema = z.object({
   tipoUnidad: z.enum(['autobus', 'buseta', 'microbus'], { required_error: 'Tipo de unidad es requerido' }),
@@ -41,42 +42,6 @@ const asignacionEditSchema = z.object({
     estado: z.enum(['activo', 'inactivo'])
   })).optional()
 });
-
-// Mock data - mismos datos del registro
-const mockRamales: Ramal[] = [
-  { id: '1', nombre: 'San José - Cartago', tipoRuta: 'publica' as 'privada' },
-  { id: '2', nombre: 'Heredia - Alajuela', tipoRuta: 'publica' as 'privada' },
-  { id: '3', nombre: 'Zona Franca Intel', tipoRuta: 'privada' },
-  { id: '4', nombre: 'Campus Tecnológico', tipoRuta: 'especial' },
-  { id: '5', nombre: 'Parque Industrial', tipoRuta: 'parque' }
-];
-
-const mockEmpresasCliente: EmpresaCliente[] = [
-  {
-    id: '1',
-    nombre: 'Intel Corporation',
-    cuentasPO: [
-      { id: '1', nombre: 'Cuenta Principal', codigo: 'MAIN001', esPrincipal: true },
-      { id: '2', nombre: 'Desarrollo R&D', codigo: 'RD001', esPrincipal: false },
-      { id: '3', nombre: 'Manufactura', codigo: 'MFG001', esPrincipal: false }
-    ]
-  },
-  {
-    id: '2',
-    nombre: 'Universidad Nacional',
-    cuentasPO: [
-      { id: '4', nombre: 'Cuenta Principal', codigo: 'UNA001', esPrincipal: true },
-      { id: '5', nombre: 'Campus Tecnológico', codigo: 'TECH001', esPrincipal: false }
-    ]
-  },
-  {
-    id: '3',
-    nombre: 'Compañía Manufacturera XYZ',
-    cuentasPO: [
-      { id: '6', nombre: 'Cuenta Principal', codigo: 'XYZ001', esPrincipal: true }
-    ]
-  }
-];
 
 interface AsignacionEditFormProps {
   asignacionId: number;
@@ -124,45 +89,14 @@ const AsignacionEditForm: React.FC<AsignacionEditFormProps> = ({ asignacionId })
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        // Mock de carga de datos
+        // Mock de carga de datos usando el ID de la asignación
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const mockData: AsignacionEdicionData = {
-          id: asignacionId,
-          ramal: '3',
-          ramalNombre: 'Zona Franca Intel',
-          tipoRuta: 'privada',
-          empresaCliente: '1',
-          empresaTransporte: 'Transportes Unidos S.A.',
-          cuentaPO: '2',
-          tipoUnidad: 'autobus',
-          montoFee: 5.5,
-          tarifasPasajeroExistentes: [
-            {
-              id: 'existing-1',
-              monto: 850,
-              fechaInicioVigencia: '2024-01-01',
-              estado: 'activo',
-              esExistente: true
-            },
-            {
-              id: 'existing-2',
-              monto: 800,
-              fechaInicioVigencia: '2023-06-01',
-              estado: 'inactivo',
-              esExistente: true
-            }
-          ],
-          tarifasServicioExistentes: [
-            {
-              id: 'existing-s1',
-              monto: 15000,
-              fechaInicioVigencia: '2024-01-01',
-              estado: 'activo',
-              esExistente: true
-            }
-          ]
-        };
+        const mockData = getAsignacionEdicionData(asignacionId);
+        
+        if (!mockData) {
+          throw new Error('Asignación no encontrada');
+        }
 
         setDatosAsignacion(mockData);
         
@@ -170,12 +104,13 @@ const AsignacionEditForm: React.FC<AsignacionEditFormProps> = ({ asignacionId })
         form.setValue('ramal', mockData.ramal);
         form.setValue('ramalNombre', mockData.ramalNombre);
         form.setValue('tipoRuta', mockData.tipoRuta);
-        form.setValue('empresaCliente', mockData.empresaCliente);
-        form.setValue('cuentaPO', mockData.cuentaPO);
+        form.setValue('empresaCliente', mockData.empresaCliente || '');
+        form.setValue('cuentaPO', mockData.cuentaPO || '');
         form.setValue('tipoUnidad', mockData.tipoUnidad);
         form.setValue('montoFee', mockData.montoFee);
         form.setValue('tarifasPasajero', [...mockData.tarifasPasajeroExistentes]);
         form.setValue('tarifasServicio', [...mockData.tarifasServicioExistentes]);
+        
         
       } catch (error) {
         console.error('Error cargando datos:', error);
