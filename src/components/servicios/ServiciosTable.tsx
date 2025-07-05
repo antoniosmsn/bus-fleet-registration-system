@@ -14,7 +14,19 @@ import { Link } from 'react-router-dom';
 import { mockServicios } from '@/data/mockServicios';
 
 interface ServiciosTableProps {
-  filters?: any; // Filters can be implemented later
+  filters: {
+    empresaCliente: string;
+    transportista: string;
+    tipoUnidad: string;
+    diasSemana: string[];
+    horarioInicio: string;
+    horarioFin: string;
+    ramal: string;
+    tipoRuta: string;
+    sentido: string;
+    turno: string;
+    estado: string;
+  };
 }
 
 const ServiciosTable = ({ filters }: ServiciosTableProps) => {
@@ -109,8 +121,69 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
     }).format(monto);
   };
 
-  // Procesar datos del mock para mostrar en la tabla
-  const servicios = mockServicios.map(servicio => ({
+  // Aplicar filtros a los datos del mock
+  const serviciosFiltrados = mockServicios.filter(servicio => {
+    // Filtro por empresa cliente
+    if (filters.empresaCliente && filters.empresaCliente !== '' && servicio.empresaCliente !== filters.empresaCliente) {
+      return false;
+    }
+    
+    // Filtro por transportista
+    if (filters.transportista && filters.transportista !== '' && servicio.transportista !== filters.transportista) {
+      return false;
+    }
+    
+    // Filtro por tipo de unidad
+    if (filters.tipoUnidad && filters.tipoUnidad !== 'todos' && servicio.tipoUnidad !== filters.tipoUnidad) {
+      return false;
+    }
+    
+    // Filtro por ramal
+    if (filters.ramal && filters.ramal !== '' && servicio.ramal !== filters.ramal) {
+      return false;
+    }
+    
+    // Filtro por tipo de ruta
+    if (filters.tipoRuta && filters.tipoRuta !== 'todos' && servicio.tipoRuta !== filters.tipoRuta) {
+      return false;
+    }
+    
+    // Filtro por sentido
+    if (filters.sentido && filters.sentido !== 'todos' && servicio.sentido !== filters.sentido) {
+      return false;
+    }
+    
+    // Filtro por turno
+    if (filters.turno && filters.turno !== '' && servicio.turno !== filters.turno) {
+      return false;
+    }
+    
+    // Filtro por estado
+    if (filters.estado && filters.estado !== 'todos' && servicio.estado !== filters.estado) {
+      return false;
+    }
+    
+    // Filtro por horario (rango)
+    if (filters.horarioInicio && servicio.horario < filters.horarioInicio) {
+      return false;
+    }
+    if (filters.horarioFin && servicio.horario > filters.horarioFin) {
+      return false;
+    }
+    
+    // Filtro por días de la semana (al menos uno en común)
+    if (filters.diasSemana && filters.diasSemana.length > 0) {
+      const hasCommonDay = servicio.diasSemana.some(dia => filters.diasSemana.includes(dia));
+      if (!hasCommonDay) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+
+  // Procesar datos filtrados para mostrar en la tabla
+  const servicios = serviciosFiltrados.map(servicio => ({
     id: servicio.id,
     numeroServicio: servicio.numeroServicio,
     turno: getTurnoNombre(servicio.turno),
