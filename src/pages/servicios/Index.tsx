@@ -12,15 +12,15 @@ const ServiciosIndex = () => {
   const [filtros, setFiltros] = useState({
     empresaCliente: '',
     transportista: '',
-    tipoUnidad: '',
+    tipoUnidad: 'todos',
     diasSemana: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'],
     horarioInicio: '00:00',
     horarioFin: '23:59',
     ramal: '',
-    tipoRuta: '',
-    sentido: '',
+    tipoRuta: 'todos',
+    sentido: 'todos',
     turno: '',
-    estado: ''
+    estado: 'todos'
   });
 
   const [paginaActual, setPaginaActual] = useState(1);

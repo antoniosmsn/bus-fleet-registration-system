@@ -71,15 +71,15 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
     onFiltrosChange({
       empresaCliente: '',
       transportista: '',
-      tipoUnidad: '',
+      tipoUnidad: 'todos',
       diasSemana: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'],
       horarioInicio: '00:00',
       horarioFin: '23:59',
       ramal: '',
-      tipoRuta: '',
-      sentido: '',
+      tipoRuta: 'todos',
+      sentido: 'todos',
       turno: '',
-      estado: ''
+      estado: 'todos'
     });
   };
 
@@ -155,7 +155,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                     <SelectValue placeholder="Seleccionar sentido" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="ingreso">Ingreso</SelectItem>
                     <SelectItem value="salida">Salida</SelectItem>
                   </SelectContent>
@@ -173,7 +173,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                     <SelectValue placeholder="Seleccionar estado" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="activo">Activo</SelectItem>
                     <SelectItem value="inactivo">Inactivo</SelectItem>
                   </SelectContent>
@@ -228,7 +228,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="autobus">Autobús</SelectItem>
                     <SelectItem value="buseta">Buseta</SelectItem>
                     <SelectItem value="microbus">Microbús</SelectItem>
@@ -260,7 +260,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="publica">Pública</SelectItem>
                     <SelectItem value="privada">Privada</SelectItem>
                     <SelectItem value="especial">Especial</SelectItem>
