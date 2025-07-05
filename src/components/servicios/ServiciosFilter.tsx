@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Combobox } from '@/components/ui/combobox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Search, X } from 'lucide-react';
 
 interface ServiciosFiltrosProps {
   filtros: {
@@ -66,6 +66,12 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
     { id: 'sabado', label: 'Sábado' },
     { id: 'domingo', label: 'Domingo' }
   ];
+
+  const aplicarFiltros = () => {
+    // Los filtros ya están actualizados en tiempo real
+    // Esta función se puede usar para trigger adicional si es necesario
+    console.log('Aplicando filtros:', filtros);
+  };
 
   const limpiarFiltros = () => {
     onFiltrosChange({
@@ -290,6 +296,17 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
           </TabsContent>
         </Tabs>
       </CardContent>
+      
+      <CardFooter className="flex justify-between border-t pt-4">
+        <Button variant="outline" onClick={limpiarFiltros} className="flex items-center gap-2">
+          <X className="h-4 w-4" />
+          Limpiar Filtros
+        </Button>
+        <Button onClick={aplicarFiltros} className="flex items-center gap-2">
+          <Search className="h-4 w-4" />
+          Buscar
+        </Button>
+      </CardFooter>
     </Card>
   );
 };
