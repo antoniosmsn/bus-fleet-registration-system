@@ -34,6 +34,7 @@ import PasajerosIndex from "./pages/pasajeros/Index";
 import RegisterPasajero from "./pages/pasajeros/Register";
 import ServiciosIndex from "./pages/servicios/Index";
 import RegisterServicio from "./pages/servicios/Register";
+import EditServicio from "./pages/servicios/Edit";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -78,6 +79,7 @@ const App = () => (
             <Route path="/pasajeros/view/:id" element={<PlaceholderPage title="Ver Pasajero" />} />
             <Route path="/servicios" element={<ServiciosIndex />} />
             <Route path="/servicios/register" element={<RegisterServicio />} />
+            <Route path="/servicios/edit/:id" element={<EditServicio />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />

@@ -73,8 +73,6 @@ const ServiciosIndex = () => {
     setPaginaActual(1);
   };
 
-  const serviciosFiltrados = servicios; // Here would be the actual filtering logic
-
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -100,15 +98,10 @@ const ServiciosIndex = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Lista de Servicios ({serviciosFiltrados.length})</CardTitle>
+            <CardTitle>Lista de Servicios</CardTitle>
           </CardHeader>
           <CardContent>
-            <ServiciosTable 
-              servicios={serviciosFiltrados}
-              paginaActual={paginaActual}
-              serviciosPorPagina={serviciosPorPagina}
-              onPaginaChange={setPaginaActual}
-            />
+            <ServiciosTable filters={filtros} />
           </CardContent>
         </Card>
       </div>
