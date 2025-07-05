@@ -18,41 +18,118 @@ interface ServiciosTableProps {
 }
 
 const ServiciosTable = ({ filters }: ServiciosTableProps) => {
-  // Procesar datos del mock para mostrar en la tabla
-  const servicios = mockServicios.map(servicio => {
-    // Obtener nombres legibles de los IDs
-    const turnoNombre = servicio.turno === '1' ? 'Turno A' : servicio.turno === '2' ? 'Turno B' : 'Turno C';
-    const transportistaNombre = servicio.transportista === '1' ? 'Transportes San José S.A.' : 
-                               servicio.transportista === '2' ? 'Autobuses del Valle' :
-                               servicio.transportista === '3' ? 'Empresa de Transporte Central' :
-                               servicio.transportista === '4' ? 'Transportes Unidos' : 'Buses Express Costa Rica';
-    const ramalNombre = servicio.ramal === '1' ? 'San José - Cartago' :
-                        servicio.ramal === '2' ? 'Heredia - Alajuela' :
-                        servicio.ramal === '3' ? 'Zona Franca Intel - Privada - Intel' :
-                        servicio.ramal === '4' ? 'Campus Tecnológico - Especial - Universidad Nacional' : 'Parque Industrial - Parque';
-    
-    // Formatear días
-    const diasAbrev = servicio.diasSemana.map(dia => {
+  // Helper functions to map IDs to names
+  const getTurnoNombre = (turnoId: string) => {
+    const turnos: Record<string, string> = {
+      '1': 'Turno A',
+      '2': 'Turno B', 
+      '3': 'Turno C'
+    };
+    return turnos[turnoId] || turnoId;
+  };
+
+  const getTransportistaNombre = (transportistaId: string) => {
+    const transportistas: Record<string, string> = {
+      '1': 'Transportes San José S.A.',
+      '2': 'Autobuses del Valle',
+      '3': 'Empresa de Transporte Central',
+      '4': 'Transportes Unidos',
+      '5': 'Buses Express Costa Rica'
+    };
+    return transportistas[transportistaId] || transportistaId;
+  };
+
+  const getEmpresaClienteNombre = (empresaId: string) => {
+    const empresas: Record<string, string> = {
+      '1': 'Intel Corporation',
+      '2': 'Microsoft Costa Rica',
+      '3': 'Amazon Development Center',
+      '4': 'Parque Industrial S.A.'
+    };
+    return empresas[empresaId] || '-';
+  };
+
+  const getRamalNombre = (ramalId: string) => {
+    const ramales: Record<string, string> = {
+      '1': 'San José - Cartago',
+      '2': 'Heredia - Alajuela', 
+      '3': 'Zona Franca Intel',
+      '4': 'Campus Tecnológico',
+      '5': 'Parque Industrial'
+    };
+    return ramales[ramalId] || ramalId;
+  };
+
+  const getTipoUnidadNombre = (tipo: string) => {
+    const tipos: Record<string, string> = {
+      'autobus': 'Autobús',
+      'buseta': 'Buseta',
+      'microbus': 'Microbús'
+    };
+    return tipos[tipo] || tipo;
+  };
+
+  const getTipoRutaNombre = (tipo: string) => {
+    const tipos: Record<string, string> = {
+      'publica': 'Pública',
+      'privada': 'Privada',
+      'especial': 'Especial',
+      'parque': 'Parque'
+    };
+    return tipos[tipo] || tipo;
+  };
+
+  const formatearFecha = (fechaISO: string) => {
+    return new Date(fechaISO).toLocaleDateString('es-CR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
+  // Formatear días
+  const formatearDias = (diasSemana: string[]) => {
+    const diasAbrev = diasSemana.map(dia => {
       const map: Record<string, string> = {
         'lunes': 'L', 'martes': 'M', 'miercoles': 'X', 'jueves': 'J', 
         'viernes': 'V', 'sabado': 'S', 'domingo': 'D'
       };
       return map[dia];
     }).join(',');
+    return diasAbrev;
+  };
 
-    return {
-      id: servicio.id,
-      turno: turnoNombre,
-      transportista: transportistaNombre,
-      ramal: ramalNombre,
-      horario: servicio.horario,
-      dias: diasAbrev,
-      sentido: servicio.sentido === 'ingreso' ? 'Ingreso' : 'Salida',
-      unidades: servicio.cantidadUnidades,
-      fee: servicio.porcentajeFee,
-      estado: servicio.estado === 'activo' ? 'Activo' : 'Inactivo'
-    };
-  });
+  // Formatear moneda
+  const formatearMoneda = (monto: number) => {
+    return new Intl.NumberFormat('es-CR', {
+      style: 'currency',
+      currency: 'CRC',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(monto);
+  };
+
+  // Procesar datos del mock para mostrar en la tabla
+  const servicios = mockServicios.map(servicio => ({
+    id: servicio.id,
+    numeroServicio: servicio.numeroServicio,
+    turno: getTurnoNombre(servicio.turno),
+    transportista: getTransportistaNombre(servicio.transportista),
+    empresaCliente: getEmpresaClienteNombre(servicio.empresaCliente),
+    tipoUnidad: getTipoUnidadNombre(servicio.tipoUnidad),
+    ramal: getRamalNombre(servicio.ramal),
+    tipoRuta: getTipoRutaNombre(servicio.tipoRuta),
+    horario: servicio.horario,
+    dias: formatearDias(servicio.diasSemana),
+    sentido: servicio.sentido === 'ingreso' ? 'Ingreso' : 'Salida',
+    tarifaPasajero: servicio.tarifaPasajero,
+    tarifaServicio: servicio.tarifaServicio,
+    estado: servicio.estado === 'activo' ? 'Activo' : 'Inactivo',
+    fechaCreacion: formatearFecha(servicio.fechaCreacion),
+    fechaModificacion: servicio.fechaModificacion ? formatearFecha(servicio.fechaModificacion) : '-',
+    usuarioCreacion: servicio.usuarioCreacion,
+    usuarioModificacion: servicio.usuarioModificacion || '-'
+  }));
 
   if (servicios.length === 0) {
     return (
@@ -68,15 +145,22 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>N° Servicio</TableHead>
               <TableHead>Turno</TableHead>
               <TableHead>Transportista</TableHead>
+              <TableHead>Empresa Cliente</TableHead>
+              <TableHead>Tipo Unidad</TableHead>
               <TableHead>Ramal</TableHead>
+              <TableHead>Tipo Ruta</TableHead>
               <TableHead>Horario</TableHead>
-              <TableHead>Días</TableHead>
               <TableHead>Sentido</TableHead>
-              <TableHead>Unidades</TableHead>
-              <TableHead>Fee %</TableHead>
+              <TableHead>Tarifa Pasajero</TableHead>
+              <TableHead>Tarifa Servicio</TableHead>
               <TableHead>Estado</TableHead>
+              <TableHead>Fecha Creación</TableHead>
+              <TableHead>Fecha Modificación</TableHead>
+              <TableHead>Usuario Creación</TableHead>
+              <TableHead>Usuario Modificación</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -84,35 +168,58 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
             {servicios.map((servicio) => (
               <TableRow key={servicio.id}>
                 <TableCell className="font-medium">
+                  {servicio.numeroServicio}
+                </TableCell>
+                <TableCell>
                   {servicio.turno}
                 </TableCell>
-                <TableCell className="max-w-[200px] truncate">
+                <TableCell className="max-w-[180px] truncate">
                   {servicio.transportista}
                 </TableCell>
-                <TableCell className="max-w-[250px] truncate">
+                <TableCell className="max-w-[180px] truncate">
+                  {servicio.empresaCliente}
+                </TableCell>
+                <TableCell>
+                  {servicio.tipoUnidad}
+                </TableCell>
+                <TableCell className="max-w-[200px] truncate">
                   {servicio.ramal}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    {servicio.tipoRuta}
+                  </Badge>
                 </TableCell>
                 <TableCell className="font-mono">
                   {servicio.horario}
-                </TableCell>
-                <TableCell>
-                  <span className="font-mono text-sm">{servicio.dias}</span>
                 </TableCell>
                 <TableCell>
                   <Badge variant={servicio.sentido === 'Ingreso' ? 'default' : 'outline'}>
                     {servicio.sentido}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-center">
-                  {servicio.unidades}
+                <TableCell className="text-right">
+                  {formatearMoneda(servicio.tarifaPasajero)}
                 </TableCell>
                 <TableCell className="text-right">
-                  {servicio.fee}%
+                  {formatearMoneda(servicio.tarifaServicio)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={servicio.estado === 'Activo' ? 'default' : 'destructive'}>
                     {servicio.estado}
                   </Badge>
+                </TableCell>
+                <TableCell className="text-sm">
+                  {servicio.fechaCreacion}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {servicio.fechaModificacion}
+                </TableCell>
+                <TableCell className="max-w-[150px] truncate text-sm">
+                  {servicio.usuarioCreacion}
+                </TableCell>
+                <TableCell className="max-w-[150px] truncate text-sm">
+                  {servicio.usuarioModificacion}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
