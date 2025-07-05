@@ -68,9 +68,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
   ];
 
   const aplicarFiltros = () => {
-    // Los filtros ya están actualizados en tiempo real
-    // Esta función se puede usar para trigger adicional si es necesario
-    console.log('Aplicando filtros:', filtros);
+    onFiltrosChange(filtros);
   };
 
   const limpiarFiltros = () => {
