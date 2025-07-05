@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Combobox } from '@/components/ui/combobox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RotateCcw, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface ServiciosFiltrosProps {
   filtros: {
@@ -101,10 +101,16 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Filtros de Búsqueda</CardTitle>
-        <Button variant="outline" onClick={limpiarFiltros} size="sm">
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Limpiar Filtros
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={limpiarFiltros} size="sm" className="flex items-center gap-2">
+            <X className="h-4 w-4" />
+            Limpiar Filtros
+          </Button>
+          <Button onClick={aplicarFiltros} size="sm" className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            Buscar
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="datos-servicio" className="w-full">
@@ -296,17 +302,6 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
           </TabsContent>
         </Tabs>
       </CardContent>
-      
-      <CardFooter className="flex justify-between border-t pt-4">
-        <Button variant="outline" onClick={limpiarFiltros} className="flex items-center gap-2">
-          <X className="h-4 w-4" />
-          Limpiar Filtros
-        </Button>
-        <Button onClick={aplicarFiltros} className="flex items-center gap-2">
-          <Search className="h-4 w-4" />
-          Buscar
-        </Button>
-      </CardFooter>
     </Card>
   );
 };
