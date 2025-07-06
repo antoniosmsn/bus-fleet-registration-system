@@ -180,7 +180,7 @@ const AsignacionesConductoresFilter: React.FC<AsignacionesConductoresFiltrosProp
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="autobus">Autobús</SelectItem>
                     <SelectItem value="buseta">Buseta</SelectItem>
                     <SelectItem value="microbus">Microbús</SelectItem>

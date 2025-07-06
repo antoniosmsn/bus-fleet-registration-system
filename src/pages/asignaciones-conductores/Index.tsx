@@ -42,7 +42,7 @@ const AsignacionesConductoresIndex = () => {
       }
       
       // Filtro por tipo de unidad
-      if (filtros.tipoUnidad && asignacion.tipoUnidad !== filtros.tipoUnidad) {
+      if (filtros.tipoUnidad && filtros.tipoUnidad !== 'todos' && asignacion.tipoUnidad !== filtros.tipoUnidad) {
         return false;
       }
       
