@@ -102,10 +102,14 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
   };
 
   const formatearFecha = (fechaISO: string) => {
-    return new Date(fechaISO).toLocaleDateString('es-CR', {
+    return new Date(fechaISO).toLocaleString('es-CR', {
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
     });
   };
 
