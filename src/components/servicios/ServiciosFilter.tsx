@@ -108,6 +108,12 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
             <Search className="h-4 w-4" />
             Buscar
           </Button>
+          <Button variant="outline" size="sm">
+            PDF
+          </Button>
+          <Button variant="outline" size="sm">
+            Excel
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
