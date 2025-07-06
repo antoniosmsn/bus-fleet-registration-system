@@ -93,11 +93,6 @@ const SidebarComponent = () => {
       icon: Calendar 
     },
     { 
-      title: "Servicios", 
-      url: "/servicios", 
-      icon: Truck 
-    },
-    { 
       title: "Usuarios Pasajeros", 
       url: "/pasajeros", 
       icon: UserCheck 
@@ -106,6 +101,20 @@ const SidebarComponent = () => {
       title: "Usuarios Administradores", 
       url: "/users", 
       icon: Users 
+    },
+  ];
+
+  // Servicios menu items
+  const serviciosItems = [
+    { 
+      title: "Listado de Servicios", 
+      url: "/servicios", 
+      icon: Truck 
+    },
+    { 
+      title: "Asignación de Conductores", 
+      url: "/asignaciones-conductores", 
+      icon: UserCheck 
     },
   ];
 
@@ -151,6 +160,31 @@ const SidebarComponent = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {registrationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip={item.title}
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Truck className="mr-2" />
+            Servicios
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {serviciosItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
