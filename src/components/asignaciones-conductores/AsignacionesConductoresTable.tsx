@@ -126,7 +126,7 @@ const AsignacionesConductoresTable = ({ asignaciones, onEditAsignacion }: Asigna
                   {formatearMoneda(asignacion.tarifaServicio)}
                 </TableCell>
                 <TableCell className="max-w-[180px] truncate">
-                  {asignacion.empresaCliente}
+                  {asignacion.tipoRuta === 'parque' ? '-' : asignacion.empresaCliente}
                 </TableCell>
                 <TableCell>
                   <Badge variant={asignacion.sentido === 'ingreso' ? 'default' : 'outline'}>
