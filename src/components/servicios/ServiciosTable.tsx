@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,6 +13,8 @@ import { Eye, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Switch } from '@/components/ui/switch';
 import { mockServicios } from '@/data/mockServicios';
+import { useToast } from '@/hooks/use-toast';
+import ConfirmarCambioEstadoDialog from './ConfirmarCambioEstadoDialog';
 
 interface ServiciosTableProps {
   filters: {
@@ -31,6 +33,13 @@ interface ServiciosTableProps {
 }
 
 const ServiciosTable = ({ filters }: ServiciosTableProps) => {
+  const { toast } = useToast();
+  const [servicioToToggle, setServicioToToggle] = useState<{
+    id: string;
+    numeroServicio: string;
+    nuevoEstado: 'Activo' | 'Inactivo';
+  } | null>(null);
+
   // Helper functions to map IDs to names
   const getTurnoNombre = (turnoId: string) => {
     const turnos: Record<string, string> = {
@@ -183,6 +192,45 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
     return true;
   });
 
+  // Manejar cambio de estado
+  const handleToggleEstado = (servicio: any) => {
+    const nuevoEstado = servicio.estado === 'Activo' ? 'Inactivo' : 'Activo';
+    setServicioToToggle({
+      id: servicio.id,
+      numeroServicio: servicio.numeroServicio,
+      nuevoEstado
+    });
+  };
+
+  const handleConfirmToggle = () => {
+    if (!servicioToToggle) return;
+
+    // Aquí se haría la llamada al API para cambiar el estado
+    // Por ahora simulamos el cambio
+    
+    // Simular registro en bitácora
+    const usuario = 'admin@sistema.com'; // En producción esto vendría del contexto del usuario
+    const fechaActual = new Date().toISOString();
+    console.log('Registro en bitácora:', {
+      accion: 'cambio_estado_servicio',
+      servicio_id: servicioToToggle.id,
+      numero_servicio: servicioToToggle.numeroServicio,
+      estado_anterior: servicioToToggle.nuevoEstado === 'Activo' ? 'Inactivo' : 'Activo',
+      estado_nuevo: servicioToToggle.nuevoEstado,
+      usuario: usuario,
+      fecha: fechaActual
+    });
+
+    toast({
+      title: "Estado actualizado",
+      description: `El servicio ${servicioToToggle.numeroServicio} ha sido cambiado a ${servicioToToggle.nuevoEstado.toLowerCase()}.`,
+    });
+
+    setServicioToToggle(null);
+    
+    // En producción aquí se actualizaría el estado local o se refrescaría la tabla
+  };
+
   // Procesar datos filtrados para mostrar en la tabla
   const servicios = serviciosFiltrados.map(servicio => ({
     id: servicio.id,
@@ -282,7 +330,7 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
                   <div className="flex items-center gap-2">
                     <Switch 
                       checked={servicio.estado === 'Activo'} 
-                      disabled
+                      onCheckedChange={() => handleToggleEstado(servicio)}
                     />
                     <span className={servicio.estado === 'Activo' ? 'text-green-600' : 'text-red-600'}>
                       {servicio.estado}
@@ -321,6 +369,16 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
           </TableBody>
         </Table>
       </div>
+
+      {servicioToToggle && (
+        <ConfirmarCambioEstadoDialog
+          isOpen={true}
+          onClose={() => setServicioToToggle(null)}
+          onConfirm={handleConfirmToggle}
+          numeroServicio={servicioToToggle.numeroServicio}
+          nuevoEstado={servicioToToggle.nuevoEstado}
+        />
+      )}
     </div>
   );
 };
