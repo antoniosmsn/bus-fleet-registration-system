@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Switch } from '@/components/ui/switch';
 import { mockServicios } from '@/data/mockServicios';
 
 interface ServiciosTableProps {
@@ -278,9 +279,15 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
                   {formatearMoneda(servicio.tarifaServicio)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={servicio.estado === 'Activo' ? 'default' : 'destructive'}>
-                    {servicio.estado}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={servicio.estado === 'Activo'} 
+                      disabled
+                    />
+                    <span className={servicio.estado === 'Activo' ? 'text-green-600' : 'text-red-600'}>
+                      {servicio.estado}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-sm">
                   {servicio.fechaCreacion}
