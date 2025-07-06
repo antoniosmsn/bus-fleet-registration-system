@@ -65,17 +65,14 @@ const AsignacionesConductoresFilter: React.FC<AsignacionesConductoresFiltrosProp
   };
 
   const limpiarFiltros = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     onFiltrosChange({
       empresaCliente: '',
       transportista: '',
       tipoUnidad: '',
       horarioInicio: '00:00',
       horarioFin: '23:59',
-      fechaInicio: weekAgo,
-      fechaFin: weekFromNow,
+      fechaInicio: '2020-01-01',
+      fechaFin: '2030-12-31',
       ramal: '',
       turno: '',
       conductor: '',
