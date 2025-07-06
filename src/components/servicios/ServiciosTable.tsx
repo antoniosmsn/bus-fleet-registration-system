@@ -351,9 +351,6 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4" />
-                    </Button>
                     <Link to={`/servicios/edit/${servicio.id}`}>
                       <Button variant="outline" size="sm">
                         <Edit className="h-4 w-4" />
