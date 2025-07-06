@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Edit } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Switch } from '@/components/ui/switch';
 import { mockServicios } from '@/data/mockServicios';
@@ -356,9 +356,6 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Link>
-                    <Button variant="outline" size="sm">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>
