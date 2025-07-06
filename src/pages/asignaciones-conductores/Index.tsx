@@ -9,6 +9,8 @@ import { mockAsignacionesConductores, AsignacionConductor } from '@/data/mockAsi
 
 const AsignacionesConductoresIndex = () => {
   const today = new Date().toISOString().split('T')[0];
+  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
   
   const [filtros, setFiltros] = useState({
     empresaCliente: '',
@@ -16,8 +18,8 @@ const AsignacionesConductoresIndex = () => {
     tipoUnidad: '',
     horarioInicio: '00:00',
     horarioFin: '23:59',
-    fechaInicio: today,
-    fechaFin: today,
+    fechaInicio: weekAgo,
+    fechaFin: weekFromNow,
     ramal: '',
     turno: '',
     conductor: '',
