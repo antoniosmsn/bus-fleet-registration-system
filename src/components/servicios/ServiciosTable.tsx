@@ -294,7 +294,7 @@ const ServiciosTable = ({ filters }: ServiciosTableProps) => {
             {servicios.map((servicio) => (
               <TableRow key={servicio.id}>
                 <TableCell className="font-medium">
-                  {servicio.numeroServicio}
+                  {servicio.numeroServicio.replace(/[^0-9]/g, '')}
                 </TableCell>
                 <TableCell>
                   {servicio.turno}
