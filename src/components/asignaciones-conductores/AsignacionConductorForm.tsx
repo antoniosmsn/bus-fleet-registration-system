@@ -235,19 +235,8 @@ const AsignacionConductorForm = () => {
   const getConductoresDisponibles = (servicioId: string) => {
     if (!empresaTransporte) return [];
 
-    const conductoresEmpresa = getConductoresByEmpresaTransporte(empresaTransporte);
-    const servicio = serviciosFiltrados.find(s => s.id === servicioId);
-    
-    if (!servicio) return [];
-
-    // Filtrar conductores que no tengan conflicto de horario
-    return conductoresEmpresa.filter(conductor => {
-      const serviciosAsignados = serviciosFiltrados.filter(s => 
-        asignaciones[s.id] === conductor.id && s.id !== servicioId
-      );
-
-      return !verificarConflictosHorario(servicio.horario, serviciosAsignados);
-    });
+    // Siempre retornar todos los conductores de la empresa
+    return getConductoresByEmpresaTransporte(empresaTransporte);
   };
 
   const formatearFechaOperacion = (fecha: string, horario: string) => {
