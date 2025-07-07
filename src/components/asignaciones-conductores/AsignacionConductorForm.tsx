@@ -52,6 +52,9 @@ const AsignacionConductorForm = () => {
 
   const watchedValues = form.watch();
   const { empresaTransporte, fechaOperacion, asignaciones } = watchedValues;
+  
+  // Crear una clave que cambie cuando cambien las asignaciones
+  const asignacionesKey = JSON.stringify(asignaciones);
 
   // Función para verificar si un día de la semana corresponde a una fecha
   const verificarDiaServicio = (diasSemana: string[], fecha: string): boolean => {
@@ -160,7 +163,7 @@ const AsignacionConductorForm = () => {
     const conflictosUnicos = [...new Set(conflictosEncontrados)];
     console.log('🎯 Conflictos encontrados (únicos):', conflictosUnicos);
     setConflictos(conflictosUnicos);
-  }, [asignaciones, mostrarServicios, serviciosFiltrados.length]);
+  }, [asignacionesKey, mostrarServicios, serviciosFiltrados.length]);
 
   // Efecto separado para actualizar el estado de conflicto en servicios
   useEffect(() => {
