@@ -220,18 +220,6 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
           {/* Tab: Transporte y Rutas */}
           <TabsContent value="transporte-rutas" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              {/* Transportista */}
-              <div className="space-y-2">
-                <Label>Transportista</Label>
-                <Combobox
-                  options={transportistas}
-                  value={filtros.transportista}
-                  onValueChange={(value) => onFiltrosChange({ ...filtros, transportista: value })}
-                  placeholder="Seleccionar transportista..."
-                  searchPlaceholder="Buscar transportista..."
-                  emptyText="No se encontraron transportistas."
-                />
-              </div>
 
               {/* Tipo de Unidad */}
               <div className="space-y-2">
@@ -287,9 +275,22 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
             </div>
           </TabsContent>
 
-          {/* Tab: Empresa Cliente */}
+          {/* Tab: Empresas */}
           <TabsContent value="empresa-cliente" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {/* Transportista */}
+              <div className="space-y-2">
+                <Label>Transportista</Label>
+                <Combobox
+                  options={transportistas}
+                  value={filtros.transportista}
+                  onValueChange={(value) => onFiltrosChange({ ...filtros, transportista: value })}
+                  placeholder="Seleccionar transportista..."
+                  searchPlaceholder="Buscar transportista..."
+                  emptyText="No se encontraron transportistas."
+                />
+              </div>
+
               {/* Empresa Cliente */}
               <div className="space-y-2">
                 <Label>Empresa Cliente</Label>
