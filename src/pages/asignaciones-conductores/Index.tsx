@@ -6,7 +6,6 @@ import AsignacionesConductoresTable from '@/components/asignaciones-conductores/
 import AsignacionesConductoresPagination from '@/components/asignaciones-conductores/AsignacionesConductoresPagination';
 import { Button } from '@/components/ui/button';
 import { mockAsignacionesConductores, AsignacionConductor } from '@/data/mockAsignacionesConductores';
-
 const AsignacionesConductoresIndex = () => {
   const [filtros, setFiltros] = useState({
     empresaCliente: '',
@@ -22,7 +21,6 @@ const AsignacionesConductoresIndex = () => {
     codigoConductor: '',
     estadoAsignacion: 'todos'
   });
-
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -33,17 +31,17 @@ const AsignacionesConductoresIndex = () => {
       if (filtros.empresaCliente && !asignacion.empresaCliente.toLowerCase().includes(filtros.empresaCliente.toLowerCase())) {
         return false;
       }
-      
+
       // Filtro por transportista
       if (filtros.transportista && !asignacion.empresaTransporte.toLowerCase().includes(filtros.transportista.toLowerCase())) {
         return false;
       }
-      
+
       // Filtro por tipo de unidad
       if (filtros.tipoUnidad && filtros.tipoUnidad !== 'todos' && asignacion.tipoUnidad !== filtros.tipoUnidad) {
         return false;
       }
-      
+
       // Filtro por horario (rango)
       if (filtros.horarioInicio && asignacion.horario < filtros.horarioInicio) {
         return false;
@@ -51,7 +49,7 @@ const AsignacionesConductoresIndex = () => {
       if (filtros.horarioFin && asignacion.horario > filtros.horarioFin) {
         return false;
       }
-      
+
       // Filtro por fecha (rango)
       const fechaOperacion = new Date(asignacion.fechaOperacion);
       if (filtros.fechaInicio) {
@@ -66,17 +64,17 @@ const AsignacionesConductoresIndex = () => {
           return false;
         }
       }
-      
+
       // Filtro por ramal
       if (filtros.ramal && !asignacion.ramal.toLowerCase().includes(filtros.ramal.toLowerCase())) {
         return false;
       }
-      
+
       // Filtro por turno
       if (filtros.turno && !asignacion.turno.toLowerCase().includes(filtros.turno.toLowerCase())) {
         return false;
       }
-      
+
       // Filtro por conductor (nombre o apellidos)
       if (filtros.conductor) {
         const conductorCompleto = `${asignacion.conductorNombre || ''} ${asignacion.conductorApellidos || ''}`.toLowerCase();
@@ -84,12 +82,12 @@ const AsignacionesConductoresIndex = () => {
           return false;
         }
       }
-      
+
       // Filtro por código conductor
       if (filtros.codigoConductor && asignacion.codigoConductor !== filtros.codigoConductor) {
         return false;
       }
-      
+
       // Filtro por estado de asignación
       if (filtros.estadoAsignacion !== 'todos') {
         const tieneAsignacion = !!(asignacion.conductorId && asignacion.conductorNombre);
@@ -100,7 +98,6 @@ const AsignacionesConductoresIndex = () => {
           return false;
         }
       }
-      
       return true;
     }).sort((a, b) => a.horario.localeCompare(b.horario)); // Ordenar por horario ascendente
   }, [filtros]);
@@ -109,35 +106,25 @@ const AsignacionesConductoresIndex = () => {
   const totalPages = Math.ceil(asignacionesFiltradas.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const asignacionesPaginadas = asignacionesFiltradas.slice(startIndex, startIndex + itemsPerPage);
-
   const handleFilter = (newFilters: any) => {
     setFiltros(newFilters);
     setCurrentPage(1); // Reset a la primera página cuando se aplican filtros
   };
-
   const handleEditAsignacion = (id: string) => {
     // TODO: Implementar navegación a edición de asignación
     console.log('Editar asignación:', id);
   };
-
   const handleAsignarConductor = () => {
     window.location.href = '/asignaciones-conductores/asignar';
   };
-
-  return (
-    <Layout>
+  return <Layout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Asignación de Conductores</h1>
-            <p className="text-gray-600">
-              Gestiona las asignaciones de conductores a servicios
-            </p>
+            
           </div>
-          <Button 
-            onClick={handleAsignarConductor}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
-          >
+          <Button onClick={handleAsignarConductor} className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Asignar Conductor
           </Button>
@@ -156,25 +143,14 @@ const AsignacionesConductoresIndex = () => {
           </div>
           
           <div className="px-6">
-            <AsignacionesConductoresTable 
-              asignaciones={asignacionesPaginadas}
-              onEditAsignacion={handleEditAsignacion}
-            />
+            <AsignacionesConductoresTable asignaciones={asignacionesPaginadas} onEditAsignacion={handleEditAsignacion} />
           </div>
           
           <div className="p-6 pt-4">
-            <AsignacionesConductoresPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              totalItems={asignacionesFiltradas.length}
-              itemsPerPage={itemsPerPage}
-            />
+            <AsignacionesConductoresPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} totalItems={asignacionesFiltradas.length} itemsPerPage={itemsPerPage} />
           </div>
         </div>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default AsignacionesConductoresIndex;
