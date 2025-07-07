@@ -120,7 +120,7 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
         <Tabs defaultValue="datos-servicio" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="datos-servicio">Datos del Servicio</TabsTrigger>
-            <TabsTrigger value="transporte-rutas">Transporte y Rutas</TabsTrigger>
+            <TabsTrigger value="transporte-rutas">Rutas</TabsTrigger>
             <TabsTrigger value="empresa-cliente">Empresa Cliente</TabsTrigger>
           </TabsList>
 
