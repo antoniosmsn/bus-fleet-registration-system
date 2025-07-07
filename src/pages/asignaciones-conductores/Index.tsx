@@ -136,9 +136,7 @@ const AsignacionesConductoresIndex = () => {
           <div className="p-6 pb-0">
             <div className="mb-4">
               <h2 className="text-lg font-medium">Asignaciones de Conductores</h2>
-              <p className="text-gray-600">
-                {asignacionesFiltradas.length} asignaciones encontradas
-              </p>
+              
             </div>
           </div>
           
