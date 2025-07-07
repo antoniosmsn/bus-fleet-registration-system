@@ -90,11 +90,17 @@ const AsignacionConductorForm = () => {
 
   // Validación en tiempo real de conflictos
   useEffect(() => {
-    if (!mostrarServicios) return;
-
-    console.log('=== VALIDANDO CONFLICTOS ===');
-    console.log('Asignaciones actuales:', asignaciones);
-    console.log('Servicios filtrados:', serviciosFiltrados.length);
+    console.log('=== INICIO VALIDACIÓN CONFLICTOS ===');
+    console.log('mostrarServicios:', mostrarServicios);
+    console.log('serviciosFiltrados.length:', serviciosFiltrados.length);
+    console.log('asignaciones objeto completo:', asignaciones);
+    console.log('Object.keys(asignaciones):', Object.keys(asignaciones));
+    console.log('Object.values(asignaciones):', Object.values(asignaciones));
+    
+    if (!mostrarServicios || serviciosFiltrados.length === 0) {
+      console.log('Saliendo - no hay servicios o no se muestran');
+      return;
+    }
 
     const conflictosEncontrados: string[] = [];
     const asignacionesPorConductor: Record<string, ServicioConAsignacion[]> = {};
@@ -102,21 +108,22 @@ const AsignacionConductorForm = () => {
     // Agrupar servicios por conductor asignado
     serviciosFiltrados.forEach(servicio => {
       const conductorId = asignaciones[servicio.id];
-      console.log(`Servicio ${servicio.numeroServicio}: conductor asignado = ${conductorId}`);
+      console.log(`🔍 Servicio ${servicio.numeroServicio} (ID: ${servicio.id}): conductor = "${conductorId}"`);
       
       if (conductorId && conductorId.trim() !== '') {
         if (!asignacionesPorConductor[conductorId]) {
           asignacionesPorConductor[conductorId] = [];
         }
         asignacionesPorConductor[conductorId].push(servicio);
+        console.log(`✅ Agregado servicio ${servicio.numeroServicio} al conductor ${conductorId}`);
       }
     });
 
-    console.log('Servicios agrupados por conductor:', asignacionesPorConductor);
+    console.log('📊 Servicios agrupados por conductor:', asignacionesPorConductor);
 
     // Verificar conflictos para cada conductor
     Object.entries(asignacionesPorConductor).forEach(([conductorId, servicios]) => {
-      console.log(`Verificando conductor ${conductorId} con ${servicios.length} servicios`);
+      console.log(`🚌 Verificando conductor ${conductorId} con ${servicios.length} servicios`);
       
       if (servicios.length > 1) {
         // Comparar cada servicio con todos los otros del mismo conductor
@@ -125,7 +132,7 @@ const AsignacionConductorForm = () => {
             const servicio1 = servicios[i];
             const servicio2 = servicios[j];
             
-            console.log(`Comparando ${servicio1.numeroServicio} (${servicio1.horario}) con ${servicio2.numeroServicio} (${servicio2.horario})`);
+            console.log(`⏰ Comparando ${servicio1.numeroServicio} (${servicio1.horario}) con ${servicio2.numeroServicio} (${servicio2.horario})`);
             
             const [horas1, minutos1] = servicio1.horario.split(':').map(Number);
             const [horas2, minutos2] = servicio2.horario.split(':').map(Number);
@@ -134,21 +141,26 @@ const AsignacionConductorForm = () => {
             const tiempo2 = horas2 * 60 + minutos2;
             
             const diferencia = Math.abs(tiempo1 - tiempo2);
-            console.log(`Diferencia en minutos: ${diferencia}`);
+            console.log(`📏 Diferencia en minutos: ${diferencia} (límite: ${DURACION_TRASLAPE_MINUTOS})`);
             
             if (diferencia < DURACION_TRASLAPE_MINUTOS) {
-              console.log(`¡CONFLICTO DETECTADO! Servicios ${servicio1.numeroServicio} y ${servicio2.numeroServicio}`);
+              console.log(`🚨 ¡CONFLICTO DETECTADO! Servicios ${servicio1.numeroServicio} y ${servicio2.numeroServicio}`);
               conflictosEncontrados.push(servicio1.id);
               conflictosEncontrados.push(servicio2.id);
+            } else {
+              console.log(`✅ Sin conflicto - diferencia suficiente`);
             }
           }
         }
+      } else {
+        console.log(`✅ Solo un servicio para conductor ${conductorId} - sin conflictos`);
       }
     });
 
-    console.log('Conflictos encontrados:', conflictosEncontrados);
-    setConflictos([...new Set(conflictosEncontrados)]); // Eliminar duplicados
-  }, [asignaciones, mostrarServicios]);
+    const conflictosUnicos = [...new Set(conflictosEncontrados)];
+    console.log('🎯 Conflictos encontrados (únicos):', conflictosUnicos);
+    setConflictos(conflictosUnicos);
+  }, [asignaciones, mostrarServicios, serviciosFiltrados.length]);
 
   // Efecto separado para actualizar el estado de conflicto en servicios
   useEffect(() => {
