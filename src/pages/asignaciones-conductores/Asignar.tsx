@@ -5,10 +5,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AsignacionConductorForm from '@/components/asignaciones-conductores/AsignacionConductorForm';
-
 const AsignarConductor = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Link to="/asignaciones-conductores">
@@ -19,9 +17,7 @@ const AsignarConductor = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Asignar Conductores a Servicios</h1>
-            <p className="text-gray-600">
-              Asigna conductores disponibles a los servicios programados
-            </p>
+            
           </div>
         </div>
 
@@ -31,8 +27,6 @@ const AsignarConductor = () => {
           </CardContent>
         </Card>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default AsignarConductor;
