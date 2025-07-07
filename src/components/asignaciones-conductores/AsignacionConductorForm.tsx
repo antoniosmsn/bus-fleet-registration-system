@@ -148,7 +148,7 @@ const AsignacionConductorForm = () => {
 
     console.log('Conflictos encontrados:', conflictosEncontrados);
     setConflictos([...new Set(conflictosEncontrados)]); // Eliminar duplicados
-  }, [asignaciones, mostrarServicios, serviciosFiltrados]);
+  }, [asignaciones, mostrarServicios]);
 
   // Efecto separado para actualizar el estado de conflicto en servicios
   useEffect(() => {
