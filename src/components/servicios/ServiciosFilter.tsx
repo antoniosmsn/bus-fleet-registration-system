@@ -118,10 +118,11 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="datos-servicio" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="datos-servicio">Datos del Servicio</TabsTrigger>
             <TabsTrigger value="transporte-rutas">Rutas</TabsTrigger>
             <TabsTrigger value="empresa-cliente">Empresas</TabsTrigger>
+            <TabsTrigger value="horarios">Horarios</TabsTrigger>
           </TabsList>
 
           {/* Tab: Datos del Servicio */}
@@ -137,26 +138,6 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                   placeholder="Seleccionar turno..."
                   searchPlaceholder="Buscar turno..."
                   emptyText="No se encontraron turnos."
-                />
-              </div>
-
-              {/* Horario Inicio */}
-              <div className="space-y-2">
-                <Label>Horario Inicio</Label>
-                <Input
-                  type="time"
-                  value={filtros.horarioInicio}
-                  onChange={(e) => onFiltrosChange({ ...filtros, horarioInicio: e.target.value })}
-                />
-              </div>
-
-              {/* Horario Fin */}
-              <div className="space-y-2">
-                <Label>Horario Fin</Label>
-                <Input
-                  type="time"
-                  value={filtros.horarioFin}
-                  onChange={(e) => onFiltrosChange({ ...filtros, horarioFin: e.target.value })}
                 />
               </div>
 
@@ -196,20 +177,45 @@ const ServiciosFilter: React.FC<ServiciosFiltrosProps> = ({ filtros, onFiltrosCh
                 </Select>
               </div>
             </div>
+          </TabsContent>
+
+          {/* Tab: Horarios */}
+          <TabsContent value="horarios" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Horario Inicio */}
+              <div className="space-y-2">
+                <Label>Horario Inicio</Label>
+                <Input
+                  type="time"
+                  value={filtros.horarioInicio}
+                  onChange={(e) => onFiltrosChange({ ...filtros, horarioInicio: e.target.value })}
+                />
+              </div>
+
+              {/* Horario Fin */}
+              <div className="space-y-2">
+                <Label>Horario Fin</Label>
+                <Input
+                  type="time"
+                  value={filtros.horarioFin}
+                  onChange={(e) => onFiltrosChange({ ...filtros, horarioFin: e.target.value })}
+                />
+              </div>
+            </div>
 
             {/* Días de la Semana */}
             <div className="space-y-2">
               <Label>Días de la Semana</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
                 {diasSemana.map((dia) => (
-                  <div key={dia.id} className="flex items-center space-x-2">
+                  <div key={dia.id} className="flex items-center space-x-2 p-2 rounded border">
                     <Checkbox
                       id={dia.id}
                       checked={filtros.diasSemana.includes(dia.id)}
                       onCheckedChange={(checked) => handleDiaChange(dia.id, !!checked)}
                     />
-                    <Label htmlFor={dia.id} className="text-sm">
-                      {dia.label}
+                    <Label htmlFor={dia.id} className="text-xs font-medium cursor-pointer">
+                      {dia.label.substring(0, 3)}
                     </Label>
                   </div>
                 ))}
