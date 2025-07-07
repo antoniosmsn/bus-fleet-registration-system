@@ -90,10 +90,13 @@ const AsignacionConductorForm = () => {
 
   // Validación en tiempo real de conflictos
   useEffect(() => {
-    if (!mostrarServicios || !asignaciones) return;
+    if (!mostrarServicios) return;
 
     const conflictosEncontrados: string[] = [];
     const asignacionesPorConductor: Record<string, ServicioConAsignacion[]> = {};
+
+    console.log('=== VALIDANDO CONFLICTOS ===');
+    console.log('Asignaciones:', asignaciones);
 
     // Agrupar servicios por conductor asignado
     serviciosFiltrados.forEach(servicio => {
@@ -106,26 +109,36 @@ const AsignacionConductorForm = () => {
       }
     });
 
+    console.log('Servicios agrupados por conductor:', asignacionesPorConductor);
+
     // Verificar conflictos para cada conductor
     Object.entries(asignacionesPorConductor).forEach(([conductorId, servicios]) => {
-      servicios.forEach((servicio, index) => {
-        const otrosServicios = servicios.filter((_, i) => i !== index);
-        if (verificarConflictosHorario(servicio.horario, otrosServicios)) {
-          conflictosEncontrados.push(servicio.id);
-        }
-      });
+      if (servicios.length > 1) {
+        servicios.forEach((servicio, index) => {
+          const otrosServicios = servicios.filter((_, i) => i !== index);
+          console.log(`Verificando servicio ${servicio.numeroServicio} (${servicio.horario}) contra:`, otrosServicios.map(s => `${s.numeroServicio} (${s.horario})`));
+          
+          if (verificarConflictosHorario(servicio.horario, otrosServicios)) {
+            console.log(`¡CONFLICTO DETECTADO! Servicio ${servicio.numeroServicio}`);
+            conflictosEncontrados.push(servicio.id);
+          }
+        });
+      }
     });
 
+    console.log('Conflictos encontrados:', conflictosEncontrados);
     setConflictos(conflictosEncontrados);
+  }, [asignaciones, mostrarServicios]);
 
-    // Actualizar estado de conflicto en servicios
+  // Efecto separado para actualizar el estado de conflicto en servicios
+  useEffect(() => {
     setServiciosFiltrados(prevServicios =>
       prevServicios.map(servicio => ({
         ...servicio,
-        conflictoHorario: conflictosEncontrados.includes(servicio.id)
+        conflictoHorario: conflictos.includes(servicio.id)
       }))
     );
-  }, [asignaciones, serviciosFiltrados.length, mostrarServicios]);
+  }, [conflictos]);
 
   const handleMostrarServicios = () => {
     if (!empresaTransporte || !fechaOperacion) {
