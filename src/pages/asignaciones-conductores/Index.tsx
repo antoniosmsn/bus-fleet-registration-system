@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import AsignacionesConductoresFilter from '@/components/asignaciones-conductores/AsignacionesConductoresFilter';
 import AsignacionesConductoresTable from '@/components/asignaciones-conductores/AsignacionesConductoresTable';
@@ -121,8 +121,7 @@ const AsignacionesConductoresIndex = () => {
   };
 
   const handleAsignarConductor = () => {
-    // TODO: Implementar navegación a asignación de conductor
-    console.log('Asignar conductor');
+    window.location.href = '/asignaciones-conductores/asignar';
   };
 
   return (

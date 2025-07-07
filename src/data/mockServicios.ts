@@ -131,6 +131,70 @@ export const mockServicios: Servicio[] = [
     estado: 'activo',
     fechaCreacion: '2024-05-08T13:30:00Z',
     usuarioCreacion: 'operador@sistema.com',
+  },
+  // Servicios adicionales para probar traslapes de horario
+  {
+    id: '6',
+    turno: '1', // Turno A
+    transportista: '1', // Transportes San José S.A.
+    empresaCliente: '1', // Intel Corporation
+    ramal: '1', // San José - Cartago
+    tipoRuta: 'publica',
+    tipoUnidad: 'autobus',
+    horario: '06:25', // 25 minutos después del servicio 1 - debería generar conflicto
+    diasSemana: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'],
+    sentido: 'ingreso',
+    cantidadUnidades: 1,
+    porcentajeFee: 3.5,
+    agregarCapacidadAdicional: false,
+    numeroServicio: 'SV-006',
+    tarifaPasajero: 570,
+    tarifaServicio: 5700,
+    estado: 'activo',
+    fechaCreacion: '2024-06-01T08:00:00Z',
+    usuarioCreacion: 'admin@sistema.com',
+  },
+  {
+    id: '7',
+    turno: '2', // Turno B
+    transportista: '2', // Autobuses del Valle
+    empresaCliente: '2', // Microsoft Costa Rica
+    ramal: '2', // Heredia - Alajuela
+    tipoRuta: 'privada',
+    tipoUnidad: 'buseta',
+    horario: '07:45', // 15 minutos después del servicio 2 - debería generar conflicto
+    diasSemana: ['lunes', 'miercoles', 'viernes'],
+    sentido: 'salida',
+    cantidadUnidades: 1,
+    porcentajeFee: 2.5,
+    agregarCapacidadAdicional: false,
+    numeroServicio: 'SV-007',
+    tarifaPasajero: 850,
+    tarifaServicio: 8500,
+    estado: 'activo',
+    fechaCreacion: '2024-06-05T10:15:00Z',
+    usuarioCreacion: 'operador@sistema.com',
+  },
+  {
+    id: '8',
+    turno: '1', // Turno A
+    transportista: '3', // Empresa de Transporte Central
+    empresaCliente: '1', // Intel Corporation
+    ramal: '7', // Zona Franca Intel
+    tipoRuta: 'privada',
+    tipoUnidad: 'autobus',
+    horario: '08:00', // Horario sin conflicto
+    diasSemana: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'],
+    sentido: 'salida',
+    cantidadUnidades: 2,
+    porcentajeFee: 6.0,
+    agregarCapacidadAdicional: false,
+    numeroServicio: 'SV-008',
+    tarifaPasajero: 900,
+    tarifaServicio: 18000,
+    estado: 'activo',
+    fechaCreacion: '2024-06-10T09:20:00Z',
+    usuarioCreacion: 'admin@sistema.com',
   }
 ];
 

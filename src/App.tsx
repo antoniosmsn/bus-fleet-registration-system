@@ -36,6 +36,7 @@ import ServiciosIndex from "./pages/servicios/Index";
 import RegisterServicio from "./pages/servicios/Register";
 import EditServicio from "./pages/servicios/Edit";
 import AsignacionesConductoresIndex from "./pages/asignaciones-conductores/Index";
+import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -82,6 +83,7 @@ const App = () => (
             <Route path="/servicios/register" element={<RegisterServicio />} />
             <Route path="/servicios/edit/:id" element={<EditServicio />} />
             <Route path="/asignaciones-conductores" element={<AsignacionesConductoresIndex />} />
+            <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
