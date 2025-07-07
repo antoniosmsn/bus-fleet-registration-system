@@ -92,16 +92,19 @@ const AsignacionConductorForm = () => {
   useEffect(() => {
     if (!mostrarServicios) return;
 
+    console.log('=== VALIDANDO CONFLICTOS ===');
+    console.log('Asignaciones actuales:', asignaciones);
+    console.log('Servicios filtrados:', serviciosFiltrados.length);
+
     const conflictosEncontrados: string[] = [];
     const asignacionesPorConductor: Record<string, ServicioConAsignacion[]> = {};
-
-    console.log('=== VALIDANDO CONFLICTOS ===');
-    console.log('Asignaciones:', asignaciones);
 
     // Agrupar servicios por conductor asignado
     serviciosFiltrados.forEach(servicio => {
       const conductorId = asignaciones[servicio.id];
-      if (conductorId) {
+      console.log(`Servicio ${servicio.numeroServicio}: conductor asignado = ${conductorId}`);
+      
+      if (conductorId && conductorId.trim() !== '') {
         if (!asignacionesPorConductor[conductorId]) {
           asignacionesPorConductor[conductorId] = [];
         }
@@ -113,22 +116,39 @@ const AsignacionConductorForm = () => {
 
     // Verificar conflictos para cada conductor
     Object.entries(asignacionesPorConductor).forEach(([conductorId, servicios]) => {
+      console.log(`Verificando conductor ${conductorId} con ${servicios.length} servicios`);
+      
       if (servicios.length > 1) {
-        servicios.forEach((servicio, index) => {
-          const otrosServicios = servicios.filter((_, i) => i !== index);
-          console.log(`Verificando servicio ${servicio.numeroServicio} (${servicio.horario}) contra:`, otrosServicios.map(s => `${s.numeroServicio} (${s.horario})`));
-          
-          if (verificarConflictosHorario(servicio.horario, otrosServicios)) {
-            console.log(`¡CONFLICTO DETECTADO! Servicio ${servicio.numeroServicio}`);
-            conflictosEncontrados.push(servicio.id);
+        // Comparar cada servicio con todos los otros del mismo conductor
+        for (let i = 0; i < servicios.length; i++) {
+          for (let j = i + 1; j < servicios.length; j++) {
+            const servicio1 = servicios[i];
+            const servicio2 = servicios[j];
+            
+            console.log(`Comparando ${servicio1.numeroServicio} (${servicio1.horario}) con ${servicio2.numeroServicio} (${servicio2.horario})`);
+            
+            const [horas1, minutos1] = servicio1.horario.split(':').map(Number);
+            const [horas2, minutos2] = servicio2.horario.split(':').map(Number);
+            
+            const tiempo1 = horas1 * 60 + minutos1;
+            const tiempo2 = horas2 * 60 + minutos2;
+            
+            const diferencia = Math.abs(tiempo1 - tiempo2);
+            console.log(`Diferencia en minutos: ${diferencia}`);
+            
+            if (diferencia < DURACION_TRASLAPE_MINUTOS) {
+              console.log(`¡CONFLICTO DETECTADO! Servicios ${servicio1.numeroServicio} y ${servicio2.numeroServicio}`);
+              conflictosEncontrados.push(servicio1.id);
+              conflictosEncontrados.push(servicio2.id);
+            }
           }
-        });
+        }
       }
     });
 
     console.log('Conflictos encontrados:', conflictosEncontrados);
-    setConflictos(conflictosEncontrados);
-  }, [asignaciones, mostrarServicios]);
+    setConflictos([...new Set(conflictosEncontrados)]); // Eliminar duplicados
+  }, [asignaciones, mostrarServicios, serviciosFiltrados]);
 
   // Efecto separado para actualizar el estado de conflicto en servicios
   useEffect(() => {
