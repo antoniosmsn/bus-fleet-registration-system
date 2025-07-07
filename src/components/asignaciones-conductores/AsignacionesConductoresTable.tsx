@@ -96,7 +96,7 @@ const AsignacionesConductoresTable = ({ asignaciones, onEditAsignacion }: Asigna
               <TableHead>Fecha Modificación</TableHead>
               <TableHead>Usuario Creación</TableHead>
               <TableHead>Usuario Modificación</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+              
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -163,15 +163,6 @@ const AsignacionesConductoresTable = ({ asignaciones, onEditAsignacion }: Asigna
                 </TableCell>
                 <TableCell className="max-w-[150px] truncate text-sm">
                   {asignacion.usuarioModificacion || '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => onEditAsignacion(asignacion.id)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}
