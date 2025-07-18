@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -118,6 +118,15 @@ const SidebarComponent = () => {
     },
   ];
 
+  // Bitácoras menu items
+  const bitacorasItems = [
+    { 
+      title: "Bitácoras de Lectoras", 
+      url: "/bitacoras-lectoras", 
+      icon: ScrollText 
+    },
+  ];
+
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
@@ -185,6 +194,31 @@ const SidebarComponent = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {serviciosItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip={item.title}
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <ScrollText className="mr-2" />
+            Bitácoras
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {bitacorasItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
