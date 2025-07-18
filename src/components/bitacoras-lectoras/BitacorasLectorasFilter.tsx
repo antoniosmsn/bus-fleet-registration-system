@@ -38,15 +38,11 @@ interface BitacorasLectorasFilterProps {
 
 const modulosOptions = [
   { value: "todos", label: "Todos" },
-  { value: "Dispositivo", label: "Dispositivo" },
+  { value: "Lectora", label: "Lectora" },
+  { value: "Usuarios", label: "Usuarios" },
+  { value: "Rutas", label: "Rutas" },
   { value: "Sesión", label: "Sesión" },
-  { value: "Configuración", label: "Configuración" },
-  { value: "Sincronización", label: "Sincronización" },
-  { value: "Ui", label: "Ui" },
-  { value: "Mqtt", label: "Mqtt" },
-  { value: "Servicio", label: "Servicio" },
-  { value: "Escaneo", label: "Escaneo" },
-  { value: "Licencia", label: "Licencia" }
+  { value: "Escaneo", label: "Escaneo" }
 ];
 
 const esHardwareOptions = [

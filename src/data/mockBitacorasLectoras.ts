@@ -18,8 +18,7 @@ export interface BitacoraLectora {
 }
 
 const modulos = [
-  'Dispositivo', 'Sesión', 'Configuración', 'Sincronización', 
-  'Ui', 'Mqtt', 'Servicio', 'Escaneo', 'Licencia'
+  'Lectora', 'Usuarios', 'Rutas', 'Sesión', 'Escaneo'
 ];
 
 const lugaresCostaRica = [
