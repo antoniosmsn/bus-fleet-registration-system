@@ -55,12 +55,13 @@ export function BitacorasLectorasTable({
     return `https://www.google.com/maps/place/${lat},${lng}`;
   };
 
-  const renderCoordinateCell = (coordinate: number, otherCoordinate: number): React.ReactNode => {
-    if (coordinate === 0 || coordinate === null || coordinate === undefined) {
+  const renderCoordinatesCell = (lat: number, lng: number): React.ReactNode => {
+    if ((lat === 0 || lat === null || lat === undefined) && 
+        (lng === 0 || lng === null || lng === undefined)) {
       return <TableCell></TableCell>;
     }
     
-    const mapsLink = generateGoogleMapsLink(coordinate, otherCoordinate);
+    const mapsLink = generateGoogleMapsLink(lat, lng);
     return (
       <TableCell>
         <Button
@@ -69,7 +70,7 @@ export function BitacorasLectorasTable({
           className="p-0 h-auto text-primary hover:text-primary/80"
           onClick={() => window.open(mapsLink, '_blank')}
         >
-          {coordinate}
+          {lat}, {lng}
           <ExternalLink className="ml-1 h-3 w-3" />
         </Button>
       </TableCell>
@@ -156,10 +157,9 @@ export function BitacorasLectorasTable({
                 <TableHead>Descripción</TableHead>
                 <TableHead>Datos</TableHead>
                 <TableHead>Es Hardware</TableHead>
-                <TableHead>Lugar</TableHead>
-                <TableHead>Latitud</TableHead>
-                <TableHead>Longitud</TableHead>
-                <TableHead>Evento</TableHead>
+            <TableHead>Lugar</TableHead>
+            <TableHead>Coordenadas</TableHead>
+            <TableHead>Evento</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -189,8 +189,7 @@ export function BitacorasLectorasTable({
                     </Badge>
                   </TableCell>
                   <TableCell>{bitacora.lugar}</TableCell>
-                  {renderCoordinateCell(bitacora.latitud, bitacora.longitud)}
-                  {renderCoordinateCell(bitacora.longitud, bitacora.latitud)}
+                  {renderCoordinatesCell(bitacora.latitud, bitacora.longitud)}
                   <TableCell>
                     <Badge variant="outline">{bitacora.evento}</Badge>
                   </TableCell>
