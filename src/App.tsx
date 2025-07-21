@@ -38,6 +38,7 @@ import EditServicio from "./pages/servicios/Edit";
 import AsignacionesConductoresIndex from "./pages/asignaciones-conductores/Index";
 import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
 import BitacorasLectorasIndex from "./pages/bitacoras-lectoras/Index";
+import SolicitudesTrasladoIndex from "./pages/solicitudes-traslado/Index";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -86,6 +87,7 @@ const App = () => (
             <Route path="/asignaciones-conductores" element={<AsignacionesConductoresIndex />} />
             <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
+            <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
             
             {/* New routes for sidebar navigation */}
             <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
