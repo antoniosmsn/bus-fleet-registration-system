@@ -138,7 +138,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                     <TableCell>
                       {solicitud.estado === 'aceptado' ? (
                         <span className="text-green-600 font-medium">Aprobado</span>
-                      ) : solicitud.estado === 'cancelado' ? (
+                      ) : solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado' ? (
                         <span className="text-red-600 font-medium">Cancelada</span>
                       ) : solicitud.estado === 'activo' ? (
                         <div className="flex gap-1">
@@ -172,7 +172,6 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                               variant="outline"
                               onClick={() => handleAprobar(solicitud.id)}
                               className="flex items-center gap-1 text-xs px-2 py-1 h-7"
-                              disabled={solicitud.estado === 'rechazado'}
                             >
                               <CheckCircle className="h-3 w-3" />
                               Aprobar
@@ -182,7 +181,6 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                               variant="destructive"
                               onClick={() => handleCancelar(solicitud.id)}
                               className="flex items-center gap-1 text-xs px-2 py-1 h-7"
-                              disabled={solicitud.estado === 'rechazado'}
                             >
                               <XCircle className="h-3 w-3" />
                               Cancelar
