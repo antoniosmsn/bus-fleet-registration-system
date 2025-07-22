@@ -91,10 +91,7 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Filtros de Búsqueda</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <Tabs defaultValue="datos-personales" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="datos-personales">Datos Personales</TabsTrigger>
