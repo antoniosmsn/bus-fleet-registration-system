@@ -16,7 +16,7 @@ interface SolicitudesTrasladoTableProps {
 
 export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   // Aplicar filtros
   const filteredData = mockSolicitudesTraslado.filter((solicitud) => {
@@ -95,10 +95,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Historial de Solicitudes de Traslado ({filteredData.length} registros)</CardTitle>
-      </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <div className="rounded-md border">
           <Table>
             <TableHeader>
