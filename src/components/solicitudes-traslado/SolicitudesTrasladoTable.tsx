@@ -114,7 +114,6 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                 <TableHead>Usuario Modificador</TableHead>
                 <TableHead>Comentarios</TableHead>
                 <TableHead>Estado</TableHead>
-                <TableHead>Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,39 +136,45 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                       {solicitud.comentarios || '-'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
-                        {solicitud.estado === 'en-solicitud-traslado' ? 'En Solicitud de Traslado' : solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleAprobar(solicitud.id)}
-                          className="flex items-center gap-1"
-                          disabled={solicitud.estado === 'aceptado' || solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado'}
-                        >
-                          <CheckCircle className="h-3 w-3" />
-                          Aprobar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleCancelar(solicitud.id)}
-                          className="flex items-center gap-1"
-                          disabled={solicitud.estado === 'aceptado' || solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado'}
-                        >
-                          <XCircle className="h-3 w-3" />
-                          Cancelar
-                        </Button>
-                      </div>
+                      {solicitud.estado === 'aceptado' ? (
+                        <span className="text-green-600 font-medium">Aprobado</span>
+                      ) : solicitud.estado === 'cancelado' ? (
+                        <span className="text-red-600 font-medium">Cancelada</span>
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
+                            {solicitud.estado === 'en-solicitud-traslado' ? 'En Solicitud de Traslado' : solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
+                          </Badge>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAprobar(solicitud.id)}
+                              className="flex items-center gap-1 text-xs px-2 py-1 h-7"
+                              disabled={solicitud.estado === 'rechazado'}
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                              Aprobar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleCancelar(solicitud.id)}
+                              className="flex items-center gap-1 text-xs px-2 py-1 h-7"
+                              disabled={solicitud.estado === 'rechazado'}
+                            >
+                              <XCircle className="h-3 w-3" />
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={13} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
                     No se encontraron solicitudes con los filtros aplicados
                   </TableCell>
                 </TableRow>
