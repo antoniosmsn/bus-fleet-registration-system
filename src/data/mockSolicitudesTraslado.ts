@@ -74,7 +74,7 @@ export const mockSolicitudesTraslado: SolicitudTraslado[] = [
     fechaModificacion: null,
     usuarioModificador: null,
     comentarios: 'En proceso de evaluación',
-    estado: 'activo'
+    estado: 'en-solicitud-traslado'
   },
   {
     id: 6,
@@ -134,7 +134,7 @@ export const mockSolicitudesTraslado: SolicitudTraslado[] = [
     fechaModificacion: null,
     usuarioModificador: null,
     comentarios: 'Pendiente de documentación',
-    estado: 'activo'
+    estado: 'en-solicitud-traslado'
   },
   {
     id: 10,

@@ -74,6 +74,8 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
         return 'destructive';
       case 'rechazado':
         return 'destructive';
+      case 'en-solicitud-traslado':
+        return 'secondary';
       default:
         return 'secondary';
     }
@@ -136,7 +138,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                     </TableCell>
                     <TableCell>
                       <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
-                        {solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
+                        {solicitud.estado === 'en-solicitud-traslado' ? 'En Solicitud de Traslado' : solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell>

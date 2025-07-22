@@ -11,7 +11,7 @@ export interface SolicitudTraslado {
   fechaModificacion?: string | null;
   usuarioModificador?: string | null;
   comentarios?: string;
-  estado: 'aceptado' | 'activo' | 'inactivo' | 'cancelado' | 'rechazado';
+  estado: 'aceptado' | 'activo' | 'inactivo' | 'cancelado' | 'rechazado' | 'en-solicitud-traslado';
 }
 
 export interface SolicitudTrasladoFilter {
@@ -23,5 +23,5 @@ export interface SolicitudTrasladoFilter {
   empresaOrigen?: string;
   fechaCreacionInicio?: string;
   fechaCreacionFin?: string;
-  estado?: 'aceptado' | 'activo' | 'inactivo' | 'cancelado' | 'rechazado' | 'todos';
+  estado?: 'aceptado' | 'activo' | 'inactivo' | 'cancelado' | 'rechazado' | 'en-solicitud-traslado' | 'todos';
 }

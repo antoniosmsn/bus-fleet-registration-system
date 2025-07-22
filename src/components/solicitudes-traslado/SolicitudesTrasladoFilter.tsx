@@ -220,14 +220,15 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar estado" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="aceptado">Aceptado</SelectItem>
-                <SelectItem value="activo">Activo</SelectItem>
-                <SelectItem value="inactivo">Inactivo</SelectItem>
-                <SelectItem value="cancelado">Cancelado</SelectItem>
-                <SelectItem value="rechazado">Rechazado</SelectItem>
-              </SelectContent>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="aceptado">Aceptado</SelectItem>
+              <SelectItem value="activo">Activo</SelectItem>
+              <SelectItem value="inactivo">Inactivo</SelectItem>
+              <SelectItem value="cancelado">Cancelado</SelectItem>
+              <SelectItem value="rechazado">Rechazado</SelectItem>
+              <SelectItem value="en-solicitud-traslado">En Solicitud de Traslado</SelectItem>
+            </SelectContent>
             </Select>
           </div>
         </div>
