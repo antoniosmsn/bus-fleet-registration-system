@@ -140,7 +140,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                         <span className="text-green-600 font-medium">Aprobado</span>
                       ) : solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado' ? (
                         <span className="text-red-600 font-medium">Cancelada</span>
-                      ) : solicitud.estado === 'activo' ? (
+                      ) : solicitud.estado === 'activo' || solicitud.estado === 'en-solicitud-traslado' ? (
                         <div className="flex gap-1">
                           <Button
                             size="sm"
@@ -164,7 +164,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                       ) : (
                         <div className="flex flex-col gap-2">
                           <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
-                            {solicitud.estado === 'en-solicitud-traslado' ? 'En Solicitud de Traslado' : solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
+                            {solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
                           </Badge>
                           <div className="flex gap-1">
                             <Button
