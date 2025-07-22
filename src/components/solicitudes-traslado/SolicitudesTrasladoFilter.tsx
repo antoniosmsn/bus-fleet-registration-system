@@ -6,10 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, Search, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { SolicitudTrasladoFilter } from '../../types/solicitud-traslado';
+import { mockEmpresas } from '../../data/mockEmpresas';
 
 interface SolicitudesTrasladoFilterProps {
   onFilter: (filters: SolicitudTrasladoFilter) => void;
@@ -92,146 +94,171 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
       <CardHeader>
         <CardTitle>Filtros de Búsqueda</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="nombres">Nombres</Label>
-            <Input
-              id="nombres"
-              value={filters.nombres}
-              onChange={(e) => handleInputChange('nombres', e.target.value)}
-              placeholder="Buscar por nombres"
-              maxLength={200}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="apellidos">Apellidos</Label>
-            <Input
-              id="apellidos"
-              value={filters.apellidos}
-              onChange={(e) => handleInputChange('apellidos', e.target.value)}
-              placeholder="Buscar por apellidos"
-              maxLength={200}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="cedula">Cédula</Label>
-            <Input
-              id="cedula"
-              value={filters.cedula}
-              onChange={(e) => handleInputChange('cedula', e.target.value)}
-              placeholder="Buscar por cédula"
-              maxLength={50}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="correo">Correo Electrónico</Label>
-            <Input
-              id="correo"
-              value={filters.correo}
-              onChange={(e) => handleInputChange('correo', e.target.value)}
-              placeholder="Buscar por correo"
-              maxLength={200}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="empresaOrigen">Empresa Origen</Label>
-            <Input
-              id="empresaOrigen"
-              value={filters.empresaOrigen}
-              onChange={(e) => handleInputChange('empresaOrigen', e.target.value)}
-              placeholder="Buscar por empresa origen"
-              maxLength={200}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="empresaDestino">Empresa Destino</Label>
-            <Input
-              id="empresaDestino"
-              value={filters.empresaDestino}
-              onChange={(e) => handleInputChange('empresaDestino', e.target.value)}
-              placeholder="Buscar por empresa destino"
-              maxLength={200}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Fecha Inicio</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !fechaInicio && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {fechaInicio ? format(fechaInicio, "dd/MM/yyyy") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={fechaInicio}
-                  onSelect={(date) => handleDateChange('inicio', date)}
-                  initialFocus
-                  className="pointer-events-auto"
+      <CardContent>
+        <Tabs defaultValue="datos-personales" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="datos-personales">Datos Personales</TabsTrigger>
+            <TabsTrigger value="traslado">Traslado</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="datos-personales" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="nombres">Nombres</Label>
+                <Input
+                  id="nombres"
+                  value={filters.nombres}
+                  onChange={(e) => handleInputChange('nombres', e.target.value)}
+                  placeholder="Buscar por nombres"
+                  maxLength={200}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label>Fecha Fin</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !fechaFin && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {fechaFin ? format(fechaFin, "dd/MM/yyyy") : "Seleccionar fecha"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={fechaFin}
-                  onSelect={(date) => handleDateChange('fin', date)}
-                  initialFocus
-                  className="pointer-events-auto"
+              <div className="space-y-2">
+                <Label htmlFor="apellidos">Apellidos</Label>
+                <Input
+                  id="apellidos"
+                  value={filters.apellidos}
+                  onChange={(e) => handleInputChange('apellidos', e.target.value)}
+                  placeholder="Buscar por apellidos"
+                  maxLength={200}
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="estado">Estado</Label>
-            <Select value={filters.estado} onValueChange={(value) => handleInputChange('estado', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccionar estado" />
-              </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos</SelectItem>
-              <SelectItem value="aceptado">Aceptado</SelectItem>
-              <SelectItem value="activo">Activo</SelectItem>
-              <SelectItem value="inactivo">Inactivo</SelectItem>
-              <SelectItem value="cancelado">Cancelado</SelectItem>
-              <SelectItem value="rechazado">Rechazado</SelectItem>
-              <SelectItem value="en-solicitud-traslado">En Solicitud de Traslado</SelectItem>
-            </SelectContent>
-            </Select>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="cedula">Cédula</Label>
+                <Input
+                  id="cedula"
+                  value={filters.cedula}
+                  onChange={(e) => handleInputChange('cedula', e.target.value)}
+                  placeholder="Buscar por cédula"
+                  maxLength={50}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="correo">Correo Electrónico</Label>
+                <Input
+                  id="correo"
+                  value={filters.correo}
+                  onChange={(e) => handleInputChange('correo', e.target.value)}
+                  placeholder="Buscar por correo"
+                  maxLength={200}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="traslado" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="empresaOrigen">Empresa Origen</Label>
+                <Select value={filters.empresaOrigen} onValueChange={(value) => handleInputChange('empresaOrigen', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar empresa origen" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background">
+                    <SelectItem value="">Todas</SelectItem>
+                    {mockEmpresas.filter(empresa => empresa.activa).map((empresa) => (
+                      <SelectItem key={empresa.id} value={empresa.nombre}>
+                        {empresa.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="empresaDestino">Empresa Destino</Label>
+                <Select value={filters.empresaDestino} onValueChange={(value) => handleInputChange('empresaDestino', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar empresa destino" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background">
+                    <SelectItem value="">Todas</SelectItem>
+                    {mockEmpresas.filter(empresa => empresa.activa).map((empresa) => (
+                      <SelectItem key={empresa.id} value={empresa.nombre}>
+                        {empresa.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Fecha Inicio</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !fechaInicio && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {fechaInicio ? format(fechaInicio, "dd/MM/yyyy") : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={fechaInicio}
+                      onSelect={(date) => handleDateChange('inicio', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Fecha Fin</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !fechaFin && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {fechaFin ? format(fechaFin, "dd/MM/yyyy") : "Seleccionar fecha"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={fechaFin}
+                      onSelect={(date) => handleDateChange('fin', date)}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="estado">Estado</Label>
+                <Select value={filters.estado} onValueChange={(value) => handleInputChange('estado', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background">
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="aceptado">Aceptado</SelectItem>
+                    <SelectItem value="activo">Activo</SelectItem>
+                    <SelectItem value="inactivo">Inactivo</SelectItem>
+                    <SelectItem value="cancelado">Cancelado</SelectItem>
+                    <SelectItem value="rechazado">Rechazado</SelectItem>
+                    <SelectItem value="en-solicitud-traslado">En Solicitud de Traslado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <div className="flex gap-2 pt-4">
           <Button onClick={handleSearch} className="flex items-center gap-2">
