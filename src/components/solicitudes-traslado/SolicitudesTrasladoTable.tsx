@@ -140,7 +140,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                         <span className="text-green-600 font-medium">Aprobado</span>
                       ) : solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado' ? (
                         <span className="text-red-600 font-medium">Cancelada</span>
-                      ) : solicitud.estado === 'activo' || solicitud.estado === 'en-solicitud-traslado' ? (
+                      ) : (
                         <div className="flex gap-1">
                           <Button
                             size="sm"
@@ -160,32 +160,6 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                             <XCircle className="h-3 w-3" />
                             Cancelar
                           </Button>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-2">
-                          <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
-                            {solicitud.estado.charAt(0).toUpperCase() + solicitud.estado.slice(1)}
-                          </Badge>
-                          <div className="flex gap-1">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleAprobar(solicitud.id)}
-                              className="flex items-center gap-1 text-xs px-2 py-1 h-7"
-                            >
-                              <CheckCircle className="h-3 w-3" />
-                              Aprobar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleCancelar(solicitud.id)}
-                              className="flex items-center gap-1 text-xs px-2 py-1 h-7"
-                            >
-                              <XCircle className="h-3 w-3" />
-                              Cancelar
-                            </Button>
-                          </div>
                         </div>
                       )}
                     </TableCell>
