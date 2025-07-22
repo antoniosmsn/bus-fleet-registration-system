@@ -98,8 +98,9 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
   return (
     <Card>
       <CardContent className="pt-6">
-        <div className="rounded-md border">
-          <Table>
+        <div className="overflow-x-auto">
+          <div className="min-w-[1200px]">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Cédula</TableHead>
@@ -173,7 +174,8 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                 </TableRow>
               )}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
 
         {totalPages > 1 && (
