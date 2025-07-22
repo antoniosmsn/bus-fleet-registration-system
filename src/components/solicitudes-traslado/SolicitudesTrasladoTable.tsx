@@ -158,7 +158,7 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
                           variant="destructive"
                           onClick={() => handleCancelar(solicitud.id)}
                           className="flex items-center gap-1"
-                          disabled={solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado'}
+                          disabled={solicitud.estado === 'aceptado' || solicitud.estado === 'cancelado' || solicitud.estado === 'rechazado'}
                         >
                           <XCircle className="h-3 w-3" />
                           Cancelar
