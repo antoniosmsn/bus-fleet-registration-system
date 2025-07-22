@@ -28,8 +28,8 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
     apellidos: '',
     cedula: '',
     correo: '',
-    empresaDestino: '',
-    empresaOrigen: '',
+    empresaDestino: 'todas',
+    empresaOrigen: 'todas',
     fechaCreacionInicio: firstDayOfMonth.toISOString(),
     fechaCreacionFin: lastDayOfMonth.toISOString(),
     estado: 'todos'
@@ -77,8 +77,8 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
       apellidos: '',
       cedula: '',
       correo: '',
-      empresaDestino: '',
-      empresaOrigen: '',
+      empresaDestino: 'todas',
+      empresaOrigen: 'todas',
       fechaCreacionInicio: firstDayOfMonth.toISOString(),
       fechaCreacionFin: lastDayOfMonth.toISOString(),
       estado: 'todos'
@@ -158,7 +158,7 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
                     <SelectValue placeholder="Seleccionar empresa origen" />
                   </SelectTrigger>
                   <SelectContent className="bg-background">
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="todas">Todas</SelectItem>
                     {mockEmpresas.filter(empresa => empresa.activa).map((empresa) => (
                       <SelectItem key={empresa.id} value={empresa.nombre}>
                         {empresa.nombre}
@@ -175,7 +175,7 @@ export function SolicitudesTrasladoFilter({ onFilter }: SolicitudesTrasladoFilte
                     <SelectValue placeholder="Seleccionar empresa destino" />
                   </SelectTrigger>
                   <SelectContent className="bg-background">
-                    <SelectItem value="">Todas</SelectItem>
+                    <SelectItem value="todas">Todas</SelectItem>
                     {mockEmpresas.filter(empresa => empresa.activa).map((empresa) => (
                       <SelectItem key={empresa.id} value={empresa.nombre}>
                         {empresa.nombre}

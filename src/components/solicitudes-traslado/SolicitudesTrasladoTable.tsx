@@ -34,10 +34,10 @@ export function SolicitudesTrasladoTable({ filters }: SolicitudesTrasladoTablePr
     const matchesCorreo = !filters.correo || 
       solicitud.correo.toLowerCase().includes(filters.correo.toLowerCase());
     
-    const matchesEmpresaOrigen = !filters.empresaOrigen || 
+    const matchesEmpresaOrigen = !filters.empresaOrigen || filters.empresaOrigen === 'todas' ||
       solicitud.empresaOrigen.toLowerCase().includes(filters.empresaOrigen.toLowerCase());
     
-    const matchesEmpresaDestino = !filters.empresaDestino || 
+    const matchesEmpresaDestino = !filters.empresaDestino || filters.empresaDestino === 'todas' ||
       solicitud.empresaDestino.toLowerCase().includes(filters.empresaDestino.toLowerCase());
     
     const matchesEstado = !filters.estado || filters.estado === 'todos' || 
