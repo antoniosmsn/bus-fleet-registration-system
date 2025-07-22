@@ -16,9 +16,6 @@ export default function SolicitudesTrasladoIndex() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Historial de Solicitudes de Traslado</h1>
-          <p className="text-muted-foreground">
-            Consulta y gestiona el historial completo de solicitudes de traslado entre empresas.
-          </p>
         </div>
 
         <SolicitudesTrasladoFilter onFilter={handleFilter} />
