@@ -39,6 +39,7 @@ import AsignacionesConductoresIndex from "./pages/asignaciones-conductores/Index
 import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
 import BitacorasLectorasIndex from "./pages/bitacoras-lectoras/Index";
 import SolicitudesTrasladoIndex from "./pages/solicitudes-traslado/Index";
+import AutobusesCapacidadCumplida from "./pages/buses/AutobusesCapacidadCumplida";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/buses" element={<BusesIndex />} />
             <Route path="/buses/register" element={<RegisterBus />} />
             <Route path="/buses/edit/:id" element={<EditBus />} />
+            <Route path="/buses/capacidad-cumplida" element={<AutobusesCapacidadCumplida />} />
             <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
             <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
             <Route path="/configuracion/programacion-parametros" element={<ProgramacionParametros />} />

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Building2, Truck, Factory, TrendingUp, Users, MapPin, Bus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,6 +29,7 @@ const overviewData = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('zona-franca');
+  const navigate = useNavigate();
 
   const getTabContent = (tab: string) => {
     switch (tab) {
@@ -96,7 +98,19 @@ const Index = () => {
             {/* Métricas principales */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {currentContent.cards.map((card, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+                <Card 
+                  key={index} 
+                  className={`hover:shadow-lg transition-shadow ${
+                    activeTab === 'transportistas' && index === 4 
+                      ? 'cursor-pointer hover:scale-105 transform' 
+                      : ''
+                  }`}
+                  onClick={() => {
+                    if (activeTab === 'transportistas' && index === 4) {
+                      navigate('/buses/capacidad-cumplida');
+                    }
+                  }}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
