@@ -46,7 +46,8 @@ const Index = () => {
             { title: 'Transportistas', value: '15', subtitle: 'Activos', color: 'text-blue-600', bgColor: 'bg-blue-50' },
             { title: 'Autobuses', value: '89', subtitle: 'En Flota', color: 'text-red-600', bgColor: 'bg-red-50' },
             { title: 'Conductores', value: '142', subtitle: 'Certificados', color: 'text-orange-600', bgColor: 'bg-orange-50' },
-            { title: 'Asignaciones', value: '67', subtitle: 'Completadas', color: 'text-green-600', bgColor: 'bg-green-50' }
+            { title: 'Asignaciones', value: '67', subtitle: 'Completadas', color: 'text-green-600', bgColor: 'bg-green-50' },
+            { title: 'Autobuses capacidad cumplida', value: '200', subtitle: 'Cumpliendo normativa', color: 'text-indigo-600', bgColor: 'bg-indigo-50' }
           ]
         };
       case 'empresas':
