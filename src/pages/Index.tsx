@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Building2, Truck, Factory, TrendingUp, Users, MapPin } from 'lucide-react';
+import { Building2, Truck, Factory, TrendingUp, Users, MapPin, Bus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -47,7 +47,7 @@ const Index = () => {
             { title: 'Autobuses', value: '89', subtitle: 'En Flota', color: 'text-red-600', bgColor: 'bg-red-50' },
             { title: 'Conductores', value: '142', subtitle: 'Certificados', color: 'text-orange-600', bgColor: 'bg-orange-50' },
             { title: 'Asignaciones', value: '67', subtitle: 'Completadas', color: 'text-green-600', bgColor: 'bg-green-50' },
-            { title: 'Autobuses capacidad cumplida', value: '200', subtitle: 'Cumpliendo normativa', color: 'text-indigo-600', bgColor: 'bg-indigo-50' }
+            { title: 'Autobuses capacidad cumplida', value: '200', subtitle: '', color: 'text-indigo-600', bgColor: 'bg-indigo-50' }
           ]
         };
       case 'empresas':
@@ -107,10 +107,21 @@ const Index = () => {
                         <p className="text-sm text-muted-foreground mt-1">{card.subtitle}</p>
                       </div>
                       <div className={`p-3 rounded-full ${card.bgColor}`}>
-                        {index === 0 && <TrendingUp className={`h-6 w-6 ${card.color}`} />}
-                        {index === 1 && <Users className={`h-6 w-6 ${card.color}`} />}
-                        {index === 2 && <Factory className={`h-6 w-6 ${card.color}`} />}
-                        {index === 3 && <Building2 className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'zona-franca' && index === 0 && <TrendingUp className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'zona-franca' && index === 1 && <Users className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'zona-franca' && index === 2 && <Factory className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'zona-franca' && index === 3 && <Building2 className={`h-6 w-6 ${card.color}`} />}
+                        
+                        {activeTab === 'transportistas' && index === 0 && <TrendingUp className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 1 && <Truck className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 2 && <Users className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 3 && <Building2 className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 4 && <Bus className={`h-6 w-6 ${card.color}`} />}
+                        
+                        {activeTab === 'empresas' && index === 0 && <Building2 className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'empresas' && index === 1 && <Users className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'empresas' && index === 2 && <Factory className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'empresas' && index === 3 && <TrendingUp className={`h-6 w-6 ${card.color}`} />}
                       </div>
                     </div>
                   </CardContent>
