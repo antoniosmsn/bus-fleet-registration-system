@@ -707,19 +707,6 @@ const TiempoReal = () => {
                 </div>
               </DrawerContent>
             </Drawer>
-            
-            <div className="ml-auto flex gap-2">
-              <Button 
-                onClick={handleDetener} 
-                variant={isTracking ? "destructive" : "default"}
-                size="lg"
-                className="h-12"
-                disabled={!isTracking && autobusesEnRastreo.length === 0}
-              >
-                {isTracking ? <Square className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
-                {isTracking ? "Detener" : "Reanudar"}
-              </Button>
-            </div>
           </div>
         )}
 
