@@ -57,24 +57,29 @@ interface Filtros {
 }
 
 const createBusIcon = (identificador: string, estado: 'en_linea' | 'fuera_linea', curso: number) => {
-  const color = estado === 'en_linea' ? '#22c55e' : '#6b7280';
+  const color = estado === 'en_linea' ? '#dc2626' : '#6b7280'; // Rojo similar a la imagen para en línea
+  const bgColor = estado === 'en_linea' ? '#fef2f2' : '#f3f4f6';
+  
   return divIcon({
     html: `
       <div style="transform: rotate(${curso}deg); display: flex; align-items: center; justify-content: center;">
-        <div style="color: ${color}; font-size: 20px;">▲</div>
+        <svg width="24" height="24" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
+          <path d="M12 2 L20 12 L15 12 L15 20 L9 20 L9 12 L4 12 Z" fill="${color}" stroke="#fff" stroke-width="0.5"/>
+        </svg>
         <div style="
           position: absolute; 
-          top: 25px; 
+          top: 26px; 
           left: 50%; 
           transform: translateX(-50%);
-          background: white;
+          background: ${bgColor};
           border: 1px solid ${color};
-          border-radius: 4px;
-          padding: 1px 4px;
-          font-size: 10px;
+          border-radius: 3px;
+          padding: 1px 3px;
+          font-size: 9px;
           font-weight: bold;
           color: ${color};
           white-space: nowrap;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         ">${identificador}</div>
       </div>
     `,
