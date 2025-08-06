@@ -25,7 +25,8 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
-  RotateCcw
+  RotateCcw,
+  Focus
 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { 
@@ -103,6 +104,17 @@ const FitBounds = ({ autobuses }: { autobuses: AutobusRastreo[] }) => {
   return null;
 };
 
+// Component to provide map instance
+const MapInstanceProvider = ({ onMapReady }: { onMapReady: (map: L.Map) => void }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    onMapReady(map);
+  }, [map, onMapReady]);
+  
+  return null;
+};
+
 const TiempoReal = () => {
   const [filtros, setFiltros] = useState<Filtros>({
     placaIdentificador: '',
@@ -120,6 +132,7 @@ const TiempoReal = () => {
   const [isTracking, setIsTracking] = useState(true);
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
   const [pausedMessage, setPausedMessage] = useState(false);
+  const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mouseOverRef = useRef(false);
@@ -252,6 +265,16 @@ const TiempoReal = () => {
     setIsTracking(true);
   };
 
+  const handleCenterOnBus = (bus: AutobusRastreo) => {
+    if (mapInstance) {
+      mapInstance.setView([bus.lat, bus.lng], 16, { animate: true });
+      toast({
+        title: "Autobús centrado",
+        description: `Vista centrada en ${bus.identificador} - ${bus.placa}`
+      });
+    }
+  };
+
   const formatDateTime = (date: Date) => {
     return date.toLocaleString('es-CR', {
       year: 'numeric',
@@ -304,7 +327,7 @@ const TiempoReal = () => {
               </div>
             </CardHeader>
             <CardContent className="flex-1 p-0">
-              <ScrollArea className="h-full">
+              <ScrollArea className="h-[calc(100vh-280px)]">
                 <div className="space-y-2 p-4">
                   {autobusesEnRastreo.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
@@ -324,9 +347,22 @@ const TiempoReal = () => {
                           <div className="font-medium text-sm">
                             {bus.identificador} - {bus.placa}
                           </div>
-                          <Badge variant={bus.estado === 'en_linea' ? 'default' : 'secondary'}>
-                            {bus.estado === 'en_linea' ? 'En línea' : 'Fuera línea'}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCenterOnBus(bus);
+                              }}
+                            >
+                              <Focus className="h-3 w-3" />
+                            </Button>
+                            <Badge variant={bus.estado === 'en_linea' ? 'default' : 'secondary'}>
+                              {bus.estado === 'en_linea' ? 'En línea' : 'Fuera línea'}
+                            </Badge>
+                          </div>
                         </div>
                         
                         <div className="space-y-1 text-xs text-muted-foreground">
@@ -594,6 +630,8 @@ const TiempoReal = () => {
             />
             
             <FitBounds autobuses={autobusesEnRastreo} />
+            
+            <MapInstanceProvider onMapReady={setMapInstance} />
             
             {autobusesEnRastreo.map((bus) => (
               <Marker
