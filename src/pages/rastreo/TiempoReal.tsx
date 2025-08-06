@@ -185,7 +185,7 @@ const TiempoReal = () => {
         clearInterval(trackingIntervalRef.current);
       }
     };
-  }, [isTracking, updateBusData]);
+  }, [isTracking]); // Remove updateBusData dependency to prevent re-creation
 
   // Búsqueda y filtrado
   const handleBuscar = () => {
