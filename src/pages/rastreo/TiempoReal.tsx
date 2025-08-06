@@ -109,6 +109,50 @@ const createBusIcon = (identificador: string, estado: 'en_linea' | 'fuera_linea'
   });
 };
 
+// Crear icono para las paradas
+const createStopIcon = (codigo: string, nombre: string) => {
+  return divIcon({
+    html: `
+      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <!-- Icono de target/placemark -->
+        <div style="position: relative;">
+          <svg width="20" height="20" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
+            <circle cx="12" cy="12" r="10" fill="#059669" stroke="#fff" stroke-width="2"/>
+            <circle cx="12" cy="12" r="6" fill="#fff"/>
+            <circle cx="12" cy="12" r="3" fill="#059669"/>
+          </svg>
+        </div>
+        
+        <!-- Etiqueta con código y nombre -->
+        <div style="
+          position: absolute; 
+          top: 24px; 
+          left: 50%; 
+          transform: translateX(-50%);
+          background: #f0fdf4;
+          border: 1px solid #059669;
+          border-radius: 4px;
+          padding: 3px 6px;
+          font-size: 10px;
+          font-weight: bold;
+          color: #059669;
+          white-space: nowrap;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          z-index: 1000;
+          max-width: 120px;
+          text-align: center;
+        ">
+          <div style="font-weight: bold;">${codigo}</div>
+          <div style="font-size: 8px; font-weight: normal; margin-top: 1px;">${nombre}</div>
+        </div>
+      </div>
+    `,
+    className: 'custom-stop-icon',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
+  });
+};
+
 // Component to fit map bounds only when filters are applied
 const FitBounds = ({ autobuses, shouldFit }: { autobuses: AutobusRastreo[], shouldFit: boolean }) => {
   const map = useMap();
@@ -894,6 +938,33 @@ const TiempoReal = () => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            
+            {/* Mostrar paradas seleccionadas en el mapa */}
+            {mockStops
+              .filter(stop => selectedStops.includes(stop.id))
+              .map((stop) => (
+                <Marker
+                  key={`stop-${stop.id}`}
+                  position={[stop.lat, stop.lng]}
+                  icon={createStopIcon(stop.codigo, stop.nombre)}
+                >
+                  <Popup>
+                    <div className="text-sm">
+                      <div className="font-semibold text-emerald-600">{stop.codigo}</div>
+                      <div className="font-medium">{stop.nombre}</div>
+                      <div className="text-muted-foreground text-xs mt-1">
+                        {stop.provincia}, {stop.canton}
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        Estado: <span className={stop.estado === 'Activo' ? 'text-emerald-600' : 'text-gray-500'}>
+                          {stop.estado}
+                        </span>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))
+            }
             
             <FitBounds autobuses={autobusesEnRastreo} shouldFit={shouldFitBounds} />
             
