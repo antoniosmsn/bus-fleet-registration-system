@@ -33,7 +33,8 @@ import {
   Menu,
   Info,
   Target,
-  ChevronDown
+  ChevronDown,
+  Map
 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { 
@@ -44,6 +45,8 @@ import {
   AutobusRastreo,
   TELEMETRIA_CONFIG 
 } from '@/data/mockRastreoData';
+import { mockStops, Stop } from '@/data/mockStops';
+import { StopsPanel } from '@/components/rastreo/StopsPanel';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -147,12 +150,16 @@ const TiempoReal = () => {
   const [autobusesEnRastreo, setAutobusesEnRastreo] = useState<AutobusRastreo[]>(mockAutobusesRastreo.filter(bus => bus.activo));
   const [showInfoPanel, setShowInfoPanel] = useState(!isMobile);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [showStopsPanel, setShowStopsPanel] = useState(false);
   const [isTracking, setIsTracking] = useState(true);
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
   const [pausedMessage, setPausedMessage] = useState(false);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const [shouldFitBounds, setShouldFitBounds] = useState(false);
   const [busquedaLocal, setBusquedaLocal] = useState('');
+  
+  // Stops state
+  const [selectedStops, setSelectedStops] = useState<string[]>(mockStops.map(stop => stop.id)); // All stops selected by default
   
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mouseOverRef = useRef(false);
@@ -300,6 +307,16 @@ const TiempoReal = () => {
     }
   };
 
+  // Manejar el panel de paradas
+  const toggleStopsPanel = useCallback(() => {
+    setShowStopsPanel(!showStopsPanel);
+  }, [showStopsPanel]);
+
+  // Manejar cambio de paradas seleccionadas
+  const handleStopsChange = useCallback((stopIds: string[]) => {
+    setSelectedStops(stopIds);
+  }, []);
+
   const formatDateTime = (date: Date) => {
     return date.toLocaleString('es-CR', {
       year: 'numeric',
@@ -328,31 +345,38 @@ const TiempoReal = () => {
   // Componente del contenido del panel de información
   const InfoPanelContent = () => (
     <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
-      <div className={cn(isMobile ? "pb-4" : "pb-2")}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Autobuses en Tiempo Real</h3>
-          {!isMobile && (
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  setShowFilterPanel(true);
-                  setShowInfoPanel(false);
-                }}
-              >
-                <Filter className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowInfoPanel(false)}
-              >
-                <EyeOff className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
-        </div>
+        <div className={cn(isMobile ? "pb-4" : "pb-2")}>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Autobuses en Tiempo Real</h3>
+            {!isMobile && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={toggleStopsPanel}
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setShowFilterPanel(true);
+                    setShowInfoPanel(false);
+                  }}
+                >
+                  <Filter className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowInfoPanel(false)}
+                >
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
         
         <div className={cn("flex items-center gap-2 text-muted-foreground mb-3", isMobile ? "text-sm" : "text-xs")}>
           <div className="flex items-center gap-1">
@@ -751,10 +775,24 @@ const TiempoReal = () => {
     <Layout>
       <div className="h-[calc(100vh-120px)] flex bg-background relative">
         {/* Desktop Panels */}
-        {!isMobile && showInfoPanel && !showFilterPanel && (
+        {!isMobile && showInfoPanel && !showFilterPanel && !showStopsPanel && (
           <Card className="w-64 lg:w-72 flex flex-col border-r">
             <CardContent className="p-4 flex-1">
               <InfoPanelContent />
+            </CardContent>
+          </Card>
+        )}
+
+        {!isMobile && showStopsPanel && (
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
+            <CardContent className="p-4 flex-1">
+              <StopsPanel
+                stops={mockStops}
+                selectedStops={selectedStops}
+                onStopsChange={handleStopsChange}
+                onClose={() => setShowStopsPanel(false)}
+                isMobile={false}
+              />
             </CardContent>
           </Card>
         )}
@@ -789,6 +827,28 @@ const TiempoReal = () => {
             <Drawer>
               <DrawerTrigger asChild>
                 <Button variant="outline" size="lg" className="h-12 w-12 p-0">
+                  <Map className="h-5 w-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[80vh] flex flex-col">
+                <DrawerHeader>
+                  <DrawerTitle>Paradas</DrawerTitle>
+                </DrawerHeader>
+                <div className="flex-1 overflow-hidden px-4 pb-4">
+                  <StopsPanel
+                    stops={mockStops}
+                    selectedStops={selectedStops}
+                    onStopsChange={handleStopsChange}
+                    onClose={() => setShowStopsPanel(false)}
+                    isMobile={true}
+                  />
+                </div>
+              </DrawerContent>
+            </Drawer>
+
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="lg" className="h-12 w-12 p-0">
                   <Filter className="h-5 w-5" />
                 </Button>
               </DrawerTrigger>
@@ -812,7 +872,7 @@ const TiempoReal = () => {
             </div>
           )}
           
-          {!isMobile && !showInfoPanel && !showFilterPanel && (
+          {!isMobile && !showInfoPanel && !showFilterPanel && !showStopsPanel && (
             <Button
               className="absolute top-4 left-4 z-[1000]"
               variant="outline"
