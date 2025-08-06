@@ -124,66 +124,42 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
           Todos ({filteredStops.length})
         </label>
         {selectedStops.length > 0 && (
-          <Badge variant="secondary" className="ml-auto">
-            {selectedStops.length} seleccionadas
+          <Badge variant="secondary" className="ml-auto text-xs">
+            {selectedStops.length}
           </Badge>
         )}
       </div>
 
       {/* Stops List */}
-      <ScrollArea className={cn("flex-1", isMobile ? "h-full" : "h-96")}>
-        <div className="space-y-2 pr-4">
+      <ScrollArea className={cn("flex-1", isMobile ? "h-[400px]" : "h-[350px]")}>
+        <div className="space-y-2 pr-2">
           {filteredStops.map((stop) => (
             <div
               key={stop.id}
-              className={cn(
-                "flex items-start space-x-3 p-3 rounded-lg border transition-colors hover:bg-muted/50",
-                selectedStops.includes(stop.id) ? "bg-muted border-primary" : "bg-background"
-              )}
+              className="flex items-center space-x-2"
             >
               <Checkbox
                 id={`stop-${stop.id}`}
                 checked={selectedStops.includes(stop.id)}
                 onCheckedChange={() => handleStopToggle(stop.id)}
-                className="mt-1"
               />
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-                  <span className="font-medium text-sm truncate">
-                    {stop.codigo}
-                  </span>
-                  <Badge 
-                    variant={stop.estado === 'Activo' ? 'default' : 'secondary'}
-                    className="text-xs"
-                  >
-                    {stop.estado}
-                  </Badge>
-                </div>
-                
-                <h4 className="font-medium text-sm mb-1 truncate">
-                  {stop.nombre}
-                </h4>
-                
-                <p className="text-xs text-muted-foreground">
-                  {stop.provincia}, {stop.canton}
-                </p>
-                
-                <p className="text-xs text-muted-foreground">
-                  {stop.distrito}
-                </p>
-              </div>
+              <label
+                htmlFor={`stop-${stop.id}`}
+                className="flex-1 text-sm cursor-pointer leading-tight py-1"
+              >
+                <div className="font-medium">{stop.codigo}</div>
+                <div className="text-muted-foreground text-xs truncate">{stop.nombre}</div>
+              </label>
             </div>
           ))}
           
           {filteredStops.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <div className="text-center py-6 text-muted-foreground">
+              <MapPin className="h-6 w-6 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No se encontraron paradas</p>
               {searchFilter && (
                 <p className="text-xs mt-1">
-                  Intenta con otros términos de búsqueda
+                  Intenta con otros términos
                 </p>
               )}
             </div>
