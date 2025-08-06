@@ -75,9 +75,9 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
   };
 
   return (
-    <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-3")}>
+    <div className={cn("flex flex-col h-full", isMobile ? "max-h-[calc(100vh-120px)]" : "max-h-[calc(100vh-200px)]")}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
         <h3 className={cn("font-medium text-muted-foreground", isMobile ? "text-sm" : "text-base")}>
           Paradas
         </h3>
@@ -92,7 +92,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
       </div>
 
       {/* Search */}
-      <div className="relative mb-3">
+      <div className="relative mb-3 flex-shrink-0">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           placeholder="Buscar parada..."
@@ -113,7 +113,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
       </div>
 
       {/* Select All */}
-      <div className="flex items-center space-x-2 mb-3">
+      <div className="flex items-center space-x-2 mb-3 flex-shrink-0">
         <Checkbox
           id="select-all-stops"
           checked={allVisibleSelected}
@@ -133,7 +133,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
       </div>
 
       {/* Stops List */}
-      <ScrollArea className={cn("flex-1 border rounded-md", isMobile ? "h-[400px]" : "h-[350px]")}>
+      <ScrollArea className="flex-1 border rounded-md min-h-0">
         <div className="space-y-1 p-2">
           {filteredStops.map((stop) => (
             <div
