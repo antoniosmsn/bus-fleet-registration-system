@@ -133,12 +133,12 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
       </div>
 
       {/* Stops List */}
-      <ScrollArea className={cn("flex-1", isMobile ? "h-[400px]" : "h-[350px]")}>
-        <div className="space-y-2 pr-2">
+      <ScrollArea className={cn("flex-1 border rounded-md", isMobile ? "h-[400px]" : "h-[350px]")}>
+        <div className="space-y-1 p-2">
           {filteredStops.map((stop) => (
             <div
               key={stop.id}
-              className="flex items-center space-x-2 group"
+              className="flex items-center space-x-2 p-2 hover:bg-accent/50 rounded-sm group"
             >
               <Checkbox
                 id={`stop-${stop.id}`}
@@ -147,7 +147,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
               />
               <label
                 htmlFor={`stop-${stop.id}`}
-                className="flex-1 text-sm cursor-pointer leading-tight py-1"
+                className="flex-1 text-sm cursor-pointer leading-tight"
               >
                 <div className="font-medium">{stop.codigo}</div>
                 <div className="text-muted-foreground text-xs truncate">{stop.nombre}</div>
