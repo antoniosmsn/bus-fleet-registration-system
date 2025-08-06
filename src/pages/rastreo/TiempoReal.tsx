@@ -31,7 +31,9 @@ import {
   RotateCcw,
   Focus,
   Menu,
-  Info
+  Info,
+  Target,
+  ChevronDown
 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { 
@@ -680,11 +682,11 @@ const TiempoReal = () => {
                   <Info className="h-5 w-5" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-[70vh]">
+              <DrawerContent className="h-[75vh] flex flex-col">
                 <DrawerHeader>
                   <DrawerTitle>Información de Autobuses</DrawerTitle>
                 </DrawerHeader>
-                <div className="p-4 flex-1">
+                <div className="flex-1 overflow-hidden px-4 pb-4">
                   <InfoPanelContent />
                 </div>
               </DrawerContent>
@@ -696,11 +698,11 @@ const TiempoReal = () => {
                   <Filter className="h-5 w-5" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-[80vh]">
+              <DrawerContent className="h-[90vh] flex flex-col">
                 <DrawerHeader>
                   <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
                 </DrawerHeader>
-                <div className="p-4 flex-1">
+                <div className="flex-1 overflow-hidden px-4 pb-4">
                   <FilterPanelContent />
                 </div>
               </DrawerContent>
