@@ -320,7 +320,7 @@ const TiempoReal = () => {
       <div className="h-[calc(100vh-120px)] flex bg-background">
         {/* Panel de Información */}
         {showInfoPanel && !showFilterPanel && (
-          <Card className="w-80 lg:w-96 flex flex-col border-r">
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Autobuses en Tiempo Real</CardTitle>
@@ -448,7 +448,7 @@ const TiempoReal = () => {
 
         {/* Panel de Filtros */}
         {showFilterPanel && (
-          <Card className="w-80 lg:w-96 flex flex-col border-r">
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Filtros</CardTitle>
