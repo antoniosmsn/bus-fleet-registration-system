@@ -142,6 +142,7 @@ const TiempoReal = () => {
   const [pausedMessage, setPausedMessage] = useState(false);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
   const [shouldFitBounds, setShouldFitBounds] = useState(false);
+  const [busquedaLocal, setBusquedaLocal] = useState('');
   
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mouseOverRef = useRef(false);
@@ -300,6 +301,20 @@ const TiempoReal = () => {
     });
   };
 
+  // Filtrar autobuses para mostrar en el panel basado en la búsqueda local
+  const autobusesFiltradosParaMostrar = autobusesEnRastreo.filter(bus => {
+    if (!busquedaLocal) return true;
+    
+    const searchTerm = busquedaLocal.toLowerCase();
+    return (
+      bus.identificador.toLowerCase().includes(searchTerm) ||
+      bus.placa.toLowerCase().includes(searchTerm) ||
+      bus.conductor.toLowerCase().includes(searchTerm) ||
+      bus.tipoServicio.toLowerCase().includes(searchTerm) ||
+      (bus.ramal && bus.ramal.toLowerCase().includes(searchTerm))
+    );
+  });
+
   return (
     <Layout>
       <div className="h-[calc(100vh-120px)] flex bg-background">
@@ -332,23 +347,41 @@ const TiempoReal = () => {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  En línea: {autobusesEnRastreo.filter(b => b.estado === 'en_linea').length}
+                  En línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'en_linea').length}
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-                  Fuera línea: {autobusesEnRastreo.filter(b => b.estado === 'fuera_linea').length}
+                  Fuera línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'fuera_linea').length}
                 </div>
+              </div>
+              
+              {/* Input de búsqueda local */}
+              <div className="mt-3">
+                <Input
+                  placeholder="Buscar en lista actual..."
+                  value={busquedaLocal}
+                  onChange={(e) => setBusquedaLocal(e.target.value)}
+                  className="h-8 text-sm"
+                />
+                {busquedaLocal && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Mostrando {autobusesFiltradosParaMostrar.length} de {autobusesEnRastreo.length} autobuses
+                  </p>
+                )}
               </div>
             </CardHeader>
             <CardContent className="flex-1 p-0">
               <ScrollArea className="h-[calc(100vh-280px)]">
                 <div className="space-y-2 p-4">
-                  {autobusesEnRastreo.length === 0 ? (
+                  {autobusesFiltradosParaMostrar.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      No hay autobuses disponibles con los filtros seleccionados.
+                      {busquedaLocal 
+                        ? "No se encontraron autobuses con ese criterio de búsqueda." 
+                        : "No hay autobuses disponibles con los filtros seleccionados."
+                      }
                     </p>
                   ) : (
-                    autobusesEnRastreo.map((bus) => (
+                    autobusesFiltradosParaMostrar.map((bus) => (
                       <Card 
                         key={bus.id} 
                         className={`p-3 cursor-pointer hover:bg-accent transition-colors ${
