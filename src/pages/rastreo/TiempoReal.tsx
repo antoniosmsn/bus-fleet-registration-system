@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -454,8 +454,8 @@ const TiempoReal = () => {
     </div>
   );
 
-  // Componente del contenido del panel de filtros
-  const FilterPanelContent = () => (
+  // Componente del contenido del panel de filtros - Memoizado para evitar re-renders
+  const FilterPanelContent = useMemo(() => (
     <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-3")}>
       <div className="flex items-center justify-between mb-3">
         <h3 className={cn("font-medium text-muted-foreground", isMobile ? "text-sm" : "text-base")}>Filtros</h3>
@@ -745,7 +745,7 @@ const TiempoReal = () => {
         </Button>
       </div>
     </div>
-  );
+  ), [filtros, autobusesFiltrados, isMobile]); // Dependencies for memoization
 
   return (
     <Layout>
@@ -762,7 +762,7 @@ const TiempoReal = () => {
         {!isMobile && showFilterPanel && (
           <Card className="w-64 lg:w-72 flex flex-col border-r">
             <CardContent className="p-4 flex-1">
-              <FilterPanelContent />
+              {FilterPanelContent}
             </CardContent>
           </Card>
         )}
@@ -797,7 +797,7 @@ const TiempoReal = () => {
                   <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
                 </DrawerHeader>
                 <div className="flex-1 overflow-hidden px-4 pb-4">
-                  <FilterPanelContent />
+                  {FilterPanelContent}
                 </div>
               </DrawerContent>
             </Drawer>
