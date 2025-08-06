@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Search, X, MapPin } from 'lucide-react';
+import { Search, X, MapPin, Eye } from 'lucide-react';
 import { Stop } from '@/data/mockStops';
 import { cn } from '@/lib/utils';
 
@@ -13,6 +13,7 @@ interface StopsPanelProps {
   selectedStops: string[];
   onStopsChange: (stopIds: string[]) => void;
   onClose: () => void;
+  onCenterMap?: (lat: number, lng: number) => void;
   isMobile?: boolean;
 }
 
@@ -21,6 +22,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
   selectedStops,
   onStopsChange,
   onClose,
+  onCenterMap,
   isMobile = false
 }) => {
   const [searchFilter, setSearchFilter] = useState('');
@@ -136,7 +138,7 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
           {filteredStops.map((stop) => (
             <div
               key={stop.id}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 group"
             >
               <Checkbox
                 id={`stop-${stop.id}`}
@@ -150,6 +152,17 @@ export const StopsPanel: React.FC<StopsPanelProps> = ({
                 <div className="font-medium">{stop.codigo}</div>
                 <div className="text-muted-foreground text-xs truncate">{stop.nombre}</div>
               </label>
+              {onCenterMap && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onCenterMap(stop.lat, stop.lng)}
+                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Centrar en mapa"
+                >
+                  <Eye className="h-3 w-3" />
+                </Button>
+              )}
             </div>
           ))}
           

@@ -208,6 +208,16 @@ const TiempoReal = () => {
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mouseOverRef = useRef(false);
 
+  // Function to center map on specific coordinates
+  const handleCenterMap = useCallback((lat: number, lng: number) => {
+    if (mapInstance) {
+      mapInstance.setView([lat, lng], 16, {
+        animate: true,
+        duration: 1
+      });
+    }
+  }, [mapInstance]);
+
   // Simular actualización de datos en tiempo real
   const updateBusData = useCallback(() => {
     if (!isTracking || mouseOverRef.current) return;
@@ -835,6 +845,7 @@ const TiempoReal = () => {
                 selectedStops={selectedStops}
                 onStopsChange={handleStopsChange}
                 onClose={() => setShowStopsPanel(false)}
+                onCenterMap={handleCenterMap}
                 isMobile={false}
               />
             </CardContent>
@@ -884,6 +895,7 @@ const TiempoReal = () => {
                     selectedStops={selectedStops}
                     onStopsChange={handleStopsChange}
                     onClose={() => setShowStopsPanel(false)}
+                    onCenterMap={handleCenterMap}
                     isMobile={true}
                   />
                 </div>
