@@ -14,7 +14,7 @@ export interface Stop {
 export const mockStops: Stop[] = [
   {
     id: '1',
-    codigo: 'PARA-001',
+    codigo: '001',
     nombre: 'Terminal Central',
     provincia: 'San José',
     canton: 'San José',
@@ -25,7 +25,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '2',
-    codigo: 'PARA-002',
+    codigo: '002',
     nombre: 'Parada Norte',
     provincia: 'San José',
     canton: 'San José',
@@ -36,7 +36,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '3',
-    codigo: 'PARA-003',
+    codigo: '003',
     nombre: 'Parada Sur',
     provincia: 'San José',
     canton: 'San José',
@@ -47,7 +47,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '4',
-    codigo: 'PARA-004',
+    codigo: '004',
     nombre: 'Zona Franca',
     provincia: 'San José',
     canton: 'San José',
@@ -58,7 +58,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '5',
-    codigo: 'PARA-005',
+    codigo: '005',
     nombre: 'Universidad',
     provincia: 'San José',
     canton: 'Montes de Oca',
@@ -69,7 +69,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '6',
-    codigo: 'PARA-006',
+    codigo: '006',
     nombre: 'Centro Comercial',
     provincia: 'San José',
     canton: 'Escazú',
@@ -80,7 +80,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '7',
-    codigo: 'PARA-007',
+    codigo: '007',
     nombre: 'Hospital Nacional',
     provincia: 'San José',
     canton: 'San José',
@@ -91,7 +91,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '8',
-    codigo: 'PARA-008',
+    codigo: '008',
     nombre: 'Aeropuerto',
     provincia: 'Alajuela',
     canton: 'Alajuela',
@@ -102,7 +102,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '9',
-    codigo: 'PARA-009',
+    codigo: '009',
     nombre: 'Plaza Central',
     provincia: 'Cartago',
     canton: 'Cartago',
@@ -113,7 +113,7 @@ export const mockStops: Stop[] = [
   },
   {
     id: '10',
-    codigo: 'PARA-010',
+    codigo: '010',
     nombre: 'Mercado Municipal',
     provincia: 'Alajuela',
     canton: 'Alajuela',
