@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
@@ -667,7 +667,35 @@ const TiempoReal = () => {
                     }
                   }
                 }}
-              />
+              >
+                <Popup>
+                  <div className="text-sm space-y-1">
+                    <div className="font-semibold text-primary">
+                      {bus.identificador} - {bus.placa}
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Gauge className="h-3 w-3" />
+                      <span>{bus.velocidad} km/h</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Users className="h-3 w-3" />
+                      <span>{bus.ocupacionActual} - {bus.capacidadTotal}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span>{formatDateTime(bus.ultimaTransmision)}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {bus.conductor}
+                    </div>
+                    {bus.ramal && (
+                      <div className="text-xs text-primary">
+                        {bus.tipoServicio} - {bus.ramal}
+                      </div>
+                    )}
+                  </div>
+                </Popup>
+              </Marker>
             ))}
           </MapContainer>
         </div>
