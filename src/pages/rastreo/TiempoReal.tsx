@@ -90,16 +90,16 @@ const createBusIcon = (identificador: string, estado: 'en_linea' | 'fuera_linea'
   });
 };
 
-// Component to fit map bounds
-const FitBounds = ({ autobuses }: { autobuses: AutobusRastreo[] }) => {
+// Component to fit map bounds only when filters are applied
+const FitBounds = ({ autobuses, shouldFit }: { autobuses: AutobusRastreo[], shouldFit: boolean }) => {
   const map = useMap();
   
   useEffect(() => {
-    if (autobuses.length > 0) {
+    if (autobuses.length > 0 && shouldFit) {
       const bounds = L.latLngBounds(autobuses.map(bus => [bus.lat, bus.lng]));
       map.fitBounds(bounds, { padding: [20, 20] });
     }
-  }, [autobuses, map]);
+  }, [autobuses, map, shouldFit]);
   
   return null;
 };
@@ -133,6 +133,7 @@ const TiempoReal = () => {
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
   const [pausedMessage, setPausedMessage] = useState(false);
   const [mapInstance, setMapInstance] = useState<L.Map | null>(null);
+  const [shouldFitBounds, setShouldFitBounds] = useState(false);
   
   const trackingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mouseOverRef = useRef(false);
@@ -223,8 +224,13 @@ const TiempoReal = () => {
 
     setAutobusesEnRastreo(autobusesParaRastreo);
     setIsTracking(true);
+    setShouldFitBounds(true); // Trigger map centering only when applying filter
     setShowFilterPanel(false);
     setShowInfoPanel(true);
+    
+    // Reset shouldFitBounds after a brief delay
+    setTimeout(() => setShouldFitBounds(false), 1000);
+    
     toast({
       title: "Filtro aplicado",
       description: `Rastreando ${autobusesParaRastreo.length} autobuses`
@@ -572,7 +578,7 @@ const TiempoReal = () => {
                   <Button 
                     onClick={handleAplicarFiltro} 
                     className="flex-1"
-                    disabled={!isTracking || autobusesFiltrados.length === 0}
+                    disabled={isTracking || autobusesFiltrados.length === 0}
                   >
                     <Play className="h-4 w-4 mr-2" />
                     Aplicar Filtro
@@ -629,7 +635,7 @@ const TiempoReal = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            <FitBounds autobuses={autobusesEnRastreo} />
+            <FitBounds autobuses={autobusesEnRastreo} shouldFit={shouldFitBounds} />
             
             <MapInstanceProvider onMapReady={setMapInstance} />
             
