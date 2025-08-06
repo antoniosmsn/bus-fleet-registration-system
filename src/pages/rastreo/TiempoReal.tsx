@@ -63,30 +63,38 @@ const createBusIcon = (identificador: string, estado: 'en_linea' | 'fuera_linea'
   
   return divIcon({
     html: `
-      <div style="transform: rotate(${curso}deg); display: flex; align-items: center; justify-content: center;">
-        <svg width="24" height="24" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
-          <path d="M12 2 L20 12 L15 12 L15 20 L9 20 L9 12 L4 12 Z" fill="${color}" stroke="#fff" stroke-width="0.5"/>
-        </svg>
+      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <!-- Flecha que rota según la dirección -->
+        <div style="transform: rotate(${curso}deg);">
+          <svg width="24" height="24" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
+            <path d="M12 2 L20 12 L15 12 L15 20 L9 20 L9 12 L4 12 Z" fill="${color}" stroke="#fff" stroke-width="0.5"/>
+          </svg>
+        </div>
+        
+        <!-- Etiqueta que NO rota, siempre horizontal y legible -->
         <div style="
           position: absolute; 
-          top: 26px; 
+          top: 28px; 
           left: 50%; 
           transform: translateX(-50%);
           background: ${bgColor};
           border: 1px solid ${color};
           border-radius: 3px;
-          padding: 1px 3px;
+          padding: 2px 4px;
           font-size: 9px;
           font-weight: bold;
           color: ${color};
           white-space: nowrap;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          z-index: 1000;
+          min-width: 20px;
+          text-align: center;
         ">${identificador}</div>
       </div>
     `,
     className: 'custom-bus-marker',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
+    iconSize: [50, 50],
+    iconAnchor: [25, 25]
   });
 };
 
