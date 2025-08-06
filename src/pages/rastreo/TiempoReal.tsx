@@ -11,6 +11,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   Filter, 
   MapPin, 
@@ -26,7 +29,9 @@ import {
   Eye,
   EyeOff,
   RotateCcw,
-  Focus
+  Focus,
+  Menu,
+  Info
 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { 
@@ -124,6 +129,8 @@ const MapInstanceProvider = ({ onMapReady }: { onMapReady: (map: L.Map) => void 
 };
 
 const TiempoReal = () => {
+  const isMobile = useIsMobile();
+  
   const [filtros, setFiltros] = useState<Filtros>({
     placaIdentificador: '',
     empresasTransporte: ['todos'],
@@ -135,7 +142,7 @@ const TiempoReal = () => {
 
   const [autobusesFiltrados, setAutobusesFiltrados] = useState<AutobusRastreo[]>([]);
   const [autobusesEnRastreo, setAutobusesEnRastreo] = useState<AutobusRastreo[]>(mockAutobusesRastreo.filter(bus => bus.activo));
-  const [showInfoPanel, setShowInfoPanel] = useState(true);
+  const [showInfoPanel, setShowInfoPanel] = useState(!isMobile);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [isTracking, setIsTracking] = useState(true);
   const [selectedBus, setSelectedBus] = useState<string | null>(null);
@@ -315,345 +322,414 @@ const TiempoReal = () => {
     );
   });
 
-  return (
-    <Layout>
-      <div className="h-[calc(100vh-120px)] flex bg-background">
-        {/* Panel de Información */}
-        {showInfoPanel && !showFilterPanel && (
-          <Card className="w-64 lg:w-72 flex flex-col border-r">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Autobuses en Tiempo Real</CardTitle>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => {
-                      setShowFilterPanel(true);
-                      setShowInfoPanel(false);
-                    }}
-                  >
-                    <Filter className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowInfoPanel(false)}
-                  >
-                    <EyeOff className="h-4 w-4" />
-                  </Button>
+  // Componente del contenido del panel de información
+  const InfoPanelContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="pb-4">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Autobuses en Tiempo Real</h3>
+          {!isMobile && (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setShowFilterPanel(true);
+                  setShowInfoPanel(false);
+                }}
+              >
+                <Filter className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowInfoPanel(false)}
+              >
+                <EyeOff className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            En línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'en_linea').length}
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+            Fuera línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'fuera_linea').length}
+          </div>
+        </div>
+        
+        {/* Input de búsqueda local */}
+        <div>
+          <Input
+            placeholder="Buscar en lista actual..."
+            value={busquedaLocal}
+            onChange={(e) => setBusquedaLocal(e.target.value)}
+            className="h-10 text-sm"
+          />
+          {busquedaLocal && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Mostrando {autobusesFiltradosParaMostrar.length} de {autobusesEnRastreo.length} autobuses
+            </p>
+          )}
+        </div>
+      </div>
+      
+      <ScrollArea className="flex-1">
+        <div className="space-y-2 pr-4">
+          {autobusesFiltradosParaMostrar.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              {busquedaLocal 
+                ? "No se encontraron autobuses con ese criterio de búsqueda." 
+                : "No hay autobuses disponibles con los filtros seleccionados."
+              }
+            </p>
+          ) : (
+            autobusesFiltradosParaMostrar.map((bus) => (
+              <Card 
+                key={bus.id} 
+                className={`p-3 cursor-pointer hover:bg-accent transition-colors ${
+                  selectedBus === bus.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleBusClick(bus.id)}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="font-medium text-sm">
+                    {bus.identificador} - {bus.placa}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCenterOnBus(bus);
+                      }}
+                    >
+                      <Focus className="h-4 w-4" />
+                    </Button>
+                    <Badge variant={bus.estado === 'en_linea' ? 'default' : 'secondary'}>
+                      {bus.estado === 'en_linea' ? 'En línea' : 'Fuera línea'}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  En línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'en_linea').length}
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-                  Fuera línea: {autobusesFiltradosParaMostrar.filter(b => b.estado === 'fuera_linea').length}
-                </div>
-              </div>
-              
-              {/* Input de búsqueda local */}
-              <div className="mt-3">
-                <Input
-                  placeholder="Buscar en lista actual..."
-                  value={busquedaLocal}
-                  onChange={(e) => setBusquedaLocal(e.target.value)}
-                  className="h-8 text-sm"
-                />
-                {busquedaLocal && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Mostrando {autobusesFiltradosParaMostrar.length} de {autobusesEnRastreo.length} autobuses
-                  </p>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 p-0">
-              <ScrollArea className="h-[calc(100vh-280px)]">
-                <div className="space-y-2 p-4">
-                  {autobusesFiltradosParaMostrar.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {busquedaLocal 
-                        ? "No se encontraron autobuses con ese criterio de búsqueda." 
-                        : "No hay autobuses disponibles con los filtros seleccionados."
-                      }
-                    </p>
-                  ) : (
-                    autobusesFiltradosParaMostrar.map((bus) => (
-                      <Card 
-                        key={bus.id} 
-                        className={`p-3 cursor-pointer hover:bg-accent transition-colors ${
-                          selectedBus === bus.id ? 'ring-2 ring-primary' : ''
-                        }`}
-                        onClick={() => handleBusClick(bus.id)}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="font-medium text-sm">
-                            {bus.identificador} - {bus.placa}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 w-6 p-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleCenterOnBus(bus);
-                              }}
-                            >
-                              <Focus className="h-3 w-3" />
-                            </Button>
-                            <Badge variant={bus.estado === 'en_linea' ? 'default' : 'secondary'}>
-                              {bus.estado === 'en_linea' ? 'En línea' : 'Fuera línea'}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-1 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatDateTime(bus.ultimaTransmision)}
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            {bus.ocupacionActual} - {bus.capacidadTotal}
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <Gauge className="h-3 w-3" />
-                            {bus.velocidad} km/h
-                          </div>
-                          
-                          <div className="text-xs">{bus.conductor}</div>
-                          
-                          {bus.ramal && (
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {bus.tipoServicio} - {bus.ramal}
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    ))
+                
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {formatDateTime(bus.ultimaTransmision)}
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {bus.ocupacionActual} - {bus.capacidadTotal}
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    <Gauge className="h-3 w-3" />
+                    {bus.velocidad} km/h
+                  </div>
+                  
+                  <div className="text-xs">{bus.conductor}</div>
+                  
+                  {bus.ramal && (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {bus.tipoServicio} - {bus.ramal}
+                    </div>
                   )}
                 </div>
-              </ScrollArea>
+              </Card>
+            ))
+          )}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+
+  // Componente del contenido del panel de filtros
+  const FilterPanelContent = () => (
+    <div className="space-y-4 h-full flex flex-col">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Filtros</h3>
+        {!isMobile && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => {
+              setShowFilterPanel(false);
+              setShowInfoPanel(true);
+            }}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+      
+      <ScrollArea className="flex-1">
+        <div className="space-y-4 pr-4">
+          {/* Placa/Identificador */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Placa o Identificador</Label>
+            <Input
+              placeholder="Buscar por placa o identificador..."
+              value={filtros.placaIdentificador}
+              onChange={(e) => setFiltros(prev => ({ ...prev, placaIdentificador: e.target.value }))}
+              className="h-10"
+            />
+          </div>
+
+          {/* Empresa de Transporte */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Empresa de Transporte</Label>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="todos-transporte"
+                  checked={filtros.empresasTransporte.includes('todos')}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setFiltros(prev => ({ ...prev, empresasTransporte: ['todos'] }));
+                    } else {
+                      setFiltros(prev => ({ ...prev, empresasTransporte: [] }));
+                    }
+                  }}
+                />
+                <Label htmlFor="todos-transporte" className="text-sm">Todos</Label>
+              </div>
+              {mockEmpresasTransporte.map((empresa) => (
+                <div key={empresa.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`transporte-${empresa.id}`}
+                    checked={filtros.empresasTransporte.includes(empresa.nombre)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFiltros(prev => ({ 
+                          ...prev, 
+                          empresasTransporte: prev.empresasTransporte.filter(e => e !== 'todos').concat([empresa.nombre])
+                        }));
+                      } else {
+                        setFiltros(prev => ({ 
+                          ...prev, 
+                          empresasTransporte: prev.empresasTransporte.filter(e => e !== empresa.nombre)
+                        }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor={`transporte-${empresa.id}`} className="text-sm">{empresa.nombre}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Tipo de Servicio */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Tipo de Servicio</Label>
+            <div className="space-y-2">
+              {['todos', 'parque', 'privado', 'especial'].map((tipo) => (
+                <div key={tipo} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`tipo-${tipo}`}
+                    checked={filtros.tiposServicio.includes(tipo)}
+                    onCheckedChange={(checked) => {
+                      if (tipo === 'todos') {
+                        if (checked) {
+                          setFiltros(prev => ({ ...prev, tiposServicio: ['todos'] }));
+                        } else {
+                          setFiltros(prev => ({ ...prev, tiposServicio: [] }));
+                        }
+                      } else {
+                        if (checked) {
+                          setFiltros(prev => ({ 
+                            ...prev, 
+                            tiposServicio: prev.tiposServicio.filter(t => t !== 'todos').concat([tipo])
+                          }));
+                        } else {
+                          setFiltros(prev => ({ 
+                            ...prev, 
+                            tiposServicio: prev.tiposServicio.filter(t => t !== tipo)
+                          }));
+                        }
+                      }
+                    }}
+                  />
+                  <Label htmlFor={`tipo-${tipo}`} className="text-sm capitalize">{tipo}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Lista de Autobuses Filtrados */}
+          {autobusesFiltrados.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Autobuses Encontrados</Label>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="todos-autobuses"
+                    checked={filtros.autobusesSeleccionados.includes('todos')}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFiltros(prev => ({ ...prev, autobusesSeleccionados: ['todos'] }));
+                      } else {
+                        setFiltros(prev => ({ ...prev, autobusesSeleccionados: [] }));
+                      }
+                    }}
+                  />
+                  <Label htmlFor="todos-autobuses" className="text-sm">Todos ({autobusesFiltrados.length})</Label>
+                </div>
+                {autobusesFiltrados.map((bus) => (
+                  <div key={bus.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`bus-${bus.id}`}
+                      checked={filtros.autobusesSeleccionados.includes(bus.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setFiltros(prev => ({ 
+                            ...prev, 
+                            autobusesSeleccionados: prev.autobusesSeleccionados.filter(b => b !== 'todos').concat([bus.id])
+                          }));
+                        } else {
+                          setFiltros(prev => ({ 
+                            ...prev, 
+                            autobusesSeleccionados: prev.autobusesSeleccionados.filter(b => b !== bus.id)
+                          }));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={`bus-${bus.id}`} className="text-sm">{bus.identificador} - {bus.placa}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+      
+      {/* Botones de Acción - Sticky en móviles */}
+      <div className="space-y-2 pt-4 border-t">
+        <Button onClick={handleBuscar} className="w-full h-12" variant="outline">
+          <Search className="h-4 w-4 mr-2" />
+          Buscar
+        </Button>
+        
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleAplicarFiltro} 
+            className="flex-1 h-12"
+            disabled={isTracking || autobusesFiltrados.length === 0}
+          >
+            <Play className="h-4 w-4 mr-2" />
+            Aplicar Filtro
+          </Button>
+          
+          <Button 
+            onClick={handleDetener} 
+            variant="destructive"
+            className="flex-1 h-12"
+            disabled={!isTracking}
+          >
+            <Square className="h-4 w-4 mr-2" />
+            Detener
+          </Button>
+        </div>
+        
+        <Button onClick={handleLimpiarFiltros} variant="outline" className="w-full h-12">
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Limpiar Filtros
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <Layout>
+      <div className="h-[calc(100vh-120px)] flex bg-background relative">
+        {/* Desktop Panels */}
+        {!isMobile && showInfoPanel && !showFilterPanel && (
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
+            <CardContent className="p-4 flex-1">
+              <InfoPanelContent />
             </CardContent>
           </Card>
         )}
 
-        {/* Panel de Filtros */}
-        {showFilterPanel && (
+        {!isMobile && showFilterPanel && (
           <Card className="w-64 lg:w-72 flex flex-col border-r">
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Filtros</CardTitle>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setShowFilterPanel(false);
-                    setShowInfoPanel(true);
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 space-y-4">
-              <div className="space-y-4">
-                {/* Placa/Identificador */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Placa o Identificador</Label>
-                  <Input
-                    placeholder="Buscar por placa o identificador..."
-                    value={filtros.placaIdentificador}
-                    onChange={(e) => setFiltros(prev => ({ ...prev, placaIdentificador: e.target.value }))}
-                  />
-                </div>
-
-                {/* Empresa de Transporte */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Empresa de Transporte</Label>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="todos-transporte"
-                        checked={filtros.empresasTransporte.includes('todos')}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setFiltros(prev => ({ ...prev, empresasTransporte: ['todos'] }));
-                          } else {
-                            setFiltros(prev => ({ ...prev, empresasTransporte: [] }));
-                          }
-                        }}
-                      />
-                      <Label htmlFor="todos-transporte" className="text-sm">Todos</Label>
-                    </div>
-                    {mockEmpresasTransporte.map((empresa) => (
-                      <div key={empresa.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`transporte-${empresa.id}`}
-                          checked={filtros.empresasTransporte.includes(empresa.nombre)}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setFiltros(prev => ({ 
-                                ...prev, 
-                                empresasTransporte: prev.empresasTransporte.filter(e => e !== 'todos').concat([empresa.nombre])
-                              }));
-                            } else {
-                              setFiltros(prev => ({ 
-                                ...prev, 
-                                empresasTransporte: prev.empresasTransporte.filter(e => e !== empresa.nombre)
-                              }));
-                            }
-                          }}
-                        />
-                        <Label htmlFor={`transporte-${empresa.id}`} className="text-sm">{empresa.nombre}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Tipo de Servicio */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Tipo de Servicio</Label>
-                  <div className="space-y-2">
-                    {['todos', 'parque', 'privado', 'especial'].map((tipo) => (
-                      <div key={tipo} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`tipo-${tipo}`}
-                          checked={filtros.tiposServicio.includes(tipo)}
-                          onCheckedChange={(checked) => {
-                            if (tipo === 'todos') {
-                              if (checked) {
-                                setFiltros(prev => ({ ...prev, tiposServicio: ['todos'] }));
-                              } else {
-                                setFiltros(prev => ({ ...prev, tiposServicio: [] }));
-                              }
-                            } else {
-                              if (checked) {
-                                setFiltros(prev => ({ 
-                                  ...prev, 
-                                  tiposServicio: prev.tiposServicio.filter(t => t !== 'todos').concat([tipo])
-                                }));
-                              } else {
-                                setFiltros(prev => ({ 
-                                  ...prev, 
-                                  tiposServicio: prev.tiposServicio.filter(t => t !== tipo)
-                                }));
-                              }
-                            }
-                          }}
-                        />
-                        <Label htmlFor={`tipo-${tipo}`} className="text-sm capitalize">{tipo}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Lista de Autobuses Filtrados */}
-                {autobusesFiltrados.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Autobuses Encontrados</Label>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="todos-autobuses"
-                          checked={filtros.autobusesSeleccionados.includes('todos')}
-                          onCheckedChange={(checked) => {
-                            if (checked) {
-                              setFiltros(prev => ({ ...prev, autobusesSeleccionados: ['todos'] }));
-                            } else {
-                              setFiltros(prev => ({ ...prev, autobusesSeleccionados: [] }));
-                            }
-                          }}
-                        />
-                        <Label htmlFor="todos-autobuses" className="text-sm">Todos ({autobusesFiltrados.length})</Label>
-                      </div>
-                      {autobusesFiltrados.map((bus) => (
-                        <div key={bus.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`bus-${bus.id}`}
-                            checked={filtros.autobusesSeleccionados.includes(bus.id)}
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                setFiltros(prev => ({ 
-                                  ...prev, 
-                                  autobusesSeleccionados: prev.autobusesSeleccionados.filter(b => b !== 'todos').concat([bus.id])
-                                }));
-                              } else {
-                                setFiltros(prev => ({ 
-                                  ...prev, 
-                                  autobusesSeleccionados: prev.autobusesSeleccionados.filter(b => b !== bus.id)
-                                }));
-                              }
-                            }}
-                          />
-                          <Label htmlFor={`bus-${bus.id}`} className="text-sm">{bus.identificador} - {bus.placa}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* Botones de Acción */}
-              <div className="space-y-2">
-                <Button onClick={handleBuscar} className="w-full" variant="outline">
-                  <Search className="h-4 w-4 mr-2" />
-                  Buscar
-                </Button>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleAplicarFiltro} 
-                    className="flex-1"
-                    disabled={isTracking || autobusesFiltrados.length === 0}
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    Aplicar Filtro
-                  </Button>
-                  
-                  <Button 
-                    onClick={handleDetener} 
-                    variant="destructive"
-                    className="flex-1"
-                    disabled={!isTracking}
-                  >
-                    <Square className="h-4 w-4 mr-2" />
-                    Detener
-                  </Button>
-                </div>
-                
-                <Button onClick={handleLimpiarFiltros} variant="outline" className="w-full">
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Limpiar Filtros
-                </Button>
-              </div>
+            <CardContent className="p-4 flex-1">
+              <FilterPanelContent />
             </CardContent>
           </Card>
+        )}
+
+        {/* Mobile Header */}
+        {isMobile && (
+          <div className="absolute top-4 left-4 right-4 z-[1000] flex gap-2">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="default" size="lg" className="h-12 w-12 p-0">
+                  <Info className="h-5 w-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[70vh]">
+                <DrawerHeader>
+                  <DrawerTitle>Información de Autobuses</DrawerTitle>
+                </DrawerHeader>
+                <div className="p-4 flex-1">
+                  <InfoPanelContent />
+                </div>
+              </DrawerContent>
+            </Drawer>
+
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="lg" className="h-12 w-12 p-0">
+                  <Filter className="h-5 w-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[80vh]">
+                <DrawerHeader>
+                  <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
+                </DrawerHeader>
+                <div className="p-4 flex-1">
+                  <FilterPanelContent />
+                </div>
+              </DrawerContent>
+            </Drawer>
+            
+            <div className="ml-auto flex gap-2">
+              <Button 
+                onClick={handleDetener} 
+                variant={isTracking ? "destructive" : "default"}
+                size="lg"
+                className="h-12"
+                disabled={!isTracking && autobusesEnRastreo.length === 0}
+              >
+                {isTracking ? <Square className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
+                {isTracking ? "Detener" : "Reanudar"}
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Mapa */}
         <div className="flex-1 relative">
           {pausedMessage && (
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-md text-sm">
+            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-[999] bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded-md text-sm max-w-[90%] text-center">
               El rastreo está detenido. Para continuar, retire el cursor del autobús.
             </div>
           )}
           
-          {!showInfoPanel && !showFilterPanel && (
+          {!isMobile && !showInfoPanel && !showFilterPanel && (
             <Button
               className="absolute top-4 left-4 z-[1000]"
               variant="outline"
@@ -666,7 +742,7 @@ const TiempoReal = () => {
           )}
 
           <MapContainer
-            center={[9.9326, -84.0775]} // San José, Costa Rica
+            center={[9.9326, -84.0775]}
             zoom={12}
             style={{ height: '100%', width: '100%' }}
             className="z-0"
@@ -688,12 +764,14 @@ const TiempoReal = () => {
                 eventHandlers={{
                   click: () => handleBusClick(bus.id),
                   mouseover: () => {
-                    mouseOverRef.current = true;
-                    setIsTracking(false);
-                    setPausedMessage(true);
+                    if (!isMobile) {
+                      mouseOverRef.current = true;
+                      setIsTracking(false);
+                      setPausedMessage(true);
+                    }
                   },
                   mouseout: () => {
-                    if (selectedBus !== bus.id) {
+                    if (!isMobile && selectedBus !== bus.id) {
                       mouseOverRef.current = false;
                       setIsTracking(true);
                       setPausedMessage(false);
