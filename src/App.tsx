@@ -40,6 +40,7 @@ import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
 import BitacorasLectorasIndex from "./pages/bitacoras-lectoras/Index";
 import SolicitudesTrasladoIndex from "./pages/solicitudes-traslado/Index";
 import AutobusesCapacidadCumplida from "./pages/buses/AutobusesCapacidadCumplida";
+import TiempoReal from "./pages/rastreo/TiempoReal";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -89,6 +90,7 @@ const App = () => (
             <Route path="/asignaciones-conductores" element={<AsignacionesConductoresIndex />} />
             <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
+            <Route path="/rastreo/tiempo-real" element={<TiempoReal />} />
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
             
             {/* New routes for sidebar navigation */}

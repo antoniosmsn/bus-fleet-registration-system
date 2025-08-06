@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -127,6 +127,15 @@ const SidebarComponent = () => {
     },
   ];
 
+  // Rastreo menu items
+  const rastreoItems = [
+    { 
+      title: "Tiempo Real", 
+      url: "/rastreo/tiempo-real", 
+      icon: Radar 
+    },
+  ];
+
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
@@ -219,6 +228,31 @@ const SidebarComponent = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {bitacorasItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip={item.title}
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Radar className="mr-2" />
+            Rastreo
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {rastreoItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
