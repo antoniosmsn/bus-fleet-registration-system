@@ -384,7 +384,7 @@ const TiempoReal = () => {
       <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
         <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
           <div className="space-y-2 pr-4">
-            {autobusesFiltradosParaMostrar.length === 0 ? (
+            {!autobusesFiltradosParaMostrar || autobusesFiltradosParaMostrar.length === 0 ? (
               <p className="text-sm text-muted-foreground text-center py-8">
                 {busquedaLocal 
                   ? "No se encontraron autobuses con ese criterio de búsqueda." 
@@ -392,7 +392,7 @@ const TiempoReal = () => {
                 }
               </p>
             ) : (
-              autobusesFiltradosParaMostrar.map((bus) => (
+              autobusesFiltradosParaMostrar.map((bus) => bus ? (
                 <Card 
                   key={bus.id} 
                   className={`p-3 cursor-pointer hover:bg-accent transition-colors ${
@@ -446,7 +446,7 @@ const TiempoReal = () => {
                     )}
                   </div>
                 </Card>
-              ))
+              ) : null)
             )}
           </div>
         </ScrollArea>
