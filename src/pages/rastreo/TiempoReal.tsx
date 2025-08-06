@@ -618,36 +618,36 @@ const TiempoReal = () => {
       </ScrollArea>
       
       {/* Botones de Acción - Sticky en móviles */}
-      <div className="space-y-2 pt-4 border-t">
-        <Button onClick={handleBuscar} className="w-full h-12" variant="outline">
-          <Search className="h-4 w-4 mr-2" />
+      <div className="space-y-1.5 pt-2 border-t bg-background">
+        <Button onClick={handleBuscar} className="w-full h-8 text-xs" variant="outline">
+          <Search className="h-3 w-3 mr-1" />
           Buscar
         </Button>
         
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <Button 
             onClick={handleAplicarFiltro} 
-            className="flex-1 h-12"
+            className="flex-1 h-8 text-xs"
             disabled={isTracking || autobusesFiltrados.length === 0}
           >
-            <Play className="h-4 w-4 mr-2" />
-            Aplicar Filtro
+            <Play className="h-3 w-3 mr-1" />
+            Aplicar
           </Button>
           
           <Button 
             onClick={handleDetener} 
             variant="destructive"
-            className="flex-1 h-12"
+            className="flex-1 h-8 text-xs"
             disabled={!isTracking}
           >
-            <Square className="h-4 w-4 mr-2" />
+            <Square className="h-3 w-3 mr-1" />
             Detener
           </Button>
         </div>
         
-        <Button onClick={handleLimpiarFiltros} variant="outline" className="w-full h-12">
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Limpiar Filtros
+        <Button onClick={handleLimpiarFiltros} variant="outline" className="w-full h-8 text-xs">
+          <RotateCcw className="h-3 w-3 mr-1" />
+          Limpiar
         </Button>
       </div>
     </div>
