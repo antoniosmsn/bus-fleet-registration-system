@@ -8,6 +8,10 @@ export interface AutobusCapacidadCumplida {
   rutaAsignada: string;
   conductorAsignado: string;
   codigoConductorAsignado: string;
+  atendido: boolean;
+  atendidoPor?: string;
+  fechaHoraAtencion?: string;
+  activo: boolean;
 }
 
 export interface FiltrosCapacidadCumplida {
@@ -21,4 +25,5 @@ export interface FiltrosCapacidadCumplida {
   ruta?: string;
   conductor?: string;
   codigoConductor?: string;
+  estadoAtencion?: 'todos' | 'si' | 'no';
 }

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { TimePicker } from "@/components/ui/time-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { FiltrosCapacidadCumplida } from "@/types/autobus-capacidad-cumplida";
-import { mockTransportistas } from "@/data/mockTransportistas";
+import { mockEmpresasTransporte } from "@/data/mockEmpresasTransporte";
+import { mockRamales } from "@/data/mockRamales";
 import { Search, X } from "lucide-react";
 
 interface FiltrosCapacidadCumplidaProps {
@@ -55,7 +56,7 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas las empresas</SelectItem>
-                    {mockTransportistas.map((empresa) => (
+                    {mockEmpresasTransporte.filter(e => e.activa).map((empresa) => (
                       <SelectItem key={empresa.id} value={empresa.nombre}>
                         {empresa.nombre}
                       </SelectItem>
@@ -104,12 +105,39 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
 
               <div className="space-y-2">
                 <Label htmlFor="ruta">Ruta</Label>
-                <Input
-                  id="ruta"
-                  placeholder="Buscar por ruta"
-                  value={filtros.ruta || ""}
-                  onChange={(e) => handleInputChange('ruta', e.target.value)}
-                />
+                <Select
+                  value={filtros.ruta || "all"}
+                  onValueChange={(value) => handleInputChange('ruta', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar ruta" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas las rutas</SelectItem>
+                    {mockRamales.map((ramal) => (
+                      <SelectItem key={ramal.id} value={ramal.nombre}>
+                        {ramal.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="estadoAtencion">Estado de Atención</Label>
+                <Select
+                  value={filtros.estadoAtencion || "todos"}
+                  onValueChange={(value) => handleInputChange('estadoAtencion', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Estado de atención" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="si">Sí</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </TabsContent>

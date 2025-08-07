@@ -153,7 +153,18 @@ const formatPasajerosForExport = (pasajeros: Pasajero[]) => {
   }));
 };
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' = 'conductores') => {
+// Exportación de Capacidad Cumplida
+export const exportCapacidadCumplidaToPDF = async (autobuses: any[]): Promise<void> => {
+  logExportAction('PDF', 'capacidad-cumplida');
+  alert(`Exportando ${autobuses.length} registros de capacidad cumplida a PDF...`);
+};
+
+export const exportCapacidadCumplidaToExcel = async (autobuses: any[]): Promise<void> => {
+  logExportAction('Excel', 'capacidad-cumplida');
+  alert(`Exportando ${autobuses.length} registros de capacidad cumplida a Excel...`);
+};
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación

@@ -10,7 +10,9 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-07T08:30:00',
     rutaAsignada: 'San José - Cartago',
     conductorAsignado: 'Carlos Rodríguez',
-    codigoConductorAsignado: 'COND-001'
+    codigoConductorAsignado: 'COND-001',
+    atendido: false,
+    activo: true
   },
   {
     id: '2',
@@ -21,7 +23,11 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-07T09:15:00',
     rutaAsignada: 'San José - Alajuela',
     conductorAsignado: 'María González',
-    codigoConductorAsignado: 'COND-002'
+    codigoConductorAsignado: 'COND-002',
+    atendido: true,
+    atendidoPor: 'Admin Usuario',
+    fechaHoraAtencion: '2024-08-07T10:00:00',
+    activo: true
   },
   {
     id: '3',
@@ -32,7 +38,9 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-07T07:45:00',
     rutaAsignada: 'Heredia - San José',
     conductorAsignado: 'José Pérez',
-    codigoConductorAsignado: 'COND-003'
+    codigoConductorAsignado: 'COND-003',
+    atendido: false,
+    activo: true
   },
   {
     id: '4',
@@ -43,7 +51,11 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-07T10:20:00',
     rutaAsignada: 'Cartago - San José',
     conductorAsignado: 'Ana Jiménez',
-    codigoConductorAsignado: 'COND-004'
+    codigoConductorAsignado: 'COND-004',
+    atendido: true,
+    atendidoPor: 'Supervisor García',
+    fechaHoraAtencion: '2024-08-07T11:15:00',
+    activo: true
   },
   {
     id: '5',
@@ -54,7 +66,9 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-07T11:00:00',
     rutaAsignada: 'Puntarenas - San José',
     conductorAsignado: 'Luis Vargas',
-    codigoConductorAsignado: 'COND-005'
+    codigoConductorAsignado: 'COND-005',
+    atendido: false,
+    activo: true
   },
   {
     id: '6',
@@ -65,7 +79,9 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-06T16:30:00',
     rutaAsignada: 'Limón - San José',
     conductorAsignado: 'Patricia Mora',
-    codigoConductorAsignado: 'COND-006'
+    codigoConductorAsignado: 'COND-006',
+    atendido: false,
+    activo: true
   },
   {
     id: '7',
@@ -76,7 +92,11 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-06T14:15:00',
     rutaAsignada: 'Guanacaste - San José',
     conductorAsignado: 'Roberto Sánchez',
-    codigoConductorAsignado: 'COND-007'
+    codigoConductorAsignado: 'COND-007',
+    atendido: true,
+    atendidoPor: 'Jefe Operaciones',
+    fechaHoraAtencion: '2024-08-06T15:30:00',
+    activo: true
   },
   {
     id: '8',
@@ -87,6 +107,8 @@ export const mockAutobusesCapacidadCumplida: AutobusCapacidadCumplida[] = [
     fechaHoraCumplimiento: '2024-08-06T12:45:00',
     rutaAsignada: 'San José - Pérez Zeledón',
     conductorAsignado: 'Elena Castro',
-    codigoConductorAsignado: 'COND-008'
+    codigoConductorAsignado: 'COND-008',
+    atendido: false,
+    activo: false
   }
 ];
