@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -136,6 +136,15 @@ const SidebarComponent = () => {
     },
   ];
 
+  // Alertas menu items
+  const alertasItems = [
+    { 
+      title: "Capacidad Cumplida", 
+      url: "/buses/capacidad-cumplida", 
+      icon: Bus 
+    },
+  ];
+
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
@@ -253,6 +262,31 @@ const SidebarComponent = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {rastreoItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip={item.title}
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <AlertTriangle className="mr-2" />
+            Alertas
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {alertasItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
