@@ -22,7 +22,7 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
   const handleInputChange = (field: keyof FiltrosCapacidadCumplida, value: string) => {
     onFiltrosChange({
       ...filtros,
-      [field]: value || undefined
+      [field]: value === 'all' ? undefined : (value || undefined)
     });
   };
 
@@ -39,14 +39,14 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
           <div className="space-y-2">
             <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
             <Select
-              value={filtros.empresaTransporte || ""}
+              value={filtros.empresaTransporte || "all"}
               onValueChange={(value) => handleInputChange('empresaTransporte', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar empresa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todas las empresas</SelectItem>
+                <SelectItem value="all">Todas las empresas</SelectItem>
                 {mockTransportistas.map((empresa) => (
                   <SelectItem key={empresa.id} value={empresa.nombre}>
                     {empresa.nombre}
