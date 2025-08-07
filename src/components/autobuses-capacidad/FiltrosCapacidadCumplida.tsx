@@ -96,28 +96,88 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="horaInicio">Hora Inicio</Label>
-            <Input
-              id="horaInicio"
-              type="time"
-              step="60"
-              pattern="[0-9]{2}:[0-9]{2}"
-              placeholder="00:00"
-              value={filtros.horaInicio || ""}
-              onChange={(e) => handleInputChange('horaInicio', e.target.value)}
-            />
+            <div className="flex gap-2">
+              <Select
+                value={filtros.horaInicio ? filtros.horaInicio.split(':')[0] : ""}
+                onValueChange={(hora) => {
+                  const minutos = filtros.horaInicio ? filtros.horaInicio.split(':')[1] || '00' : '00';
+                  handleInputChange('horaInicio', `${hora}:${minutos}`);
+                }}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue placeholder="HH" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="self-center">:</span>
+              <Select
+                value={filtros.horaInicio ? filtros.horaInicio.split(':')[1] || '00' : ""}
+                onValueChange={(minutos) => {
+                  const hora = filtros.horaInicio ? filtros.horaInicio.split(':')[0] || '00' : '00';
+                  handleInputChange('horaInicio', `${hora}:${minutos}`);
+                }}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue placeholder="MM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 60 }, (_, i) => (
+                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="horaFin">Hora Fin</Label>
-            <Input
-              id="horaFin"
-              type="time"
-              step="60"
-              pattern="[0-9]{2}:[0-9]{2}"
-              placeholder="23:59"
-              value={filtros.horaFin || ""}
-              onChange={(e) => handleInputChange('horaFin', e.target.value)}
-            />
+            <div className="flex gap-2">
+              <Select
+                value={filtros.horaFin ? filtros.horaFin.split(':')[0] : ""}
+                onValueChange={(hora) => {
+                  const minutos = filtros.horaFin ? filtros.horaFin.split(':')[1] || '00' : '00';
+                  handleInputChange('horaFin', `${hora}:${minutos}`);
+                }}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue placeholder="HH" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="self-center">:</span>
+              <Select
+                value={filtros.horaFin ? filtros.horaFin.split(':')[1] || '00' : ""}
+                onValueChange={(minutos) => {
+                  const hora = filtros.horaFin ? filtros.horaFin.split(':')[0] || '00' : '00';
+                  handleInputChange('horaFin', `${hora}:${minutos}`);
+                }}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue placeholder="MM" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 60 }, (_, i) => (
+                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                      {i.toString().padStart(2, '0')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">
