@@ -29,8 +29,7 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
+        <CardTitle>
         </CardTitle>
       </CardHeader>
       <CardContent>
