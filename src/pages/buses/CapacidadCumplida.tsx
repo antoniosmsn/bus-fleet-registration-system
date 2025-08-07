@@ -65,6 +65,21 @@ const CapacidadCumplida: React.FC = () => {
         }
       }
 
+      // Filtro por hora
+      if (filtros.horaInicio || filtros.horaFin) {
+        const fechaCumplimiento = new Date(autobus.fechaHoraCumplimiento);
+        const horaActual = fechaCumplimiento.getHours().toString().padStart(2, '0') + ':' + 
+                          fechaCumplimiento.getMinutes().toString().padStart(2, '0');
+        
+        if (filtros.horaInicio && horaActual < filtros.horaInicio) {
+          return false;
+        }
+        
+        if (filtros.horaFin && horaActual > filtros.horaFin) {
+          return false;
+        }
+      }
+
       return true;
     }).sort((a, b) => {
       // Ordenar por empresa de transporte, fecha/hora y ID del autobús

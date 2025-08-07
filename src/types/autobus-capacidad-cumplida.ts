@@ -16,6 +16,8 @@ export interface FiltrosCapacidadCumplida {
   placa?: string;
   fechaInicio?: string;
   fechaFin?: string;
+  horaInicio?: string;
+  horaFin?: string;
   ruta?: string;
   conductor?: string;
   codigoConductor?: string;

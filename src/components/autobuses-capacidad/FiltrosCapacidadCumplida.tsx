@@ -95,6 +95,26 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="horaInicio">Hora Inicio</Label>
+            <Input
+              id="horaInicio"
+              type="time"
+              value={filtros.horaInicio || ""}
+              onChange={(e) => handleInputChange('horaInicio', e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="horaFin">Hora Fin</Label>
+            <Input
+              id="horaFin"
+              type="time"
+              value={filtros.horaFin || ""}
+              onChange={(e) => handleInputChange('horaFin', e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="ruta">Ruta</Label>
             <Input
               id="ruta"
