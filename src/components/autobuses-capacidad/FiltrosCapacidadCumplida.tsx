@@ -99,6 +99,9 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
             <Input
               id="horaInicio"
               type="time"
+              step="60"
+              pattern="[0-9]{2}:[0-9]{2}"
+              placeholder="00:00"
               value={filtros.horaInicio || ""}
               onChange={(e) => handleInputChange('horaInicio', e.target.value)}
             />
@@ -109,6 +112,9 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
             <Input
               id="horaFin"
               type="time"
+              step="60"
+              pattern="[0-9]{2}:[0-9]{2}"
+              placeholder="23:59"
               value={filtros.horaFin || ""}
               onChange={(e) => handleInputChange('horaFin', e.target.value)}
             />
