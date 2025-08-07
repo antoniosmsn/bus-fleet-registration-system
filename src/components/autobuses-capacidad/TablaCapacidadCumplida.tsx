@@ -34,12 +34,6 @@ const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobus
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Autobuses con Capacidad Cumplida ({autobuses.length})
-        </CardTitle>
-      </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
