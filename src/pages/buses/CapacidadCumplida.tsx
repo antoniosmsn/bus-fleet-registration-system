@@ -89,9 +89,6 @@ const CapacidadCumplida: React.FC = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold">Autobuses con Capacidad Cumplida</h1>
-            <p className="text-muted-foreground mt-2">
-              Listado de autobuses que han alcanzado su capacidad máxima de pasajeros
-            </p>
           </div>
           <ExportCapacidadCumplida autobuses={autobusesFiltrados} />
         </div>
