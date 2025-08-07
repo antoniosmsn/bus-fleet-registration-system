@@ -105,10 +105,10 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="conductor">Conductor</Label>
+            <Label htmlFor="conductor">Nombres y Apellidos del Conductor</Label>
             <Input
               id="conductor"
-              placeholder="Buscar por conductor"
+              placeholder="Buscar por nombres y apellidos"
               value={filtros.conductor || ""}
               onChange={(e) => handleInputChange('conductor', e.target.value)}
             />
