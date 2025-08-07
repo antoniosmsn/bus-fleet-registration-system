@@ -13,7 +13,7 @@ interface TablaCapacidadCumplidaProps {
 
 const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobuses }) => {
   const [paginaActual, setPaginaActual] = useState(1);
-  const elementosPorPagina = 10;
+  const elementosPorPagina = 5;
 
   const { autobusesVisibles, totalPaginas } = useMemo(() => {
     const inicio = (paginaActual - 1) * elementosPorPagina;
