@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { TimePicker } from "@/components/ui/time-picker";
 import type { FiltrosCapacidadCumplida } from "@/types/autobus-capacidad-cumplida";
 import { mockTransportistas } from "@/data/mockTransportistas";
 import { Search, X } from "lucide-react";
@@ -96,88 +97,20 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
 
           <div className="space-y-2">
             <Label htmlFor="horaInicio">Hora Inicio</Label>
-            <div className="flex gap-2">
-              <Select
-                value={filtros.horaInicio ? filtros.horaInicio.split(':')[0] : ""}
-                onValueChange={(hora) => {
-                  const minutos = filtros.horaInicio ? filtros.horaInicio.split(':')[1] || '00' : '00';
-                  handleInputChange('horaInicio', `${hora}:${minutos}`);
-                }}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="HH" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                      {i.toString().padStart(2, '0')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span className="self-center">:</span>
-              <Select
-                value={filtros.horaInicio ? filtros.horaInicio.split(':')[1] || '00' : ""}
-                onValueChange={(minutos) => {
-                  const hora = filtros.horaInicio ? filtros.horaInicio.split(':')[0] || '00' : '00';
-                  handleInputChange('horaInicio', `${hora}:${minutos}`);
-                }}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="MM" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 60 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                      {i.toString().padStart(2, '0')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <TimePicker
+              id="horaInicio"
+              value={filtros.horaInicio || ""}
+              onValueChange={(value) => handleInputChange('horaInicio', value)}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="horaFin">Hora Fin</Label>
-            <div className="flex gap-2">
-              <Select
-                value={filtros.horaFin ? filtros.horaFin.split(':')[0] : ""}
-                onValueChange={(hora) => {
-                  const minutos = filtros.horaFin ? filtros.horaFin.split(':')[1] || '00' : '00';
-                  handleInputChange('horaFin', `${hora}:${minutos}`);
-                }}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="HH" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                      {i.toString().padStart(2, '0')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <span className="self-center">:</span>
-              <Select
-                value={filtros.horaFin ? filtros.horaFin.split(':')[1] || '00' : ""}
-                onValueChange={(minutos) => {
-                  const hora = filtros.horaFin ? filtros.horaFin.split(':')[0] || '00' : '00';
-                  handleInputChange('horaFin', `${hora}:${minutos}`);
-                }}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="MM" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: 60 }, (_, i) => (
-                    <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                      {i.toString().padStart(2, '0')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <TimePicker
+              id="horaFin"
+              value={filtros.horaFin || ""}
+              onValueChange={(value) => handleInputChange('horaFin', value)}
+            />
           </div>
 
           <div className="space-y-2">
