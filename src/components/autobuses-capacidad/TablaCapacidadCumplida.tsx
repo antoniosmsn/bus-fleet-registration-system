@@ -70,6 +70,7 @@ const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobus
                 <TableHead>Fecha y Hora</TableHead>
                 <TableHead>Ruta Asignada</TableHead>
                 <TableHead>Conductor</TableHead>
+                <TableHead>Código del Conductor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -89,6 +90,7 @@ const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobus
                   <TableCell>{formatearFechaHora(autobus.fechaHoraCumplimiento)}</TableCell>
                   <TableCell>{autobus.rutaAsignada}</TableCell>
                   <TableCell>{autobus.conductorAsignado}</TableCell>
+                  <TableCell>{autobus.codigoConductorAsignado}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
