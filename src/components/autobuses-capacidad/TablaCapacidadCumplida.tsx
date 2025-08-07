@@ -1,21 +1,45 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { AutobusCapacidadCumplida } from "@/types/autobus-capacidad-cumplida";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Bus, Users } from "lucide-react";
+import { Bus, Users, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface TablaCapacidadCumplidaProps {
   autobuses: AutobusCapacidadCumplida[];
 }
 
 const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobuses }) => {
+  const [paginaActual, setPaginaActual] = useState(1);
+  const elementosPorPagina = 10;
+
+  const { autobusesVisibles, totalPaginas } = useMemo(() => {
+    const inicio = (paginaActual - 1) * elementosPorPagina;
+    const fin = inicio + elementosPorPagina;
+    return {
+      autobusesVisibles: autobuses.slice(inicio, fin),
+      totalPaginas: Math.ceil(autobuses.length / elementosPorPagina)
+    };
+  }, [autobuses, paginaActual]);
   const formatearFechaHora = (fechaHora: string) => {
     try {
       return format(new Date(fechaHora), "dd/MM/yyyy HH:mm", { locale: es });
     } catch {
       return fechaHora;
+    }
+  };
+
+  const irAPaginaSiguiente = () => {
+    if (paginaActual < totalPaginas) {
+      setPaginaActual(paginaActual + 1);
+    }
+  };
+
+  const irAPaginaAnterior = () => {
+    if (paginaActual > 1) {
+      setPaginaActual(paginaActual - 1);
     }
   };
 
@@ -49,7 +73,7 @@ const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobus
               </TableRow>
             </TableHeader>
             <TableBody>
-              {autobuses.map((autobus) => (
+              {autobusesVisibles.map((autobus) => (
                 <TableRow key={autobus.id}>
                   <TableCell className="font-medium">
                     {autobus.empresaTransporte}
@@ -70,6 +94,44 @@ const TablaCapacidadCumplida: React.FC<TablaCapacidadCumplidaProps> = ({ autobus
             </TableBody>
           </Table>
         </div>
+
+        {/* Paginador */}
+        {totalPaginas > 1 && (
+          <div className="flex items-center justify-between px-2 mt-4">
+            <div className="text-sm text-muted-foreground">
+              Mostrando {((paginaActual - 1) * elementosPorPagina) + 1} a{' '}
+              {Math.min(paginaActual * elementosPorPagina, autobuses.length)} de{' '}
+              {autobuses.length} registros
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={irAPaginaAnterior}
+                disabled={paginaActual <= 1}
+                className="flex items-center gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Anterior
+              </Button>
+              <div className="flex items-center gap-1">
+                <span className="text-sm text-muted-foreground">
+                  Página {paginaActual} de {totalPaginas}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={irAPaginaSiguiente}
+                disabled={paginaActual >= totalPaginas}
+                className="flex items-center gap-1"
+              >
+                Siguiente
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
