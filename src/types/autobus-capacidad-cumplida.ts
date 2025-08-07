@@ -7,6 +7,7 @@ export interface AutobusCapacidadCumplida {
   fechaHoraCumplimiento: string;
   rutaAsignada: string;
   conductorAsignado: string;
+  codigoConductorAsignado: string;
 }
 
 export interface FiltrosCapacidadCumplida {
@@ -17,4 +18,5 @@ export interface FiltrosCapacidadCumplida {
   fechaFin?: string;
   ruta?: string;
   conductor?: string;
+  codigoConductor?: string;
 }

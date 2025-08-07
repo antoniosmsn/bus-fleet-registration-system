@@ -113,6 +113,16 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
               onChange={(e) => handleInputChange('conductor', e.target.value)}
             />
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="codigoConductor">Código del Conductor</Label>
+            <Input
+              id="codigoConductor"
+              placeholder="Buscar por código"
+              value={filtros.codigoConductor || ""}
+              onChange={(e) => handleInputChange('codigoConductor', e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="flex justify-end mt-4">

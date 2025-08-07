@@ -43,6 +43,12 @@ const CapacidadCumplida: React.FC = () => {
         return false;
       }
 
+      // Filtro por código del conductor
+      if (filtros.codigoConductor && 
+          !autobus.codigoConductorAsignado.toLowerCase().includes(filtros.codigoConductor.toLowerCase())) {
+        return false;
+      }
+
       // Filtro por fecha
       if (filtros.fechaInicio || filtros.fechaFin) {
         const fechaCumplimiento = new Date(autobus.fechaHoraCumplimiento);
