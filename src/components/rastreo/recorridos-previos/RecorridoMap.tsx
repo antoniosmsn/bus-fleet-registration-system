@@ -36,14 +36,14 @@ function createArrowIcon(course: number, speed: number, showSpeed: boolean) {
   });
 }
 
-function useFitBounds(points: {lat:number; lng:number}[]) {
+function FitBoundsOnPoints({ points }: { points: {lat:number; lng:number}[] }) {
   const map = useMap();
   useEffect(() => {
     if (!points || points.length === 0) return;
     const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
     map.fitBounds(bounds, { padding: [24,24] });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(points)]);
+  }, [map, JSON.stringify(points)]);
+  return null;
 }
 
 export type InitialFocus = 'recorrido' | 'paradas' | 'lecturas';
@@ -86,7 +86,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const pathPositions = useMemo(() => points.map(p => [p.lat, p.lng] as [number, number]), [points]);
 
-  useFitBounds(points);
+  
 
   const handleResetView = () => {
     if (!mapRef.current || points.length === 0) return;
@@ -126,6 +126,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
         style={{ width: '100%', height: 'calc(100vh - 120px)' }}
       >
         <SetMapRef />
+        <FitBoundsOnPoints points={points} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
