@@ -134,6 +134,11 @@ const SidebarComponent = () => {
       url: "/rastreo/tiempo-real", 
       icon: Radar 
     },
+    { 
+      title: "Recorridos Previos", 
+      url: "/rastreo/recorridos-previos", 
+      icon: Map 
+    },
   ];
 
   // Alertas menu items
