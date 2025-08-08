@@ -109,15 +109,23 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const startPoint = modo === 'servicios' && points.length > 0 ? points[0] : null;
   const endPoint = modo === 'servicios' && points.length > 1 ? points[points.length-1] : null;
-
+  
+  const SetMapRef: React.FC = () => {
+    const m = useMap();
+    useEffect(() => {
+      mapRef.current = m;
+    }, [m]);
+    return null;
+  };
+  
   return (
     <div className="relative w-full h-full">
       <MapContainer
         center={center}
         zoom={12}
         style={{ width: '100%', height: 'calc(100vh - 120px)' }}
-        whenCreated={(m) => (mapRef.current = m)}
       >
+        <SetMapRef />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
