@@ -148,14 +148,30 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
         {/* Inicio / Fin para modo servicios */}
         {modo === 'servicios' && startPoint && (
-          <Marker position={[startPoint.lat, startPoint.lng]} icon={new L.Icon({ iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-green.png', iconSize:[25,41], iconAnchor:[12,41] })}>
+          <Marker 
+            position={[startPoint.lat, startPoint.lng]} 
+            icon={L.divIcon({
+              html: `<div style="background-color: #16A34A; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+              className: 'custom-marker',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
+            })}
+          >
             <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
               Inicio del servicio — {new Date(startPoint.timestampUtc).toLocaleString()}
             </Tooltip>
           </Marker>
         )}
         {modo === 'servicios' && endPoint && (
-          <Marker position={[endPoint.lat, endPoint.lng]} icon={new L.Icon({ iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-2x-red.png', iconSize:[25,41], iconAnchor:[12,41] })}>
+          <Marker 
+            position={[endPoint.lat, endPoint.lng]} 
+            icon={L.divIcon({
+              html: `<div style="background-color: #DC2626; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+              className: 'custom-marker',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
+            })}
+          >
             <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
               Fin del servicio — {new Date(endPoint.timestampUtc).toLocaleString()}
             </Tooltip>

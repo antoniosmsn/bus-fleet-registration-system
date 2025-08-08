@@ -3,10 +3,11 @@ import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, EyeOff, Filter, MapPinned, Search } from 'lucide-react';
+import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
 import { RecorridoMap } from '@/components/rastreo/recorridos-previos/RecorridoMap';
 import { 
@@ -49,6 +50,7 @@ function toIsoUtcFromLocalInput(v: string) {
 const tiposRuta = ['parque','privado','especial'] as const;
 
 const RecorridosPrevios: React.FC = () => {
+  const isMobile = useIsMobile();
   const [modo, setModo] = useState<ModoConsulta>('servicios');
   const [desde, setDesde] = useState<string>(toLocalInputValue(startOfToday()));
   const [hasta, setHasta] = useState<string>(toLocalInputValue(endOfToday()));
@@ -57,7 +59,7 @@ const RecorridosPrevios: React.FC = () => {
   const [empresasTransporte, setEmpresasTransporte] = useState<string[]>(['todos']);
   const [empresasCliente, setEmpresasCliente] = useState<string[]>(['todos']);
   const [tiposSeleccionados, setTiposSeleccionados] = useState<string[]>(['todos']);
-  const [vehiculoTexto, setVehiculoTexto] = useState<string>(''); // opcional (identificador/placa/busId)
+  const [vehiculos, setVehiculos] = useState<string[]>(['todos']);
 
   const [busquedaLocal, setBusquedaLocal] = useState('');
 
@@ -65,11 +67,38 @@ const RecorridosPrevios: React.FC = () => {
   const [resultRango, setResultRango] = useState<RecorridoRangoListItem[]>([]);
 
   const [mapData, setMapData] = useState<RecorridoMapData | null>(null);
-  const [showPanel, setShowPanel] = useState(true);
+  const [showPanel, setShowPanel] = useState(!isMobile);
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
 
-  const empresasTransporteOptions = useMemo(() => ['todos', ...mockEmpresasTransporte.map(e=>e.nombre)], []);
-  const empresasClienteOptions = useMemo(() => ['todos', ...mockEmpresas.map(e=>e.nombre)], []);
+  const empresasTransporteOptions = useMemo(() => [
+    { value: 'todos', label: 'Todos' },
+    ...mockEmpresasTransporte.map(e => ({ value: e.nombre, label: e.nombre }))
+  ], []);
+  
+  const empresasClienteOptions = useMemo(() => [
+    { value: 'todos', label: 'Todos' },
+    ...mockEmpresas.map(e => ({ value: e.nombre, label: e.nombre }))
+  ], []);
+
+  const tiposRutaOptions = useMemo(() => [
+    { value: 'todos', label: 'Todos' },
+    { value: 'parque', label: 'Parque' },
+    { value: 'privado', label: 'Privado' },
+    { value: 'especial', label: 'Especial' }
+  ], []);
+
+  const vehiculosOptions = useMemo(() => {
+    const vehiculosUnicos = Array.from(new Set([
+      ...resultServicios.map(s => s.identificador),
+      ...resultServicios.map(s => s.placa),
+      ...resultRango.map(r => r.identificador),
+      ...resultRango.map(r => r.placa)
+    ]));
+    return [
+      { value: 'todos', label: 'Todos' },
+      ...vehiculosUnicos.map(v => ({ value: v, label: v }))
+    ];
+  }, [resultServicios, resultRango]);
 
   const handleBuscar = () => {
     // Validaciones básicas
@@ -94,7 +123,7 @@ const RecorridosPrevios: React.FC = () => {
       desdeUtc: desdeIso,
       hastaUtc: hastaIso,
       numeroServicio: modo === 'servicios' && numeroServicio ? numeroServicio : undefined,
-      vehiculos: vehiculoTexto ? [vehiculoTexto] : undefined,
+      vehiculos: vehiculos.includes('todos') ? undefined : vehiculos,
       empresasTransporte: empresasTransporte.includes('todos') ? undefined : empresasTransporte,
       empresasCliente: empresasCliente.includes('todos') ? undefined : empresasCliente,
       tiposRuta: tiposSeleccionados.includes('todos') ? undefined : tiposSeleccionados as any,
@@ -151,13 +180,13 @@ const RecorridosPrevios: React.FC = () => {
     const data = getMapDataForServicio(id);
     setMapData(data);
     setInitialFocus(focus);
-    setShowPanel(false);
+    if (isMobile) setShowPanel(false);
   };
   const abrirMapaRango = (busId: string, focus: 'recorrido'|'paradas'|'lecturas') => {
     const data = getMapDataForRango(busId, toIsoUtcFromLocalInput(desde), toIsoUtcFromLocalInput(hasta));
     setMapData(data);
     setInitialFocus(focus);
-    setShowPanel(false);
+    if (isMobile) setShowPanel(false);
   };
 
   return (
@@ -169,10 +198,30 @@ const RecorridosPrevios: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Panel lateral */}
-          <div className={`${showPanel ? 'block' : 'hidden lg:block'} lg:col-span-5 space-y-4`}>
+          <div className={`${showPanel ? 'block' : 'hidden'} ${isMobile ? 'fixed inset-0 z-50 bg-background' : 'lg:col-span-5'} space-y-4 ${isMobile && showPanel ? 'p-4' : ''}`}>
+            {isMobile && showPanel && (
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Recorridos Previos</h2>
+                <Button size="sm" variant="outline" onClick={() => setShowPanel(false)}>
+                  <PanelLeftClose className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
             <Card>
               <CardHeader className="py-3">
-                <CardTitle className="text-base flex items-center"><Filter className="h-4 w-4 mr-2"/>Filtros</CardTitle>
+                <CardTitle className="text-base flex items-center">
+                  <Filter className="h-4 w-4 mr-2"/>Filtros
+                  {!isMobile && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="ml-auto" 
+                      onClick={() => setShowPanel(false)}
+                    >
+                      <PanelLeftClose className="h-4 w-4" />
+                    </Button>
+                  )}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {/* Modo */}
@@ -201,50 +250,54 @@ const RecorridosPrevios: React.FC = () => {
                   </div>
                 )}
 
-                {/* Vehículo (texto opcional) */}
+                {/* Vehículo */}
                 <div>
-                  <label className="text-xs block mb-1">Vehículo (identificador/placa)</label>
-                  <Input value={vehiculoTexto} onChange={(e)=>setVehiculoTexto(e.target.value)} placeholder="Ej: ID023 o ABC023" />
+                  <label className="text-xs block mb-1">Vehículo</label>
+                  <MultiSelect
+                    options={vehiculosOptions}
+                    value={vehiculos}
+                    onValueChange={setVehiculos}
+                    placeholder="Seleccionar vehículos"
+                    searchPlaceholder="Buscar vehículo..."
+                  />
                 </div>
 
                 {/* Empresa transporte */}
                 <div>
                   <label className="text-xs block mb-1">Empresa de transporte</label>
-                  <Select onValueChange={(v)=> setEmpresasTransporte(v==='todos'? ['todos']: [v])}>
-                    <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      {empresasTransporteOptions.map(e => (
-                        <SelectItem key={e} value={e}>{e}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect
+                    options={empresasTransporteOptions}
+                    value={empresasTransporte}
+                    onValueChange={setEmpresasTransporte}
+                    placeholder="Seleccionar empresas"
+                    searchPlaceholder="Buscar empresa..."
+                  />
                 </div>
 
-                {/* Empresa cliente */}
-                <div>
-                  <label className="text-xs block mb-1">Empresa cliente</label>
-                  <Select onValueChange={(v)=> setEmpresasCliente(v==='todos'? ['todos']: [v])}>
-                    <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      {empresasClienteOptions.map(e => (
-                        <SelectItem key={e} value={e}>{e}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Empresa cliente - solo si no es parque */}
+                {!tiposSeleccionados.includes('parque') || tiposSeleccionados.includes('todos') ? (
+                  <div>
+                    <label className="text-xs block mb-1">Empresa cliente</label>
+                    <MultiSelect
+                      options={empresasClienteOptions}
+                      value={empresasCliente}
+                      onValueChange={setEmpresasCliente}
+                      placeholder="Seleccionar clientes"
+                      searchPlaceholder="Buscar cliente..."
+                    />
+                  </div>
+                ) : null}
 
                 {/* Tipo ruta */}
                 <div>
                   <label className="text-xs block mb-1">Tipo de ruta</label>
-                  <Select onValueChange={(v)=> setTiposSeleccionados(v==='todos'? ['todos']: [v])}>
-                    <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="todos">todos</SelectItem>
-                      {tiposRuta.map(t => (
-                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <MultiSelect
+                    options={tiposRutaOptions}
+                    value={tiposSeleccionados}
+                    onValueChange={setTiposSeleccionados}
+                    placeholder="Seleccionar tipos"
+                    searchPlaceholder="Buscar tipo..."
+                  />
                 </div>
 
                 <div className="flex gap-2 pt-2">
@@ -322,15 +375,24 @@ const RecorridosPrevios: React.FC = () => {
           </div>
 
           {/* Panel mapa */}
-          <div className="lg:col-span-7 min-h-[60vh]">
+          <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
+            {!showPanel && !mapData && (
+              <Button 
+                className="absolute top-4 left-4 z-50" 
+                size="sm" 
+                variant="secondary"
+                onClick={() => setShowPanel(true)}
+              >
+                <PanelLeftOpen className="h-4 w-4 mr-2" />
+                Mostrar panel
+              </Button>
+            )}
+            
             {!mapData ? (
               <Card className="h-full">
                 <CardContent className="h-full flex items-center justify-center text-center">
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">Selecciona un recorrido para visualizar en el mapa.</p>
-                    {!showPanel && (
-                      <Button size="sm" variant="outline" onClick={()=> setShowPanel(true)}><Eye className="h-4 w-4 mr-2"/>Mostrar panel</Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -339,7 +401,7 @@ const RecorridosPrevios: React.FC = () => {
                 data={mapData}
                 modo={mapData.modo}
                 initialFocus={initialFocus}
-                onRequestShowPanel={()=> setShowPanel(true)}
+                onRequestShowPanel={() => setShowPanel(true)}
               />
             )}
           </div>
