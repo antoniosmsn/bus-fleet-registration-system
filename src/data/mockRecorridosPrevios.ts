@@ -8,7 +8,7 @@ const SAN_JOSE = { lat: 9.9281, lng: -84.0907 }; // Catedral
 const ALAJUELA = { lat: 10.0163, lng: -84.2116 }; // Parque Central
 const CARTAGO = { lat: 9.8644, lng: -83.9194 }; // Basílica
 
-export type TipoRuta = 'parque' | 'privado' | 'especial';
+export type TipoRuta = 'Parque' | 'Privada' | 'Especial';
 
 interface BusInfo {
   busId: string;
@@ -92,7 +92,7 @@ function clusterReadings(readings: QRReading[], clusterCount = 6): QRCluster[] {
 // Catálogos
 const empresasTransporte = mockEmpresasTransporte.map(e => e.nombre);
 const empresasCliente = mockEmpresas.map(e => e.nombre);
-const tiposRuta: TipoRuta[] = ['parque','privado','especial'];
+const tiposRuta: TipoRuta[] = ['Parque','Privada','Especial'];
 
 // Buses
 const buses: BusInfo[] = Array.from({ length: 200 }).map((_, idx) => {
@@ -151,16 +151,17 @@ const serviciosStore = new Map<string, ServicioMock>();
         }
       }
 
-      // Lecturas QR ~30
+      // Lecturas QR ~30 con paradaNombre
       const qrReadings: QRReading[] = Array.from({ length: 30 + randomInt(0, 30) }).map(() => {
         const tp = telemetria[randomInt(0, telemetria.length - 1)];
         const cedula = String(randomInt(100000000, 999999999));
-        return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc };
+        const paradaNombre = randomChoice(stops).nombre;
+        return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc, paradaNombre };
       });
       const qrClusters = clusterReadings(qrReadings);
 
       const tipoRuta = randomChoice(tiposRuta);
-      const empCliente = tipoRuta === 'parque' ? null : randomChoice(empresasCliente);
+      const empCliente = tipoRuta === 'Parque' ? null : randomChoice(empresasCliente);
       const conductorCodigo = `C${randomInt(1000, 9999)}`;
       const conductorNombre = `Conductor ${randomInt(1, 300)}`;
 
@@ -335,11 +336,12 @@ export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: st
     lng: p.lng,
   }));
 
-  // Lecturas QR individuales aleatorias en el rango
+  // Lecturas QR individuales aleatorias en el rango con paradaNombre
   const qrReadings: QRReading[] = Array.from({ length: 40 }).map((_,i) => {
     const tp = points[randomInt(0, points.length-1)];
     const cedula = String(randomInt(100000000, 999999999));
-    return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc };
+    const paradaNombre = randomChoice(stops).nombre;
+    return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc, paradaNombre };
   });
   const qrClusters = clusterReadings(qrReadings);
 

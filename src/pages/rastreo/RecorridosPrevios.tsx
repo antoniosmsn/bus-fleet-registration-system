@@ -47,7 +47,7 @@ function toIsoUtcFromLocalInput(v: string) {
   return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-const tiposRuta = ['parque','privado','especial'] as const;
+const tiposRuta = ['Parque','Privada','Especial'] as const;
 
 const RecorridosPrevios: React.FC = () => {
   const isMobile = useIsMobile();
@@ -82,9 +82,9 @@ const RecorridosPrevios: React.FC = () => {
 
   const tiposRutaOptions = useMemo(() => [
     { value: 'todos', label: 'Todos' },
-    { value: 'parque', label: 'Parque' },
-    { value: 'privado', label: 'Privado' },
-    { value: 'especial', label: 'Especial' }
+    { value: 'Parque', label: 'Parque' },
+    { value: 'Privada', label: 'Privada' },
+    { value: 'Especial', label: 'Especial' }
   ], []);
 
   const vehiculosOptions = useMemo(() => {
@@ -112,8 +112,8 @@ const RecorridosPrevios: React.FC = () => {
     }
     if (modo === 'rango') {
       const diffH = (d2.getTime() - d1.getTime()) / 3600000;
-      if (diffH > 24) {
-        toast({ title: 'El rango máximo permitido es de 24 horas.', description: 'Ajusta las fechas para no exceder 24 h.' });
+      if (diffH > 6) {
+        toast({ title: 'El rango máximo permitido es de 6 horas.', description: 'Ajusta las fechas para no exceder 6 h.' });
         return;
       }
     }
@@ -275,7 +275,7 @@ const RecorridosPrevios: React.FC = () => {
                 </div>
 
                 {/* Empresa cliente - solo si no es parque */}
-                {!tiposSeleccionados.includes('parque') || tiposSeleccionados.includes('todos') ? (
+                 {!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos') ? (
                   <div>
                     <label className="text-xs block mb-1">Empresa cliente</label>
                     <MultiSelect
@@ -327,10 +327,10 @@ const RecorridosPrevios: React.FC = () => {
                           <div className="divide-y">
                             {items.map(it => (
                               <div key={it.id} className="p-3 text-xs flex flex-col gap-1">
-                                <div className="flex justify-between">
-                                  <div className="font-medium">Servicio: {it.id}</div>
-                                  <div className="text-muted-foreground">{new Date(it.inicioUtc).toLocaleString()}</div>
-                                </div>
+                                 <div className="flex justify-between">
+                                   <div className="font-medium">Id Servicio: {it.id}</div>
+                                   <div className="text-muted-foreground">{new Date(it.inicioUtc).toLocaleString()}</div>
+                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
                                   <div>Conductor: {it.conductorCodigo}</div>
                                   <div>Ruta: {it.ruta}</div>
@@ -376,7 +376,7 @@ const RecorridosPrevios: React.FC = () => {
 
           {/* Panel mapa */}
           <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
-            {!showPanel && !mapData && (
+            {!showPanel && (
               <Button 
                 className="absolute top-4 left-4 z-50" 
                 size="sm" 
@@ -388,22 +388,12 @@ const RecorridosPrevios: React.FC = () => {
               </Button>
             )}
             
-            {!mapData ? (
-              <Card className="h-full">
-                <CardContent className="h-full flex items-center justify-center text-center">
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Selecciona un recorrido para visualizar en el mapa.</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <RecorridoMap 
-                data={mapData}
-                modo={mapData.modo}
-                initialFocus={initialFocus}
-                onRequestShowPanel={() => setShowPanel(true)}
-              />
-            )}
+            <RecorridoMap 
+              data={mapData}
+              modo={modo}
+              initialFocus={initialFocus}
+              onRequestShowPanel={() => setShowPanel(true)}
+            />
           </div>
         </div>
       </div>

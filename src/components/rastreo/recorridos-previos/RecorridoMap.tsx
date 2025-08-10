@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Eye, EyeOff, Layers, RotateCcw, MapPinned } from 'lucide-react';
+import { Eye, EyeOff, Layers, RotateCcw, MapPinned, Target, User } from 'lucide-react';
 import { RecorridoMapData, StopInfo, QRReading } from '@/types/recorridos-previos';
 import RecorridoMapExport from './RecorridoMapExport';
 
@@ -71,6 +71,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const mapRef = useRef<L.Map | null>(null);
   const center: [number, number] = [9.9333, -84.0833];
+  const [clickedMarker, setClickedMarker] = useState<string | null>(null);
 
   const allStops = data?.stops ?? [];
 
@@ -147,35 +148,61 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
           />
         ))}
 
-        {/* Inicio / Fin para modo servicios */}
+        {/* Inicio / Fin para modo servicios con iconos tipo target */}
         {modo === 'servicios' && startPoint && (
           <Marker 
             position={[startPoint.lat, startPoint.lng]} 
             icon={L.divIcon({
-              html: `<div style="background-color: #16A34A; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-              className: 'custom-marker',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]
+              html: `
+                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </div>
+              `,
+              className: 'target-marker',
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
             })}
+            eventHandlers={{
+              click: () => setClickedMarker('start')
+            }}
           >
-            <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
-              Inicio del servicio — {new Date(startPoint.timestampUtc).toLocaleString()}
-            </Tooltip>
+            {clickedMarker === 'start' && (
+              <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
+                Inicio del servicio — {new Date(startPoint.timestampUtc).toLocaleString()}
+              </Tooltip>
+            )}
           </Marker>
         )}
         {modo === 'servicios' && endPoint && (
           <Marker 
             position={[endPoint.lat, endPoint.lng]} 
             icon={L.divIcon({
-              html: `<div style="background-color: #DC2626; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-              className: 'custom-marker',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]
+              html: `
+                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                  </svg>
+                </div>
+              `,
+              className: 'target-marker',
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
             })}
+            eventHandlers={{
+              click: () => setClickedMarker('end')
+            }}
           >
-            <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
-              Fin del servicio — {new Date(endPoint.timestampUtc).toLocaleString()}
-            </Tooltip>
+            {clickedMarker === 'end' && (
+              <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
+                Fin del servicio — {new Date(endPoint.timestampUtc).toLocaleString()}
+              </Tooltip>
+            )}
           </Marker>
         )}
 
@@ -200,19 +227,55 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
           <Circle key={`rad-${st.id}`} center={[st.lat, st.lng]} radius={radioParadaMts} pathOptions={{ color: '#6b7280', weight: 1, opacity: 0.6 }} />
         ))}
 
-        {/* Lecturas QR */}
+        {/* Lecturas QR con iconos de persona */}
         {showLecturas && agruparLecturas && data?.qrClusters.map((c, i) => (
-          <Marker key={`qrc-${i}`} position={[c.lat, c.lng]}>
+          <Marker 
+            key={`qrc-${i}`} 
+            position={[c.lat, c.lng]}
+            icon={L.divIcon({
+              html: `
+                <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(59, 130, 246, 0.8); border-radius: 50%; border: 2px solid white;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.65 13.65 12 12 12S9 10.65 9 9V7L3 7V9C3 11.76 5.24 14 8 14H16C18.76 14 21 11.76 21 9ZM12 13C14.21 13 16 14.79 16 17V20H8V17C8 14.79 9.79 13 12 13Z"/>
+                  </svg>
+                  <div style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">${c.count}</div>
+                </div>
+              `,
+              className: 'qr-cluster-marker',
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })}
+          >
             <Tooltip permanent direction="top" offset={[0,-10]} opacity={1}>
               <div className="text-xs">QR x{c.count}</div>
             </Tooltip>
           </Marker>
         ))}
         {showLecturas && !agruparLecturas && filteredQRList.map((qr, i) => (
-          <Marker key={`qr-${i}`} position={[qr.lat, qr.lng]}>
-            <Tooltip>
-              <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString()}</div>
-            </Tooltip>
+          <Marker 
+            key={`qr-${i}`} 
+            position={[qr.lat, qr.lng]}
+            icon={L.divIcon({
+              html: `
+                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: rgba(34, 197, 94, 0.8); border-radius: 50%; border: 2px solid white;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.65 13.65 12 12 12S9 10.65 9 9V7L3 7V9C3 11.76 5.24 14 8 14H16C18.76 14 21 11.76 21 9ZM12 13C14.21 13 16 14.79 16 17V20H8V17C8 14.79 9.79 13 12 13Z"/>
+                  </svg>
+                </div>
+              `,
+              className: 'qr-reading-marker',
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
+            })}
+            eventHandlers={{
+              click: () => setClickedMarker(`qr-${i}`)
+            }}
+          >
+            {clickedMarker === `qr-${i}` && (
+              <Tooltip>
+                <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString()}</div>
+              </Tooltip>
+            )}
           </Marker>
         ))}
       </MapContainer>
@@ -227,11 +290,12 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
         </Button>
       </div>
 
+      {/* Sección de capas sobre el mapa */}
       <div className="absolute top-3 right-3 z-[400] w-80 max-w-[90vw]">
         <Card>
           <CardHeader className="py-3">
             <CardTitle className="text-sm flex items-center">
-              <Layers className="h-4 w-4 mr-2" /> Capas y controles
+              <Layers className="h-4 w-4 mr-2" /> Capas
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -253,7 +317,17 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                 Radios paradas
               </Button>
             </div>
+          </CardContent>
+        </Card>
+      </div>
 
+      {/* Controles y detalles */}
+      <div className="absolute bottom-3 right-3 z-[400] w-80 max-w-[90vw]">
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-sm">Controles</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             <div>
               <label className="text-xs block mb-1">Umbral de exceso de velocidad (km/h)</label>
               <Input type="number" min={0} max={150} value={speedThreshold} onChange={(e)=> setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value)||0)))} />
@@ -296,7 +370,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                                   mapRef.current.setView([st.lat, st.lng], 17, { animate: true });
                                 }
                               }}>
-                                <MapPinned className="h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                               </Button>
                               <input type="checkbox" checked={selected} onChange={() => {
                                 setSelectedStops(prev => selected ? prev.filter(id=>id!==st.id) : [...prev, st.id]);
@@ -335,7 +409,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                             <div className="text-muted-foreground">{new Date(qr.timestampUtc).toLocaleString()}</div>
                           </div>
                           <Button size="icon" variant="ghost" onClick={() => mapRef.current?.setView([qr.lat, qr.lng], 17, { animate: true })}>
-                            <MapPinned className="h-4 w-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </div>
                       ))}
