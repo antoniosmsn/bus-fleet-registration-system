@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Eye, EyeOff, Layers, RotateCcw, MapPinned } from 'lucide-react';
 import { RecorridoMapData, StopInfo, QRReading } from '@/types/recorridos-previos';
+import RecorridoMapExport from './RecorridoMapExport';
 
 // Fix default icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -257,6 +258,8 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
               <label className="text-xs block mb-1">Umbral de exceso de velocidad (km/h)</label>
               <Input type="number" min={0} max={150} value={speedThreshold} onChange={(e)=> setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value)||0)))} />
             </div>
+
+            <RecorridoMapExport data={data} modo={modo} />
 
             <Tabs value={activeTab} onValueChange={(v)=> setActiveTab(v as InitialFocus)}>
               <TabsList className="grid grid-cols-3">
