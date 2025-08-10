@@ -657,7 +657,8 @@ const RecorridosPrevios: React.FC = () => {
         />
       </div>
 
-      <div className="pt-2">
+      {/* Botón buscar */}
+      <div className="pt-4 pb-2">
         <Button 
           onClick={handleBuscar} 
           className={cn("w-full", isMobile ? "h-10" : "h-9")}
