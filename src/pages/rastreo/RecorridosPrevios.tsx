@@ -618,8 +618,8 @@ const RecorridosPrevios: React.FC = () => {
         </div>
       </div>
       
-      <div className={cn("flex-1 overflow-hidden", isMobile ? "" : "")}>
-        <ScrollArea className={cn("h-full", isMobile ? "h-full" : "h-[calc(100vh-280px)]")}>
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-[calc(100vh-320px)]">
           <div className="space-y-2 pr-3">
             {/* Listado por modo */}
             {modo==='servicios' ? (
