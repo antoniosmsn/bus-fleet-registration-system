@@ -377,9 +377,11 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
             <Eye className="h-4 w-4" />
           </Button>
         )}
-        <Button size="sm" variant="secondary" onClick={handleResetView}>
-          <RotateCcw className="h-4 w-4 mr-2" /> Restablecer vista
-        </Button>
+        {showRecorrido && points.length > 0 && (
+          <Button size="sm" variant="secondary" onClick={handleResetView}>
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       {/* Panel de capas simplificado y compacto */}
