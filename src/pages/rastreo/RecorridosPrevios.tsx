@@ -621,7 +621,7 @@ const RecorridosPrevios: React.FC = () => {
       
       {/* Área de scroll */}
       <div className="flex-1 min-h-0">
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-[calc(100vh-400px)]">
           <div className="space-y-2 pr-3">
             {/* Listado por modo */}
             {modo==='servicios' ? (
