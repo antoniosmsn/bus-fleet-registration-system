@@ -620,9 +620,9 @@ const RecorridosPrevios: React.FC = () => {
       </div>
       
       {/* Área de scroll */}
-      <div className="flex-1 min-h-0">
-        <ScrollArea className="h-[calc(100vh-400px)]">
-          <div className="space-y-2 pr-3">
+      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
+        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
+          <div className="space-y-2 pr-4">
             {/* Listado por modo */}
             {modo==='servicios' ? (
               <div className="space-y-3">
