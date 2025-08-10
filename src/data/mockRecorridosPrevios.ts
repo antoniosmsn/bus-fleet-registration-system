@@ -220,12 +220,16 @@ export interface FiltrosBase {
 }
 
 export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
+  console.log('🔍 QueryServicios ejecutándose con filtros:', f);
+  
   // Generar datos dinámicamente para el rango buscado
   generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
   
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
   let items = Array.from(serviciosStore.values()).map(v => v.item);
+  
+  console.log('📋 Items iniciales en store:', items.length, items.slice(0, 3));
 
   // Por servicios: inicio dentro del rango (sin importar fin)
   items = items.filter(it => {
@@ -259,6 +263,10 @@ export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
 
   // Agrupar por bus y ordenar inicio asc
   items.sort((a,b) => a.identificador.localeCompare(b.identificador) || new Date(a.inicioUtc).getTime() - new Date(b.inicioUtc).getTime());
+  
+  console.log('✅ QueryServicios resultado final:', items.length, 'servicios encontrados');
+  console.log('📋 Primeros 3 resultados:', items.slice(0, 3));
+  
   return items;
 }
 
@@ -275,6 +283,8 @@ export function getMapDataForServicio(id: string): RecorridoMapData | null {
 }
 
 export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
+  console.log('🔍 QueryRango ejecutándose con filtros:', f);
+  
   // Generar datos dinámicamente para el rango buscado
   generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
   
@@ -283,6 +293,8 @@ export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
 
   // Filtrar servicios que intersectan el rango y luego consolidar por bus
   const items = Array.from(serviciosStore.values()).map(v => v.item);
+  console.log('📋 Items iniciales en store para rango:', items.length);
+  
   const intersect = items.filter(it => {
     const ini = new Date(it.inicioUtc);
     const fin = new Date(it.finUtc);
@@ -325,6 +337,10 @@ export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
 
   const result = Array.from(byBus.values());
   result.sort((a,b) => a.identificador.localeCompare(b.identificador));
+  
+  console.log('✅ QueryRango resultado final:', result.length, 'buses encontrados');
+  console.log('📋 Primeros 3 resultados:', result.slice(0, 3));
+  
   return result;
 }
 
