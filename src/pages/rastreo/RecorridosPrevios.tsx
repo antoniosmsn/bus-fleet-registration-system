@@ -569,9 +569,9 @@ const RecorridosPrevios: React.FC = () => {
         </div>
       </div>
 
-      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
-        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-250px)]")}>
-          <div className={cn("space-y-4 pr-4", !isMobile && "text-sm")}>
+      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "flex-1")}>
+        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-200px)]")}>
+          <div className={cn("space-y-4 pr-4 pb-4", !isMobile && "text-sm")}>
             {/* Modo */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Modo de consulta</Label>
