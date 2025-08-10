@@ -258,7 +258,8 @@ export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
   // Agrupar por bus y ordenar inicio asc
   items.sort((a,b) => a.identificador.localeCompare(b.identificador) || new Date(a.inicioUtc).getTime() - new Date(b.inicioUtc).getTime());
   
-  return items;
+  // Limitar a 20 servicios para mejorar rendimiento
+  return items.slice(0, 20);
 }
 
 export function getMapDataForServicio(id: string): RecorridoMapData | null {
@@ -326,7 +327,8 @@ export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
   const result = Array.from(byBus.values());
   result.sort((a,b) => a.identificador.localeCompare(b.identificador));
   
-  return result;
+  // Limitar a 20 buses para mejorar rendimiento
+  return result.slice(0, 20);
 }
 
 export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: string): RecorridoMapData | null {
