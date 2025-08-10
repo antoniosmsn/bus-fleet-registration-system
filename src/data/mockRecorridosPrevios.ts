@@ -114,18 +114,28 @@ const rutasBase = [
 
 const serviciosStore = new Map<string, ServicioMock>();
 
-// Generación de 10 servicios por bus
-(function generateServiciosPorBus(){
-  const now = new Date();
+// Función para generar servicios dinámicamente basados en el rango de búsqueda
+function generateServiciosParaRango(desdeUtc: string, hastaUtc: string): void {
+  serviciosStore.clear(); // Limpiar datos anteriores
+  
+  const desde = new Date(desdeUtc);
+  const hasta = new Date(hastaUtc);
+  const rangoMs = hasta.getTime() - desde.getTime();
+  
   for (const bus of buses) {
-    for (let s = 0; s < 10; s++) {
+    // Generar 3-8 servicios por bus en el rango especificado
+    const serviciosCount = randomInt(3, 8);
+    for (let s = 0; s < serviciosCount; s++) {
       const ruta = randomChoice(rutasBase);
       // Asegurar que inician o terminan en Coyol
       const startAtCoyol = Math.random() < 0.5;
       const start = startAtCoyol ? COYOL_ZF : ruta.inicio;
       const end = startAtCoyol ? ruta.fin : COYOL_ZF;
       const poly = generatePolyline(start, end, randomInt(80, 140));
-      const inicio = new Date(now.getTime() - randomInt(1, 7) * 24 * 3600 * 1000 - randomInt(0, 23) * 3600 * 1000 - randomInt(0, 59) * 60 * 1000);
+      
+      // Generar hora de inicio dentro del rango buscado
+      const inicioOffset = Math.random() * rangoMs;
+      const inicio = new Date(desde.getTime() + inicioOffset);
       const durMin = randomInt(40, 120);
       const fin = new Date(inicio.getTime() + durMin * 60 * 1000);
 
@@ -184,7 +194,7 @@ const serviciosStore = new Map<string, ServicioMock>();
       serviciosStore.set(id, { item, telemetria, stops, qrReadings, qrClusters });
     }
   }
-})();
+}
 
 export interface FiltrosBase {
   modo: ModoConsulta;
@@ -198,6 +208,9 @@ export interface FiltrosBase {
 }
 
 export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
+  // Generar datos dinámicamente para el rango buscado
+  generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
+  
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
   let items = Array.from(serviciosStore.values()).map(v => v.item);
@@ -250,6 +263,9 @@ export function getMapDataForServicio(id: string): RecorridoMapData | null {
 }
 
 export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
+  // Generar datos dinámicamente para el rango buscado
+  generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
+  
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
 
