@@ -552,8 +552,9 @@ const RecorridosPrevios: React.FC = () => {
     const serviciosConCliente = resultServicios.filter(s => s.empresaCliente).length;
     
     return (
-    <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
-      <div className={cn(isMobile ? "pb-4" : "pb-2")}>
+    <div className="flex flex-col h-full">
+      {/* Header fijo */}
+      <div className="pb-4 flex-shrink-0">
         {/* Header mejorado */}
         <div className="mb-4">
           <h3 className={cn("font-semibold text-foreground mb-2", isMobile ? "text-lg" : "text-base")}>
@@ -618,8 +619,9 @@ const RecorridosPrevios: React.FC = () => {
         </div>
       </div>
       
+      {/* Área de scroll */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-[calc(100vh-320px)]">
+        <ScrollArea className="h-full">
           <div className="space-y-2 pr-3">
             {/* Listado por modo */}
             {modo==='servicios' ? (
