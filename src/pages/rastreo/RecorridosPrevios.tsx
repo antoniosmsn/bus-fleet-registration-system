@@ -612,27 +612,26 @@ const RecorridosPrevios: React.FC = () => {
                     }
                   </p>
                 ) : gruposServicios.map(([grupo, items]) => (
-                  <div key={grupo} className="space-y-2">
-                    <div className="text-sm font-semibold text-muted-foreground px-1">
+                  <div key={grupo} className="space-y-1">
+                    <div className="text-xs font-medium text-muted-foreground px-1 py-1">
                       {grupo}
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {items.map(it => (
                         <div 
                           key={it.id} 
-                          className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+                          className="p-3 border rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
                           onClick={() => abrirMapaServicio(it.id, 'recorrido')}
                         >
-                          {/* Header con ID y fecha */}
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {/* Header compacto */}
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">
                               {it.id}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground flex-shrink-0 ml-2">
                               {new Date(it.inicioUtc).toLocaleDateString('es-ES', {
                                 day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
+                                month: '2-digit'
                               })}, {new Date(it.inicioUtc).toLocaleTimeString('es-ES', {
                                 hour: '2-digit',
                                 minute: '2-digit'
@@ -640,49 +639,34 @@ const RecorridosPrevios: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Información principal */}
-                          <div className="space-y-2 text-sm">
-                            <div className="flex items-center justify-between">
+                          {/* Grid compacto de información */}
+                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                            <div className="flex justify-between">
                               <span className="text-muted-foreground">Conductor:</span>
                               <span className="font-medium">{it.conductorCodigo}</span>
                             </div>
                             
-                            <div className="flex items-center justify-between">
+                            <div className="flex justify-between">
                               <span className="text-muted-foreground">Ruta:</span>
                               <span className="font-medium">{it.ruta}</span>
                             </div>
                             
-                            <div className="flex items-center justify-between">
+                            <div className="flex justify-between">
                               <span className="text-muted-foreground">Tipo:</span>
                               <span className={cn(
-                                "px-2 py-1 rounded-md text-xs font-medium",
-                                it.tipoRuta === 'Privada' && "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
-                                it.tipoRuta === 'Especial' && "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-                                it.tipoRuta === 'Parque' && "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400"
+                                "px-1.5 py-0.5 rounded text-xs font-medium",
+                                it.tipoRuta === 'Privada' && "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+                                it.tipoRuta === 'Especial' && "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
+                                it.tipoRuta === 'Parque' && "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"
                               )}>
                                 {it.tipoRuta}
                               </span>
                             </div>
 
-                            {it.empresaCliente && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground">Cliente:</span>
-                                <span className="font-medium text-right max-w-[60%]">{it.empresaCliente}</span>
-                              </div>
-                            )}
-                            
-                            <div className="flex items-center justify-between">
-                              <span className="text-muted-foreground">Transporte:</span>
-                              <span className="font-medium text-right max-w-[60%]">{it.empresaTransporte}</span>
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
+                            <div className="flex justify-between">
                               <span className="text-muted-foreground">Fin:</span>
                               <span className="text-xs">
-                                {new Date(it.finUtc).toLocaleDateString('es-ES', {
-                                  day: '2-digit',
-                                  month: '2-digit'
-                                })}, {new Date(it.finUtc).toLocaleTimeString('es-ES', {
+                                {new Date(it.finUtc).toLocaleTimeString('es-ES', {
                                   hour: '2-digit',
                                   minute: '2-digit'
                                 })}
@@ -690,11 +674,24 @@ const RecorridosPrevios: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Indicador visual */}
-                          <div className="flex items-center justify-center mt-3 pt-2 border-t border-border/50">
-                            <div className="flex items-center text-xs text-muted-foreground group-hover:text-primary transition-colors">
+                          {/* Información adicional en una línea si existe */}
+                          {it.empresaCliente && (
+                            <div className="mt-1 text-xs">
+                              <span className="text-muted-foreground">Cliente: </span>
+                              <span className="font-medium">{it.empresaCliente}</span>
+                            </div>
+                          )}
+                          
+                          <div className="mt-1 text-xs">
+                            <span className="text-muted-foreground">Transporte: </span>
+                            <span className="font-medium">{it.empresaTransporte}</span>
+                          </div>
+
+                          {/* Indicador sutil */}
+                          <div className="flex items-center justify-center mt-2 pt-1 border-t border-border/30">
+                            <div className="flex items-center text-xs text-muted-foreground/70 group-hover:text-primary/70 transition-colors">
                               <Eye className="h-3 w-3 mr-1" />
-                              Hacer clic para ver recorrido
+                              Ver recorrido
                             </div>
                           </div>
                         </div>
