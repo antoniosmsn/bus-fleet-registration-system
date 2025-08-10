@@ -209,16 +209,18 @@ const RecorridosPrevios: React.FC = () => {
           <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Filtros de Búsqueda</h3>
           {!isMobile && (
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  setShowFilterPanel(false);
-                  setShowInfoPanel(true);
-                }}
-              >
-                <Info className="h-4 w-4" />
-              </Button>
+              {((modo === 'servicios' && resultServicios.length > 0) || (modo === 'rango' && resultRango.length > 0)) && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setShowFilterPanel(false);
+                    setShowInfoPanel(true);
+                  }}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+              )}
               <Button 
                 variant="outline" 
                 size="sm"
