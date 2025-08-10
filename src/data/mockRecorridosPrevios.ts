@@ -117,10 +117,8 @@ const buses: BusInfo[] = Array.from({ length: 200 }).map((_, idx) => {
   };
 });
 
-// Rutas base
+// Rutas base - Solo Cartago-Coyol para mejorar rendimiento
 const rutasBase = [
-  { nombre:"SJ-Coyol", inicio: SAN_JOSE, fin: COYOL_ZF, provincia: 'San José' },
-  { nombre:"Alajuela-Coyol", inicio: ALAJUELA, fin: COYOL_ZF, provincia: 'Alajuela' },
   { nombre:"Coyol-Cartago", inicio: COYOL_ZF, fin: CARTAGO, provincia: 'Cartago' },
 ];
 
