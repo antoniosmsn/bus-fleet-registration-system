@@ -547,48 +547,68 @@ const RecorridosPrevios: React.FC = () => {
 
   // Componente del contenido del panel de información/resultados
   const InfoPanelContent = () => {
+    const totalServicios = resultServicios.length;
+    const totalBuses = resultRango.length;
+    const serviciosConCliente = resultServicios.filter(s => s.empresaCliente).length;
+    
     return (
     <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
       <div className={cn(isMobile ? "pb-4" : "pb-2")}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Resultados</h3>
+        {/* Header mejorado */}
+        <div className="mb-4">
+          <h3 className={cn("font-semibold text-foreground mb-2", isMobile ? "text-lg" : "text-base")}>
+            Recorridos Previos
+          </h3>
+          
+          {/* Estadísticas en línea */}
+          <div className="flex items-center gap-4 text-sm mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+              <span className="text-muted-foreground">
+                {modo === 'servicios' ? `Servicios: ${totalServicios}` : `Buses: ${totalBuses}`}
+              </span>
+            </div>
+            {modo === 'servicios' && serviciosConCliente > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span className="text-muted-foreground">Con cliente: {serviciosConCliente}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Controles del header */}
           {!isMobile && (
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => {
-                  setShowInfoPanel(false);
-                  setShowFilterPanel(true);
-                }}
-              >
-                <Filter className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowInfoPanel(false)}
-              >
-                <EyeOff className="h-4 w-4" />
-              </Button>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setShowInfoPanel(false);
+                    setShowFilterPanel(true);
+                  }}
+                >
+                  <Filter className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowInfoPanel(false)}
+                >
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>
-
-        <div className={cn("flex items-center gap-2 text-muted-foreground mb-3", isMobile ? "text-sm" : "text-xs")}>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-            {modo === 'servicios' ? `Servicios: ${resultServicios.length}` : `Buses: ${resultRango.length}`}
-          </div>
-        </div>
         
-        {/* Input de búsqueda local */}
-        <div>
+        {/* Input de búsqueda mejorado */}
+        <div className="mb-4">
           <Input
-            placeholder="Buscar en resultados..."
+            placeholder="Buscar en lista actual..."
             value={busquedaLocal}
             onChange={(e) => setBusquedaLocal(e.target.value)}
-            className={cn(isMobile ? "h-10 text-sm" : "h-8 text-xs")}
+            className="text-sm"
           />
           {busquedaLocal && (
             <p className="text-xs text-muted-foreground mt-1">
@@ -613,86 +633,80 @@ const RecorridosPrevios: React.FC = () => {
                   </p>
                 ) : gruposServicios.map(([grupo, items]) => (
                   <div key={grupo} className="space-y-1">
-                    <div className="text-xs font-medium text-muted-foreground px-1 py-1">
+                    <div className="text-xs font-medium text-muted-foreground px-2 py-1">
                       {grupo}
                     </div>
                     <div className="space-y-1">
                       {items.map(it => (
                         <div 
                           key={it.id} 
-                          className="p-3 border rounded-md hover:bg-accent/50 cursor-pointer transition-colors group"
+                          className="p-3 bg-card border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
                           onClick={() => abrirMapaServicio(it.id, 'recorrido')}
                         >
-                          {/* Header compacto */}
+                          {/* Header con ID y estado */}
                           <div className="flex items-center justify-between mb-2">
-                            <div className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">
+                            <div className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
                               {it.id}
                             </div>
-                            <div className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                              {new Date(it.inicioUtc).toLocaleDateString('es-ES', {
-                                day: '2-digit',
-                                month: '2-digit'
-                              })}, {new Date(it.inicioUtc).toLocaleTimeString('es-ES', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Grid compacto de información */}
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Conductor:</span>
-                              <span className="font-medium">{it.conductorCodigo}</span>
-                            </div>
-                            
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Ruta:</span>
-                              <span className="font-medium">{it.ruta}</span>
-                            </div>
-                            
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Tipo:</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
                               <span className={cn(
-                                "px-1.5 py-0.5 rounded text-xs font-medium",
-                                it.tipoRuta === 'Privada' && "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-                                it.tipoRuta === 'Especial' && "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400",
-                                it.tipoRuta === 'Parque' && "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400"
+                                "px-2 py-1 rounded-md text-xs font-medium",
+                                it.tipoRuta === 'Privada' && "bg-blue-500 text-white",
+                                it.tipoRuta === 'Especial' && "bg-green-500 text-white", 
+                                it.tipoRuta === 'Parque' && "bg-orange-500 text-white"
                               )}>
                                 {it.tipoRuta}
                               </span>
                             </div>
+                          </div>
 
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Fin:</span>
-                              <span className="text-xs">
-                                {new Date(it.finUtc).toLocaleTimeString('es-ES', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </span>
+                          {/* Información principal en línea */}
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                            <div className="flex items-center gap-1">
+                              <User className="h-3 w-3" />
+                              <span>{it.conductorCodigo}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span>📍</span>
+                              <span>{it.ruta}</span>
                             </div>
                           </div>
 
-                          {/* Información adicional en una línea si existe */}
-                          {it.empresaCliente && (
-                            <div className="mt-1 text-xs">
-                              <span className="text-muted-foreground">Cliente: </span>
-                              <span className="font-medium">{it.empresaCliente}</span>
-                            </div>
-                          )}
-                          
-                          <div className="mt-1 text-xs">
-                            <span className="text-muted-foreground">Transporte: </span>
-                            <span className="font-medium">{it.empresaTransporte}</span>
+                          {/* Timestamp */}
+                          <div className="text-xs text-muted-foreground mb-2">
+                            {new Date(it.inicioUtc).toLocaleDateString('es-ES', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                            })}, {new Date(it.inicioUtc).toLocaleTimeString('es-ES', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            })} - {new Date(it.finUtc).toLocaleTimeString('es-ES', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </div>
 
-                          {/* Indicador sutil */}
-                          <div className="flex items-center justify-center mt-2 pt-1 border-t border-border/30">
-                            <div className="flex items-center text-xs text-muted-foreground/70 group-hover:text-primary/70 transition-colors">
-                              <Eye className="h-3 w-3 mr-1" />
-                              Ver recorrido
-                            </div>
+                          {/* Conductor nombre */}
+                          <div className="text-sm font-medium text-foreground mb-1">
+                            {it.conductorNombre || `Conductor ${it.conductorCodigo}`}
+                          </div>
+
+                          {/* Ruta con iconos como en la imagen */}
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="px-1 py-0.5 bg-primary/10 text-primary rounded text-xs">
+                              {it.tipoRuta.toLowerCase()}
+                            </span>
+                            <span>-</span>
+                            <span>{it.empresaTransporte}</span>
+                            {it.empresaCliente && (
+                              <>
+                                <span>-</span>
+                                <span className="text-primary font-medium">{it.empresaCliente}</span>
+                              </>
+                            )}
                           </div>
                         </div>
                       ))}
