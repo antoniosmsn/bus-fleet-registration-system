@@ -763,8 +763,8 @@ const RecorridosPrevios: React.FC = () => {
       <div className="h-[calc(100vh-120px)] flex bg-background relative">
         {/* Desktop Panels */}
         {!isMobile && showInfoPanel && !showFilterPanel && (
-          <Card className="w-64 lg:w-72 flex flex-col border-r">
-            <CardContent className="p-4 flex-1">
+          <Card className="w-64 lg:w-72 flex flex-col border-r overflow-hidden">
+            <CardContent className="p-4 flex-1 overflow-hidden">
               <MultiPurposeSidebarContent />
             </CardContent>
           </Card>
