@@ -286,6 +286,8 @@ const RecorridosPrevios: React.FC = () => {
                       </Button>
                       {modo === 'rango' && (
                         <input 
+                          id={`parada-checkbox-${st.id}`}
+                          name={`parada-checkbox-${st.id}`}
                           type="checkbox" 
                           checked={selected} 
                           onChange={() => {
@@ -321,6 +323,8 @@ const RecorridosPrevios: React.FC = () => {
           <div className="flex items-center gap-2">
             <label className="text-xs">Agrupar</label>
             <input 
+              id="agrupar-lecturas"
+              name="agrupar-lecturas"
               type="checkbox" 
               checked={agruparLecturas} 
               onChange={(e) => setAgruparLecturas(e.target.checked)}
@@ -596,6 +600,8 @@ const RecorridosPrevios: React.FC = () => {
                 <div>
                   <Label className="text-xs text-muted-foreground">Fecha/Hora inicio</Label>
                   <Input 
+                    id="fecha-inicio"
+                    name="fecha-inicio"
                     type="datetime-local" 
                     value={desde} 
                     onChange={(e)=>setDesde(e.target.value)}
@@ -605,6 +611,8 @@ const RecorridosPrevios: React.FC = () => {
                 <div>
                   <Label className="text-xs text-muted-foreground">Fecha/Hora fin</Label>
                   <Input 
+                    id="fecha-fin"
+                    name="fecha-fin"
                     type="datetime-local" 
                     value={hasta} 
                     onChange={(e)=>setHasta(e.target.value)}
@@ -619,6 +627,8 @@ const RecorridosPrevios: React.FC = () => {
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Número de servicio</Label>
                 <Input 
+                  id="numero-servicio"
+                  name="numero-servicio"
                   type="text" 
                   inputMode="numeric" 
                   placeholder="ID exacto" 
