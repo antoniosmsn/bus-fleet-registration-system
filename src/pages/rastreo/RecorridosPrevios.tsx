@@ -112,15 +112,11 @@ const RecorridosPrevios: React.FC = () => {
   }, [resultServicios, resultRango]);
 
   const handleBuscar = () => {
-    console.log('🔍 HandleBuscar iniciado', { modo, desde, hasta, numeroServicio, vehiculos, empresasTransporte, empresasCliente, tiposSeleccionados });
-    
     // Validaciones básicas
     const desdeIso = toIsoUtcFromLocalInput(desde);
     const hastaIso = toIsoUtcFromLocalInput(hasta);
     const d1 = new Date(desdeIso);
     const d2 = new Date(hastaIso);
-    
-    console.log('⏰ Fechas procesadas', { desdeIso, hastaIso, d1, d2 });
     
     if (!(d2 > d1)) {
       toast({ title: 'Rango inválido', description: 'Fin debe ser mayor a Inicio.' });
@@ -145,23 +141,21 @@ const RecorridosPrevios: React.FC = () => {
       tiposRuta: tiposSeleccionados.includes('todos') ? undefined : tiposSeleccionados as any,
     };
 
-    console.log('📋 Filtros base creados', filtrosBase);
-
     if (modo === 'servicios') {
-      console.log('🔎 Ejecutando queryServicios...');
       const res = queryServicios(filtrosBase);
-      console.log('📊 Resultado queryServicios', res);
       setResultServicios(res);
       setResultRango([]);
       if (res.length === 0) toast({ title: 'Sin datos', description: 'No hay recorridos para los filtros seleccionados.' });
     } else {
-      console.log('🔎 Ejecutando queryRango...');
       const res = queryRango(filtrosBase);
-      console.log('📊 Resultado queryRango', res);
       setResultRango(res);
       setResultServicios([]);
       if (res.length === 0) toast({ title: 'Sin datos', description: 'No hay recorridos para los filtros seleccionados.' });
     }
+
+    // Después de la búsqueda, mostrar los resultados y ocultar los filtros
+    setShowFilterPanel(false);
+    setShowInfoPanel(true);
   };
 
   const gruposServicios = useMemo(() => {
@@ -553,14 +547,6 @@ const RecorridosPrevios: React.FC = () => {
 
   // Componente del contenido del panel de información/resultados
   const InfoPanelContent = () => {
-    console.log('🖥️ InfoPanelContent renderizando', { 
-      modo, 
-      resultServiciosLength: resultServicios.length, 
-      resultRangoLength: resultRango.length,
-      gruposServiciosLength: gruposServicios.length,
-      listaRangoFiltradaLength: listaRangoFiltrada.length
-    });
-    
     return (
     <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
       <div className={cn(isMobile ? "pb-4" : "pb-2")}>
