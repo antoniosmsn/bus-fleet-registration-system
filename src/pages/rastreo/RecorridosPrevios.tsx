@@ -852,9 +852,18 @@ const RecorridosPrevios: React.FC = () => {
         )}
 
         {!isMobile && showFilterPanel && (
-          <Card className="w-64 lg:w-72 flex flex-col border-r">
-            <CardContent className="p-4 flex-1">
-              <FilterPanelContent />
+          <Card className="w-64 lg:w-72 flex flex-col border-r max-h-screen">
+            <CardContent className="p-0 flex-1 flex flex-col">
+              <div className="p-4 border-b">
+                <h3 className="font-medium text-sm">Filtros de Búsqueda</h3>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="p-4">
+                    <FilterPanelContent />
+                  </div>
+                </ScrollArea>
+              </div>
             </CardContent>
           </Card>
         )}
