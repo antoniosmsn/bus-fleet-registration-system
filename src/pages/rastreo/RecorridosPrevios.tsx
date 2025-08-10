@@ -861,7 +861,7 @@ const RecorridosPrevios: React.FC = () => {
         <div className="flex-1 relative">
           {!isMobile && !showInfoPanel && !showFilterPanel && (
             <Button
-              className="absolute top-4 left-4 z-[1000]"
+              className="absolute top-4 left-4 z-[1000] bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border"
               variant="outline"
               size="sm"
               onClick={() => setShowInfoPanel(true)}
