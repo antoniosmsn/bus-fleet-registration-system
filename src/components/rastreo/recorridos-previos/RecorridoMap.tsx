@@ -37,6 +37,50 @@ function createArrowIcon(course: number, speed: number, showSpeed: boolean) {
   });
 }
 
+// Crear icono para las paradas (igual que en TiempoReal)
+function createStopIcon(codigo: string, nombre: string) {
+  return divIcon({
+    html: `
+      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <!-- Icono de target/placemark igual que en TiempoReal -->
+        <div style="position: relative;">
+          <svg width="20" height="20" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
+            <circle cx="12" cy="12" r="10" fill="#059669" stroke="#fff" stroke-width="2"/>
+            <circle cx="12" cy="12" r="6" fill="#fff"/>
+            <circle cx="12" cy="12" r="3" fill="#059669"/>
+          </svg>
+        </div>
+        
+        <!-- Etiqueta con código y nombre igual que en TiempoReal -->
+        <div style="
+          position: absolute; 
+          top: 24px; 
+          left: 50%; 
+          transform: translateX(-50%);
+          background: #f0fdf4;
+          border: 1px solid #059669;
+          border-radius: 4px;
+          padding: 3px 6px;
+          font-size: 10px;
+          font-weight: bold;
+          color: #059669;
+          white-space: nowrap;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          z-index: 1000;
+          max-width: 120px;
+          text-align: center;
+        ">
+          <div style="font-weight: bold;">${codigo}</div>
+          <div style="font-size: 8px; font-weight: normal; margin-top: 1px;">${nombre}</div>
+        </div>
+      </div>
+    `,
+    className: 'custom-stop-icon',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
+  });
+}
+
 function FitBoundsOnPoints({ points }: { points: {lat:number; lng:number}[] }) {
   const map = useMap();
   useEffect(() => {
@@ -206,19 +250,21 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
           </Marker>
         )}
 
-        {/* Paradas */}
+        {/* Paradas con el mismo estilo que TiempoReal */}
         {showParadas && selectedStopsObjects.map(st => (
-          <Marker key={st.id} position={[st.lat, st.lng]}>
-            <Tooltip>
-              <div className="text-xs">
-                <div className="font-semibold">{st.codigo} — {st.nombre}</div>
-                {st.visitada ? (
-                  <div>LLegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>
-                ) : (
-                  <div>Sin visita registrada</div>
-                )}
-              </div>
-            </Tooltip>
+          <Marker 
+            key={st.id} 
+            position={[st.lat, st.lng]}
+            icon={createStopIcon(st.codigo, st.nombre)}
+          >
+            {st.visitada && (
+              <Tooltip>
+                <div className="text-xs">
+                  <div className="font-semibold">{st.codigo} — {st.nombre}</div>
+                  <div>Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>
+                </div>
+              </Tooltip>
+            )}
           </Marker>
         ))}
 
