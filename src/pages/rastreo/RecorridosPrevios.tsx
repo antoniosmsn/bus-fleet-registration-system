@@ -795,6 +795,7 @@ const RecorridosPrevios: React.FC = () => {
             initialFocus={initialFocus}
             onRequestShowPanel={() => setShowInfoPanel(true)}
             onLayerDataChange={handleLayerDataChange}
+            showInfoPanel={showInfoPanel}
           />
         </div>
       </div>

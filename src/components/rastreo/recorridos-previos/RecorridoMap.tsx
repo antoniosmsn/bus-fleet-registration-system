@@ -100,9 +100,10 @@ interface RecorridoMapProps {
   radioParadaMts?: number; // default 30
   onRequestShowPanel: () => void;
   onLayerDataChange?: (layerType: 'paradas' | 'lecturas' | 'controles', data: any) => void;
+  showInfoPanel?: boolean; // Nueva prop para saber si el panel está visible
 }
 
-export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel, onLayerDataChange }) => {
+export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel, onLayerDataChange, showInfoPanel = false }) => {
   const points = data?.telemetria ?? [];
   const [speedThreshold, setSpeedThreshold] = useState<number>(90);
   const [showRecorrido, setShowRecorrido] = useState(true);
@@ -371,9 +372,11 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
       {/* Controles flotantes */}
       <div className="absolute top-3 left-3 flex gap-2 z-[400]">
-        <Button size="sm" variant="secondary" onClick={onRequestShowPanel}>
-          <Eye className="h-4 w-4 mr-2" /> Mostrar panel
-        </Button>
+        {!showInfoPanel && (
+          <Button size="sm" variant="secondary" onClick={onRequestShowPanel}>
+            <Eye className="h-4 w-4" />
+          </Button>
+        )}
         <Button size="sm" variant="secondary" onClick={handleResetView}>
           <RotateCcw className="h-4 w-4 mr-2" /> Restablecer vista
         </Button>
