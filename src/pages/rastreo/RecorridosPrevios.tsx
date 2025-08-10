@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import FilterPanelContent from '@/components/rastreo/FilterPanel';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen, X, Info, Target, User, Settings, RotateCcw } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
+import { FilterPanelCard } from '@/components/rastreo/FilterPanel';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -537,137 +539,6 @@ const RecorridosPrevios: React.FC = () => {
     );
   };
 
-  // Componente del contenido del panel de filtros
-  const FilterPanelContent = () => (
-    <div className="space-y-4">
-      {/* Modo */}
-      <div className="space-y-2">
-        <Label className="text-xs font-medium">Modo de consulta</Label>
-        <div className="grid grid-cols-2 gap-2">
-          <Button 
-            variant={modo==='servicios'?'default':'outline'} 
-            onClick={()=>setModo('servicios')}
-            className={cn(isMobile ? "h-10" : "h-8")}
-          >
-            Por servicios
-          </Button>
-          <Button 
-            variant={modo==='rango'?'default':'outline'} 
-            onClick={()=>setModo('rango')}
-            className={cn(isMobile ? "h-10" : "h-8")}
-          >
-            Por rango
-          </Button>
-        </div>
-      </div>
-
-      {/* Fechas */}
-      <div className="space-y-2">
-        <Label className="text-xs font-medium">Rango de fechas</Label>
-        <div className="grid grid-cols-1 gap-2">
-          <div>
-            <Label className="text-xs text-muted-foreground">Fecha/Hora inicio</Label>
-            <Input 
-              id="fecha-inicio"
-              name="fecha-inicio"
-              type="datetime-local" 
-              value={desde} 
-              onChange={(e)=>setDesde(e.target.value)}
-              className={cn(isMobile ? "h-10" : "h-8")}
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Fecha/Hora fin</Label>
-            <Input 
-              id="fecha-fin"
-              name="fecha-fin"
-              type="datetime-local" 
-              value={hasta} 
-              onChange={(e)=>setHasta(e.target.value)}
-              className={cn(isMobile ? "h-10" : "h-8")}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Número servicio solo en servicios */}
-      {modo==='servicios' && (
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Número de servicio</Label>
-          <Input 
-            id="numero-servicio"
-            name="numero-servicio"
-            type="text" 
-            inputMode="numeric" 
-            placeholder="ID exacto" 
-            value={numeroServicio} 
-            onChange={(e)=>setNumeroServicio(e.target.value)}
-            className={cn(isMobile ? "h-10" : "h-8")}
-          />
-        </div>
-      )}
-
-      {/* Vehículo */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Vehículo</Label>
-        <MultiSelect
-          options={vehiculosOptions}
-          value={vehiculos}
-          onValueChange={setVehiculos}
-          placeholder="Seleccionar vehículos"
-          searchPlaceholder="Buscar vehículo..."
-        />
-      </div>
-
-      {/* Empresa transporte */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Empresa de transporte</Label>
-        <MultiSelect
-          options={empresasTransporteOptions}
-          value={empresasTransporte}
-          onValueChange={setEmpresasTransporte}
-          placeholder="Seleccionar empresas"
-          searchPlaceholder="Buscar empresa..."
-        />
-      </div>
-
-      {/* Empresa cliente */}
-      {(!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos')) && (
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Empresa cliente</Label>
-          <MultiSelect
-            options={empresasClienteOptions}
-            value={empresasCliente}
-            onValueChange={setEmpresasCliente}
-            placeholder="Seleccionar clientes"
-            searchPlaceholder="Buscar cliente..."
-          />
-        </div>
-      )}
-
-      {/* Tipo ruta */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Tipo de ruta</Label>
-        <MultiSelect
-          options={tiposRutaOptions}
-          value={tiposSeleccionados}
-          onValueChange={setTiposSeleccionados}
-          placeholder="Seleccionar tipos"
-          searchPlaceholder="Buscar tipo..."
-        />
-      </div>
-
-      {/* Botón buscar */}
-      <div className="pt-4 pb-2">
-        <Button 
-          onClick={handleBuscar} 
-          className={cn("w-full", isMobile ? "h-10" : "h-9")}
-        >
-          Buscar
-        </Button>
-      </div>
-    </div>
-  );
 
   // Componente del contenido del panel de información/resultados
   const InfoPanelContent = () => (
@@ -818,20 +689,30 @@ const RecorridosPrevios: React.FC = () => {
         )}
 
         {!isMobile && showFilterPanel && (
-          <Card className="w-64 lg:w-72 flex flex-col border-r max-h-screen">
-            <CardContent className="p-0 flex-1 flex flex-col">
-              <div className="p-4 border-b">
-                <h3 className="font-medium text-sm">Filtros de Búsqueda</h3>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
-                  <div className="p-4">
-                    <FilterPanelContent />
-                  </div>
-                </ScrollArea>
-              </div>
-            </CardContent>
-          </Card>
+          <FilterPanelCard 
+            isMobile={isMobile}
+            modo={modo}
+            setModo={setModo}
+            desde={desde}
+            setDesde={setDesde}
+            hasta={hasta}
+            setHasta={setHasta}
+            numeroServicio={numeroServicio}
+            setNumeroServicio={setNumeroServicio}
+            vehiculos={vehiculos}
+            setVehiculos={setVehiculos}
+            vehiculosOptions={vehiculosOptions}
+            empresasTransporte={empresasTransporte}
+            setEmpresasTransporte={setEmpresasTransporte}
+            empresasTransporteOptions={empresasTransporteOptions}
+            empresasCliente={empresasCliente}
+            setEmpresasCliente={setEmpresasCliente}
+            empresasClienteOptions={empresasClienteOptions}
+            tiposSeleccionados={tiposSeleccionados}
+            setTiposSeleccionados={setTiposSeleccionados}
+            tiposRutaOptions={tiposRutaOptions}
+            handleBuscar={handleBuscar}
+          />
         )}
 
         {/* Mobile Header */}
@@ -863,9 +744,32 @@ const RecorridosPrevios: React.FC = () => {
                 <DrawerHeader>
                   <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
                 </DrawerHeader>
-                <div className="flex-1 overflow-hidden px-4 pb-4">
-                  <FilterPanelContent />
-                </div>
+                 <div className="flex-1 overflow-hidden px-4 pb-4">
+                   <FilterPanelContent 
+                     isMobile={isMobile}
+                     modo={modo}
+                     setModo={setModo}
+                     desde={desde}
+                     setDesde={setDesde}
+                     hasta={hasta}
+                     setHasta={setHasta}
+                     numeroServicio={numeroServicio}
+                     setNumeroServicio={setNumeroServicio}
+                     vehiculos={vehiculos}
+                     setVehiculos={setVehiculos}
+                     vehiculosOptions={vehiculosOptions}
+                     empresasTransporte={empresasTransporte}
+                     setEmpresasTransporte={setEmpresasTransporte}
+                     empresasTransporteOptions={empresasTransporteOptions}
+                     empresasCliente={empresasCliente}
+                     setEmpresasCliente={setEmpresasCliente}
+                     empresasClienteOptions={empresasClienteOptions}
+                     tiposSeleccionados={tiposSeleccionados}
+                     setTiposSeleccionados={setTiposSeleccionados}
+                     tiposRutaOptions={tiposRutaOptions}
+                     handleBuscar={handleBuscar}
+                   />
+                 </div>
               </DrawerContent>
             </Drawer>
           </div>
