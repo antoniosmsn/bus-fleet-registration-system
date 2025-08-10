@@ -3,12 +3,16 @@ import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
+import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen, X, Info } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import { RecorridoMap } from '@/components/rastreo/recorridos-previos/RecorridoMap';
 import { 
   RecorridoServicioListItem, 
@@ -67,7 +71,8 @@ const RecorridosPrevios: React.FC = () => {
   const [resultRango, setResultRango] = useState<RecorridoRangoListItem[]>([]);
 
   const [mapData, setMapData] = useState<RecorridoMapData | null>(null);
-  const [showPanel, setShowPanel] = useState(!isMobile);
+  const [showFilterPanel, setShowFilterPanel] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(!isMobile);
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
 
   const empresasTransporteOptions = useMemo(() => [
@@ -180,221 +185,393 @@ const RecorridosPrevios: React.FC = () => {
     const data = getMapDataForServicio(id);
     setMapData(data);
     setInitialFocus(focus);
-    if (isMobile) setShowPanel(false);
+    if (isMobile) {
+      setShowFilterPanel(false);
+      setShowInfoPanel(false);
+    }
   };
+  
   const abrirMapaRango = (busId: string, focus: 'recorrido'|'paradas'|'lecturas') => {
     const data = getMapDataForRango(busId, toIsoUtcFromLocalInput(desde), toIsoUtcFromLocalInput(hasta));
     setMapData(data);
     setInitialFocus(focus);
-    if (isMobile) setShowPanel(false);
+    if (isMobile) {
+      setShowFilterPanel(false);
+      setShowInfoPanel(false);
+    }
   };
 
-  return (
-    <Layout>
-      <div className="w-full">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Recorridos Previos</h1>
+  // Componente del contenido del panel de filtros
+  const FilterPanelContent = () => (
+    <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
+      <div className={cn(isMobile ? "pb-4" : "pb-2")}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Filtros de Búsqueda</h3>
+          {!isMobile && (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setShowFilterPanel(false);
+                  setShowInfoPanel(true);
+                }}
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowFilterPanel(false)}
+              >
+                <EyeOff className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Panel lateral */}
-          <div className={`${showPanel ? 'block' : 'hidden'} ${isMobile ? 'fixed inset-0 z-50 bg-background' : 'lg:col-span-5'} space-y-4 ${isMobile && showPanel ? 'p-4' : ''}`}>
-            {isMobile && showPanel && (
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Recorridos Previos</h2>
-                <Button size="sm" variant="outline" onClick={() => setShowPanel(false)}>
-                  <PanelLeftClose className="h-4 w-4" />
+      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
+        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-250px)]")}>
+          <div className={cn("space-y-4 pr-4", !isMobile && "text-sm")}>
+            {/* Modo */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Modo de consulta</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  variant={modo==='servicios'?'default':'outline'} 
+                  onClick={()=>setModo('servicios')}
+                  className={cn(isMobile ? "h-10" : "h-8")}
+                >
+                  Por servicios
+                </Button>
+                <Button 
+                  variant={modo==='rango'?'default':'outline'} 
+                  onClick={()=>setModo('rango')}
+                  className={cn(isMobile ? "h-10" : "h-8")}
+                >
+                  Por rango
                 </Button>
               </div>
+            </div>
+
+            {/* Fechas */}
+            <div className="space-y-2">
+              <Label className="text-xs font-medium">Rango de fechas</Label>
+              <div className="grid grid-cols-1 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Fecha/Hora inicio</Label>
+                  <Input 
+                    type="datetime-local" 
+                    value={desde} 
+                    onChange={(e)=>setDesde(e.target.value)}
+                    className={cn(isMobile ? "h-10" : "h-8")}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Fecha/Hora fin</Label>
+                  <Input 
+                    type="datetime-local" 
+                    value={hasta} 
+                    onChange={(e)=>setHasta(e.target.value)}
+                    className={cn(isMobile ? "h-10" : "h-8")}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Número servicio solo en servicios */}
+            {modo==='servicios' && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Número de servicio</Label>
+                <Input 
+                  type="text" 
+                  inputMode="numeric" 
+                  placeholder="ID exacto" 
+                  value={numeroServicio} 
+                  onChange={(e)=>setNumeroServicio(e.target.value)}
+                  className={cn(isMobile ? "h-10" : "h-8")}
+                />
+              </div>
             )}
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base flex items-center">
-                  <Filter className="h-4 w-4 mr-2"/>Filtros
-                  {!isMobile && (
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="ml-auto" 
-                      onClick={() => setShowPanel(false)}
-                    >
-                      <PanelLeftClose className="h-4 w-4" />
-                    </Button>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* Modo */}
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant={modo==='servicios'?'default':'outline'} onClick={()=>setModo('servicios')}>Por servicios</Button>
-                  <Button variant={modo==='rango'?'default':'outline'} onClick={()=>setModo('rango')}>Por rango</Button>
-                </div>
 
-                {/* Fechas */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <label className="text-xs block mb-1">Fecha/Hora inicio</label>
-                    <Input type="datetime-local" value={desde} onChange={(e)=>setDesde(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="text-xs block mb-1">Fecha/Hora fin</label>
-                    <Input type="datetime-local" value={hasta} onChange={(e)=>setHasta(e.target.value)} />
-                  </div>
-                </div>
+            {/* Vehículo */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Vehículo</Label>
+              <MultiSelect
+                options={vehiculosOptions}
+                value={vehiculos}
+                onValueChange={setVehiculos}
+                placeholder="Seleccionar vehículos"
+                searchPlaceholder="Buscar vehículo..."
+              />
+            </div>
 
-                {/* Número servicio solo en servicios */}
-                {modo==='servicios' && (
-                  <div>
-                    <label className="text-xs block mb-1">Número de servicio</label>
-                    <Input type="text" inputMode="numeric" placeholder="ID exacto" value={numeroServicio} onChange={(e)=>setNumeroServicio(e.target.value)} />
-                  </div>
-                )}
+            {/* Empresa transporte */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Empresa de transporte</Label>
+              <MultiSelect
+                options={empresasTransporteOptions}
+                value={empresasTransporte}
+                onValueChange={setEmpresasTransporte}
+                placeholder="Seleccionar empresas"
+                searchPlaceholder="Buscar empresa..."
+              />
+            </div>
 
-                {/* Vehículo */}
-                <div>
-                  <label className="text-xs block mb-1">Vehículo</label>
-                  <MultiSelect
-                    options={vehiculosOptions}
-                    value={vehiculos}
-                    onValueChange={setVehiculos}
-                    placeholder="Seleccionar vehículos"
-                    searchPlaceholder="Buscar vehículo..."
-                  />
-                </div>
+            {/* Empresa cliente */}
+            {(!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos')) && (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Empresa cliente</Label>
+                <MultiSelect
+                  options={empresasClienteOptions}
+                  value={empresasCliente}
+                  onValueChange={setEmpresasCliente}
+                  placeholder="Seleccionar clientes"
+                  searchPlaceholder="Buscar cliente..."
+                />
+              </div>
+            )}
 
-                {/* Empresa transporte */}
-                <div>
-                  <label className="text-xs block mb-1">Empresa de transporte</label>
-                  <MultiSelect
-                    options={empresasTransporteOptions}
-                    value={empresasTransporte}
-                    onValueChange={setEmpresasTransporte}
-                    placeholder="Seleccionar empresas"
-                    searchPlaceholder="Buscar empresa..."
-                  />
-                </div>
+            {/* Tipo ruta */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Tipo de ruta</Label>
+              <MultiSelect
+                options={tiposRutaOptions}
+                value={tiposSeleccionados}
+                onValueChange={setTiposSeleccionados}
+                placeholder="Seleccionar tipos"
+                searchPlaceholder="Buscar tipo..."
+              />
+            </div>
 
-                {/* Empresa cliente - solo si no es parque */}
-                 {!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos') ? (
-                  <div>
-                    <label className="text-xs block mb-1">Empresa cliente</label>
-                    <MultiSelect
-                      options={empresasClienteOptions}
-                      value={empresasCliente}
-                      onValueChange={setEmpresasCliente}
-                      placeholder="Seleccionar clientes"
-                      searchPlaceholder="Buscar cliente..."
-                    />
-                  </div>
-                ) : null}
+            <div className="pt-2">
+              <Button 
+                onClick={handleBuscar} 
+                className={cn("w-full", isMobile ? "h-10" : "h-9")}
+              >
+                Buscar
+              </Button>
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
 
-                {/* Tipo ruta */}
-                <div>
-                  <label className="text-xs block mb-1">Tipo de ruta</label>
-                  <MultiSelect
-                    options={tiposRutaOptions}
-                    value={tiposSeleccionados}
-                    onValueChange={setTiposSeleccionados}
-                    placeholder="Seleccionar tipos"
-                    searchPlaceholder="Buscar tipo..."
-                  />
-                </div>
+  // Componente del contenido del panel de información/resultados
+  const InfoPanelContent = () => (
+    <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
+      <div className={cn(isMobile ? "pb-4" : "pb-2")}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Resultados</h3>
+          {!isMobile && (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setShowInfoPanel(false);
+                  setShowFilterPanel(true);
+                }}
+              >
+                <Filter className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowInfoPanel(false)}
+              >
+                <EyeOff className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
 
-                <div className="flex gap-2 pt-2">
-                  <Button onClick={handleBuscar}>Buscar</Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base flex items-center"><Search className="h-4 w-4 mr-2"/>Resultados</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-2">
-                  <Input placeholder="Buscar en resultados..." value={busquedaLocal} onChange={(e)=> setBusquedaLocal(e.target.value)} />
-                </div>
-
-                <ScrollArea className="h-[calc(100vh-420px)] pr-2">
-                  {/* Listado por modo */}
-                  {modo==='servicios' ? (
-                    <div className="space-y-4">
-                      {gruposServicios.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
-                      ) : gruposServicios.map(([grupo, items]) => (
-                        <div key={grupo} className="border rounded">
-                          <div className="px-3 py-2 font-medium bg-accent/30">{grupo}</div>
-                          <div className="divide-y">
-                            {items.map(it => (
-                              <div key={it.id} className="p-3 text-xs flex flex-col gap-1">
-                                 <div className="flex justify-between">
-                                   <div className="font-medium">Id Servicio: {it.id}</div>
-                                   <div className="text-muted-foreground">{new Date(it.inicioUtc).toLocaleString()}</div>
-                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div>Conductor: {it.conductorCodigo}</div>
-                                  <div>Ruta: {it.ruta}</div>
-                                  <div>Tipo: {it.tipoRuta}</div>
-                                  {it.empresaCliente && <div>Cliente: {it.empresaCliente}</div>}
-                                  <div>Transporte: {it.empresaTransporte}</div>
-                                  <div>Fin: {new Date(it.finUtc).toLocaleString()}</div>
-                                </div>
-                                <div className="flex gap-2 pt-1">
-                                  <Button size="sm" onClick={()=> abrirMapaServicio(it.id,'recorrido')}><Eye className="h-4 w-4 mr-2"/>Ver recorrido</Button>
-                                  <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'paradas')}>Paradas</Button>
-                                  <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'lecturas')}>Lecturas QR</Button>
-                                </div>
-                              </div>
-                            ))}
+        <div className={cn("flex items-center gap-2 text-muted-foreground mb-3", isMobile ? "text-sm" : "text-xs")}>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            {modo === 'servicios' ? `Servicios: ${resultServicios.length}` : `Buses: ${resultRango.length}`}
+          </div>
+        </div>
+        
+        {/* Input de búsqueda local */}
+        <div>
+          <Input
+            placeholder="Buscar en resultados..."
+            value={busquedaLocal}
+            onChange={(e) => setBusquedaLocal(e.target.value)}
+            className={cn(isMobile ? "h-10 text-sm" : "h-8 text-xs")}
+          />
+          {busquedaLocal && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Filtrando resultados...
+            </p>
+          )}
+        </div>
+      </div>
+      
+      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
+        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
+          <div className="space-y-2 pr-4">
+            {/* Listado por modo */}
+            {modo==='servicios' ? (
+              <div className="space-y-4">
+                {gruposServicios.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {busquedaLocal 
+                      ? "No se encontraron servicios con ese criterio de búsqueda." 
+                      : "No hay recorridos para los filtros seleccionados."
+                    }
+                  </p>
+                ) : gruposServicios.map(([grupo, items]) => (
+                  <div key={grupo} className="border rounded">
+                    <div className="px-3 py-2 font-medium bg-accent/30">{grupo}</div>
+                    <div className="divide-y">
+                      {items.map(it => (
+                        <div key={it.id} className="p-3 text-xs flex flex-col gap-1">
+                          <div className="flex justify-between">
+                            <div className="font-medium">Id Servicio: {it.id}</div>
+                            <div className="text-muted-foreground">{new Date(it.inicioUtc).toLocaleString()}</div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>Conductor: {it.conductorCodigo}</div>
+                            <div>Ruta: {it.ruta}</div>
+                            <div>Tipo: {it.tipoRuta}</div>
+                            {it.empresaCliente && <div>Cliente: {it.empresaCliente}</div>}
+                            <div>Transporte: {it.empresaTransporte}</div>
+                            <div>Fin: {new Date(it.finUtc).toLocaleString()}</div>
+                          </div>
+                          <div className="flex gap-2 pt-1">
+                            <Button size="sm" onClick={()=> abrirMapaServicio(it.id,'recorrido')}>
+                              <Eye className="h-4 w-4 mr-2"/>Ver recorrido
+                            </Button>
+                            <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'paradas')}>
+                              Paradas
+                            </Button>
+                            <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'lecturas')}>
+                              Lecturas QR
+                            </Button>
                           </div>
                         </div>
                       ))}
                     </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {listaRangoFiltrada.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
-                      ) : (
-                        listaRangoFiltrada.map(it => (
-                          <div key={it.busId} className="p-3 border rounded text-xs">
-                            <div className="font-medium">{it.identificador} — {it.placa}</div>
-                            <div className="text-muted-foreground">{it.empresaTransporte}</div>
-                            <div className="flex gap-2 pt-1">
-                              <Button size="sm" onClick={()=> abrirMapaRango(it.busId,'recorrido')}><Eye className="h-4 w-4 mr-2"/>Ver recorrido</Button>
-                              <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'paradas')}>Paradas</Button>
-                              <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'lecturas')}>Lecturas QR</Button>
-                            </div>
-                          </div>
-                        ))
-                      )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {listaRangoFiltrada.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    {busquedaLocal 
+                      ? "No se encontraron buses con ese criterio de búsqueda." 
+                      : "No hay recorridos para los filtros seleccionados."
+                    }
+                  </p>
+                ) : (
+                  listaRangoFiltrada.map(it => (
+                    <div key={it.busId} className="p-3 border rounded text-xs">
+                      <div className="font-medium">{it.identificador} — {it.placa}</div>
+                      <div className="text-muted-foreground">{it.empresaTransporte}</div>
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" onClick={()=> abrirMapaRango(it.busId,'recorrido')}>
+                          <Eye className="h-4 w-4 mr-2"/>Ver recorrido
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'paradas')}>
+                          Paradas
+                        </Button>
+                        <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'lecturas')}>
+                          Lecturas QR
+                        </Button>
+                      </div>
                     </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Panel mapa */}
-          <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
-            {!showPanel && (
-              <Button 
-                className="absolute top-4 left-4 z-50" 
-                size="sm" 
-                variant="secondary"
-                onClick={() => setShowPanel(true)}
-              >
-                <PanelLeftOpen className="h-4 w-4 mr-2" />
-                Mostrar panel
-              </Button>
+                  ))
+                )}
+              </div>
             )}
-            
-            <RecorridoMap 
-              data={mapData}
-              modo={modo}
-              initialFocus={initialFocus}
-              onRequestShowPanel={() => setShowPanel(true)}
-            />
           </div>
+        </ScrollArea>
+      </div>
+    </div>
+  );
+
+  return (
+    <Layout>
+      <div className="h-[calc(100vh-120px)] flex bg-background relative">
+        {/* Desktop Panels */}
+        {!isMobile && showInfoPanel && !showFilterPanel && (
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
+            <CardContent className="p-4 flex-1">
+              <InfoPanelContent />
+            </CardContent>
+          </Card>
+        )}
+
+        {!isMobile && showFilterPanel && (
+          <Card className="w-64 lg:w-72 flex flex-col border-r">
+            <CardContent className="p-4 flex-1">
+              <FilterPanelContent />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Mobile Header */}
+        {isMobile && (
+          <div className="absolute top-4 left-4 right-4 z-[1000] flex gap-2">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="default" size="lg" className="h-12 w-12 p-0">
+                  <Info className="h-5 w-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[75vh] flex flex-col">
+                <DrawerHeader>
+                  <DrawerTitle>Resultados</DrawerTitle>
+                </DrawerHeader>
+                <div className="flex-1 overflow-hidden px-4 pb-4">
+                  <InfoPanelContent />
+                </div>
+              </DrawerContent>
+            </Drawer>
+
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="lg" className="h-12 w-12 p-0">
+                  <Filter className="h-5 w-5" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-[90vh] flex flex-col">
+                <DrawerHeader>
+                  <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
+                </DrawerHeader>
+                <div className="flex-1 overflow-hidden px-4 pb-4">
+                  <FilterPanelContent />
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        )}
+
+        {/* Mapa */}
+        <div className="flex-1 relative">
+          {!isMobile && !showInfoPanel && !showFilterPanel && (
+            <Button
+              className="absolute top-4 left-4 z-[1000]"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowInfoPanel(true)}
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              Mostrar Panel
+            </Button>
+          )}
+          
+          <RecorridoMap 
+            data={mapData}
+            modo={modo}
+            initialFocus={initialFocus}
+            onRequestShowPanel={() => setShowInfoPanel(true)}
+          />
         </div>
       </div>
     </Layout>

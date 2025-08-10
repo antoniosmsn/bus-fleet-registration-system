@@ -169,7 +169,8 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
       <MapContainer
         center={center}
         zoom={12}
-        style={{ width: '100%', height: 'calc(100vh - 120px)' }}
+        style={{ height: '100%', width: '100%' }}
+        className="z-0"
       >
         <SetMapRef />
         <FitBoundsOnPoints points={points} />
