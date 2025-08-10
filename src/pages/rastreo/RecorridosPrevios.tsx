@@ -71,8 +71,8 @@ const RecorridosPrevios: React.FC = () => {
   const [resultRango, setResultRango] = useState<RecorridoRangoListItem[]>([]);
 
   const [mapData, setMapData] = useState<RecorridoMapData | null>(null);
-  const [showFilterPanel, setShowFilterPanel] = useState(false);
-  const [showInfoPanel, setShowInfoPanel] = useState(!isMobile);
+  const [showFilterPanel, setShowFilterPanel] = useState(true); // Mostrar filtros por defecto
+  const [showInfoPanel, setShowInfoPanel] = useState(false); // Ocultar info panel inicialmente
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
   
   // Estado para el panel multi-uso
