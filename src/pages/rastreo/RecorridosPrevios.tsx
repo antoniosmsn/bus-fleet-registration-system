@@ -539,166 +539,131 @@ const RecorridosPrevios: React.FC = () => {
 
   // Componente del contenido del panel de filtros
   const FilterPanelContent = () => (
-    <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
-      <div className={cn(isMobile ? "pb-4" : "pb-2")}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>Filtros de Búsqueda</h3>
-          {!isMobile && (
-            <div className="flex gap-2">
-              {((modo === 'servicios' && resultServicios.length > 0) || (modo === 'rango' && resultRango.length > 0)) && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setShowFilterPanel(false);
-                    setShowInfoPanel(true);
-                  }}
-                >
-                  <Info className="h-4 w-4" />
-                </Button>
-              )}
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setShowFilterPanel(false)}
-              >
-                <EyeOff className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+    <div className="space-y-4">
+      {/* Modo */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium">Modo de consulta</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <Button 
+            variant={modo==='servicios'?'default':'outline'} 
+            onClick={()=>setModo('servicios')}
+            className={cn(isMobile ? "h-10" : "h-8")}
+          >
+            Por servicios
+          </Button>
+          <Button 
+            variant={modo==='rango'?'default':'outline'} 
+            onClick={()=>setModo('rango')}
+            className={cn(isMobile ? "h-10" : "h-8")}
+          >
+            Por rango
+          </Button>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col min-h-0">
-        <ScrollArea className="flex-1">
-          <div className={cn("space-y-4 p-4", !isMobile && "text-sm")}>
-            {/* Modo */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium">Modo de consulta</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  variant={modo==='servicios'?'default':'outline'} 
-                  onClick={()=>setModo('servicios')}
-                  className={cn(isMobile ? "h-10" : "h-8")}
-                >
-                  Por servicios
-                </Button>
-                <Button 
-                  variant={modo==='rango'?'default':'outline'} 
-                  onClick={()=>setModo('rango')}
-                  className={cn(isMobile ? "h-10" : "h-8")}
-                >
-                  Por rango
-                </Button>
-              </div>
-            </div>
-
-            {/* Fechas */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium">Rango de fechas</Label>
-              <div className="grid grid-cols-1 gap-2">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Fecha/Hora inicio</Label>
-                  <Input 
-                    id="fecha-inicio"
-                    name="fecha-inicio"
-                    type="datetime-local" 
-                    value={desde} 
-                    onChange={(e)=>setDesde(e.target.value)}
-                    className={cn(isMobile ? "h-10" : "h-8")}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Fecha/Hora fin</Label>
-                  <Input 
-                    id="fecha-fin"
-                    name="fecha-fin"
-                    type="datetime-local" 
-                    value={hasta} 
-                    onChange={(e)=>setHasta(e.target.value)}
-                    className={cn(isMobile ? "h-10" : "h-8")}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Número servicio solo en servicios */}
-            {modo==='servicios' && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Número de servicio</Label>
-                <Input 
-                  id="numero-servicio"
-                  name="numero-servicio"
-                  type="text" 
-                  inputMode="numeric" 
-                  placeholder="ID exacto" 
-                  value={numeroServicio} 
-                  onChange={(e)=>setNumeroServicio(e.target.value)}
-                  className={cn(isMobile ? "h-10" : "h-8")}
-                />
-              </div>
-            )}
-
-            {/* Vehículo */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Vehículo</Label>
-              <MultiSelect
-                options={vehiculosOptions}
-                value={vehiculos}
-                onValueChange={setVehiculos}
-                placeholder="Seleccionar vehículos"
-                searchPlaceholder="Buscar vehículo..."
-              />
-            </div>
-
-            {/* Empresa transporte */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Empresa de transporte</Label>
-              <MultiSelect
-                options={empresasTransporteOptions}
-                value={empresasTransporte}
-                onValueChange={setEmpresasTransporte}
-                placeholder="Seleccionar empresas"
-                searchPlaceholder="Buscar empresa..."
-              />
-            </div>
-
-            {/* Empresa cliente */}
-            {(!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos')) && (
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Empresa cliente</Label>
-                <MultiSelect
-                  options={empresasClienteOptions}
-                  value={empresasCliente}
-                  onValueChange={setEmpresasCliente}
-                  placeholder="Seleccionar clientes"
-                  searchPlaceholder="Buscar cliente..."
-                />
-              </div>
-            )}
-
-            {/* Tipo ruta */}
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Tipo de ruta</Label>
-              <MultiSelect
-                options={tiposRutaOptions}
-                value={tiposSeleccionados}
-                onValueChange={setTiposSeleccionados}
-                placeholder="Seleccionar tipos"
-                searchPlaceholder="Buscar tipo..."
-              />
-            </div>
-
-            <div className="pt-2">
-              <Button 
-                onClick={handleBuscar} 
-                className={cn("w-full", isMobile ? "h-10" : "h-9")}
-              >
-                Buscar
-              </Button>
-            </div>
+      {/* Fechas */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium">Rango de fechas</Label>
+        <div className="grid grid-cols-1 gap-2">
+          <div>
+            <Label className="text-xs text-muted-foreground">Fecha/Hora inicio</Label>
+            <Input 
+              id="fecha-inicio"
+              name="fecha-inicio"
+              type="datetime-local" 
+              value={desde} 
+              onChange={(e)=>setDesde(e.target.value)}
+              className={cn(isMobile ? "h-10" : "h-8")}
+            />
           </div>
-        </ScrollArea>
+          <div>
+            <Label className="text-xs text-muted-foreground">Fecha/Hora fin</Label>
+            <Input 
+              id="fecha-fin"
+              name="fecha-fin"
+              type="datetime-local" 
+              value={hasta} 
+              onChange={(e)=>setHasta(e.target.value)}
+              className={cn(isMobile ? "h-10" : "h-8")}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Número servicio solo en servicios */}
+      {modo==='servicios' && (
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium">Número de servicio</Label>
+          <Input 
+            id="numero-servicio"
+            name="numero-servicio"
+            type="text" 
+            inputMode="numeric" 
+            placeholder="ID exacto" 
+            value={numeroServicio} 
+            onChange={(e)=>setNumeroServicio(e.target.value)}
+            className={cn(isMobile ? "h-10" : "h-8")}
+          />
+        </div>
+      )}
+
+      {/* Vehículo */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium">Vehículo</Label>
+        <MultiSelect
+          options={vehiculosOptions}
+          value={vehiculos}
+          onValueChange={setVehiculos}
+          placeholder="Seleccionar vehículos"
+          searchPlaceholder="Buscar vehículo..."
+        />
+      </div>
+
+      {/* Empresa transporte */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium">Empresa de transporte</Label>
+        <MultiSelect
+          options={empresasTransporteOptions}
+          value={empresasTransporte}
+          onValueChange={setEmpresasTransporte}
+          placeholder="Seleccionar empresas"
+          searchPlaceholder="Buscar empresa..."
+        />
+      </div>
+
+      {/* Empresa cliente */}
+      {(!tiposSeleccionados.includes('Parque') || tiposSeleccionados.includes('todos')) && (
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium">Empresa cliente</Label>
+          <MultiSelect
+            options={empresasClienteOptions}
+            value={empresasCliente}
+            onValueChange={setEmpresasCliente}
+            placeholder="Seleccionar clientes"
+            searchPlaceholder="Buscar cliente..."
+          />
+        </div>
+      )}
+
+      {/* Tipo ruta */}
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium">Tipo de ruta</Label>
+        <MultiSelect
+          options={tiposRutaOptions}
+          value={tiposSeleccionados}
+          onValueChange={setTiposSeleccionados}
+          placeholder="Seleccionar tipos"
+          searchPlaceholder="Buscar tipo..."
+        />
+      </div>
+
+      <div className="pt-2">
+        <Button 
+          onClick={handleBuscar} 
+          className={cn("w-full", isMobile ? "h-10" : "h-9")}
+        >
+          Buscar
+        </Button>
       </div>
     </div>
   );
