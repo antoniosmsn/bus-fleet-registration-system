@@ -59,15 +59,27 @@ function generatePolyline(start: {lat:number; lng:number}, end: {lat:number; lng
 }
 
 function createStopsAlongPath(poly: {lat:number; lng:number}[], count: number, prefix: string): StopInfo[] {
+  const costaRicaPlaces = [
+    'San José Centro', 'Plaza de la Cultura', 'Mercado Central', 'Barrio Escalante',
+    'Hospital San Juan de Dios', 'Universidad de Costa Rica', 'Estación del Pacífico',
+    'Sabana Norte', 'Pavas Centro', 'Escazú Centro', 'Santa Ana Centro',
+    'Alajuela Centro', 'Hospital San Rafael', 'Aeropuerto Juan Santamaría',
+    'Heredia Centro', 'Universidad Nacional', 'Cartago Centro', 'Basílica de los Ángeles',
+    'Tres Ríos', 'Desamparados', 'Aserrí', 'Curridabat', 'Guadalupe',
+    'Moravia', 'Tibás', 'Goicoechea', 'Montes de Oca', 'La Unión',
+    'Zona Franca El Coyol', 'Ciudad Colón', 'Puriscal', 'Aserrí Centro'
+  ];
+  
   const step = Math.max(1, Math.floor(poly.length / count));
   const stops: StopInfo[] = [];
   for (let i = 0; i < count; i++) {
     const idx = Math.min(poly.length - 1, i * step);
-    const id = `${prefix}-${(i+1).toString().padStart(2,'0')}`;
+    const id = (i + 1).toString();
+    const nombre = costaRicaPlaces[i % costaRicaPlaces.length];
     stops.push({
       id,
       codigo: id,
-      nombre: `Parada ${i+1}`,
+      nombre,
       lat: poly[idx].lat,
       lng: poly[idx].lng,
     });
