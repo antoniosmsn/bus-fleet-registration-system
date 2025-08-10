@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen, X, Info } from 'lucide-react';
+import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen, X, Info, Target, User, Settings, RotateCcw } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
@@ -74,6 +74,10 @@ const RecorridosPrevios: React.FC = () => {
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(!isMobile);
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
+  
+  // Estado para el panel multi-uso
+  const [sidebarContent, setSidebarContent] = useState<'resultados' | 'paradas' | 'lecturas' | 'controles'>('resultados');
+  const [layerData, setLayerData] = useState<{[key: string]: any}>({});
 
   const empresasTransporteOptions = useMemo(() => [
     { value: 'todos', label: 'Todos' },
@@ -199,6 +203,334 @@ const RecorridosPrevios: React.FC = () => {
       setShowFilterPanel(false);
       setShowInfoPanel(false);
     }
+  };
+
+  // Handler para los datos de las capas del mapa
+  const handleLayerDataChange = (layerType: 'paradas' | 'lecturas' | 'controles', data: any) => {
+    setLayerData(prev => ({ ...prev, [layerType]: data }));
+  };
+
+  // Componente para el contenido de paradas en el sidebar
+  const ParadasSidebarContent = () => {
+    const data = layerData.paradas;
+    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de paradas disponibles.</div>;
+
+    const { allStops, selectedStops, setSelectedStops, showRadios, setShowRadios, mapRef } = data;
+    
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium">Paradas ({allStops?.length || 0})</h4>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant={showRadios ? 'default' : 'outline'} 
+              onClick={() => setShowRadios(!showRadios)}
+              className="h-7 px-2"
+            >
+              Radios
+            </Button>
+          </div>
+        </div>
+        
+        {modo === 'rango' && (
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => setSelectedStops(allStops?.map(s => s.id) || [])}
+              className="h-7 px-2"
+            >
+              Todas
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => setSelectedStops([])}
+              className="h-7 px-2"
+            >
+              Ninguna
+            </Button>
+          </div>
+        )}
+
+        <ScrollArea className="h-[calc(100vh-400px)]">
+          <div className="space-y-2 pr-2">
+            {!allStops || allStops.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No hay paradas registradas.</p>
+            ) : (
+              allStops.map((st: any) => {
+                const selected = selectedStops?.includes(st.id);
+                return (
+                  <div key={st.id} className="flex items-center justify-between text-xs border rounded p-2">
+                    <div className="flex-1">
+                      <div className="font-medium">{st.codigo} — {st.nombre}</div>
+                      {st.visitada && st.llegadaUtc && (
+                        <div className="text-muted-foreground">
+                          Llegada: {new Date(st.llegadaUtc).toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        onClick={() => {
+                          if (mapRef?.current) {
+                            mapRef.current.setView([st.lat, st.lng], 17, { animate: true });
+                          }
+                        }}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Eye className="h-3 w-3" />
+                      </Button>
+                      {modo === 'rango' && (
+                        <input 
+                          type="checkbox" 
+                          checked={selected} 
+                          onChange={() => {
+                            setSelectedStops((prev: string[]) => 
+                              selected ? prev.filter(id => id !== st.id) : [...prev, st.id]
+                            );
+                          }} 
+                          className="h-3 w-3"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  };
+
+  // Componente para el contenido de lecturas QR en el sidebar
+  const LecturasSidebarContent = () => {
+    const data = layerData.lecturas;
+    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de lecturas disponibles.</div>;
+
+    const { qrClusters, qrReadings, agruparLecturas, setAgruparLecturas, qrSearch, setQrSearch, filteredQRList, mapRef } = data;
+    
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-medium">Lecturas QR</h4>
+          <div className="flex items-center gap-2">
+            <label className="text-xs">Agrupar</label>
+            <input 
+              type="checkbox" 
+              checked={agruparLecturas} 
+              onChange={(e) => setAgruparLecturas(e.target.checked)}
+              className="h-3 w-3"
+            />
+          </div>
+        </div>
+
+        {!agruparLecturas && (
+          <Input 
+            placeholder="Filtrar por cédula..." 
+            value={qrSearch} 
+            onChange={(e) => setQrSearch(e.target.value)}
+            className="h-8 text-xs"
+          />
+        )}
+
+        <ScrollArea className="h-[calc(100vh-400px)]">
+          <div className="space-y-2 pr-2">
+            {agruparLecturas ? (
+              !qrClusters || qrClusters.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No hay lecturas QR agrupadas.</p>
+              ) : (
+                qrClusters.map((cluster: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
+                    <div className="flex-1">
+                      <div className="font-medium">Grupo {idx + 1}</div>
+                      <div className="text-muted-foreground">{cluster.count} lecturas</div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => {
+                        if (mapRef?.current) {
+                          mapRef.current.setView([cluster.lat, cluster.lng], 17, { animate: true });
+                        }
+                      }}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))
+              )
+            ) : (
+              !filteredQRList || filteredQRList.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No hay lecturas QR individuales.</p>
+              ) : (
+                filteredQRList.map((qr: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
+                    <div className="flex-1">
+                      <div className="font-medium">{qr.cedula}</div>
+                      <div className="text-muted-foreground">
+                        {new Date(qr.timestampUtc).toLocaleString()}
+                      </div>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => {
+                        if (mapRef?.current) {
+                          mapRef.current.setView([qr.lat, qr.lng], 17, { animate: true });
+                        }
+                      }}
+                      className="h-6 w-6 p-0"
+                    >
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))
+              )
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+    );
+  };
+
+  // Componente para el contenido de controles en el sidebar
+  const ControlesSidebarContent = () => {
+    const data = layerData.controles;
+    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de controles disponibles.</div>;
+
+    const { speedThreshold, setSpeedThreshold, points, modo, data: mapData } = data;
+    
+    return (
+      <div className="space-y-4">
+        <div>
+          <h4 className="text-sm font-medium mb-2">Controles del Mapa</h4>
+          
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs block mb-1">Umbral velocidad (km/h)</label>
+              <Input 
+                type="number" 
+                min={0} 
+                max={150} 
+                value={speedThreshold} 
+                onChange={(e) => setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value) || 0)))}
+                className="h-8 text-xs"
+              />
+            </div>
+
+            <div className="text-xs text-muted-foreground space-y-1">
+              <div>Total puntos: {points?.length || 0}</div>
+              {modo === 'servicios' && mapData && (
+                <>
+                  <div>Paradas: {mapData.stops?.length || 0}</div>
+                  <div>Lecturas QR: {mapData.qrReadings?.length || 0}</div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Panel lateral multi-uso
+  const MultiPurposeSidebarContent = () => {
+    // Mostrar resultados por defecto cuando no hay mapa cargado
+    if (sidebarContent === 'resultados' || !mapData) {
+      return <InfoPanelContent />;
+    }
+
+    return (
+      <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
+        <div className={cn(isMobile ? "pb-4" : "pb-2")}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>
+                {sidebarContent === 'paradas' && 'Paradas'}
+                {sidebarContent === 'lecturas' && 'Lecturas QR'}
+                {sidebarContent === 'controles' && 'Controles'}
+              </h3>
+            </div>
+            {!isMobile && (
+              <div className="flex gap-1">
+                <Button 
+                  variant={!mapData ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => {
+                    setSidebarContent('resultados');
+                    setShowInfoPanel(true);
+                  }}
+                  className="h-7 px-2"
+                >
+                  <Info className="h-3 w-3" />
+                </Button>
+                {mapData && (
+                  <>
+                    <Button 
+                      variant={sidebarContent === 'paradas' ? 'default' : 'outline'} 
+                      size="sm"
+                      onClick={() => setSidebarContent('paradas')}
+                      className="h-7 px-2"
+                    >
+                      <Target className="h-3 w-3" />
+                    </Button>
+                    <Button 
+                      variant={sidebarContent === 'lecturas' ? 'default' : 'outline'} 
+                      size="sm"
+                      onClick={() => setSidebarContent('lecturas')}
+                      className="h-7 px-2"
+                    >
+                      <User className="h-3 w-3" />
+                    </Button>
+                    <Button 
+                      variant={sidebarContent === 'controles' ? 'default' : 'outline'} 
+                      size="sm"
+                      onClick={() => setSidebarContent('controles')}
+                      className="h-7 px-2"
+                    >
+                      <Settings className="h-3 w-3" />
+                    </Button>
+                  </>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setShowInfoPanel(false);
+                    setShowFilterPanel(true);
+                  }}
+                  className="h-7 px-2"
+                >
+                  <Filter className="h-3 w-3" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowInfoPanel(false)}
+                  className="h-7 px-2"
+                >
+                  <EyeOff className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
+          <div className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
+            {sidebarContent === 'paradas' && <ParadasSidebarContent />}
+            {sidebarContent === 'lecturas' && <LecturasSidebarContent />}
+            {sidebarContent === 'controles' && <ControlesSidebarContent />}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   // Componente del contenido del panel de filtros
@@ -504,7 +836,7 @@ const RecorridosPrevios: React.FC = () => {
         {!isMobile && showInfoPanel && !showFilterPanel && (
           <Card className="w-64 lg:w-72 flex flex-col border-r">
             <CardContent className="p-4 flex-1">
-              <InfoPanelContent />
+              <MultiPurposeSidebarContent />
             </CardContent>
           </Card>
         )}
@@ -573,6 +905,7 @@ const RecorridosPrevios: React.FC = () => {
             modo={modo}
             initialFocus={initialFocus}
             onRequestShowPanel={() => setShowInfoPanel(true)}
+            onLayerDataChange={handleLayerDataChange}
           />
         </div>
       </div>

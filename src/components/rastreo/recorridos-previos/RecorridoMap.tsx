@@ -99,9 +99,10 @@ interface RecorridoMapProps {
   initialFocus: InitialFocus;
   radioParadaMts?: number; // default 30
   onRequestShowPanel: () => void;
+  onLayerDataChange?: (layerType: 'paradas' | 'lecturas' | 'controles', data: any) => void;
 }
 
-export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel }) => {
+export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel, onLayerDataChange }) => {
   const points = data?.telemetria ?? [];
   const [speedThreshold, setSpeedThreshold] = useState<number>(90);
   const [showRecorrido, setShowRecorrido] = useState(true);
@@ -132,14 +133,6 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const pathPositions = useMemo(() => points.map(p => [p.lat, p.lng] as [number, number]), [points]);
 
-  
-
-  const handleResetView = () => {
-    if (!mapRef.current || points.length === 0) return;
-    const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
-    mapRef.current.fitBounds(bounds, { padding: [24,24] });
-  };
-
   const selectedStopsObjects: StopInfo[] = useMemo(() => {
     const set = new Set(selectedStops);
     return allStops.filter(s => set.has(s.id));
@@ -152,6 +145,55 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
     const q = qrSearch.toLowerCase();
     return data.qrReadings.filter(r => r.cedula.toLowerCase().includes(q));
   }, [agruparLecturas, data, qrSearch]);
+
+  const handleResetView = () => {
+    if (!mapRef.current || points.length === 0) return;
+    const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
+    mapRef.current.fitBounds(bounds, { padding: [24,24] });
+  };
+
+  // Notificar cambios en los datos al panel lateral
+  useEffect(() => {
+    if (onLayerDataChange) {
+      onLayerDataChange('paradas', {
+        allStops,
+        selectedStops,
+        selectedStopsObjects,
+        setSelectedStops,
+        radioParadaMts,
+        showRadios,
+        setShowRadios,
+        mapRef
+      });
+    }
+  }, [allStops, selectedStops, selectedStopsObjects, radioParadaMts, showRadios, onLayerDataChange]);
+
+  useEffect(() => {
+    if (onLayerDataChange) {
+      onLayerDataChange('lecturas', {
+        qrClusters: data?.qrClusters || [],
+        qrReadings: data?.qrReadings || [],
+        agruparLecturas,
+        setAgruparLecturas,
+        qrSearch,
+        setQrSearch,
+        filteredQRList,
+        mapRef
+      });
+    }
+  }, [data?.qrClusters, data?.qrReadings, agruparLecturas, qrSearch, filteredQRList, onLayerDataChange]);
+
+  useEffect(() => {
+    if (onLayerDataChange) {
+      onLayerDataChange('controles', {
+        speedThreshold,
+        setSpeedThreshold,
+        points,
+        modo,
+        data
+      });
+    }
+  }, [speedThreshold, points, modo, data, onLayerDataChange]);
 
   const startPoint = modo === 'servicios' && points.length > 0 ? points[0] : null;
   const endPoint = modo === 'servicios' && points.length > 1 ? points[points.length-1] : null;
@@ -337,134 +379,39 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
         </Button>
       </div>
 
-      {/* Sección de capas sobre el mapa */}
-      <div className="absolute top-3 right-3 z-[400] w-80 max-w-[90vw]">
-        <Card>
-          <CardHeader className="py-3">
-            <CardTitle className="text-sm flex items-center">
-              <Layers className="h-4 w-4 mr-2" /> Capas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-2">
-              <Button size="sm" variant={showRecorrido? 'default':'outline'} onClick={()=>setShowRecorrido(v=>!v)}>
-                {showRecorrido ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
-                Recorrido
+      {/* Panel de capas simplificado y compacto */}
+      <div className="absolute top-14 right-3 z-[400]">
+        <Card className="w-auto">
+          <CardContent className="p-3">
+            <div className="flex gap-1">
+              <Button 
+                size="sm" 
+                variant={showRecorrido ? 'default' : 'outline'} 
+                onClick={() => setShowRecorrido(v => !v)}
+                className="h-8 px-2"
+                title="Mostrar/ocultar recorrido"
+              >
+                {showRecorrido ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
               </Button>
-              <Button size="sm" variant={showParadas? 'default':'outline'} onClick={()=>setShowParadas(v=>!v)}>
-                {showParadas ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
-                Paradas
+              <Button 
+                size="sm" 
+                variant={showParadas ? 'default' : 'outline'} 
+                onClick={() => setShowParadas(v => !v)}
+                className="h-8 px-2"
+                title="Mostrar/ocultar paradas"
+              >
+                <Target className="h-3 w-3" />
               </Button>
-              <Button size="sm" variant={showLecturas? 'default':'outline'} onClick={()=>setShowLecturas(v=>!v)}>
-                {showLecturas ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
-                Lecturas QR
-              </Button>
-              <Button size="sm" variant={showRadios? 'default':'outline'} onClick={()=>setShowRadios(v=>!v)}>
-                {showRadios ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
-                Radios paradas
+              <Button 
+                size="sm" 
+                variant={showLecturas ? 'default' : 'outline'} 
+                onClick={() => setShowLecturas(v => !v)}
+                className="h-8 px-2"
+                title="Mostrar/ocultar lecturas QR"
+              >
+                <User className="h-3 w-3" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Controles y detalles */}
-      <div className="absolute bottom-3 right-3 z-[400] w-80 max-w-[90vw]">
-        <Card>
-          <CardHeader className="py-3">
-            <CardTitle className="text-sm">Controles</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
-              <label className="text-xs block mb-1">Umbral de exceso de velocidad (km/h)</label>
-              <Input type="number" min={0} max={150} value={speedThreshold} onChange={(e)=> setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value)||0)))} />
-            </div>
-
-            <RecorridoMapExport data={data} modo={modo} />
-
-            <Tabs value={activeTab} onValueChange={(v)=> setActiveTab(v as InitialFocus)}>
-              <TabsList className="grid grid-cols-3">
-                <TabsTrigger value="recorrido">Recorrido</TabsTrigger>
-                <TabsTrigger value="paradas">Paradas</TabsTrigger>
-                <TabsTrigger value="lecturas">Lecturas</TabsTrigger>
-              </TabsList>
-              <TabsContent value="recorrido" className="pt-2">
-                <p className="text-xs text-muted-foreground">Total puntos: {points.length}</p>
-              </TabsContent>
-              <TabsContent value="paradas" className="pt-2">
-                {modo === 'rango' && (
-                  <div className="flex gap-2 mb-2">
-                    <Button size="sm" variant="outline" onClick={()=> setSelectedStops(allStops.map(s=>s.id))}>Seleccionar todas</Button>
-                    <Button size="sm" variant="outline" onClick={()=> setSelectedStops([])}>Limpiar</Button>
-                  </div>
-                )}
-                <ScrollArea className="h-48 pr-2">
-                  {allStops.length === 0 ? (
-                    <p className="text-xs text-muted-foreground">No hay paradas registradas en este recorrido.</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {allStops.map(st => {
-                        const selected = selectedStops.includes(st.id);
-                        return (
-                          <div key={st.id} className="flex items-center justify-between text-xs border rounded p-2">
-                            <div>
-                              <div className="font-medium">{st.codigo} — {st.nombre}</div>
-                              {st.visitada && <div className="text-muted-foreground">Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button size="icon" variant="ghost" onClick={() => {
-                                if (mapRef.current) {
-                                  mapRef.current.setView([st.lat, st.lng], 17, { animate: true });
-                                }
-                              }}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                              <input type="checkbox" checked={selected} onChange={() => {
-                                setSelectedStops(prev => selected ? prev.filter(id=>id!==st.id) : [...prev, st.id]);
-                              }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </ScrollArea>
-              </TabsContent>
-              <TabsContent value="lecturas" className="pt-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs">Agrupar lecturas</span>
-                  <input type="checkbox" checked={agruparLecturas} onChange={(e)=> setAgruparLecturas(e.target.checked)} />
-                </div>
-                {!agruparLecturas && (
-                  <div className="mb-2">
-                    <Input placeholder="Filtrar por cédula" value={qrSearch} onChange={(e)=> setQrSearch(e.target.value)} />
-                  </div>
-                )}
-                <ScrollArea className="h-48 pr-2">
-                  {showLecturas && agruparLecturas && (data?.qrClusters?.length ?? 0) === 0 && (
-                    <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
-                  )}
-                  {!agruparLecturas && filteredQRList.length === 0 && (
-                    <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
-                  )}
-                  {!agruparLecturas && filteredQRList.length > 0 && (
-                    <div className="space-y-2">
-                      {filteredQRList.map((qr, idx) => (
-                        <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
-                          <div>
-                            <div className="font-medium">{qr.cedula}</div>
-                            <div className="text-muted-foreground">{new Date(qr.timestampUtc).toLocaleString()}</div>
-                          </div>
-                          <Button size="icon" variant="ghost" onClick={() => mapRef.current?.setView([qr.lat, qr.lng], 17, { animate: true })}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
           </CardContent>
         </Card>
       </div>
