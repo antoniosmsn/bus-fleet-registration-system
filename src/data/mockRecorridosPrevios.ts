@@ -63,11 +63,11 @@ function createStopsAlongPath(poly: {lat:number; lng:number}[], count: number, p
   const stops: StopInfo[] = [];
   for (let i = 0; i < count; i++) {
     const idx = Math.min(poly.length - 1, i * step);
-    const id = `${(i+1).toString().padStart(2,'0')}`;
+    const id = `${prefix}-${(i+1).toString().padStart(2,'0')}`;
     stops.push({
       id,
       codigo: id,
-      nombre: `${i+1}`,
+      nombre: `Parada ${i+1}`,
       lat: poly[idx].lat,
       lng: poly[idx].lng,
     });
@@ -107,27 +107,26 @@ const buses: BusInfo[] = Array.from({ length: 200 }).map((_, idx) => {
 
 // Rutas base
 const rutasBase = [
-  { nombre:"SJ-Coyol", inicio: SAN_JOSE, fin: COYOL_ZF, provincia: 'San José' },
-  { nombre:"Alajuela-Coyol", inicio: ALAJUELA, fin: COYOL_ZF, provincia: 'Alajuela' },
-  { nombre:"Coyol-Cartago", inicio: COYOL_ZF, fin: CARTAGO, provincia: 'Cartago' },
+  { nombre: "Cartago al Coyol", inicio: CARTAGO, fin: COYOL_ZF, provincia: 'Cartago' },
 ];
 
 const serviciosStore = new Map<string, ServicioMock>();
+
+// Último rango de filtro aplicado (para re-temporizar datos de mocks)
+let lastFilterRange: { desdeUtc: string; hastaUtc: string } | null = null;
 
 // Generación de 10 servicios por bus
 (function generateServiciosPorBus(){
   const now = new Date();
   for (const bus of buses) {
-    for (let s = 0; s < 10; s++) {
-      const ruta = randomChoice(rutasBase);
-      // Asegurar que inician o terminan en Coyol
-      const startAtCoyol = Math.random() < 0.5;
-      const start = startAtCoyol ? COYOL_ZF : ruta.inicio;
-      const end = startAtCoyol ? ruta.fin : COYOL_ZF;
-      const poly = generatePolyline(start, end, randomInt(80, 140));
-      const inicio = new Date(now.getTime() - randomInt(1, 7) * 24 * 3600 * 1000 - randomInt(0, 23) * 3600 * 1000 - randomInt(0, 59) * 60 * 1000);
-      const durMin = randomInt(40, 120);
-      const fin = new Date(inicio.getTime() + durMin * 60 * 1000);
+for (let s = 0; s < 10; s++) {
+  const ruta = rutasBase[0]; // Solo "Cartago al Coyol"
+  const start = ruta.inicio; // Cartago
+  const end = ruta.fin;      // Coyol
+  const poly = generatePolyline(start, end, randomInt(80, 140));
+  const inicio = new Date(now.getTime() - randomInt(1, 7) * 24 * 3600 * 1000 - randomInt(0, 23) * 3600 * 1000 - randomInt(0, 59) * 60 * 1000);
+  const durMin = randomInt(40, 120);
+  const fin = new Date(inicio.getTime() + durMin * 60 * 1000);
 
       const telemetria: TelemetriaPoint[] = poly.map((p, i) => {
         const t = new Date(inicio.getTime() + (i / (poly.length - 1)) * (fin.getTime() - inicio.getTime()));
@@ -197,19 +196,17 @@ export interface FiltrosBase {
 }
 
 export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
+  lastFilterRange = { desdeUtc: f.desdeUtc, hastaUtc: f.hastaUtc };
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
   let items = Array.from(serviciosStore.values()).map(v => v.item);
 
   // Por servicios: inicio dentro del rango (sin importar fin)
   items = items.filter(it => {
-    const inicio = new Date(it.inicioUtc);
-    return inicio >= desde && inicio <= hasta;
+    // Permitimos cualquier item y re-temporizamos después, pero si tiene numeroServicio aplicamos exacto
+    if (f.numeroServicio) return it.id.endsWith(f.numeroServicio as string) || it.id === f.numeroServicio;
+    return true;
   });
-
-  if (f.numeroServicio) {
-    items = items.filter(it => it.id.endsWith(f.numeroServicio as string) || it.id === f.numeroServicio);
-  }
 
   if (f.vehiculos && f.vehiculos.length && !f.vehiculos.includes('todos')) {
     const needle = new Set(f.vehiculos);
@@ -231,20 +228,79 @@ export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
     items = items.filter(it => set.has(it.tipoRuta));
   }
 
-  // Agrupar por bus y ordenar inicio asc
+  // Ordenar por bus y hora
   items.sort((a,b) => a.identificador.localeCompare(b.identificador) || new Date(a.inicioUtc).getTime() - new Date(b.inicioUtc).getTime());
+
+  // Limitar a 20 por rendimiento y re-temporizar al rango solicitado
+  items = items.slice(0, 20).map(it => {
+    const svc = serviciosStore.get(it.id)!;
+    const origIni = new Date(svc.item.inicioUtc);
+    const origFin = new Date(svc.item.finUtc);
+    const dur = Math.max(1, origFin.getTime() - origIni.getTime());
+
+    let targetStart = new Date(desde);
+    // Si no cabe completo dentro del rango, lo ajustamos al final sin exceder 'hasta'
+    if (targetStart.getTime() + dur > hasta.getTime()) {
+      targetStart = new Date(Math.max(desde.getTime(), hasta.getTime() - dur));
+    }
+    const targetEnd = new Date(Math.min(hasta.getTime(), targetStart.getTime() + dur));
+
+    return { ...it, inicioUtc: toIsoUtc(targetStart), finUtc: toIsoUtc(targetEnd) };
+  });
+
   return items;
 }
 
 export function getMapDataForServicio(id: string): RecorridoMapData | null {
   const svc = serviciosStore.get(id);
   if (!svc) return null;
+
+  // Re-temporizar al último rango aplicado si existe
+  let telemetria = svc.telemetria.map(p => ({ ...p }));
+  let stops = svc.stops.map(s => ({ ...s }));
+  let qrReadings = svc.qrReadings.map(r => ({ ...r }));
+
+  if (lastFilterRange) {
+    const desde = new Date(lastFilterRange.desdeUtc);
+    const hasta = new Date(lastFilterRange.hastaUtc);
+    const origIni = new Date(svc.item.inicioUtc);
+    const origFin = new Date(svc.item.finUtc);
+    const dur = Math.max(1, origFin.getTime() - origIni.getTime());
+    let targetStart = new Date(desde);
+    if (targetStart.getTime() + dur > hasta.getTime()) {
+      targetStart = new Date(Math.max(desde.getTime(), hasta.getTime() - dur));
+    }
+    const shiftMs = targetStart.getTime() - origIni.getTime();
+
+    telemetria = telemetria.map(p => ({
+      ...p,
+      timestampUtc: toIsoUtc(new Date(new Date(p.timestampUtc).getTime() + shiftMs))
+    }));
+    stops = stops.map(s => ({
+      ...s,
+      llegadaUtc: s.llegadaUtc ? toIsoUtc(new Date(new Date(s.llegadaUtc).getTime() + shiftMs)) : s.llegadaUtc ?? null
+    }));
+    qrReadings = qrReadings.map(r => ({
+      ...r,
+      timestampUtc: toIsoUtc(new Date(new Date(r.timestampUtc).getTime() + shiftMs))
+    }));
+  }
+
+  // Reducir puntos de la polilínea por rendimiento
+  const MAX_POINTS = 300;
+  if (telemetria.length > MAX_POINTS) {
+    const step = Math.ceil(telemetria.length / MAX_POINTS);
+    telemetria = telemetria.filter((_, i) => i % step === 0 || i === telemetria.length - 1);
+  }
+
+  const qrClusters = clusterReadings(qrReadings);
+
   return {
     modo: 'servicios',
-    telemetria: svc.telemetria,
-    stops: svc.stops,
-    qrClusters: svc.qrClusters,
-    qrReadings: svc.qrReadings,
+    telemetria,
+    stops,
+    qrClusters,
+    qrReadings,
   };
 }
 
@@ -324,48 +380,55 @@ function generateZonaFrancaStops(): StopInfo[] {
 const zonaFrancaStops = generateZonaFrancaStops();
 
 export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: string): RecorridoMapData | null {
+  lastFilterRange = { desdeUtc, hastaUtc };
   const desde = new Date(desdeUtc);
   const hasta = new Date(hastaUtc);
-  // Unir telemetrías de servicios del bus dentro del rango
+
+  // Tomar el servicio más largo del bus como base para construir el recorrido del rango
   const servicios = Array.from(serviciosStore.values()).filter(v => v.item.busId === busId);
-  const points: TelemetriaPoint[] = [];
-  for (const s of servicios) {
-    const ini = new Date(s.item.inicioUtc);
-    const fin = new Date(s.item.finUtc);
-    if (fin >= desde && ini <= hasta) {
-      points.push(...s.telemetria.filter(p => {
-        const t = new Date(p.timestampUtc);
-        return t >= desde && t <= hasta;
-      }));
-    }
+  if (servicios.length === 0) {
+    return {
+      modo: 'rango',
+      telemetria: [],
+      stops: zonaFrancaStops,
+      qrClusters: [],
+      qrReadings: [],
+    };
   }
-  points.sort((a,b) => new Date(a.timestampUtc).getTime() - new Date(b.timestampUtc).getTime());
+  const base = servicios.reduce((a,b) => (
+    (a.telemetria.length >= b.telemetria.length) ? a : b
+  ));
 
-  if (points.length === 0) return {
-    modo: 'rango',
-    telemetria: [],
-    stops: zonaFrancaStops, // Mostrar todas las paradas de zona franca aunque no haya telemetría
-    qrClusters: [],
-    qrReadings: [],
-  };
+  // Base de puntos (posiciones) sin considerar tiempos originales
+  let points = base.telemetria.map(p => ({ ...p }));
 
-  // En modo rango: devolver todas las paradas de la zona franca
-  const stops = zonaFrancaStops.map(stop => ({
-    ...stop,
-    // Marcar algunas como visitadas si hay telemetría cerca
-    visitada: points.some(p => 
-      Math.abs(p.lat - stop.lat) < 0.001 && Math.abs(p.lng - stop.lng) < 0.001
-    ),
-    llegadaUtc: points.find(p => 
-      Math.abs(p.lat - stop.lat) < 0.001 && Math.abs(p.lng - stop.lng) < 0.001
-    )?.timestampUtc
-  }));
+  // Reducir puntos por rendimiento
+  const MAX_POINTS = 300;
+  if (points.length > MAX_POINTS) {
+    const step = Math.ceil(points.length / MAX_POINTS);
+    points = points.filter((_, i) => i % step === 0 || i === points.length - 1);
+  }
 
-  // Lecturas QR individuales aleatorias en el rango
-  const qrReadings: QRReading[] = Array.from({ length: 40 }).map((_,i) => {
-    const tp = points[randomInt(0, points.length-1)];
+  // Reasignar tiempos uniformemente en el rango [desde, hasta]
+  const totalMs = Math.max(1, hasta.getTime() - desde.getTime());
+  points = points.map((p, i) => {
+    const t = (points.length > 1) ? (i / (points.length - 1)) : 0;
+    const ts = new Date(desde.getTime() + Math.round(t * totalMs));
+    return { ...p, timestampUtc: toIsoUtc(ts) };
+  });
+
+  // Paradas de zona franca, marcar visitadas si hay puntos cerca
+  const stops = zonaFrancaStops.map(stop => {
+    const idx = points.findIndex(p => Math.abs(p.lat - stop.lat) < 0.001 && Math.abs(p.lng - stop.lng) < 0.001);
+    const llegadaUtc = idx >= 0 ? points[idx].timestampUtc : null;
+    return { ...stop, visitada: idx >= 0, llegadaUtc };
+  });
+
+  // Generar lecturas QR sobre el recorrido
+  const qrReadings: QRReading[] = Array.from({ length: Math.min(40, points.length) }).map(() => {
+    const p = points[Math.floor(Math.random() * points.length)];
     const cedula = String(randomInt(100000000, 999999999));
-    return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc };
+    return { cedula, lat: p.lat + (Math.random()-0.5)*0.0008, lng: p.lng + (Math.random()-0.5)*0.0008, timestampUtc: p.timestampUtc };
   });
   const qrClusters = clusterReadings(qrReadings);
 
