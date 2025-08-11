@@ -20,6 +20,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MultiSelect } from '@/components/ui/multi-select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Helpers
 const startOfToday = () => {
@@ -249,112 +250,142 @@ const TelemetriaListado: React.FC = () => {
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div>
-              <label className="block text-sm mb-1">Rol (simulado)</label>
-              <RolSelector rol={rol} onChange={setRol} />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm mb-1">Rango de fecha y hora</label>
-              <DateRangePicker value={dateRange} onChange={setDateRange} />
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Tipo de registro</label>
-              <MultiSelect
-                options={[{ value: 'todos', label: 'Todos' }, ...tiposRegistro.map(t => ({ value: t, label: t }))]}
-                value={filtros.tiposRegistro.length ? filtros.tiposRegistro : ['todos']}
-                onValueChange={(vals) => {
-                  setFiltros({
+          <div>
+            <label className="block text-sm mb-1">Rol (simulado)</label>
+            <RolSelector rol={rol} onChange={setRol} />
+          </div>
+
+          <Tabs defaultValue="fechas" className="w-full">
+            <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
+              <TabsTrigger value="fechas">Fechas</TabsTrigger>
+              <TabsTrigger value="servicio">Servicio</TabsTrigger>
+              <TabsTrigger value="vehiculo">Vehículo</TabsTrigger>
+              <TabsTrigger value="conductor">Conductor</TabsTrigger>
+              <TabsTrigger value="empresas">Empresas</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="fechas" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="md:col-span-2">
+                  <label className="block text-sm mb-1">Rango de fecha y hora</label>
+                  <DateRangePicker value={dateRange} onChange={setDateRange} />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="servicio" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm mb-1">Tipo de registro</label>
+                  <MultiSelect
+                    options={[{ value: 'todos', label: 'Todos' }, ...tiposRegistro.map(t => ({ value: t, label: t }))]}
+                    value={filtros.tiposRegistro.length ? filtros.tiposRegistro : ['todos']}
+                    onValueChange={(vals) => {
+                      setFiltros({
+                        ...filtros,
+                        tiposRegistro: vals.includes('todos') ? [] : (vals as TipoRegistro[]),
+                      });
+                    }}
+                    placeholder="Todos"
+                    searchPlaceholder="Buscar tipo..."
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Ruta</label>
+                  <Select value={filtros.ruta || '__ALL__'} onValueChange={v => setFiltros({
                     ...filtros,
-                    tiposRegistro: vals.includes('todos') ? [] : (vals as TipoRegistro[]),
-                  });
-                }}
-                placeholder="Todos"
-                searchPlaceholder="Buscar tipo..."
-                className="w-full"
-              />
-            </div>
-          </div>
+                    ruta: v === '__ALL__' ? '' : v
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent className="z-50 bg-popover">
+                      <SelectItem value="__ALL__">Todos</SelectItem>
+                      {rutas.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </TabsContent>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-            <div>
-              <label className="block text-sm mb-1">Ruta</label>
-              <Select value={filtros.ruta || '__ALL__'} onValueChange={v => setFiltros({
-              ...filtros,
-              ruta: v === '__ALL__' ? '' : v
-            })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent className="z-50 bg-popover">
-                  <SelectItem value="__ALL__">Todos</SelectItem>
-                  {rutas.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Placa</label>
-              <Input value={filtros.placa} onChange={e => setFiltros({
-              ...filtros,
-              placa: e.target.value
-            })} placeholder="Buscar..." />
-            </div>
-            <div>
-              <label className="block text-sm mb-1">ID autobús</label>
-              <Input value={filtros.busId} onChange={e => setFiltros({
-              ...filtros,
-              busId: e.target.value
-            })} placeholder="Exacto" />
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Código de conductor</label>
-              <Input value={filtros.conductorCodigo} onChange={e => setFiltros({
-              ...filtros,
-              conductorCodigo: e.target.value
-            })} placeholder="Exacto" />
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Nombre de conductor</label>
-              <Input value={filtros.conductorNombre} onChange={e => setFiltros({
-              ...filtros,
-              conductorNombre: e.target.value
-            })} placeholder="Parcial" />
-            </div>
-          </div>
+            <TabsContent value="vehiculo" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm mb-1">Placa</label>
+                  <Input value={filtros.placa} onChange={e => setFiltros({
+                    ...filtros,
+                    placa: e.target.value
+                  })} placeholder="Buscar..." />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">ID autobús</label>
+                  <Input value={filtros.busId} onChange={e => setFiltros({
+                    ...filtros,
+                    busId: e.target.value
+                  })} placeholder="Exacto" />
+                </div>
+              </div>
+            </TabsContent>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {(rol === 'Administrador' || rol === 'Empresa de transporte') && <div>
-                <label className="block text-sm mb-1">Empresa de transporte</label>
-                <Select value={filtros.empresasTransporte[0] || '__ALL__'} onValueChange={v => setFiltros({
-              ...filtros,
-              empresasTransporte: v && v !== '__ALL__' ? [v] : []
-            })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent className="z-50 bg-popover">
-                    <SelectItem value="__ALL__">Todas</SelectItem>
-                    {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>}
-            {(rol === 'Administrador' || rol === 'Empresa cliente') && <div>
-                <label className="block text-sm mb-1">Empresa cliente</label>
-                <Select value={filtros.empresasCliente[0] || '__ALL__'} onValueChange={v => setFiltros({
-              ...filtros,
-              empresasCliente: v && v !== '__ALL__' ? [v] : []
-            })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todas" />
-                  </SelectTrigger>
-                  <SelectContent className="z-50 bg-popover">
-                    <SelectItem value="__ALL__">Todas</SelectItem>
-                    {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>}
-            
-          </div>
+            <TabsContent value="conductor" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm mb-1">Código de conductor</label>
+                  <Input value={filtros.conductorCodigo} onChange={e => setFiltros({
+                    ...filtros,
+                    conductorCodigo: e.target.value
+                  })} placeholder="Exacto" />
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Nombre de conductor</label>
+                  <Input value={filtros.conductorNombre} onChange={e => setFiltros({
+                    ...filtros,
+                    conductorNombre: e.target.value
+                  })} placeholder="Parcial" />
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="empresas" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {(rol === 'Administrador' || rol === 'Empresa de transporte') && (
+                  <div>
+                    <label className="block text-sm mb-1">Empresa de transporte</label>
+                    <Select value={filtros.empresasTransporte[0] || '__ALL__'} onValueChange={v => setFiltros({
+                      ...filtros,
+                      empresasTransporte: v && v !== '__ALL__' ? [v] : []
+                    })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent className="z-50 bg-popover">
+                        <SelectItem value="__ALL__">Todas</SelectItem>
+                        {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                {(rol === 'Administrador' || rol === 'Empresa cliente') && (
+                  <div>
+                    <label className="block text-sm mb-1">Empresa cliente</label>
+                    <Select value={filtros.empresasCliente[0] || '__ALL__'} onValueChange={v => setFiltros({
+                      ...filtros,
+                      empresasCliente: v && v !== '__ALL__' ? [v] : []
+                    })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Todas" />
+                      </SelectTrigger>
+                      <SelectContent className="z-50 bg-popover">
+                        <SelectItem value="__ALL__">Todas</SelectItem>
+                        {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

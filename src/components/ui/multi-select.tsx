@@ -67,7 +67,7 @@ export function MultiSelect({
           <span className="truncate">{displayValue}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
+      <PopoverContent className="z-50 w-full p-0 bg-popover" align="start">
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
