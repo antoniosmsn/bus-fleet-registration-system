@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { Info, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FilterPanelProps {
@@ -188,15 +189,44 @@ const FilterPanelContent: React.FC<FilterPanelProps> = ({
   );
 };
 
-interface FilterPanelCardProps extends FilterPanelProps {}
+interface FilterPanelCardProps extends FilterPanelProps {
+  onShowResultados?: () => void;
+  onHidePanel?: () => void;
+}
 
-export const FilterPanelCard: React.FC<FilterPanelCardProps> = (props) => {
+export const FilterPanelCard: React.FC<FilterPanelCardProps> = ({ onShowResultados, onHidePanel, ...props }) => {
   return (
     <Card className="w-64 lg:w-72 h-full border-r">
       <CardContent className="h-full p-0 flex flex-col">
         {/* Header fijo */}
         <div className="flex-none p-4 border-b bg-background">
-          <h3 className="font-medium text-sm">Filtros de Búsqueda</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-sm">Filtros de Búsqueda</h3>
+            <div className="flex gap-1">
+              {onShowResultados && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={onShowResultados}
+                  className="h-7 px-2"
+                  title="Mostrar resultados"
+                >
+                  <Info className="h-3 w-3" />
+                </Button>
+              )}
+              {onHidePanel && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={onHidePanel}
+                  className="h-7 px-2"
+                  title="Ocultar panel"
+                >
+                  <EyeOff className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* Contenido con scroll */}

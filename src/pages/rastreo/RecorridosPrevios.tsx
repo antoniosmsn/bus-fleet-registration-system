@@ -794,6 +794,14 @@ const RecorridosPrevios: React.FC = () => {
             setTiposSeleccionados={setTiposSeleccionados}
             tiposRutaOptions={tiposRutaOptions}
             handleBuscar={handleBuscar}
+            onShowResultados={() => {
+              setShowFilterPanel(false);
+              setShowInfoPanel(true);
+            }}
+            onHidePanel={() => {
+              setShowFilterPanel(false);
+              setShowInfoPanel(false);
+            }}
           />
         )}
 
