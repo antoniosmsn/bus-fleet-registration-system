@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Bus } from "@/types/bus";
 import { Pasajero } from "@/types/pasajero";
-
+import { TelemetriaRecord } from "@/types/telemetria";
 export const exportConductoresToPDF = async (conductores: Conductor[]) => {
   // Aquí iría la lógica real de exportación a PDF
   // Por ahora simulamos la exportación
@@ -162,6 +162,19 @@ export const exportCapacidadCumplidaToPDF = async (autobuses: any[]): Promise<vo
 export const exportCapacidadCumplidaToExcel = async (autobuses: any[]): Promise<void> => {
   logExportAction('Excel', 'capacidad-cumplida');
   alert(`Exportando ${autobuses.length} registros de capacidad cumplida a Excel...`);
+};
+
+// Exportación de Telemetría
+export const exportTelemetriaToPDF = async (registros: TelemetriaRecord[]): Promise<void> => {
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  logExportAction('PDF', 'buses');
+  alert(`Exportando ${registros.length} lecturas de telemetría a PDF (${timestamp})...`);
+};
+
+export const exportTelemetriaToExcel = async (registros: TelemetriaRecord[]): Promise<void> => {
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  logExportAction('Excel', 'buses');
+  alert(`Exportando ${registros.length} lecturas de telemetría a Excel (${timestamp})...`);
 };
 
 const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' = 'conductores') => {
