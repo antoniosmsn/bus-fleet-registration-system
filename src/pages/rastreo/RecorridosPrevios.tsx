@@ -401,23 +401,27 @@ const RecorridosPrevios: React.FC = () => {
                     title="Mapa de Costa Rica"
                   />
                 </div>
-                <Card className="absolute inset-4 bg-background/90 backdrop-blur-sm border-2 border-dashed">
-                  <CardContent className="h-full flex items-center justify-center text-center">
-                    <div className="space-y-2">
-                      <p className="text-lg font-medium">Mapa de Recorridos Previos</p>
-                      <p className="text-sm text-muted-foreground">Selecciona un recorrido de la lista lateral para visualizar la ruta, paradas y lecturas QR en el mapa.</p>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             ) : (
-              <RecorridoMap 
-                data={mapData}
-                modo={mapData.modo}
-                initialFocus={initialFocus}
-                onRequestShowPanel={() => setShowPanel(true)}
-                isPanelVisible={showPanel}
-              />
+              <>
+                <RecorridoMap 
+                  data={mapData}
+                  modo={mapData.modo}
+                  initialFocus={initialFocus}
+                  onRequestShowPanel={() => setShowPanel(true)}
+                  isPanelVisible={showPanel}
+                />
+                {(mapData?.telemetria?.length ?? 0) > 0 && (
+                  <Card className="absolute inset-4 bg-background/90 backdrop-blur-sm border-2 border-dashed">
+                    <CardContent className="h-full flex items-center justify-center text-center">
+                      <div className="space-y-2">
+                        <p className="text-lg font-medium">Mapa de Recorridos Previos</p>
+                        <p className="text-sm text-muted-foreground">Selecciona un recorrido de la lista lateral para visualizar la ruta, paradas y lecturas QR en el mapa.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             )}
           </div>
         </div>
