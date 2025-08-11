@@ -585,8 +585,8 @@ const RecorridosPrevios: React.FC = () => {
                   variant="outline" 
                   size="sm"
                   onClick={() => {
-                    setShowInfoPanel(false);
                     setShowFilterPanel(true);
+                    setShowInfoPanel(false);
                   }}
                 >
                   <Filter className="h-4 w-4" />
@@ -594,7 +594,10 @@ const RecorridosPrevios: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => setShowInfoPanel(false)}
+                  onClick={() => {
+                    setShowInfoPanel(false);
+                    setShowFilterPanel(false);
+                  }}
                 >
                   <EyeOff className="h-4 w-4" />
                 </Button>
