@@ -233,7 +233,7 @@ const RecorridosPrevios: React.FC = () => {
                 </div>
 
                 {/* Fechas */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2">
                   <div>
                     <label className="text-xs block mb-1">Fecha/Hora inicio</label>
                     <Input type="datetime-local" value={desde} onChange={(e)=>setDesde(e.target.value)} />
