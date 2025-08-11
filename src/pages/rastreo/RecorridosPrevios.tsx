@@ -193,7 +193,16 @@ const RecorridosPrevios: React.FC = () => {
   }, [resultRango, busquedaLocal]);
 
   const abrirMapaServicio = (id: string, focus: 'recorrido'|'paradas'|'lecturas') => {
+    console.log('Abriendo mapa para servicio:', id);
     const data = getMapDataForServicio(id);
+    console.log('Datos del mapa:', data);
+    if (!data) {
+      toast({
+        title: "Error",
+        description: "No se encontraron datos para este servicio"
+      });
+      return;
+    }
     setMapData(data);
     setInitialFocus(focus);
     if (isMobile) {
