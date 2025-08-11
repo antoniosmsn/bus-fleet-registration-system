@@ -251,21 +251,29 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
             key={`qr-${i}`} 
             position={[qr.lat, qr.lng]}
             icon={L.divIcon({
-              html: `<div style="background-color: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">👤</div>`,
-              className: 'qr-individual-marker',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]
+              html: `
+                <div class="qr-marker">
+                  <div class="qr-pin">👤</div>
+                  <div class="qr-label">${qr.cedula}</div>
+                </div>
+              `,
+              className: 'qr-div-icon',
+              iconAnchor: [11, 11]
             })}
           >
             <Tooltip>
-              <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString('es-CR', {
-                year: 'numeric',
-                month: '2-digit', 
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })}</div>
+              <div className="text-xs">
+                <div className="font-medium">${qr.cedula}</div>
+                <div className="text-muted-foreground">${new Date(qr.timestampUtc).toLocaleString('es-CR', {
+                  year: 'numeric',
+                  month: '2-digit', 
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+                </div>
+              </div>
             </Tooltip>
           </Marker>
         ))}
