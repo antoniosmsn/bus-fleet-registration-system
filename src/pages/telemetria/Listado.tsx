@@ -10,7 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { TelemetriaRecord, TelemetriaFiltros, TipoRegistro, RolSimulado } from '@/types/telemetria';
+import { TelemetriaRecord, TelemetriaFiltros, TipoRegistro } from '@/types/telemetria';
 import { generarTelemetria, filtrarTelemetria } from '@/data/mockTelemetria';
 import { mockEmpresasTransporte, mockRamalesDetallados, mockEmpresasCliente } from '@/data/mockRastreoData';
 import { cn } from '@/lib/utils';
@@ -142,27 +142,11 @@ const DateRangePicker: React.FC<{
       </Popover>
     </div>;
 };
-const RolSelector: React.FC<{
-  rol: RolSimulado;
-  onChange: (r: RolSimulado) => void;
-}> = ({
-  rol,
-  onChange
-}) => <Select value={rol} onValueChange={v => onChange(v as RolSimulado)}>
-    <SelectTrigger>
-      <SelectValue placeholder="Rol" />
-    </SelectTrigger>
-    <SelectContent className="z-50 bg-popover">
-      <SelectItem value="Administrador">Administrador</SelectItem>
-      <SelectItem value="Empresa de transporte">Empresa de transporte</SelectItem>
-      <SelectItem value="Empresa cliente">Empresa cliente</SelectItem>
-    </SelectContent>
-  </Select>;
 const TelemetriaListado: React.FC = () => {
   useEffect(() => {
     document.title = 'Listado de telemetría | SistemaTransporte';
   }, []);
-  const [rol, setRol] = useState<RolSimulado>('Administrador');
+  
   const [dateRange, setDateRange] = useState<{
     from: Date;
     to: Date;
@@ -194,17 +178,7 @@ const TelemetriaListado: React.FC = () => {
     hastaUtc: filtros.hastaUtc
   }, 360), [filtros.desdeUtc, filtros.hastaUtc]);
 
-  // Aplicar permisos simulados
-  const dataConPermisos = useMemo(() => {
-    if (rol === 'Administrador') return baseData;
-    if (rol === 'Empresa de transporte') {
-      const permitted = new Set(filtros.empresasTransporte.length ? filtros.empresasTransporte : [mockEmpresasTransporte[0].nombre]);
-      return baseData.filter(r => permitted.has(r.empresaTransporte));
-    }
-    // Empresa cliente
-    const permitted = new Set(filtros.empresasCliente.length ? filtros.empresasCliente : [mockEmpresasCliente[0].nombre]);
-    return baseData.filter(r => !r.ruta || r.ruta === '' || r.ruta?.toLowerCase().includes('parque') || r.empresaCliente && permitted.has(r.empresaCliente));
-  }, [baseData, rol, filtros.empresasTransporte, filtros.empresasCliente]);
+  const dataConPermisos = baseData;
   const datos = useMemo(() => filtrarTelemetria(dataConPermisos, filtros), [dataConPermisos, filtros]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -212,7 +186,7 @@ const TelemetriaListado: React.FC = () => {
   const pageData = useMemo(() => datos.slice((page - 1) * pageSize, page * pageSize), [datos, page, pageSize]);
   useEffect(() => {
     setPage(1);
-  }, [JSON.stringify(filtros), rol, pageSize]);
+  }, [JSON.stringify(filtros), pageSize]);
   const rutas = useMemo(() => Array.from(new Set(mockRamalesDetallados.map(r => r.nombre))), []);
   const empresasTrans = useMemo(() => mockEmpresasTransporte.map(e => e.nombre), []);
   const empresasCli = useMemo(() => mockEmpresasCliente.map(e => e.nombre), []);
@@ -250,10 +224,6 @@ const TelemetriaListado: React.FC = () => {
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div>
-            <label className="block text-sm mb-1">Rol (simulado)</label>
-            <RolSelector rol={rol} onChange={setRol} />
-          </div>
 
           <Tabs defaultValue="fechas" className="w-full">
             <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
@@ -349,40 +319,36 @@ const TelemetriaListado: React.FC = () => {
 
             <TabsContent value="empresas" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {(rol === 'Administrador' || rol === 'Empresa de transporte') && (
-                  <div>
-                    <label className="block text-sm mb-1">Empresa de transporte</label>
-                    <Select value={filtros.empresasTransporte[0] || '__ALL__'} onValueChange={v => setFiltros({
-                      ...filtros,
-                      empresasTransporte: v && v !== '__ALL__' ? [v] : []
-                    })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todas" />
-                      </SelectTrigger>
-                      <SelectContent className="z-50 bg-popover">
-                        <SelectItem value="__ALL__">Todas</SelectItem>
-                        {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                {(rol === 'Administrador' || rol === 'Empresa cliente') && (
-                  <div>
-                    <label className="block text-sm mb-1">Empresa cliente</label>
-                    <Select value={filtros.empresasCliente[0] || '__ALL__'} onValueChange={v => setFiltros({
-                      ...filtros,
-                      empresasCliente: v && v !== '__ALL__' ? [v] : []
-                    })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todas" />
-                      </SelectTrigger>
-                      <SelectContent className="z-50 bg-popover">
-                        <SelectItem value="__ALL__">Todas</SelectItem>
-                        {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                <div>
+                  <label className="block text-sm mb-1">Empresa de transporte</label>
+                  <Select value={filtros.empresasTransporte[0] || '__ALL__'} onValueChange={v => setFiltros({
+                    ...filtros,
+                    empresasTransporte: v && v !== '__ALL__' ? [v] : []
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent className="z-50 bg-popover">
+                      <SelectItem value="__ALL__">Todas</SelectItem>
+                      {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm mb-1">Empresa cliente</label>
+                  <Select value={filtros.empresasCliente[0] || '__ALL__'} onValueChange={v => setFiltros({
+                    ...filtros,
+                    empresasCliente: v && v !== '__ALL__' ? [v] : []
+                  })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent className="z-50 bg-popover">
+                      <SelectItem value="__ALL__">Todas</SelectItem>
+                      {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
