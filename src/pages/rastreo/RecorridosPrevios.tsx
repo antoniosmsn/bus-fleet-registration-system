@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -67,7 +69,7 @@ const RecorridosPrevios: React.FC = () => {
   const [resultRango, setResultRango] = useState<RecorridoRangoListItem[]>([]);
 
   const [mapData, setMapData] = useState<RecorridoMapData | null>(null);
-  const [showPanel, setShowPanel] = useState(!isMobile);
+  const [showPanel, setShowPanel] = useState(false);
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
 
   const empresasTransporteOptions = useMemo(() => [
@@ -198,10 +200,10 @@ const RecorridosPrevios: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Panel lateral */}
-          <div className={`${showPanel ? 'block' : 'hidden'} ${isMobile ? 'fixed inset-0 z-50 bg-background' : 'lg:col-span-5'} space-y-4 ${isMobile && showPanel ? 'p-4' : ''}`}>
+          <div className={`${showPanel ? 'block' : 'hidden'} ${isMobile ? 'fixed inset-0 z-50 bg-background' : 'lg:col-span-3 lg:max-w-md'} space-y-4 ${isMobile && showPanel ? 'p-4' : ''}`}>
             {isMobile && showPanel && (
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Recorridos Previos</h2>
+                <h2 className="text-lg font-semibold">Filtros y resultados</h2>
                 <Button size="sm" variant="outline" onClick={() => setShowPanel(false)}>
                   <PanelLeftClose className="h-4 w-4" />
                 </Button>
@@ -250,55 +252,63 @@ const RecorridosPrevios: React.FC = () => {
                   </div>
                 )}
 
-                {/* Vehículo */}
-                <div>
-                  <label className="text-xs block mb-1">Vehículo</label>
-                  <MultiSelect
-                    options={vehiculosOptions}
-                    value={vehiculos}
-                    onValueChange={setVehiculos}
-                    placeholder="Seleccionar vehículos"
-                    searchPlaceholder="Buscar vehículo..."
-                  />
-                </div>
+                {/* Avanzado */}
+                <Accordion type="single" collapsible defaultValue="advanced">
+                  <AccordionItem value="advanced">
+                    <AccordionTrigger>Filtros avanzados</AccordionTrigger>
+                    <AccordionContent className="space-y-3">
+                      {/* Vehículo */}
+                      <div>
+                        <label className="text-xs block mb-1">Vehículo</label>
+                        <MultiSelect
+                          options={vehiculosOptions}
+                          value={vehiculos}
+                          onValueChange={setVehiculos}
+                          placeholder="Seleccionar vehículos"
+                          searchPlaceholder="Buscar vehículo..."
+                        />
+                      </div>
 
-                {/* Empresa transporte */}
-                <div>
-                  <label className="text-xs block mb-1">Empresa de transporte</label>
-                  <MultiSelect
-                    options={empresasTransporteOptions}
-                    value={empresasTransporte}
-                    onValueChange={setEmpresasTransporte}
-                    placeholder="Seleccionar empresas"
-                    searchPlaceholder="Buscar empresa..."
-                  />
-                </div>
+                      {/* Empresa transporte */}
+                      <div>
+                        <label className="text-xs block mb-1">Empresa de transporte</label>
+                        <MultiSelect
+                          options={empresasTransporteOptions}
+                          value={empresasTransporte}
+                          onValueChange={setEmpresasTransporte}
+                          placeholder="Seleccionar empresas"
+                          searchPlaceholder="Buscar empresa..."
+                        />
+                      </div>
 
-                {/* Empresa cliente - solo si no es parque */}
-                {!tiposSeleccionados.includes('parque') || tiposSeleccionados.includes('todos') ? (
-                  <div>
-                    <label className="text-xs block mb-1">Empresa cliente</label>
-                    <MultiSelect
-                      options={empresasClienteOptions}
-                      value={empresasCliente}
-                      onValueChange={setEmpresasCliente}
-                      placeholder="Seleccionar clientes"
-                      searchPlaceholder="Buscar cliente..."
-                    />
-                  </div>
-                ) : null}
+                      {/* Empresa cliente - solo si no es parque */}
+                      {!tiposSeleccionados.includes('parque') || tiposSeleccionados.includes('todos') ? (
+                        <div>
+                          <label className="text-xs block mb-1">Empresa cliente</label>
+                          <MultiSelect
+                            options={empresasClienteOptions}
+                            value={empresasCliente}
+                            onValueChange={setEmpresasCliente}
+                            placeholder="Seleccionar clientes"
+                            searchPlaceholder="Buscar cliente..."
+                          />
+                        </div>
+                      ) : null}
 
-                {/* Tipo ruta */}
-                <div>
-                  <label className="text-xs block mb-1">Tipo de ruta</label>
-                  <MultiSelect
-                    options={tiposRutaOptions}
-                    value={tiposSeleccionados}
-                    onValueChange={setTiposSeleccionados}
-                    placeholder="Seleccionar tipos"
-                    searchPlaceholder="Buscar tipo..."
-                  />
-                </div>
+                      {/* Tipo ruta */}
+                      <div>
+                        <label className="text-xs block mb-1">Tipo de ruta</label>
+                        <MultiSelect
+                          options={tiposRutaOptions}
+                          value={tiposSeleccionados}
+                          onValueChange={setTiposSeleccionados}
+                          placeholder="Seleccionar tipos"
+                          searchPlaceholder="Buscar tipo..."
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
                 <div className="flex gap-2 pt-2">
                   <Button onClick={handleBuscar}>Buscar</Button>
@@ -379,17 +389,24 @@ const RecorridosPrevios: React.FC = () => {
           </div>
 
           {/* Panel mapa */}
-          <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
+          <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-9'} min-h-[60vh] relative`}>
             {!showPanel && (
-              <Button 
-                className="absolute top-4 left-4 z-50" 
-                size="sm" 
-                variant="secondary"
-                onClick={() => setShowPanel(true)}
-              >
-                <PanelLeftOpen className="h-4 w-4 mr-2" />
-                Mostrar panel
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      className="absolute top-4 left-4 z-50" 
+                      size="sm" 
+                      variant="secondary"
+                      onClick={() => setShowPanel(true)}
+                      aria-label="Abrir panel de filtros"
+                    >
+                      <PanelLeftOpen className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Mostrar filtros</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
             
             {!mapData ? (
