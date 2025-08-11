@@ -15,7 +15,7 @@ export const mockStops: Stop[] = [
   {
     id: '1',
     codigo: '001',
-    nombre: 'Plaza de la Cultura (San José)',
+    nombre: 'Plaza de la Cultura',
     provincia: 'San José',
     canton: 'San José',
     distrito: 'Carmen',
@@ -26,7 +26,7 @@ export const mockStops: Stop[] = [
   {
     id: '2',
     codigo: '002',
-    nombre: 'Parque La Merced (San José)',
+    nombre: 'Parque La Merced',
     provincia: 'San José',
     canton: 'San José',
     distrito: 'Merced',
@@ -37,7 +37,7 @@ export const mockStops: Stop[] = [
   {
     id: '3',
     codigo: '003',
-    nombre: 'Hospital San Juan de Dios',
+    nombre: 'Hosp. San Juan de Dios',
     provincia: 'San José',
     canton: 'San José',
     distrito: 'Hospital',
@@ -48,7 +48,7 @@ export const mockStops: Stop[] = [
   {
     id: '4',
     codigo: '004',
-    nombre: 'Parque La Sabana (Este)',
+    nombre: 'La Sabana Este',
     provincia: 'San José',
     canton: 'San José',
     distrito: 'Mata Redonda',
@@ -59,7 +59,7 @@ export const mockStops: Stop[] = [
   {
     id: '5',
     codigo: '005',
-    nombre: 'Universidad de Costa Rica (UCR)',
+    nombre: 'UCR',
     provincia: 'San José',
     canton: 'Montes de Oca',
     distrito: 'San Pedro',
@@ -70,7 +70,7 @@ export const mockStops: Stop[] = [
   {
     id: '6',
     codigo: '006',
-    nombre: 'Parque Central de Escazú',
+    nombre: 'Parque Central Escazú',
     provincia: 'San José',
     canton: 'Escazú',
     distrito: 'Escazú',
@@ -81,7 +81,7 @@ export const mockStops: Stop[] = [
   {
     id: '7',
     codigo: '007',
-    nombre: 'Hospital Nacional de Niños',
+    nombre: 'Hosp. Niños',
     provincia: 'San José',
     canton: 'San José',
     distrito: 'Hospital',
@@ -92,7 +92,7 @@ export const mockStops: Stop[] = [
   {
     id: '8',
     codigo: '008',
-    nombre: 'Aeropuerto Internacional Juan Santamaría',
+    nombre: 'Juan Santamaría',
     provincia: 'Alajuela',
     canton: 'Alajuela',
     distrito: 'Río Segundo',
@@ -103,7 +103,7 @@ export const mockStops: Stop[] = [
   {
     id: '9',
     codigo: '009',
-    nombre: 'Parque Central de Cartago',
+    nombre: 'Parque Central Cartago',
     provincia: 'Cartago',
     canton: 'Cartago',
     distrito: 'Oriental',
@@ -114,7 +114,7 @@ export const mockStops: Stop[] = [
   {
     id: '10',
     codigo: '010',
-    nombre: 'Mercado Central de Alajuela',
+    nombre: 'Mercado Central Alajuela',
     provincia: 'Alajuela',
     canton: 'Alajuela',
     distrito: 'Alajuela',
