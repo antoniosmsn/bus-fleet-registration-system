@@ -10,13 +10,11 @@ import type { FiltrosCapacidadCumplida } from "@/types/autobus-capacidad-cumplid
 import { mockEmpresasTransporte } from "@/data/mockEmpresasTransporte";
 import { mockRamales } from "@/data/mockRamales";
 import { Search, X } from "lucide-react";
-
 interface FiltrosCapacidadCumplidaProps {
   filtros: FiltrosCapacidadCumplida;
   onFiltrosChange: (filtros: FiltrosCapacidadCumplida) => void;
   onLimpiarFiltros: () => void;
 }
-
 const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
   filtros,
   onFiltrosChange,
@@ -25,16 +23,11 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
   const handleInputChange = (field: keyof FiltrosCapacidadCumplida, value: string) => {
     onFiltrosChange({
       ...filtros,
-      [field]: value === 'all' ? undefined : (value || undefined)
+      [field]: value === 'all' ? undefined : value || undefined
     });
   };
-
-  return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>
-        </CardTitle>
-      </CardHeader>
+  return <Card className="mb-6">
+      
       <CardContent>
         <Tabs defaultValue="servicio" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
@@ -47,88 +40,57 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
-                <Select
-                  value={filtros.empresaTransporte || "all"}
-                  onValueChange={(value) => handleInputChange('empresaTransporte', value)}
-                >
+                <Select value={filtros.empresaTransporte || "all"} onValueChange={value => handleInputChange('empresaTransporte', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar empresa" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas las empresas</SelectItem>
-                    {mockEmpresasTransporte.filter(e => e.activa).map((empresa) => (
-                      <SelectItem key={empresa.id} value={empresa.nombre}>
+                    {mockEmpresasTransporte.filter(e => e.activa).map(empresa => <SelectItem key={empresa.id} value={empresa.nombre}>
                         {empresa.nombre}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="fechaInicio">Fecha Inicio</Label>
-                <Input
-                  id="fechaInicio"
-                  type="date"
-                  value={filtros.fechaInicio || ""}
-                  onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
-                />
+                <Input id="fechaInicio" type="date" value={filtros.fechaInicio || ""} onChange={e => handleInputChange('fechaInicio', e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="fechaFin">Fecha Fin</Label>
-                <Input
-                  id="fechaFin"
-                  type="date"
-                  value={filtros.fechaFin || ""}
-                  onChange={(e) => handleInputChange('fechaFin', e.target.value)}
-                />
+                <Input id="fechaFin" type="date" value={filtros.fechaFin || ""} onChange={e => handleInputChange('fechaFin', e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="horaInicio">Hora Inicio</Label>
-                <TimePicker
-                  id="horaInicio"
-                  value={filtros.horaInicio || ""}
-                  onValueChange={(value) => handleInputChange('horaInicio', value)}
-                />
+                <TimePicker id="horaInicio" value={filtros.horaInicio || ""} onValueChange={value => handleInputChange('horaInicio', value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="horaFin">Hora Fin</Label>
-                <TimePicker
-                  id="horaFin"
-                  value={filtros.horaFin || ""}
-                  onValueChange={(value) => handleInputChange('horaFin', value)}
-                />
+                <TimePicker id="horaFin" value={filtros.horaFin || ""} onValueChange={value => handleInputChange('horaFin', value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="ruta">Ruta</Label>
-                <Select
-                  value={filtros.ruta || "all"}
-                  onValueChange={(value) => handleInputChange('ruta', value)}
-                >
+                <Select value={filtros.ruta || "all"} onValueChange={value => handleInputChange('ruta', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar ruta" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas las rutas</SelectItem>
-                    {mockRamales.map((ramal) => (
-                      <SelectItem key={ramal.id} value={ramal.nombre}>
+                    {mockRamales.map(ramal => <SelectItem key={ramal.id} value={ramal.nombre}>
                         {ramal.nombre}
-                      </SelectItem>
-                    ))}
+                      </SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="estadoAtencion">Estado de Atención</Label>
-                <Select
-                  value={filtros.estadoAtencion || "todos"}
-                  onValueChange={(value) => handleInputChange('estadoAtencion', value)}
-                >
+                <Select value={filtros.estadoAtencion || "todos"} onValueChange={value => handleInputChange('estadoAtencion', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Estado de atención" />
                   </SelectTrigger>
@@ -146,22 +108,12 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="idAutobus">ID del Autobús</Label>
-                <Input
-                  id="idAutobus"
-                  placeholder="Buscar por ID"
-                  value={filtros.idAutobus || ""}
-                  onChange={(e) => handleInputChange('idAutobus', e.target.value)}
-                />
+                <Input id="idAutobus" placeholder="Buscar por ID" value={filtros.idAutobus || ""} onChange={e => handleInputChange('idAutobus', e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="placa">Placa</Label>
-                <Input
-                  id="placa"
-                  placeholder="Buscar por placa"
-                  value={filtros.placa || ""}
-                  onChange={(e) => handleInputChange('placa', e.target.value)}
-                />
+                <Input id="placa" placeholder="Buscar por placa" value={filtros.placa || ""} onChange={e => handleInputChange('placa', e.target.value)} />
               </div>
             </div>
           </TabsContent>
@@ -170,40 +122,24 @@ const FiltrosCapacidadCumplida: React.FC<FiltrosCapacidadCumplidaProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="conductor">Nombres y Apellidos del Conductor</Label>
-                <Input
-                  id="conductor"
-                  placeholder="Buscar por nombres y apellidos"
-                  value={filtros.conductor || ""}
-                  onChange={(e) => handleInputChange('conductor', e.target.value)}
-                />
+                <Input id="conductor" placeholder="Buscar por nombres y apellidos" value={filtros.conductor || ""} onChange={e => handleInputChange('conductor', e.target.value)} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="codigoConductor">Código del Conductor</Label>
-                <Input
-                  id="codigoConductor"
-                  placeholder="Buscar por código"
-                  value={filtros.codigoConductor || ""}
-                  onChange={(e) => handleInputChange('codigoConductor', e.target.value)}
-                />
+                <Input id="codigoConductor" placeholder="Buscar por código" value={filtros.codigoConductor || ""} onChange={e => handleInputChange('codigoConductor', e.target.value)} />
               </div>
             </div>
           </TabsContent>
         </Tabs>
 
         <div className="flex justify-end mt-4">
-          <Button
-            variant="outline"
-            onClick={onLimpiarFiltros}
-            className="flex items-center gap-2"
-          >
+          <Button variant="outline" onClick={onLimpiarFiltros} className="flex items-center gap-2">
             <X className="h-4 w-4" />
             Limpiar Filtros
           </Button>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default FiltrosCapacidadCumplida;
