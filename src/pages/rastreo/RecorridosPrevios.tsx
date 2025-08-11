@@ -319,7 +319,9 @@ const RecorridosPrevios: React.FC = () => {
                   {/* Listado por modo */}
                   {modo==='servicios' ? (
                     <div className="space-y-4">
-                      {gruposServicios.length === 0 ? (
+                      {gruposServicios.length === 0 && busquedaLocal ? (
+                        <p className="text-sm text-muted-foreground">No hay resultados.</p>
+                      ) : gruposServicios.length === 0 ? (
                         <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
                       ) : gruposServicios.map(([grupo, items]) => (
                         <div key={grupo} className="border rounded">
@@ -352,7 +354,9 @@ const RecorridosPrevios: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {listaRangoFiltrada.length === 0 ? (
+                      {listaRangoFiltrada.length === 0 && busquedaLocal ? (
+                        <p className="text-sm text-muted-foreground">No hay resultados.</p>
+                      ) : listaRangoFiltrada.length === 0 ? (
                         <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
                       ) : (
                         listaRangoFiltrada.map(it => (
@@ -389,13 +393,23 @@ const RecorridosPrevios: React.FC = () => {
             )}
             
             {!mapData ? (
-              <Card className="h-full">
-                <CardContent className="h-full flex items-center justify-center text-center">
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Selecciona un recorrido para visualizar en el mapa.</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="h-full relative">
+                <div className="absolute inset-0">
+                  <iframe 
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=-84.35,-10.1,-83.85,9.7&layer=mapnik&marker=10.0199,-84.2419"
+                    className="w-full h-full border-0 rounded-lg"
+                    title="Mapa de Costa Rica"
+                  />
+                </div>
+                <Card className="absolute inset-4 bg-background/90 backdrop-blur-sm border-2 border-dashed">
+                  <CardContent className="h-full flex items-center justify-center text-center">
+                    <div className="space-y-2">
+                      <p className="text-lg font-medium">Mapa de Recorridos Previos</p>
+                      <p className="text-sm text-muted-foreground">Selecciona un recorrido de la lista lateral para visualizar la ruta, paradas y lecturas QR en el mapa.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             ) : (
               <RecorridoMap 
                 data={mapData}

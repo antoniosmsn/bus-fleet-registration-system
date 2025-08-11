@@ -79,6 +79,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
     if (modo === 'servicios') {
       setSelectedStops(allStops.map(s => s.id));
     } else {
+      // En modo rango: ninguna parada seleccionada inicialmente
       setSelectedStops([]);
     }
     setActiveTab(initialFocus);
@@ -182,16 +183,21 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
         {/* Paradas */}
         {showParadas && selectedStopsObjects.map(st => (
           <Marker key={st.id} position={[st.lat, st.lng]}>
-            <Tooltip>
-              <div className="text-xs">
-                <div className="font-semibold">{st.codigo} — {st.nombre}</div>
-                {st.visitada ? (
-                  <div>LLegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>
-                ) : (
-                  <div>Sin visita registrada</div>
-                )}
-              </div>
-            </Tooltip>
+            {st.visitada ? (
+              <Tooltip>
+                <div className="text-xs">
+                  <div className="font-semibold">{st.codigo} — {st.nombre}</div>
+                  <div>Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString('es-CR', {
+                    year: 'numeric',
+                    month: '2-digit', 
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  }) : '-'}</div>
+                </div>
+              </Tooltip>
+            ) : null}
           </Marker>
         ))}
 
@@ -213,16 +219,41 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
         {/* Lecturas QR */}
         {showLecturas && agruparLecturas && data?.qrClusters.map((c, i) => (
-          <Marker key={`qrc-${i}`} position={[c.lat, c.lng]}>
+          <Marker 
+            key={`qrc-${i}`} 
+            position={[c.lat, c.lng]}
+            icon={L.divIcon({
+              html: `<div style="background-color: #3b82f6; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">👥</div>`,
+              className: 'qr-cluster-marker',
+              iconSize: [30, 30],
+              iconAnchor: [15, 15]
+            })}
+          >
             <Tooltip permanent direction="top" offset={[0,-10]} opacity={1}>
               <div className="text-xs">QR x{c.count}</div>
             </Tooltip>
           </Marker>
         ))}
         {showLecturas && !agruparLecturas && filteredQRList.map((qr, i) => (
-          <Marker key={`qr-${i}`} position={[qr.lat, qr.lng]}>
+          <Marker 
+            key={`qr-${i}`} 
+            position={[qr.lat, qr.lng]}
+            icon={L.divIcon({
+              html: `<div style="background-color: #10b981; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 10px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">👤</div>`,
+              className: 'qr-individual-marker',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
+            })}
+          >
             <Tooltip>
-              <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString()}</div>
+              <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString('es-CR', {
+                year: 'numeric',
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}</div>
             </Tooltip>
           </Marker>
         ))}
@@ -299,7 +330,14 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                           <div key={st.id} className="flex items-center justify-between text-xs border rounded p-2">
                             <div>
                               <div className="font-medium">{st.codigo} — {st.nombre}</div>
-                              {st.visitada && <div className="text-muted-foreground">Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>}
+                              {st.visitada && <div className="text-muted-foreground">Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString('es-CR', {
+                                year: 'numeric',
+                                month: '2-digit', 
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                              }) : '-'}</div>}
                             </div>
                             <div className="flex items-center gap-2">
                               <Button size="icon" variant="ghost" onClick={() => {
@@ -334,7 +372,10 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                   {showLecturas && agruparLecturas && (data?.qrClusters?.length ?? 0) === 0 && (
                     <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
                   )}
-                  {!agruparLecturas && filteredQRList.length === 0 && (
+                  {!agruparLecturas && filteredQRList.length === 0 && qrSearch && (
+                    <p className="text-xs text-muted-foreground">No hay resultados.</p>
+                  )}
+                  {!agruparLecturas && filteredQRList.length === 0 && !qrSearch && (
                     <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
                   )}
                   {!agruparLecturas && filteredQRList.length > 0 && (
@@ -343,7 +384,14 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
                         <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
                           <div>
                             <div className="font-medium">{qr.cedula}</div>
-                            <div className="text-muted-foreground">{new Date(qr.timestampUtc).toLocaleString()}</div>
+                            <div className="text-muted-foreground">{new Date(qr.timestampUtc).toLocaleString('es-CR', {
+                              year: 'numeric',
+                              month: '2-digit', 
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit'
+                            })}</div>
                           </div>
                           <Button size="icon" variant="ghost" onClick={() => mapRef.current?.setView([qr.lat, qr.lng], 17, { animate: true })}>
                             <MapPinned className="h-4 w-4" />
