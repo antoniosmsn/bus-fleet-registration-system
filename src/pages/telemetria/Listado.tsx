@@ -15,6 +15,10 @@ import { generarTelemetria, filtrarTelemetria } from '@/data/mockTelemetria';
 import { mockEmpresasTransporte, mockRamalesDetallados, mockEmpresasCliente } from '@/data/mockRastreoData';
 import { cn } from '@/lib/utils';
 import { exportTelemetriaToExcel, exportTelemetriaToPDF } from '@/services/exportService';
+import { Checkbox } from '@/components/ui/checkbox';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Helpers
 const startOfToday = () => {
@@ -38,6 +42,39 @@ const tiposRegistro: TipoRegistro[] = [
 ];
 
 const pageSizeOptions = [10, 25, 50];
+
+// Selección y mapa
+const recKey = (r: TelemetriaRecord) => [r.fechaHoraUtc, r.placa, r.busId, r.tipoRegistro, r.lat ?? 'n', r.lng ?? 'n'].join('|');
+
+const tipoIconCfg: Record<TipoRegistro, { label: string; cls: string }> = {
+  'Entrada a ruta': { label: 'Entrada', cls: 'bg-primary text-primary-foreground' },
+  'Salida de ruta': { label: 'Salida', cls: 'bg-secondary text-secondary-foreground' },
+  'Paso por parada': { label: 'Parada', cls: 'bg-accent text-accent-foreground' },
+  'Exceso de velocidad': { label: 'Velocidad', cls: 'bg-destructive text-destructive-foreground' },
+  'Grabación por tiempo': { label: 'Tiempo', cls: 'bg-muted text-foreground' },
+  'Grabación por curso': { label: 'Curso', cls: 'bg-ring text-primary-foreground' },
+};
+
+const buildDivIcon = (tipo: TipoRegistro) => {
+  const cfg = tipoIconCfg[tipo];
+  return L.divIcon({
+    className: '',
+    html: `<div class="rounded px-2 py-1 text-[10px] font-medium shadow ${cfg.cls}">${cfg.label}</div>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+};
+
+const FitBounds: React.FC<{ points: Array<{ lat: number; lng: number }> }> = ({ points }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (!map) return;
+    if (points.length === 0) return;
+    const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
+    map.fitBounds(bounds.pad(0.2));
+  }, [map, JSON.stringify(points)]);
+  return null;
+};
 
 const DateRangePicker: React.FC<{
   value: { from: Date; to: Date };
@@ -138,6 +175,28 @@ const TelemetriaListado: React.FC = () => {
   const rutas = useMemo(() => Array.from(new Set(mockRamalesDetallados.map(r => r.nombre))), []);
   const empresasTrans = useMemo(() => mockEmpresasTransporte.map(e => e.nombre), []);
   const empresasCli = useMemo(() => mockEmpresasCliente.map(e => e.nombre), []);
+
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const allOnPage = useMemo(() => pageData.length > 0 && pageData.every(r => selected.has(recKey(r))), [pageData, selected]);
+  const selectedForMap = useMemo(() => datos.filter(r => selected.has(recKey(r)) && !!r.lat && !!r.lng && r.lat !== 0 && r.lng !== 0), [datos, selected]);
+
+  const toggleOne = (key: string, checked: boolean | string) => {
+    setSelected(prev => {
+      const n = new Set(prev);
+      if (checked) n.add(key); else n.delete(key);
+      return n;
+    });
+  };
+  const toggleAllOnPage = (checked: boolean | string) => {
+    setSelected(prev => {
+      const n = new Set(prev);
+      pageData.forEach(r => {
+        const k = recKey(r);
+        if (checked) n.add(k); else n.delete(k);
+      });
+      return n;
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -260,6 +319,9 @@ const TelemetriaListado: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-8">
+                  <Checkbox checked={allOnPage} onCheckedChange={toggleAllOnPage} aria-label="Seleccionar página" />
+                </TableHead>
                 <TableHead>Fecha y hora</TableHead>
                 <TableHead>Placa</TableHead>
                 <TableHead>ID autobús</TableHead>
@@ -282,6 +344,9 @@ const TelemetriaListado: React.FC = () => {
             <TableBody>
               {pageData.map((r, idx) => (
                 <TableRow key={idx}>
+                  <TableCell>
+                    <Checkbox checked={selected.has(recKey(r))} onCheckedChange={(c) => toggleOne(recKey(r), c)} aria-label="Seleccionar" />
+                  </TableCell>
                   <TableCell>{new Date(r.fechaHoraUtc).toLocaleString()}</TableCell>
                   <TableCell>{r.placa}</TableCell>
                   <TableCell>{r.busId}</TableCell>
@@ -331,6 +396,50 @@ const TelemetriaListado: React.FC = () => {
               </PaginationContent>
             </Pagination>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Mapa de registros seleccionados ({selectedForMap.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {selectedForMap.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Selecciona uno o más registros para visualizarlos en el mapa.</p>
+          ) : (
+            <div className="h-[480px] w-full rounded-md overflow-hidden">
+              <MapContainer center={[9.9326, -84.0775]} zoom={12} className="h-full w-full">
+                <TileLayer
+                  attribution="&copy; OpenStreetMap contributors"
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <FitBounds points={selectedForMap.map(r => ({ lat: r.lat as number, lng: r.lng as number }))} />
+                {selectedForMap.map((r) => (
+                  <Marker key={recKey(r)} position={[r.lat as number, r.lng as number]} icon={buildDivIcon(r.tipoRegistro)}>
+                    <Popup>
+                      <div className="space-y-1">
+                        <div className="text-xs font-medium">{r.tipoRegistro}</div>
+                        <div className="text-xs">{new Date(r.fechaHoraUtc).toLocaleString()}</div>
+                        <div className="text-xs">Placa: {r.placa} • Bus ID: {r.busId}</div>
+                        <div className="text-xs">Velocidad: {r.velocidadKmH} km/h • Dirección: {r.direccion}°</div>
+                        {r.parada && <div className="text-xs">Parada: {r.parada}</div>}
+                        {r.geocerca && <div className="text-xs">Geocerca: {r.geocerca}</div>}
+                        {r.ruta && <div className="text-xs">Ruta: {r.ruta} • {r.sentido || ''}</div>}
+                        <div className="text-xs">Conductor: {r.conductorNombre} ({r.conductorCodigo})</div>
+                        <div className="text-xs">Transporte: {r.empresaTransporte}</div>
+                        {r.empresaCliente && <div className="text-xs">Cliente: {r.empresaCliente}</div>}
+                        {(r.lat && r.lng && r.lat !== 0 && r.lng !== 0) && (
+                          <a className="text-xs text-primary underline" target="_blank" rel="noreferrer" href={`https://www.google.com/maps/place/${r.lat},${r.lng}`}>
+                            Ver en Google Maps
+                          </a>
+                        )}
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+              </MapContainer>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
