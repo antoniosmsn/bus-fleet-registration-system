@@ -19,6 +19,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MultiSelect } from '@/components/ui/multi-select';
 
 // Helpers
 const startOfToday = () => {
@@ -259,18 +260,19 @@ const TelemetriaListado: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm mb-1">Tipo de registro</label>
-              <Select value={filtros.tiposRegistro[0] || '__ALL__'} onValueChange={v => setFiltros({
-              ...filtros,
-              tiposRegistro: v && v !== '__ALL__' ? [v as TipoRegistro] : []
-            })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent className="z-50 bg-popover">
-                  <SelectItem value="__ALL__">Todos</SelectItem>
-                  {tiposRegistro.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={[{ value: 'todos', label: 'Todos' }, ...tiposRegistro.map(t => ({ value: t, label: t }))]}
+                value={filtros.tiposRegistro.length ? filtros.tiposRegistro : ['todos']}
+                onValueChange={(vals) => {
+                  setFiltros({
+                    ...filtros,
+                    tiposRegistro: vals.includes('todos') ? [] : (vals as TipoRegistro[]),
+                  });
+                }}
+                placeholder="Todos"
+                searchPlaceholder="Buscar tipo..."
+                className="w-full"
+              />
             </div>
           </div>
 
