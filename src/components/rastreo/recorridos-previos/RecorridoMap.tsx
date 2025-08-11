@@ -187,24 +187,31 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
         {/* Paradas */}
         {showParadas && selectedStopsObjects.map(st => (
-          <Marker key={st.id} position={[st.lat, st.lng]}>
+          <Marker 
+            key={st.id} 
+            position={[st.lat, st.lng]}
+            icon={L.divIcon({
+              html: `
+                <div style="position: relative; width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid hsl(var(--primary)); box-shadow: 0 2px 6px rgba(0,0,0,0.25);">
+                  <div style="position:absolute; top:50%; left:50%; transform: translate(-50%, -50%); width:6px; height:6px; border-radius:50%; background: hsl(var(--primary));"></div>
+                </div>
+              `,
+              className: 'stop-bullseye',
+              iconSize: [22, 22],
+              iconAnchor: [11, 11]
+            })}
+          >
             {st.visitada ? (
-              <Tooltip>
-                <div className="text-xs">
-                  <div className="font-semibold">{st.codigo} — {st.nombre}</div>
-                  <div>Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString('es-CR', {
-                    year: 'numeric',
-                    month: '2-digit', 
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  }) : '-'}</div>
+              <Tooltip permanent direction="top" offset={[0,-14]} opacity={1} className="stop-tooltip">
+                <div className="stop-info">
+                  <div className="stop-code">{st.codigo}</div>
+                  <div className="stop-name">{st.nombre}</div>
                 </div>
               </Tooltip>
             ) : null}
           </Marker>
         ))}
+
 
         {/* Radios de paradas */}
         {showParadas && showRadios && selectedStopsObjects.map(st => (
