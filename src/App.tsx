@@ -43,6 +43,7 @@ import CapacidadCumplida from "./pages/buses/CapacidadCumplida";
 import TiempoReal from "./pages/rastreo/TiempoReal";
 import RecorridosPrevios from "./pages/rastreo/RecorridosPrevios";
 import TelemetriaListado from "./pages/telemetria/Listado";
+import AlarmasListado from "./pages/alarmas/Listado";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -93,6 +94,7 @@ const App = () => (
             <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
             <Route path="/telemetria/listado" element={<TelemetriaListado />} />
+            <Route path="/alarmas/listado" element={<AlarmasListado />} />
             <Route path="/rastreo/tiempo-real" element={<TiempoReal />} />
             <Route path="/rastreo/recorridos-previos" element={<RecorridosPrevios />} />
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
