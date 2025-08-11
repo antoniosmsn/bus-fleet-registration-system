@@ -126,6 +126,10 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
       <MapContainer
         center={center}
         zoom={12}
+        dragging={true}
+        doubleClickZoom={true}
+        scrollWheelZoom={true}
+        touchZoom={true}
         style={{ width: '100%', height: 'calc(100vh - 120px)' }}
       >
         <SetMapRef />

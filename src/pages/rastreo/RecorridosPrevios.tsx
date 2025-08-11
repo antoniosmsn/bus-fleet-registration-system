@@ -429,7 +429,7 @@ const RecorridosPrevios: React.FC = () => {
                   isPanelVisible={showPanel}
                 />
                 {(mapData?.telemetria?.length ?? 0) > 0 && (
-                  <Card className="absolute inset-4 bg-background/90 backdrop-blur-sm border-2 border-dashed">
+                  <Card className="absolute inset-4 bg-background/90 backdrop-blur-sm border-2 border-dashed pointer-events-none">
                     <CardContent className="h-full flex items-center justify-center text-center">
                       <div className="space-y-2">
                         <p className="text-lg font-medium">Mapa de Recorridos Previos</p>
