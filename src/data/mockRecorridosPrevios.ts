@@ -299,6 +299,30 @@ export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
   return result;
 }
 
+// Generar paradas de zona franca (mock - todas las paradas disponibles en la zona)
+function generateZonaFrancaStops(): StopInfo[] {
+  const stops: StopInfo[] = [];
+  // Generar paradas distribuidas alrededor de COYOL_ZF
+  const radius = 0.01; // aproximadamente 1km de radio
+  for (let i = 0; i < 20; i++) {
+    const angle = (i / 20) * 2 * Math.PI;
+    const distance = Math.random() * radius;
+    const lat = COYOL_ZF.lat + distance * Math.cos(angle);
+    const lng = COYOL_ZF.lng + distance * Math.sin(angle);
+    
+    stops.push({
+      id: `ZF-${(i+1).toString().padStart(2,'0')}`,
+      codigo: `ZF-${(i+1).toString().padStart(2,'0')}`,
+      nombre: `Parada Zona Franca ${i+1}`,
+      lat,
+      lng,
+    });
+  }
+  return stops;
+}
+
+const zonaFrancaStops = generateZonaFrancaStops();
+
 export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: string): RecorridoMapData | null {
   const desde = new Date(desdeUtc);
   const hasta = new Date(hastaUtc);
@@ -320,19 +344,21 @@ export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: st
   if (points.length === 0) return {
     modo: 'rango',
     telemetria: [],
-    stops: [],
+    stops: zonaFrancaStops, // Mostrar todas las paradas de zona franca aunque no haya telemetría
     qrClusters: [],
     qrReadings: [],
   };
 
-  // Paradas en modo rango: todas las paradas potenciales en zona (mock: tomar 12 puntos espaciados)
-  const step = Math.max(1, Math.floor(points.length / 12));
-  const stops: StopInfo[] = points.filter((_,i) => i % step === 0).slice(0,12).map((p, idx) => ({
-    id: `RANGO-${busId}-${idx+1}`,
-    codigo: `RG-${idx+1}`,
-    nombre: `Parada Rango ${idx+1}`,
-    lat: p.lat,
-    lng: p.lng,
+  // En modo rango: devolver todas las paradas de la zona franca
+  const stops = zonaFrancaStops.map(stop => ({
+    ...stop,
+    // Marcar algunas como visitadas si hay telemetría cerca
+    visitada: points.some(p => 
+      Math.abs(p.lat - stop.lat) < 0.001 && Math.abs(p.lng - stop.lng) < 0.001
+    ),
+    llegadaUtc: points.find(p => 
+      Math.abs(p.lat - stop.lat) < 0.001 && Math.abs(p.lng - stop.lng) < 0.001
+    )?.timestampUtc
   }));
 
   // Lecturas QR individuales aleatorias en el rango

@@ -197,7 +197,18 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
         {/* Radios de paradas */}
         {showParadas && showRadios && selectedStopsObjects.map(st => (
-          <Circle key={`rad-${st.id}`} center={[st.lat, st.lng]} radius={radioParadaMts} pathOptions={{ color: '#6b7280', weight: 1, opacity: 0.6 }} />
+          <Circle 
+            key={`rad-${st.id}`} 
+            center={[st.lat, st.lng]} 
+            radius={radioParadaMts} 
+            pathOptions={{ 
+              color: '#6b7280', 
+              weight: 1, 
+              opacity: 0.6, 
+              fillOpacity: 0.1,
+              fill: true 
+            }} 
+          />
         ))}
 
         {/* Lecturas QR */}

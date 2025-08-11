@@ -112,8 +112,8 @@ const RecorridosPrevios: React.FC = () => {
     }
     if (modo === 'rango') {
       const diffH = (d2.getTime() - d1.getTime()) / 3600000;
-      if (diffH > 24) {
-        toast({ title: 'El rango máximo permitido es de 24 horas.', description: 'Ajusta las fechas para no exceder 24 h.' });
+      if (diffH > 6) {
+        toast({ title: 'El rango máximo permitido es de 6 horas.', description: 'Ajusta las fechas para no exceder 6 h.' });
         return;
       }
     }
@@ -376,7 +376,7 @@ const RecorridosPrevios: React.FC = () => {
 
           {/* Panel mapa */}
           <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
-            {!showPanel && !mapData && (
+            {!showPanel && (
               <Button 
                 className="absolute top-4 left-4 z-50" 
                 size="sm" 
