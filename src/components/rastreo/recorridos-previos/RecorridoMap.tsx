@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Eye, EyeOff, Layers, RotateCcw, MapPinned } from 'lucide-react';
+import { Eye, EyeOff, Layers, RotateCcw, MapPinned, PanelLeftOpen } from 'lucide-react';
 import { RecorridoMapData, StopInfo, QRReading } from '@/types/recorridos-previos';
 import RecorridoMapExport from './RecorridoMapExport';
 
@@ -55,9 +55,10 @@ interface RecorridoMapProps {
   initialFocus: InitialFocus;
   radioParadaMts?: number; // default 30
   onRequestShowPanel: () => void;
+  isPanelVisible?: boolean;
 }
 
-export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel }) => {
+export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel, isPanelVisible }) => {
   const points = data?.telemetria ?? [];
   const [speedThreshold, setSpeedThreshold] = useState<number>(90);
   const [showRecorrido, setShowRecorrido] = useState(true);
@@ -261,9 +262,11 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
       {/* Controles flotantes */}
       <div className="absolute top-3 left-3 flex gap-2 z-[400]">
-        <Button size="sm" variant="secondary" onClick={onRequestShowPanel}>
-          <Eye className="h-4 w-4 mr-2" /> Mostrar panel
-        </Button>
+        {!isPanelVisible && (
+          <Button size="icon" variant="secondary" onClick={onRequestShowPanel} aria-label="Mostrar panel">
+            <PanelLeftOpen className="h-4 w-4" />
+          </Button>
+        )}
         <Button size="sm" variant="secondary" onClick={handleResetView}>
           <RotateCcw className="h-4 w-4 mr-2" /> Restablecer vista
         </Button>

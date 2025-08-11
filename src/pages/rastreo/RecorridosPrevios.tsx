@@ -416,6 +416,7 @@ const RecorridosPrevios: React.FC = () => {
                 modo={mapData.modo}
                 initialFocus={initialFocus}
                 onRequestShowPanel={() => setShowPanel(true)}
+                isPanelVisible={showPanel}
               />
             )}
           </div>
