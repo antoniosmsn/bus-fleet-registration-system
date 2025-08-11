@@ -54,7 +54,7 @@ const DateRangePicker: React.FC<{
             {format(value.from, 'Pp', { locale: es })}
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="p-0">
+        <PopoverContent align="start" className="z-50 p-0 bg-popover">
           <Calendar mode="single" selected={value.from} onSelect={(d) => d && onChange({ from: d, to: value.to })} initialFocus />
         </PopoverContent>
       </Popover>
@@ -65,7 +65,7 @@ const DateRangePicker: React.FC<{
             {format(value.to, 'Pp', { locale: es })}
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="p-0">
+        <PopoverContent align="start" className="z-50 p-0 bg-popover">
           <Calendar mode="single" selected={value.to} onSelect={(d) => d && onChange({ from: value.from, to: d })} initialFocus />
         </PopoverContent>
       </Popover>
@@ -78,7 +78,7 @@ const RolSelector: React.FC<{ rol: RolSimulado; onChange: (r: RolSimulado) => vo
     <SelectTrigger>
       <SelectValue placeholder="Rol" />
     </SelectTrigger>
-    <SelectContent>
+    <SelectContent className="z-50 bg-popover">
       <SelectItem value="Administrador">Administrador</SelectItem>
       <SelectItem value="Empresa de transporte">Empresa de transporte</SelectItem>
       <SelectItem value="Empresa cliente">Empresa cliente</SelectItem>
@@ -135,7 +135,7 @@ const TelemetriaListado: React.FC = () => {
 
   useEffect(() => { setPage(1); }, [JSON.stringify(filtros), rol, pageSize]);
 
-  const rutas = useMemo(() => [''].concat(Array.from(new Set(mockRamalesDetallados.map(r => r.nombre)))), []);
+  const rutas = useMemo(() => Array.from(new Set(mockRamalesDetallados.map(r => r.nombre))), []);
   const empresasTrans = useMemo(() => mockEmpresasTransporte.map(e => e.nombre), []);
   const empresasCli = useMemo(() => mockEmpresasCliente.map(e => e.nombre), []);
 
@@ -165,12 +165,12 @@ const TelemetriaListado: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm mb-1">Tipo de registro</label>
-              <Select value={filtros.tiposRegistro[0] || ''} onValueChange={(v) => setFiltros({ ...filtros, tiposRegistro: v ? [v as TipoRegistro] : [] })}>
+              <Select value={filtros.tiposRegistro[0] || '__ALL__'} onValueChange={(v) => setFiltros({ ...filtros, tiposRegistro: v && v !== '__ALL__' ? [v as TipoRegistro] : [] })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                <SelectContent className="z-50 bg-popover">
+                  <SelectItem value="__ALL__">Todos</SelectItem>
                   {tiposRegistro.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -180,13 +180,13 @@ const TelemetriaListado: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             <div>
               <label className="block text-sm mb-1">Ruta</label>
-              <Select value={filtros.ruta} onValueChange={(v) => setFiltros({ ...filtros, ruta: v })}>
+              <Select value={filtros.ruta || '__ALL__'} onValueChange={(v) => setFiltros({ ...filtros, ruta: v === '__ALL__' ? '' : v })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
-                  {rutas.filter(Boolean).map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                <SelectContent className="z-50 bg-popover">
+                  <SelectItem value="__ALL__">Todos</SelectItem>
+                  {rutas.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -212,12 +212,12 @@ const TelemetriaListado: React.FC = () => {
             {(rol === 'Administrador' || rol === 'Empresa de transporte') && (
               <div>
                 <label className="block text-sm mb-1">Empresa de transporte</label>
-                <Select value={filtros.empresasTransporte[0] || ''} onValueChange={(v) => setFiltros({ ...filtros, empresasTransporte: v ? [v] : [] })}>
+                <Select value={filtros.empresasTransporte[0] || '__ALL__'} onValueChange={(v) => setFiltros({ ...filtros, empresasTransporte: v && v !== '__ALL__' ? [v] : [] })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                  <SelectContent className="z-50 bg-popover">
+                    <SelectItem value="__ALL__">Todas</SelectItem>
                     {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -226,12 +226,12 @@ const TelemetriaListado: React.FC = () => {
             {(rol === 'Administrador' || rol === 'Empresa cliente') && (
               <div>
                 <label className="block text-sm mb-1">Empresa cliente</label>
-                <Select value={filtros.empresasCliente[0] || ''} onValueChange={(v) => setFiltros({ ...filtros, empresasCliente: v ? [v] : [] })}>
+                <Select value={filtros.empresasCliente[0] || '__ALL__'} onValueChange={(v) => setFiltros({ ...filtros, empresasCliente: v && v !== '__ALL__' ? [v] : [] })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Todas</SelectItem>
+                  <SelectContent className="z-50 bg-popover">
+                    <SelectItem value="__ALL__">Todas</SelectItem>
                     {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -243,7 +243,7 @@ const TelemetriaListado: React.FC = () => {
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-50 bg-popover">
                   {pageSizeOptions.map(s => <SelectItem key={s} value={String(s)}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>

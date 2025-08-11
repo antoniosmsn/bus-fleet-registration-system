@@ -16,13 +16,12 @@ const geocercas = [
 
 const tiposRegistroOrden: TipoRegistro[] = [
   'Entrada a ruta',
-  'Salida a ruta' as unknown as TipoRegistro, // safeguard in case of typo; corrected below
   'Salida de ruta',
   'Paso por parada',
   'Exceso de velocidad',
   'Grabación por tiempo',
   'Grabación por curso',
-].filter((t): t is TipoRegistro => t !== ('Salida a ruta' as unknown as TipoRegistro));
+];
 
 // Coordenadas base para dispersión (solo Alajuela y San José)
 const seeds = [
