@@ -8,7 +8,7 @@ const SAN_JOSE = { lat: 9.9281, lng: -84.0907 }; // Catedral
 const ALAJUELA = { lat: 10.0163, lng: -84.2116 }; // Parque Central
 const CARTAGO = { lat: 9.8644, lng: -83.9194 }; // Basílica
 
-export type TipoRuta = 'Parque' | 'Privada' | 'Especial';
+export type TipoRuta = 'parque' | 'privado' | 'especial';
 
 interface BusInfo {
   busId: string;
@@ -59,27 +59,15 @@ function generatePolyline(start: {lat:number; lng:number}, end: {lat:number; lng
 }
 
 function createStopsAlongPath(poly: {lat:number; lng:number}[], count: number, prefix: string): StopInfo[] {
-  const costaRicaPlaces = [
-    'San José Centro', 'Plaza de la Cultura', 'Mercado Central', 'Barrio Escalante',
-    'Hospital San Juan de Dios', 'Universidad de Costa Rica', 'Estación del Pacífico',
-    'Sabana Norte', 'Pavas Centro', 'Escazú Centro', 'Santa Ana Centro',
-    'Alajuela Centro', 'Hospital San Rafael', 'Aeropuerto Juan Santamaría',
-    'Heredia Centro', 'Universidad Nacional', 'Cartago Centro', 'Basílica de los Ángeles',
-    'Tres Ríos', 'Desamparados', 'Aserrí', 'Curridabat', 'Guadalupe',
-    'Moravia', 'Tibás', 'Goicoechea', 'Montes de Oca', 'La Unión',
-    'Zona Franca El Coyol', 'Ciudad Colón', 'Puriscal', 'Aserrí Centro'
-  ];
-  
   const step = Math.max(1, Math.floor(poly.length / count));
   const stops: StopInfo[] = [];
   for (let i = 0; i < count; i++) {
     const idx = Math.min(poly.length - 1, i * step);
-    const id = (i + 1).toString();
-    const nombre = costaRicaPlaces[i % costaRicaPlaces.length];
+    const id = `${prefix}-${(i+1).toString().padStart(2,'0')}`;
     stops.push({
       id,
       codigo: id,
-      nombre,
+      nombre: `Parada ${i+1}`,
       lat: poly[idx].lat,
       lng: poly[idx].lng,
     });
@@ -104,7 +92,7 @@ function clusterReadings(readings: QRReading[], clusterCount = 6): QRCluster[] {
 // Catálogos
 const empresasTransporte = mockEmpresasTransporte.map(e => e.nombre);
 const empresasCliente = mockEmpresas.map(e => e.nombre);
-const tiposRuta: TipoRuta[] = ['Parque','Privada','Especial'];
+const tiposRuta: TipoRuta[] = ['parque','privado','especial'];
 
 // Buses
 const buses: BusInfo[] = Array.from({ length: 200 }).map((_, idx) => {
@@ -117,35 +105,27 @@ const buses: BusInfo[] = Array.from({ length: 200 }).map((_, idx) => {
   };
 });
 
-// Rutas base - Solo Cartago-Coyol para mejorar rendimiento
+// Rutas base
 const rutasBase = [
+  { nombre:"SJ-Coyol", inicio: SAN_JOSE, fin: COYOL_ZF, provincia: 'San José' },
+  { nombre:"Alajuela-Coyol", inicio: ALAJUELA, fin: COYOL_ZF, provincia: 'Alajuela' },
   { nombre:"Coyol-Cartago", inicio: COYOL_ZF, fin: CARTAGO, provincia: 'Cartago' },
 ];
 
 const serviciosStore = new Map<string, ServicioMock>();
 
-// Función para generar servicios dinámicamente basados en el rango de búsqueda
-function generateServiciosParaRango(desdeUtc: string, hastaUtc: string): void {
-  serviciosStore.clear(); // Limpiar datos anteriores
-  
-  const desde = new Date(desdeUtc);
-  const hasta = new Date(hastaUtc);
-  const rangoMs = hasta.getTime() - desde.getTime();
-  
+// Generación de 10 servicios por bus
+(function generateServiciosPorBus(){
+  const now = new Date();
   for (const bus of buses) {
-    // Generar 3-8 servicios por bus en el rango especificado
-    const serviciosCount = randomInt(3, 8);
-    for (let s = 0; s < serviciosCount; s++) {
+    for (let s = 0; s < 10; s++) {
       const ruta = randomChoice(rutasBase);
       // Asegurar que inician o terminan en Coyol
       const startAtCoyol = Math.random() < 0.5;
       const start = startAtCoyol ? COYOL_ZF : ruta.inicio;
       const end = startAtCoyol ? ruta.fin : COYOL_ZF;
       const poly = generatePolyline(start, end, randomInt(80, 140));
-      
-      // Generar hora de inicio dentro del rango buscado
-      const inicioOffset = Math.random() * rangoMs;
-      const inicio = new Date(desde.getTime() + inicioOffset);
+      const inicio = new Date(now.getTime() - randomInt(1, 7) * 24 * 3600 * 1000 - randomInt(0, 23) * 3600 * 1000 - randomInt(0, 59) * 60 * 1000);
       const durMin = randomInt(40, 120);
       const fin = new Date(inicio.getTime() + durMin * 60 * 1000);
 
@@ -171,17 +151,16 @@ function generateServiciosParaRango(desdeUtc: string, hastaUtc: string): void {
         }
       }
 
-      // Lecturas QR ~30 con paradaNombre
+      // Lecturas QR ~30
       const qrReadings: QRReading[] = Array.from({ length: 30 + randomInt(0, 30) }).map(() => {
         const tp = telemetria[randomInt(0, telemetria.length - 1)];
         const cedula = String(randomInt(100000000, 999999999));
-        const paradaNombre = randomChoice(stops).nombre;
-        return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc, paradaNombre };
+        return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc };
       });
       const qrClusters = clusterReadings(qrReadings);
 
       const tipoRuta = randomChoice(tiposRuta);
-      const empCliente = tipoRuta === 'Parque' ? null : randomChoice(empresasCliente);
+      const empCliente = tipoRuta === 'parque' ? null : randomChoice(empresasCliente);
       const conductorCodigo = `C${randomInt(1000, 9999)}`;
       const conductorNombre = `Conductor ${randomInt(1, 300)}`;
 
@@ -204,7 +183,7 @@ function generateServiciosParaRango(desdeUtc: string, hastaUtc: string): void {
       serviciosStore.set(id, { item, telemetria, stops, qrReadings, qrClusters });
     }
   }
-}
+})();
 
 export interface FiltrosBase {
   modo: ModoConsulta;
@@ -218,9 +197,6 @@ export interface FiltrosBase {
 }
 
 export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
-  // Generar datos dinámicamente para el rango buscado
-  generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
-  
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
   let items = Array.from(serviciosStore.values()).map(v => v.item);
@@ -257,9 +233,7 @@ export function queryServicios(f: FiltrosBase): RecorridoServicioListItem[] {
 
   // Agrupar por bus y ordenar inicio asc
   items.sort((a,b) => a.identificador.localeCompare(b.identificador) || new Date(a.inicioUtc).getTime() - new Date(b.inicioUtc).getTime());
-  
-  // Limitar a 20 servicios para mejorar rendimiento
-  return items.slice(0, 20);
+  return items;
 }
 
 export function getMapDataForServicio(id: string): RecorridoMapData | null {
@@ -275,15 +249,11 @@ export function getMapDataForServicio(id: string): RecorridoMapData | null {
 }
 
 export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
-  // Generar datos dinámicamente para el rango buscado
-  generateServiciosParaRango(f.desdeUtc, f.hastaUtc);
-  
   const desde = new Date(f.desdeUtc);
   const hasta = new Date(f.hastaUtc);
 
   // Filtrar servicios que intersectan el rango y luego consolidar por bus
   const items = Array.from(serviciosStore.values()).map(v => v.item);
-  
   const intersect = items.filter(it => {
     const ini = new Date(it.inicioUtc);
     const fin = new Date(it.finUtc);
@@ -326,9 +296,7 @@ export function queryRango(f: FiltrosBase): RecorridoRangoListItem[] {
 
   const result = Array.from(byBus.values());
   result.sort((a,b) => a.identificador.localeCompare(b.identificador));
-  
-  // Limitar a 20 buses para mejorar rendimiento
-  return result.slice(0, 20);
+  return result;
 }
 
 export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: string): RecorridoMapData | null {
@@ -367,12 +335,11 @@ export function getMapDataForRango(busId: string, desdeUtc: string, hastaUtc: st
     lng: p.lng,
   }));
 
-  // Lecturas QR individuales aleatorias en el rango con paradaNombre
+  // Lecturas QR individuales aleatorias en el rango
   const qrReadings: QRReading[] = Array.from({ length: 40 }).map((_,i) => {
     const tp = points[randomInt(0, points.length-1)];
     const cedula = String(randomInt(100000000, 999999999));
-    const paradaNombre = randomChoice(stops).nombre;
-    return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc, paradaNombre };
+    return { cedula, lat: tp.lat + (Math.random()-0.5)*0.0008, lng: tp.lng + (Math.random()-0.5)*0.0008, timestampUtc: tp.timestampUtc };
   });
   const qrClusters = clusterReadings(qrReadings);
 

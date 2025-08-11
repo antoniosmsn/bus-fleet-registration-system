@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Eye, EyeOff, Layers, RotateCcw, MapPinned, Target, User } from 'lucide-react';
+import { Eye, EyeOff, Layers, RotateCcw, MapPinned } from 'lucide-react';
 import { RecorridoMapData, StopInfo, QRReading } from '@/types/recorridos-previos';
 import RecorridoMapExport from './RecorridoMapExport';
 
@@ -37,50 +37,6 @@ function createArrowIcon(course: number, speed: number, showSpeed: boolean) {
   });
 }
 
-// Crear icono para las paradas (igual que en TiempoReal)
-function createStopIcon(codigo: string, nombre: string) {
-  return divIcon({
-    html: `
-      <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-        <!-- Icono de target/placemark igual que en TiempoReal -->
-        <div style="position: relative;">
-          <svg width="20" height="20" viewBox="0 0 24 24" style="filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.3));">
-            <circle cx="12" cy="12" r="10" fill="#059669" stroke="#fff" stroke-width="2"/>
-            <circle cx="12" cy="12" r="6" fill="#fff"/>
-            <circle cx="12" cy="12" r="3" fill="#059669"/>
-          </svg>
-        </div>
-        
-        <!-- Etiqueta con código y nombre igual que en TiempoReal -->
-        <div style="
-          position: absolute; 
-          top: 24px; 
-          left: 50%; 
-          transform: translateX(-50%);
-          background: #f0fdf4;
-          border: 1px solid #059669;
-          border-radius: 4px;
-          padding: 3px 6px;
-          font-size: 10px;
-          font-weight: bold;
-          color: #059669;
-          white-space: nowrap;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-          z-index: 1000;
-          max-width: 120px;
-          text-align: center;
-        ">
-          <div style="font-weight: bold;">${codigo}</div>
-          <div style="font-size: 8px; font-weight: normal; margin-top: 1px;">${nombre}</div>
-        </div>
-      </div>
-    `,
-    className: 'custom-stop-icon',
-    iconSize: [40, 40],
-    iconAnchor: [20, 20]
-  });
-}
-
 function FitBoundsOnPoints({ points }: { points: {lat:number; lng:number}[] }) {
   const map = useMap();
   useEffect(() => {
@@ -99,11 +55,9 @@ interface RecorridoMapProps {
   initialFocus: InitialFocus;
   radioParadaMts?: number; // default 30
   onRequestShowPanel: () => void;
-  onLayerDataChange?: (layerType: 'paradas' | 'lecturas' | 'controles', data: any) => void;
-  showInfoPanel?: boolean; // Nueva prop para saber si el panel está visible
 }
 
-export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel, onLayerDataChange, showInfoPanel = false }) => {
+export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialFocus, radioParadaMts = 30, onRequestShowPanel }) => {
   const points = data?.telemetria ?? [];
   const [speedThreshold, setSpeedThreshold] = useState<number>(90);
   const [showRecorrido, setShowRecorrido] = useState(true);
@@ -117,7 +71,6 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const mapRef = useRef<L.Map | null>(null);
   const center: [number, number] = [9.9333, -84.0833];
-  const [clickedMarker, setClickedMarker] = useState<string | null>(null);
 
   const allStops = data?.stops ?? [];
 
@@ -134,6 +87,14 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
 
   const pathPositions = useMemo(() => points.map(p => [p.lat, p.lng] as [number, number]), [points]);
 
+  
+
+  const handleResetView = () => {
+    if (!mapRef.current || points.length === 0) return;
+    const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
+    mapRef.current.fitBounds(bounds, { padding: [24,24] });
+  };
+
   const selectedStopsObjects: StopInfo[] = useMemo(() => {
     const set = new Set(selectedStops);
     return allStops.filter(s => set.has(s.id));
@@ -146,55 +107,6 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
     const q = qrSearch.toLowerCase();
     return data.qrReadings.filter(r => r.cedula.toLowerCase().includes(q));
   }, [agruparLecturas, data, qrSearch]);
-
-  const handleResetView = () => {
-    if (!mapRef.current || points.length === 0) return;
-    const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number]));
-    mapRef.current.fitBounds(bounds, { padding: [24,24] });
-  };
-
-  // Notificar cambios en los datos al panel lateral
-  useEffect(() => {
-    if (onLayerDataChange) {
-      onLayerDataChange('paradas', {
-        allStops,
-        selectedStops,
-        selectedStopsObjects,
-        setSelectedStops,
-        radioParadaMts,
-        showRadios,
-        setShowRadios,
-        mapRef
-      });
-    }
-  }, [allStops, selectedStops, selectedStopsObjects, radioParadaMts, showRadios, onLayerDataChange]);
-
-  useEffect(() => {
-    if (onLayerDataChange) {
-      onLayerDataChange('lecturas', {
-        qrClusters: data?.qrClusters || [],
-        qrReadings: data?.qrReadings || [],
-        agruparLecturas,
-        setAgruparLecturas,
-        qrSearch,
-        setQrSearch,
-        filteredQRList,
-        mapRef
-      });
-    }
-  }, [data?.qrClusters, data?.qrReadings, agruparLecturas, qrSearch, filteredQRList, onLayerDataChange]);
-
-  useEffect(() => {
-    if (onLayerDataChange) {
-      onLayerDataChange('controles', {
-        speedThreshold,
-        setSpeedThreshold,
-        points,
-        modo,
-        data
-      });
-    }
-  }, [speedThreshold, points, modo, data, onLayerDataChange]);
 
   const startPoint = modo === 'servicios' && points.length > 0 ? points[0] : null;
   const endPoint = modo === 'servicios' && points.length > 1 ? points[points.length-1] : null;
@@ -212,8 +124,7 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
       <MapContainer
         center={center}
         zoom={12}
-        style={{ height: '100%', width: '100%' }}
-        className="z-0"
+        style={{ width: '100%', height: 'calc(100vh - 120px)' }}
       >
         <SetMapRef />
         <FitBoundsOnPoints points={points} />
@@ -236,79 +147,51 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
           />
         ))}
 
-        {/* Inicio / Fin para modo servicios con iconos tipo target */}
+        {/* Inicio / Fin para modo servicios */}
         {modo === 'servicios' && startPoint && (
           <Marker 
             position={[startPoint.lat, startPoint.lng]} 
             icon={L.divIcon({
-              html: `
-                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <circle cx="12" cy="12" r="6"></circle>
-                    <circle cx="12" cy="12" r="2"></circle>
-                  </svg>
-                </div>
-              `,
-              className: 'target-marker',
-              iconSize: [24, 24],
-              iconAnchor: [12, 12]
+              html: `<div style="background-color: #16A34A; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+              className: 'custom-marker',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
             })}
-            eventHandlers={{
-              click: () => setClickedMarker('start')
-            }}
           >
-            {clickedMarker === 'start' && (
-              <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
-                Inicio del servicio — {new Date(startPoint.timestampUtc).toLocaleString()}
-              </Tooltip>
-            )}
+            <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
+              Inicio del servicio — {new Date(startPoint.timestampUtc).toLocaleString()}
+            </Tooltip>
           </Marker>
         )}
         {modo === 'servicios' && endPoint && (
           <Marker 
             position={[endPoint.lat, endPoint.lng]} 
             icon={L.divIcon({
-              html: `
-                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <circle cx="12" cy="12" r="6"></circle>
-                    <circle cx="12" cy="12" r="2"></circle>
-                  </svg>
-                </div>
-              `,
-              className: 'target-marker',
-              iconSize: [24, 24],
-              iconAnchor: [12, 12]
+              html: `<div style="background-color: #DC2626; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+              className: 'custom-marker',
+              iconSize: [20, 20],
+              iconAnchor: [10, 10]
             })}
-            eventHandlers={{
-              click: () => setClickedMarker('end')
-            }}
           >
-            {clickedMarker === 'end' && (
-              <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
-                Fin del servicio — {new Date(endPoint.timestampUtc).toLocaleString()}
-              </Tooltip>
-            )}
+            <Tooltip direction="top" offset={[0,-10]} opacity={1} permanent>
+              Fin del servicio — {new Date(endPoint.timestampUtc).toLocaleString()}
+            </Tooltip>
           </Marker>
         )}
 
-        {/* Paradas con el mismo estilo que TiempoReal */}
+        {/* Paradas */}
         {showParadas && selectedStopsObjects.map(st => (
-          <Marker 
-            key={st.id} 
-            position={[st.lat, st.lng]}
-            icon={createStopIcon(st.codigo, st.nombre)}
-          >
-            {st.visitada && (
-              <Tooltip>
-                <div className="text-xs">
-                  <div className="font-semibold">{st.codigo} — {st.nombre}</div>
-                  <div>Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>
-                </div>
-              </Tooltip>
-            )}
+          <Marker key={st.id} position={[st.lat, st.lng]}>
+            <Tooltip>
+              <div className="text-xs">
+                <div className="font-semibold">{st.codigo} — {st.nombre}</div>
+                {st.visitada ? (
+                  <div>LLegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>
+                ) : (
+                  <div>Sin visita registrada</div>
+                )}
+              </div>
+            </Tooltip>
           </Marker>
         ))}
 
@@ -317,106 +200,150 @@ export const RecorridoMap: React.FC<RecorridoMapProps> = ({ data, modo, initialF
           <Circle key={`rad-${st.id}`} center={[st.lat, st.lng]} radius={radioParadaMts} pathOptions={{ color: '#6b7280', weight: 1, opacity: 0.6 }} />
         ))}
 
-        {/* Lecturas QR con iconos de persona */}
+        {/* Lecturas QR */}
         {showLecturas && agruparLecturas && data?.qrClusters.map((c, i) => (
-          <Marker 
-            key={`qrc-${i}`} 
-            position={[c.lat, c.lng]}
-            icon={L.divIcon({
-              html: `
-                <div style="display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: rgba(59, 130, 246, 0.8); border-radius: 50%; border: 2px solid white;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.65 13.65 12 12 12S9 10.65 9 9V7L3 7V9C3 11.76 5.24 14 8 14H16C18.76 14 21 11.76 21 9ZM12 13C14.21 13 16 14.79 16 17V20H8V17C8 14.79 9.79 13 12 13Z"/>
-                  </svg>
-                  <div style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">${c.count}</div>
-                </div>
-              `,
-              className: 'qr-cluster-marker',
-              iconSize: [28, 28],
-              iconAnchor: [14, 14]
-            })}
-          >
+          <Marker key={`qrc-${i}`} position={[c.lat, c.lng]}>
             <Tooltip permanent direction="top" offset={[0,-10]} opacity={1}>
               <div className="text-xs">QR x{c.count}</div>
             </Tooltip>
           </Marker>
         ))}
         {showLecturas && !agruparLecturas && filteredQRList.map((qr, i) => (
-          <Marker 
-            key={`qr-${i}`} 
-            position={[qr.lat, qr.lng]}
-            icon={L.divIcon({
-              html: `
-                <div style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: rgba(34, 197, 94, 0.8); border-radius: 50%; border: 2px solid white;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7V9C15 10.65 13.65 12 12 12S9 10.65 9 9V7L3 7V9C3 11.76 5.24 14 8 14H16C18.76 14 21 11.76 21 9ZM12 13C14.21 13 16 14.79 16 17V20H8V17C8 14.79 9.79 13 12 13Z"/>
-                  </svg>
-                </div>
-              `,
-              className: 'qr-reading-marker',
-              iconSize: [24, 24],
-              iconAnchor: [12, 12]
-            })}
-            eventHandlers={{
-              click: () => setClickedMarker(`qr-${i}`)
-            }}
-          >
-            {clickedMarker === `qr-${i}` && (
-              <Tooltip>
-                <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString()}</div>
-              </Tooltip>
-            )}
+          <Marker key={`qr-${i}`} position={[qr.lat, qr.lng]}>
+            <Tooltip>
+              <div className="text-xs">{qr.cedula} — {new Date(qr.timestampUtc).toLocaleString()}</div>
+            </Tooltip>
           </Marker>
         ))}
       </MapContainer>
 
       {/* Controles flotantes */}
       <div className="absolute top-3 left-3 flex gap-2 z-[400]">
-        {!showInfoPanel && (
-          <Button size="sm" variant="secondary" onClick={onRequestShowPanel}>
-            <Eye className="h-4 w-4" />
-          </Button>
-        )}
-        {showRecorrido && points.length > 0 && (
-          <Button size="sm" variant="secondary" onClick={handleResetView}>
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-        )}
+        <Button size="sm" variant="secondary" onClick={onRequestShowPanel}>
+          <Eye className="h-4 w-4 mr-2" /> Mostrar panel
+        </Button>
+        <Button size="sm" variant="secondary" onClick={handleResetView}>
+          <RotateCcw className="h-4 w-4 mr-2" /> Restablecer vista
+        </Button>
       </div>
 
-      {/* Panel de capas simplificado y compacto */}
-      <div className="absolute top-14 right-3 z-[400]">
-        <Card className="w-auto">
-          <CardContent className="p-3">
-            <div className="flex gap-1">
-              <Button 
-                size="sm" 
-                variant={showRecorrido ? 'default' : 'outline'} 
-                onClick={() => setShowRecorrido(v => !v)}
-                className="h-8 px-2"
-                title="Mostrar/ocultar recorrido"
-              >
-                {showRecorrido ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+      <div className="absolute top-3 right-3 z-[400] w-80 max-w-[90vw]">
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-sm flex items-center">
+              <Layers className="h-4 w-4 mr-2" /> Capas y controles
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" variant={showRecorrido? 'default':'outline'} onClick={()=>setShowRecorrido(v=>!v)}>
+                {showRecorrido ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
+                Recorrido
               </Button>
-              <Button 
-                size="sm" 
-                variant={showParadas ? 'default' : 'outline'} 
-                onClick={() => setShowParadas(v => !v)}
-                className="h-8 px-2"
-                title="Mostrar/ocultar paradas"
-              >
-                <Target className="h-3 w-3" />
+              <Button size="sm" variant={showParadas? 'default':'outline'} onClick={()=>setShowParadas(v=>!v)}>
+                {showParadas ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
+                Paradas
               </Button>
-              <Button 
-                size="sm" 
-                variant={showLecturas ? 'default' : 'outline'} 
-                onClick={() => setShowLecturas(v => !v)}
-                className="h-8 px-2"
-                title="Mostrar/ocultar lecturas QR"
-              >
-                <User className="h-3 w-3" />
+              <Button size="sm" variant={showLecturas? 'default':'outline'} onClick={()=>setShowLecturas(v=>!v)}>
+                {showLecturas ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
+                Lecturas QR
+              </Button>
+              <Button size="sm" variant={showRadios? 'default':'outline'} onClick={()=>setShowRadios(v=>!v)}>
+                {showRadios ? <Eye className="h-4 w-4 mr-2"/>: <EyeOff className="h-4 w-4 mr-2"/>}
+                Radios paradas
               </Button>
             </div>
+
+            <div>
+              <label className="text-xs block mb-1">Umbral de exceso de velocidad (km/h)</label>
+              <Input type="number" min={0} max={150} value={speedThreshold} onChange={(e)=> setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value)||0)))} />
+            </div>
+
+            <RecorridoMapExport data={data} modo={modo} />
+
+            <Tabs value={activeTab} onValueChange={(v)=> setActiveTab(v as InitialFocus)}>
+              <TabsList className="grid grid-cols-3">
+                <TabsTrigger value="recorrido">Recorrido</TabsTrigger>
+                <TabsTrigger value="paradas">Paradas</TabsTrigger>
+                <TabsTrigger value="lecturas">Lecturas</TabsTrigger>
+              </TabsList>
+              <TabsContent value="recorrido" className="pt-2">
+                <p className="text-xs text-muted-foreground">Total puntos: {points.length}</p>
+              </TabsContent>
+              <TabsContent value="paradas" className="pt-2">
+                {modo === 'rango' && (
+                  <div className="flex gap-2 mb-2">
+                    <Button size="sm" variant="outline" onClick={()=> setSelectedStops(allStops.map(s=>s.id))}>Seleccionar todas</Button>
+                    <Button size="sm" variant="outline" onClick={()=> setSelectedStops([])}>Limpiar</Button>
+                  </div>
+                )}
+                <ScrollArea className="h-48 pr-2">
+                  {allStops.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">No hay paradas registradas en este recorrido.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {allStops.map(st => {
+                        const selected = selectedStops.includes(st.id);
+                        return (
+                          <div key={st.id} className="flex items-center justify-between text-xs border rounded p-2">
+                            <div>
+                              <div className="font-medium">{st.codigo} — {st.nombre}</div>
+                              {st.visitada && <div className="text-muted-foreground">Llegada: {st.llegadaUtc ? new Date(st.llegadaUtc).toLocaleString() : '-'}</div>}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="icon" variant="ghost" onClick={() => {
+                                if (mapRef.current) {
+                                  mapRef.current.setView([st.lat, st.lng], 17, { animate: true });
+                                }
+                              }}>
+                                <MapPinned className="h-4 w-4" />
+                              </Button>
+                              <input type="checkbox" checked={selected} onChange={() => {
+                                setSelectedStops(prev => selected ? prev.filter(id=>id!==st.id) : [...prev, st.id]);
+                              }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent value="lecturas" className="pt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs">Agrupar lecturas</span>
+                  <input type="checkbox" checked={agruparLecturas} onChange={(e)=> setAgruparLecturas(e.target.checked)} />
+                </div>
+                {!agruparLecturas && (
+                  <div className="mb-2">
+                    <Input placeholder="Filtrar por cédula" value={qrSearch} onChange={(e)=> setQrSearch(e.target.value)} />
+                  </div>
+                )}
+                <ScrollArea className="h-48 pr-2">
+                  {showLecturas && agruparLecturas && (data?.qrClusters?.length ?? 0) === 0 && (
+                    <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
+                  )}
+                  {!agruparLecturas && filteredQRList.length === 0 && (
+                    <p className="text-xs text-muted-foreground">No hay lecturas QR para el recorrido.</p>
+                  )}
+                  {!agruparLecturas && filteredQRList.length > 0 && (
+                    <div className="space-y-2">
+                      {filteredQRList.map((qr, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
+                          <div>
+                            <div className="font-medium">{qr.cedula}</div>
+                            <div className="text-muted-foreground">{new Date(qr.timestampUtc).toLocaleString()}</div>
+                          </div>
+                          <Button size="icon" variant="ghost" onClick={() => mapRef.current?.setView([qr.lat, qr.lng], 17, { animate: true })}>
+                            <MapPinned className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

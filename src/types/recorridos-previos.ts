@@ -29,7 +29,6 @@ export interface QRReading {
   lat: number;
   lng: number;
   timestampUtc: string;
-  paradaNombre?: string; // para agrupación por parada
 }
 
 export interface RecorridoServicioListItem {
@@ -40,7 +39,7 @@ export interface RecorridoServicioListItem {
   conductorCodigo: string;
   conductorNombre: string;
   ruta: string;
-  tipoRuta: 'Parque' | 'Privada' | 'Especial';
+  tipoRuta: 'parque' | 'privado' | 'especial';
   empresaCliente?: string | null;
   empresaTransporte: string;
   inicioUtc: string; // ISO

@@ -1,20 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import FilterPanelContent from '@/components/rastreo/FilterPanel';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
-import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen, X, Info, Target, User, Settings, RotateCcw } from 'lucide-react';
+import { Eye, EyeOff, Filter, MapPinned, Search, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { MultiSelect } from '@/components/ui/multi-select';
-import { FilterPanelCard } from '@/components/rastreo/FilterPanel';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import { RecorridoMap } from '@/components/rastreo/recorridos-previos/RecorridoMap';
 import { 
   RecorridoServicioListItem, 
@@ -53,7 +47,7 @@ function toIsoUtcFromLocalInput(v: string) {
   return new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
-const tiposRuta = ['Parque','Privada','Especial'] as const;
+const tiposRuta = ['parque','privado','especial'] as const;
 
 const RecorridosPrevios: React.FC = () => {
   const isMobile = useIsMobile();
@@ -73,13 +67,8 @@ const RecorridosPrevios: React.FC = () => {
   const [resultRango, setResultRango] = useState<RecorridoRangoListItem[]>([]);
 
   const [mapData, setMapData] = useState<RecorridoMapData | null>(null);
-  const [showFilterPanel, setShowFilterPanel] = useState(true); // Mostrar filtros por defecto
-  const [showInfoPanel, setShowInfoPanel] = useState(false); // Ocultar info panel inicialmente
+  const [showPanel, setShowPanel] = useState(!isMobile);
   const [initialFocus, setInitialFocus] = useState<'recorrido'|'paradas'|'lecturas'>('recorrido');
-  
-  // Estado para el panel multi-uso
-  const [sidebarContent, setSidebarContent] = useState<'resultados' | 'paradas' | 'lecturas' | 'controles'>('resultados');
-  const [layerData, setLayerData] = useState<{[key: string]: any}>({});
 
   const empresasTransporteOptions = useMemo(() => [
     { value: 'todos', label: 'Todos' },
@@ -93,9 +82,9 @@ const RecorridosPrevios: React.FC = () => {
 
   const tiposRutaOptions = useMemo(() => [
     { value: 'todos', label: 'Todos' },
-    { value: 'Parque', label: 'Parque' },
-    { value: 'Privada', label: 'Privada' },
-    { value: 'Especial', label: 'Especial' }
+    { value: 'parque', label: 'Parque' },
+    { value: 'privado', label: 'Privado' },
+    { value: 'especial', label: 'Especial' }
   ], []);
 
   const vehiculosOptions = useMemo(() => {
@@ -117,15 +106,14 @@ const RecorridosPrevios: React.FC = () => {
     const hastaIso = toIsoUtcFromLocalInput(hasta);
     const d1 = new Date(desdeIso);
     const d2 = new Date(hastaIso);
-    
     if (!(d2 > d1)) {
       toast({ title: 'Rango inválido', description: 'Fin debe ser mayor a Inicio.' });
       return;
     }
     if (modo === 'rango') {
       const diffH = (d2.getTime() - d1.getTime()) / 3600000;
-      if (diffH > 6) {
-        toast({ title: 'El rango máximo permitido es de 6 horas.', description: 'Ajusta las fechas para no exceder 6 h.' });
+      if (diffH > 24) {
+        toast({ title: 'El rango máximo permitido es de 24 horas.', description: 'Ajusta las fechas para no exceder 24 h.' });
         return;
       }
     }
@@ -152,10 +140,6 @@ const RecorridosPrevios: React.FC = () => {
       setResultServicios([]);
       if (res.length === 0) toast({ title: 'Sin datos', description: 'No hay recorridos para los filtros seleccionados.' });
     }
-
-    // Después de la búsqueda, mostrar los resultados y ocultar los filtros
-    setShowFilterPanel(false);
-    setShowInfoPanel(true);
   };
 
   const gruposServicios = useMemo(() => {
@@ -193,712 +177,234 @@ const RecorridosPrevios: React.FC = () => {
   }, [resultRango, busquedaLocal]);
 
   const abrirMapaServicio = (id: string, focus: 'recorrido'|'paradas'|'lecturas') => {
-    console.log('Abriendo mapa para servicio:', id);
     const data = getMapDataForServicio(id);
-    console.log('Datos del mapa:', data);
-    if (!data) {
-      toast({
-        title: "Error",
-        description: "No se encontraron datos para este servicio"
-      });
-      return;
-    }
     setMapData(data);
     setInitialFocus(focus);
-    if (isMobile) {
-      setShowFilterPanel(false);
-      setShowInfoPanel(false);
-    }
+    if (isMobile) setShowPanel(false);
   };
-  
   const abrirMapaRango = (busId: string, focus: 'recorrido'|'paradas'|'lecturas') => {
     const data = getMapDataForRango(busId, toIsoUtcFromLocalInput(desde), toIsoUtcFromLocalInput(hasta));
     setMapData(data);
     setInitialFocus(focus);
-    if (isMobile) {
-      setShowFilterPanel(false);
-      setShowInfoPanel(false);
-    }
-  };
-
-  // Handler para los datos de las capas del mapa
-  const handleLayerDataChange = (layerType: 'paradas' | 'lecturas' | 'controles', data: any) => {
-    setLayerData(prev => ({ ...prev, [layerType]: data }));
-  };
-
-  // Componente para el contenido de paradas en el sidebar
-  const ParadasSidebarContent = () => {
-    const data = layerData.paradas;
-    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de paradas disponibles.</div>;
-
-    const { allStops, selectedStops, setSelectedStops, showRadios, setShowRadios, mapRef } = data;
-    
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium">Paradas ({allStops?.length || 0})</h4>
-          <div className="flex items-center gap-2">
-            <Button 
-              size="sm" 
-              variant={showRadios ? 'default' : 'outline'} 
-              onClick={() => setShowRadios(!showRadios)}
-              className="h-7 px-2"
-            >
-              Radios
-            </Button>
-          </div>
-        </div>
-        
-        {modo === 'rango' && (
-          <div className="flex gap-2">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => setSelectedStops(allStops?.map(s => s.id) || [])}
-              className="h-7 px-2"
-            >
-              Todas
-            </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => setSelectedStops([])}
-              className="h-7 px-2"
-            >
-              Ninguna
-            </Button>
-          </div>
-        )}
-
-        <ScrollArea className="h-[calc(100vh-400px)]">
-          <div className="space-y-2 pr-2">
-            {!allStops || allStops.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No hay paradas registradas.</p>
-            ) : (
-              allStops.map((st: any) => {
-                const selected = selectedStops?.includes(st.id);
-                return (
-                  <div key={st.id} className="flex items-center justify-between text-xs border rounded p-2">
-                    <div className="flex-1">
-                      <div className="font-medium">{st.codigo} — {st.nombre}</div>
-                      {st.visitada && st.llegadaUtc && (
-                        <div className="text-muted-foreground">
-                          Llegada: {new Date(st.llegadaUtc).toLocaleString()}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => {
-                          if (mapRef?.current) {
-                            mapRef.current.setView([st.lat, st.lng], 17, { animate: true });
-                          }
-                        }}
-                        className="h-6 w-6 p-0"
-                      >
-                        <Eye className="h-3 w-3" />
-                      </Button>
-                      {modo === 'rango' && (
-                        <input 
-                          id={`parada-checkbox-${st.id}`}
-                          name={`parada-checkbox-${st.id}`}
-                          type="checkbox" 
-                          checked={selected} 
-                          onChange={() => {
-                            setSelectedStops((prev: string[]) => 
-                              selected ? prev.filter(id => id !== st.id) : [...prev, st.id]
-                            );
-                          }} 
-                          className="h-3 w-3"
-                        />
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    );
-  };
-
-  // Componente para el contenido de lecturas QR en el sidebar
-  const LecturasSidebarContent = () => {
-    const data = layerData.lecturas;
-    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de lecturas disponibles.</div>;
-
-    const { qrClusters, qrReadings, agruparLecturas, setAgruparLecturas, qrSearch, setQrSearch, filteredQRList, mapRef } = data;
-    
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium">Lecturas QR</h4>
-          <div className="flex items-center gap-2">
-            <label className="text-xs">Agrupar</label>
-            <input 
-              id="agrupar-lecturas"
-              name="agrupar-lecturas"
-              type="checkbox" 
-              checked={agruparLecturas} 
-              onChange={(e) => setAgruparLecturas(e.target.checked)}
-              className="h-3 w-3"
-            />
-          </div>
-        </div>
-
-        {!agruparLecturas && (
-          <Input 
-            placeholder="Filtrar por cédula..." 
-            value={qrSearch} 
-            onChange={(e) => setQrSearch(e.target.value)}
-            className="h-8 text-xs"
-          />
-        )}
-
-        <ScrollArea className="h-[calc(100vh-400px)]">
-          <div className="space-y-2 pr-2">
-            {agruparLecturas ? (
-              !qrClusters || qrClusters.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No hay lecturas QR agrupadas.</p>
-              ) : (
-                qrClusters.map((cluster: any, idx: number) => (
-                  <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
-                    <div className="flex-1">
-                      <div className="font-medium">Grupo {idx + 1}</div>
-                      <div className="text-muted-foreground">{cluster.count} lecturas</div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => {
-                        if (mapRef?.current) {
-                          mapRef.current.setView([cluster.lat, cluster.lng], 17, { animate: true });
-                        }
-                      }}
-                      className="h-6 w-6 p-0"
-                    >
-                      <Eye className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))
-              )
-            ) : (
-              !filteredQRList || filteredQRList.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No hay lecturas QR individuales.</p>
-              ) : (
-                filteredQRList.map((qr: any, idx: number) => (
-                  <div key={idx} className="flex items-center justify-between text-xs border rounded p-2">
-                    <div className="flex-1">
-                      <div className="font-medium">{qr.cedula}</div>
-                      <div className="text-muted-foreground">
-                        {new Date(qr.timestampUtc).toLocaleString()}
-                      </div>
-                    </div>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => {
-                        if (mapRef?.current) {
-                          mapRef.current.setView([qr.lat, qr.lng], 17, { animate: true });
-                        }
-                      }}
-                      className="h-6 w-6 p-0"
-                    >
-                      <Eye className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))
-              )
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    );
-  };
-
-  // Componente para el contenido de controles en el sidebar
-  const ControlesSidebarContent = () => {
-    const data = layerData.controles;
-    if (!data) return <div className="text-sm text-muted-foreground">No hay datos de controles disponibles.</div>;
-
-    const { speedThreshold, setSpeedThreshold, points, modo, data: mapData } = data;
-    
-    return (
-      <div className="space-y-4">
-        <div>
-          <h4 className="text-sm font-medium mb-2">Controles del Mapa</h4>
-          
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs block mb-1">Umbral velocidad (km/h)</label>
-              <Input 
-                type="number" 
-                min={0} 
-                max={150} 
-                value={speedThreshold} 
-                onChange={(e) => setSpeedThreshold(Math.max(0, Math.min(150, Number(e.target.value) || 0)))}
-                className="h-8 text-xs"
-              />
-            </div>
-
-            <div className="text-xs text-muted-foreground space-y-1">
-              <div>Total puntos: {points?.length || 0}</div>
-              {modo === 'servicios' && mapData && (
-                <>
-                  <div>Paradas: {mapData.stops?.length || 0}</div>
-                  <div>Lecturas QR: {mapData.qrReadings?.length || 0}</div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Panel lateral multi-uso
-  const MultiPurposeSidebarContent = () => {
-    // Mostrar resultados por defecto cuando no hay mapa cargado
-    if (sidebarContent === 'resultados' || !mapData) {
-      return <InfoPanelContent />;
-    }
-
-    return (
-      <div className={cn("flex flex-col", isMobile ? "h-full" : "space-y-4")}>
-        <div className={cn(isMobile ? "pb-4" : "pb-2")}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <h3 className={cn("font-semibold", isMobile ? "text-lg" : "text-base")}>
-                {sidebarContent === 'paradas' && 'Paradas'}
-                {sidebarContent === 'lecturas' && 'Lecturas QR'}
-                {sidebarContent === 'controles' && 'Controles'}
-              </h3>
-            </div>
-            {!isMobile && (
-              <div className="flex gap-1">
-                <Button 
-                  variant={!mapData ? 'default' : 'outline'} 
-                  size="sm"
-                  onClick={() => {
-                    setSidebarContent('resultados');
-                    setShowInfoPanel(true);
-                  }}
-                  className="h-7 px-2"
-                >
-                  <Info className="h-3 w-3" />
-                </Button>
-                {mapData && (
-                  <>
-                    <Button 
-                      variant={sidebarContent === 'paradas' ? 'default' : 'outline'} 
-                      size="sm"
-                      onClick={() => setSidebarContent('paradas')}
-                      className="h-7 px-2"
-                    >
-                      <Target className="h-3 w-3" />
-                    </Button>
-                    <Button 
-                      variant={sidebarContent === 'lecturas' ? 'default' : 'outline'} 
-                      size="sm"
-                      onClick={() => setSidebarContent('lecturas')}
-                      className="h-7 px-2"
-                    >
-                      <User className="h-3 w-3" />
-                    </Button>
-                    <Button 
-                      variant={sidebarContent === 'controles' ? 'default' : 'outline'} 
-                      size="sm"
-                      onClick={() => setSidebarContent('controles')}
-                      className="h-7 px-2"
-                    >
-                      <Settings className="h-3 w-3" />
-                    </Button>
-                  </>
-                )}
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setShowInfoPanel(false);
-                    setShowFilterPanel(true);
-                  }}
-                  className="h-7 px-2"
-                >
-                  <Filter className="h-3 w-3" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowInfoPanel(false)}
-                  className="h-7 px-2"
-                >
-                  <EyeOff className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
-          <div className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
-            {sidebarContent === 'paradas' && <ParadasSidebarContent />}
-            {sidebarContent === 'lecturas' && <LecturasSidebarContent />}
-            {sidebarContent === 'controles' && <ControlesSidebarContent />}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-
-  // Componente del contenido del panel de información/resultados
-  const InfoPanelContent = () => {
-    const totalServicios = resultServicios.length;
-    const totalBuses = resultRango.length;
-    const serviciosConCliente = resultServicios.filter(s => s.empresaCliente).length;
-    
-    return (
-    <div className="flex flex-col h-full">
-      {/* Header fijo */}
-      <div className="pb-4 flex-shrink-0">
-        {/* Header mejorado */}
-        <div className="mb-4">
-          <h3 className={cn("font-semibold text-foreground mb-2", isMobile ? "text-lg" : "text-base")}>
-            Recorridos Previos
-          </h3>
-          
-          {/* Estadísticas en línea */}
-          <div className="flex items-center gap-4 text-sm mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-              <span className="text-muted-foreground">
-                {modo === 'servicios' ? `Servicios: ${totalServicios}` : `Buses: ${totalBuses}`}
-              </span>
-            </div>
-            {modo === 'servicios' && serviciosConCliente > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span className="text-muted-foreground">Con cliente: {serviciosConCliente}</span>
-              </div>
-            )}
-          </div>
-
-          {/* Controles del header */}
-          {!isMobile && (
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setShowFilterPanel(true);
-                    setShowInfoPanel(false);
-                  }}
-                >
-                  <Filter className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setShowInfoPanel(false);
-                    setShowFilterPanel(false);
-                  }}
-                >
-                  <EyeOff className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Input de búsqueda mejorado */}
-        <div className="mb-4">
-          <Input
-            placeholder="Buscar en lista actual..."
-            value={busquedaLocal}
-            onChange={(e) => setBusquedaLocal(e.target.value)}
-            className="text-sm"
-          />
-          {busquedaLocal && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Filtrando resultados...
-            </p>
-          )}
-        </div>
-      </div>
-      
-      {/* Área de scroll */}
-      <div className={cn(isMobile ? "flex-1 overflow-hidden" : "")}>
-        <ScrollArea className={cn(isMobile ? "h-full" : "h-[calc(100vh-350px)]")}>
-          <div className="space-y-2 pr-4">
-            {/* Listado por modo */}
-            {modo==='servicios' ? (
-              <div className="space-y-3">
-                {gruposServicios.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {busquedaLocal 
-                      ? "No se encontraron servicios con ese criterio de búsqueda." 
-                      : "No hay recorridos para los filtros seleccionados."
-                    }
-                  </p>
-                ) : gruposServicios.map(([grupo, items]) => (
-                  <div key={grupo} className="space-y-1">
-                    <div className="text-xs font-medium text-muted-foreground px-2 py-1">
-                      {grupo}
-                    </div>
-                    <div className="space-y-1">
-                      {items.map(it => (
-                        <div 
-                          key={it.id} 
-                          className="p-3 bg-card border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
-                          onClick={() => abrirMapaServicio(it.id, 'recorrido')}
-                        >
-                          {/* Header con ID y estado */}
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
-                              {it.id}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                              <span className={cn(
-                                "px-2 py-1 rounded-md text-xs font-medium",
-                                it.tipoRuta === 'Privada' && "bg-blue-500 text-white",
-                                it.tipoRuta === 'Especial' && "bg-green-500 text-white", 
-                                it.tipoRuta === 'Parque' && "bg-orange-500 text-white"
-                              )}>
-                                {it.tipoRuta}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Información principal en línea */}
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
-                            <div className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              <span>{it.conductorCodigo}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>📍</span>
-                              <span>{it.ruta}</span>
-                            </div>
-                          </div>
-
-                          {/* Timestamp */}
-                          <div className="text-xs text-muted-foreground mb-2">
-                            {new Date(it.inicioUtc).toLocaleDateString('es-ES', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              year: 'numeric'
-                            })}, {new Date(it.inicioUtc).toLocaleTimeString('es-ES', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit'
-                            })} - {new Date(it.finUtc).toLocaleTimeString('es-ES', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </div>
-
-                          {/* Conductor nombre */}
-                          <div className="text-sm font-medium text-foreground mb-1">
-                            {it.conductorNombre || `Conductor ${it.conductorCodigo}`}
-                          </div>
-
-                          {/* Ruta con iconos como en la imagen */}
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span className="px-1 py-0.5 bg-primary/10 text-primary rounded text-xs">
-                              {it.tipoRuta.toLowerCase()}
-                            </span>
-                            <span>-</span>
-                            <span>{it.empresaTransporte}</span>
-                            {it.empresaCliente && (
-                              <>
-                                <span>-</span>
-                                <span className="text-primary font-medium">{it.empresaCliente}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {listaRangoFiltrada.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {busquedaLocal 
-                      ? "No se encontraron buses con ese criterio de búsqueda." 
-                      : "No hay recorridos para los filtros seleccionados."
-                    }
-                  </p>
-                ) : (
-                  listaRangoFiltrada.map(it => (
-                    <div 
-                      key={it.busId} 
-                      className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
-                      onClick={() => abrirMapaRango(it.busId, 'recorrido')}
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {it.identificador} — {it.placa}
-                        </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground mb-3">{it.empresaTransporte}</div>
-                      
-                      {/* Indicador visual */}
-                      <div className="flex items-center justify-center pt-2 border-t border-border/50">
-                        <div className="flex items-center text-xs text-muted-foreground group-hover:text-primary transition-colors">
-                          <Eye className="h-3 w-3 mr-1" />
-                          Hacer clic para ver recorrido
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
-    </div>
-    );
+    if (isMobile) setShowPanel(false);
   };
 
   return (
     <Layout>
-      <div className="h-[calc(100vh-120px)] flex bg-background relative">
-        {/* Desktop Panels */}
-        {!isMobile && showInfoPanel && !showFilterPanel && (
-          <Card className="w-64 lg:w-72 flex flex-col border-r overflow-hidden">
-            <CardContent className="p-4 flex-1 overflow-hidden">
-              <MultiPurposeSidebarContent />
-            </CardContent>
-          </Card>
-        )}
+      <div className="w-full">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Recorridos Previos</h1>
+        </div>
 
-        {!isMobile && showFilterPanel && (
-          <FilterPanelCard 
-            isMobile={isMobile}
-            modo={modo}
-            setModo={setModo}
-            desde={desde}
-            setDesde={setDesde}
-            hasta={hasta}
-            setHasta={setHasta}
-            numeroServicio={numeroServicio}
-            setNumeroServicio={setNumeroServicio}
-            vehiculos={vehiculos}
-            setVehiculos={setVehiculos}
-            vehiculosOptions={vehiculosOptions}
-            empresasTransporte={empresasTransporte}
-            setEmpresasTransporte={setEmpresasTransporte}
-            empresasTransporteOptions={empresasTransporteOptions}
-            empresasCliente={empresasCliente}
-            setEmpresasCliente={setEmpresasCliente}
-            empresasClienteOptions={empresasClienteOptions}
-            tiposSeleccionados={tiposSeleccionados}
-            setTiposSeleccionados={setTiposSeleccionados}
-            tiposRutaOptions={tiposRutaOptions}
-            handleBuscar={handleBuscar}
-            onShowResultados={() => {
-              setShowFilterPanel(false);
-              setShowInfoPanel(true);
-            }}
-            onHidePanel={() => {
-              setShowFilterPanel(false);
-              setShowInfoPanel(false);
-            }}
-          />
-        )}
-
-        {/* Mobile Header */}
-        {isMobile && (
-          <div className="absolute top-4 left-4 right-4 z-[1000] flex gap-2">
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button variant="default" size="lg" className="h-12 w-12 p-0">
-                  <Info className="h-5 w-5" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Panel lateral */}
+          <div className={`${showPanel ? 'block' : 'hidden'} ${isMobile ? 'fixed inset-0 z-50 bg-background' : 'lg:col-span-5'} space-y-4 ${isMobile && showPanel ? 'p-4' : ''}`}>
+            {isMobile && showPanel && (
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Recorridos Previos</h2>
+                <Button size="sm" variant="outline" onClick={() => setShowPanel(false)}>
+                  <PanelLeftClose className="h-4 w-4" />
                 </Button>
-              </DrawerTrigger>
-              <DrawerContent className="h-[75vh] flex flex-col">
-                <DrawerHeader>
-                  <DrawerTitle>Resultados</DrawerTitle>
-                </DrawerHeader>
-                <div className="flex-1 overflow-hidden px-4 pb-4">
-                  <InfoPanelContent />
+              </div>
+            )}
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-base flex items-center">
+                  <Filter className="h-4 w-4 mr-2"/>Filtros
+                  {!isMobile && (
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="ml-auto" 
+                      onClick={() => setShowPanel(false)}
+                    >
+                      <PanelLeftClose className="h-4 w-4" />
+                    </Button>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* Modo */}
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant={modo==='servicios'?'default':'outline'} onClick={()=>setModo('servicios')}>Por servicios</Button>
+                  <Button variant={modo==='rango'?'default':'outline'} onClick={()=>setModo('rango')}>Por rango</Button>
                 </div>
-              </DrawerContent>
-            </Drawer>
 
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button variant="outline" size="lg" className="h-12 w-12 p-0">
-                  <Filter className="h-5 w-5" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="h-[90vh] flex flex-col">
-                <DrawerHeader>
-                  <DrawerTitle>Filtros de Búsqueda</DrawerTitle>
-                </DrawerHeader>
-                 <div className="flex-1 overflow-hidden px-4 pb-4">
-                   <FilterPanelContent 
-                     isMobile={isMobile}
-                     modo={modo}
-                     setModo={setModo}
-                     desde={desde}
-                     setDesde={setDesde}
-                     hasta={hasta}
-                     setHasta={setHasta}
-                     numeroServicio={numeroServicio}
-                     setNumeroServicio={setNumeroServicio}
-                     vehiculos={vehiculos}
-                     setVehiculos={setVehiculos}
-                     vehiculosOptions={vehiculosOptions}
-                     empresasTransporte={empresasTransporte}
-                     setEmpresasTransporte={setEmpresasTransporte}
-                     empresasTransporteOptions={empresasTransporteOptions}
-                     empresasCliente={empresasCliente}
-                     setEmpresasCliente={setEmpresasCliente}
-                     empresasClienteOptions={empresasClienteOptions}
-                     tiposSeleccionados={tiposSeleccionados}
-                     setTiposSeleccionados={setTiposSeleccionados}
-                     tiposRutaOptions={tiposRutaOptions}
-                     handleBuscar={handleBuscar}
-                   />
-                 </div>
-              </DrawerContent>
-            </Drawer>
+                {/* Fechas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-xs block mb-1">Fecha/Hora inicio</label>
+                    <Input type="datetime-local" value={desde} onChange={(e)=>setDesde(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="text-xs block mb-1">Fecha/Hora fin</label>
+                    <Input type="datetime-local" value={hasta} onChange={(e)=>setHasta(e.target.value)} />
+                  </div>
+                </div>
+
+                {/* Número servicio solo en servicios */}
+                {modo==='servicios' && (
+                  <div>
+                    <label className="text-xs block mb-1">Número de servicio</label>
+                    <Input type="text" inputMode="numeric" placeholder="ID exacto" value={numeroServicio} onChange={(e)=>setNumeroServicio(e.target.value)} />
+                  </div>
+                )}
+
+                {/* Vehículo */}
+                <div>
+                  <label className="text-xs block mb-1">Vehículo</label>
+                  <MultiSelect
+                    options={vehiculosOptions}
+                    value={vehiculos}
+                    onValueChange={setVehiculos}
+                    placeholder="Seleccionar vehículos"
+                    searchPlaceholder="Buscar vehículo..."
+                  />
+                </div>
+
+                {/* Empresa transporte */}
+                <div>
+                  <label className="text-xs block mb-1">Empresa de transporte</label>
+                  <MultiSelect
+                    options={empresasTransporteOptions}
+                    value={empresasTransporte}
+                    onValueChange={setEmpresasTransporte}
+                    placeholder="Seleccionar empresas"
+                    searchPlaceholder="Buscar empresa..."
+                  />
+                </div>
+
+                {/* Empresa cliente - solo si no es parque */}
+                {!tiposSeleccionados.includes('parque') || tiposSeleccionados.includes('todos') ? (
+                  <div>
+                    <label className="text-xs block mb-1">Empresa cliente</label>
+                    <MultiSelect
+                      options={empresasClienteOptions}
+                      value={empresasCliente}
+                      onValueChange={setEmpresasCliente}
+                      placeholder="Seleccionar clientes"
+                      searchPlaceholder="Buscar cliente..."
+                    />
+                  </div>
+                ) : null}
+
+                {/* Tipo ruta */}
+                <div>
+                  <label className="text-xs block mb-1">Tipo de ruta</label>
+                  <MultiSelect
+                    options={tiposRutaOptions}
+                    value={tiposSeleccionados}
+                    onValueChange={setTiposSeleccionados}
+                    placeholder="Seleccionar tipos"
+                    searchPlaceholder="Buscar tipo..."
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={handleBuscar}>Buscar</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-base flex items-center"><Search className="h-4 w-4 mr-2"/>Resultados</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-2">
+                  <Input placeholder="Buscar en resultados..." value={busquedaLocal} onChange={(e)=> setBusquedaLocal(e.target.value)} />
+                </div>
+
+                <ScrollArea className="h-[calc(100vh-420px)] pr-2">
+                  {/* Listado por modo */}
+                  {modo==='servicios' ? (
+                    <div className="space-y-4">
+                      {gruposServicios.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
+                      ) : gruposServicios.map(([grupo, items]) => (
+                        <div key={grupo} className="border rounded">
+                          <div className="px-3 py-2 font-medium bg-accent/30">{grupo}</div>
+                          <div className="divide-y">
+                            {items.map(it => (
+                              <div key={it.id} className="p-3 text-xs flex flex-col gap-1">
+                                <div className="flex justify-between">
+                                  <div className="font-medium">Servicio: {it.id}</div>
+                                  <div className="text-muted-foreground">{new Date(it.inicioUtc).toLocaleString()}</div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div>Conductor: {it.conductorCodigo}</div>
+                                  <div>Ruta: {it.ruta}</div>
+                                  <div>Tipo: {it.tipoRuta}</div>
+                                  {it.empresaCliente && <div>Cliente: {it.empresaCliente}</div>}
+                                  <div>Transporte: {it.empresaTransporte}</div>
+                                  <div>Fin: {new Date(it.finUtc).toLocaleString()}</div>
+                                </div>
+                                <div className="flex gap-2 pt-1">
+                                  <Button size="sm" onClick={()=> abrirMapaServicio(it.id,'recorrido')}><Eye className="h-4 w-4 mr-2"/>Ver recorrido</Button>
+                                  <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'paradas')}>Paradas</Button>
+                                  <Button size="sm" variant="secondary" onClick={()=> abrirMapaServicio(it.id,'lecturas')}>Lecturas QR</Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {listaRangoFiltrada.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No hay recorridos para los filtros seleccionados.</p>
+                      ) : (
+                        listaRangoFiltrada.map(it => (
+                          <div key={it.busId} className="p-3 border rounded text-xs">
+                            <div className="font-medium">{it.identificador} — {it.placa}</div>
+                            <div className="text-muted-foreground">{it.empresaTransporte}</div>
+                            <div className="flex gap-2 pt-1">
+                              <Button size="sm" onClick={()=> abrirMapaRango(it.busId,'recorrido')}><Eye className="h-4 w-4 mr-2"/>Ver recorrido</Button>
+                              <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'paradas')}>Paradas</Button>
+                              <Button size="sm" variant="secondary" onClick={()=> abrirMapaRango(it.busId,'lecturas')}>Lecturas QR</Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
           </div>
-        )}
 
-        {/* Mapa */}
-        <div className="flex-1 relative">
-          {!isMobile && !showInfoPanel && !showFilterPanel && (
-            <Button
-              className="absolute top-4 left-4 z-[1000] bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border"
-              variant="outline"
-              size="sm"
-              onClick={() => setShowInfoPanel(true)}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Mostrar Panel
-            </Button>
-          )}
-          
-          <RecorridoMap 
-            data={mapData}
-            modo={modo}
-            initialFocus={initialFocus}
-            onRequestShowPanel={() => setShowInfoPanel(true)}
-            onLayerDataChange={handleLayerDataChange}
-            showInfoPanel={showInfoPanel}
-          />
+          {/* Panel mapa */}
+          <div className={`${isMobile ? 'col-span-1' : 'lg:col-span-7'} min-h-[60vh] relative`}>
+            {!showPanel && !mapData && (
+              <Button 
+                className="absolute top-4 left-4 z-50" 
+                size="sm" 
+                variant="secondary"
+                onClick={() => setShowPanel(true)}
+              >
+                <PanelLeftOpen className="h-4 w-4 mr-2" />
+                Mostrar panel
+              </Button>
+            )}
+            
+            {!mapData ? (
+              <Card className="h-full">
+                <CardContent className="h-full flex items-center justify-center text-center">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Selecciona un recorrido para visualizar en el mapa.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <RecorridoMap 
+                data={mapData}
+                modo={mapData.modo}
+                initialFocus={initialFocus}
+                onRequestShowPanel={() => setShowPanel(true)}
+              />
+            )}
+          </div>
         </div>
       </div>
     </Layout>
