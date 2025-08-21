@@ -55,12 +55,34 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    // Inicializar el mapa centrado en Costa Rica
-    map.current = L.map(mapContainer.current).setView([9.748917, -83.753428], 10);
+    // Inicializar el mapa centrado en Costa Rica con todas las interacciones habilitadas
+    map.current = L.map(mapContainer.current, {
+      center: [9.748917, -83.753428],
+      zoom: 10,
+      zoomControl: true,
+      dragging: true,
+      touchZoom: true,
+      doubleClickZoom: true,
+      scrollWheelZoom: true,
+      boxZoom: true,
+      keyboard: true
+    });
 
     // Agregar tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18,
+      minZoom: 3
+    }).addTo(map.current);
+
+    // Agregar controles de navegación
+    L.control.zoom({
+      position: 'topleft'
+    }).addTo(map.current);
+
+    // Agregar control de escala
+    L.control.scale({
+      position: 'bottomleft'
     }).addTo(map.current);
 
     // Agregar el layer group para los marcadores
