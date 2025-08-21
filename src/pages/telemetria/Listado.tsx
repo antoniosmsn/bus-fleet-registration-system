@@ -191,17 +191,32 @@ const TelemetriaListado: React.FC = () => {
     }));
   }, [dateRange.from.getTime(), dateRange.to.getTime()]);
   
-  const baseData = useMemo(() => generarTelemetria({
-    desdeUtc: filtros.desdeUtc,
-    hastaUtc: filtros.hastaUtc
-  }, 360), [filtros.desdeUtc, filtros.hastaUtc]);
+  const baseData = useMemo(() => {
+    console.log('Generando datos base con filtros:', filtros.desdeUtc, filtros.hastaUtc);
+    const data = generarTelemetria({
+      desdeUtc: filtros.desdeUtc,
+      hastaUtc: filtros.hastaUtc
+    }, 360);
+    console.log('Datos base generados:', data.length);
+    return data;
+  }, [filtros.desdeUtc, filtros.hastaUtc]);
 
   const dataConPermisos = baseData;
-  const datos = useMemo(() => filtrarTelemetria(dataConPermisos, filtros), [dataConPermisos, filtros]);
+  const datos = useMemo(() => {
+    console.log('Filtrando datos:', dataConPermisos.length, 'con filtros:', filtros);
+    const filtered = filtrarTelemetria(dataConPermisos, filtros);
+    console.log('Datos filtrados:', filtered.length);
+    return filtered;
+  }, [dataConPermisos, filtros]);
+  
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const totalPages = Math.max(1, Math.ceil(datos.length / pageSize));
-  const pageData = useMemo(() => datos.slice((page - 1) * pageSize, page * pageSize), [datos, page, pageSize]);
+  const pageData = useMemo(() => {
+    const data = datos.slice((page - 1) * pageSize, page * pageSize);
+    console.log('Datos de página:', data.length, 'página:', page, 'de', totalPages);
+    return data;
+  }, [datos, page, pageSize]);
   useEffect(() => {
     setPage(1);
   }, [JSON.stringify(filtros), pageSize]);
@@ -750,40 +765,48 @@ const TelemetriaListado: React.FC = () => {
                           <TableHead>Conductor</TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
-                        {pageData.map((r, idx) => (
-                          <TableRow 
-                            key={idx} 
-                            className={cn(
-                              "transition-colors hover:bg-muted/50 cursor-pointer",
-                              selected.has(recKey(r)) && 'bg-primary/5 border-l-4 border-l-primary'
-                            )}
-                            onClick={() => toggleOne(recKey(r), !selected.has(recKey(r)))}
-                          >
-                            <TableCell className="pl-6">
-                              <Checkbox 
-                                checked={selected.has(recKey(r))} 
-                                onCheckedChange={c => toggleOne(recKey(r), c)} 
-                              />
-                            </TableCell>
-                            <TableCell className="text-xs font-mono">
-                              <div className="flex flex-col">
-                                <span>{new Date(r.fechaHoraUtc).toLocaleDateString()}</span>
-                                <span className="text-muted-foreground text-[10px]">{new Date(r.fechaHoraUtc).toLocaleTimeString()}</span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-mono font-medium">{r.placa}</TableCell>
-                            <TableCell>
-                              <div className={cn("px-2 py-1 rounded-full text-[10px] font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
-                                {tipoIconCfg[r.tipoRegistro].label}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-sm truncate max-w-32" title={r.conductorNombre}>
-                              {r.conductorNombre}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
+                       <TableBody>
+                         {pageData.length === 0 ? (
+                           <TableRow>
+                             <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                               No hay registros para mostrar
+                             </TableCell>
+                           </TableRow>
+                         ) : (
+                           pageData.map((r, idx) => (
+                             <TableRow 
+                               key={idx} 
+                               className={cn(
+                                 "transition-colors hover:bg-muted/50 cursor-pointer",
+                                 selected.has(recKey(r)) && 'bg-primary/5 border-l-4 border-l-primary'
+                               )}
+                               onClick={() => toggleOne(recKey(r), !selected.has(recKey(r)))}
+                             >
+                               <TableCell className="pl-6">
+                                 <Checkbox 
+                                   checked={selected.has(recKey(r))} 
+                                   onCheckedChange={c => toggleOne(recKey(r), c)} 
+                                 />
+                               </TableCell>
+                               <TableCell className="text-xs font-mono">
+                                 <div className="flex flex-col">
+                                   <span>{new Date(r.fechaHoraUtc).toLocaleDateString()}</span>
+                                   <span className="text-muted-foreground text-[10px]">{new Date(r.fechaHoraUtc).toLocaleTimeString()}</span>
+                                 </div>
+                               </TableCell>
+                               <TableCell className="font-mono font-medium">{r.placa}</TableCell>
+                               <TableCell>
+                                 <div className={cn("px-2 py-1 rounded-full text-[10px] font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
+                                   {tipoIconCfg[r.tipoRegistro].label}
+                                 </div>
+                               </TableCell>
+                               <TableCell className="text-sm truncate max-w-32" title={r.conductorNombre}>
+                                 {r.conductorNombre}
+                               </TableCell>
+                             </TableRow>
+                           ))
+                         )}
+                       </TableBody>
                     </Table>
                   </div>
                   
