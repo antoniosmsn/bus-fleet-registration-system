@@ -59,15 +59,15 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
     map.current = L.map(mapContainer.current, {
       center: [9.748917, -83.753428],
       zoom: 10,
-      zoomControl: true,
+      zoomControl: false, // Disabled default zoom control to avoid duplicates
       dragging: true,
       touchZoom: true,
       doubleClickZoom: true,
       scrollWheelZoom: true,
       boxZoom: true,
       keyboard: true,
-      zoomSnap: 0.25,
-      zoomDelta: 0.25
+      zoomSnap: 1,
+      zoomDelta: 1
     });
 
     // Agregar tile layer
@@ -77,14 +77,14 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
       minZoom: 3
     }).addTo(map.current);
 
-    // Agregar controles de navegación
+    // Agregar controles de navegación en posición personalizada
     L.control.zoom({
-      position: 'topleft'
+      position: 'topright'
     }).addTo(map.current);
 
     // Agregar control de escala
     L.control.scale({
-      position: 'bottomleft'
+      position: 'bottomright'
     }).addTo(map.current);
 
     // Agregar el layer group para los marcadores
@@ -146,16 +146,26 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
     // Ajustar vista del mapa para mostrar todos los marcadores
     if (registrosConCoordenadas.length > 0) {
       const group = new L.FeatureGroup(Object.values(markersRef.current.getLayers()));
-      map.current.fitBounds(group.getBounds().pad(0.1));
+      const bounds = group.getBounds();
+      if (bounds.isValid()) {
+        map.current.fitBounds(bounds.pad(0.1), { maxZoom: 15 });
+      }
     }
   }, [registros]);
 
   return (
     <div className={`relative ${className}`}>
-      <div ref={mapContainer} className="w-full h-full rounded-lg cursor-grab active:cursor-grabbing" style={{ minHeight: '400px', pointerEvents: 'auto' }} />
+      <div 
+        ref={mapContainer} 
+        className="w-full h-full rounded-lg" 
+        style={{ 
+          minHeight: '400px',
+          cursor: 'grab'
+        }} 
+      />
       
       {/* Leyenda */}
-      <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-[1000]">
+      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3 z-[1000] max-w-[180px]">
         <div className="text-xs font-semibold mb-2">Tipos de Registro</div>
         <div className="space-y-1">
           {[
