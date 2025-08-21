@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import Navbar from '@/components/layout/Navbar';
 import TelemetriaFilters from '@/components/telemetria/TelemetriaFilters';
 import TelemetriaCards from '@/components/telemetria/TelemetriaCards';
 import TelemetriaMap from '@/components/telemetria/TelemetriaMap';
@@ -129,16 +130,16 @@ const TelemetriaListado: React.FC = () => {
 
   return (
     <div className="h-screen w-full flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 z-10 min-h-[72px] w-full">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-foreground">Telemetría</h1>
-        </div>
-      </header>
+      {/* Navbar */}
+      <Navbar />
 
       {/* Main Content */}
       <div className="w-full flex-1 overflow-hidden bg-muted/30 p-6">
-        <div className="h-full flex flex-col lg:flex-row gap-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground">Telemetría</h1>
+        </div>
+        
+        <div className="h-[calc(100vh-160px)] flex flex-col lg:flex-row gap-6">
           {/* Panel izquierdo - Filtros y listado */}
           <div className="flex-1 flex flex-col min-w-0">
             <TelemetriaFilters
