@@ -14,7 +14,9 @@ import { TelemetriaFiltros, TipoRegistro } from '@/types/telemetria';
 
 interface TelemetriaFiltersProps {
   filtros: TelemetriaFiltros;
+  filtrosAplicados: TelemetriaFiltros;
   onFiltrosChange: (filtros: TelemetriaFiltros) => void;
+  onAplicarFiltros: (filtros: TelemetriaFiltros) => void;
   onExportPDF: () => void;
   onExportExcel: () => void;
   isOpen: boolean;
@@ -23,7 +25,9 @@ interface TelemetriaFiltersProps {
 
 const TelemetriaFilters: React.FC<TelemetriaFiltersProps> = ({
   filtros,
+  filtrosAplicados,
   onFiltrosChange,
+  onAplicarFiltros,
   onExportPDF,
   onExportExcel,
   isOpen,
@@ -106,18 +110,25 @@ const TelemetriaFilters: React.FC<TelemetriaFiltersProps> = ({
 
   const contarFiltrosActivos = () => {
     let count = 0;
-    if (filtros.tiposRegistro.length > 0) count++;
-    if (filtros.ruta) count++;
-    if (filtros.placa) count++;
-    if (filtros.busId) count++;
-    if (filtros.conductorCodigo) count++;
-    if (filtros.conductorNombre) count++;
-    if (filtros.empresasTransporte.length > 0) count++;
-    if (filtros.empresasCliente.length > 0) count++;
+    if (filtrosAplicados.tiposRegistro.length > 0) count++;
+    if (filtrosAplicados.ruta) count++;
+    if (filtrosAplicados.placa) count++;
+    if (filtrosAplicados.busId) count++;
+    if (filtrosAplicados.conductorCodigo) count++;
+    if (filtrosAplicados.conductorNombre) count++;
+    if (filtrosAplicados.empresasTransporte.length > 0) count++;
+    if (filtrosAplicados.empresasCliente.length > 0) count++;
     return count;
   };
 
   const filtrosActivos = contarFiltrosActivos();
+
+  // Verificar si hay cambios pendientes
+  const hayCambiosPendientes = JSON.stringify(filtros) !== JSON.stringify(filtrosAplicados);
+
+  const handleBuscar = () => {
+    onAplicarFiltros(filtros);
+  };
 
   const renderSelectedTags = (items: string[], onRemove: (item: string) => void, maxShow = 3) => {
     if (items.length === 0) return null;
@@ -397,11 +408,20 @@ const TelemetriaFilters: React.FC<TelemetriaFiltersProps> = ({
 
             <Separator className="my-4" />
 
-            {/* Botón limpiar */}
-            <div className="flex justify-end">
+            {/* Botones de acción */}
+            <div className="flex items-center justify-between">
               <Button variant="outline" size="sm" onClick={limpiarFiltros}>
                 <X className="h-4 w-4 mr-1" />
                 Limpiar filtros
+              </Button>
+              
+              <Button 
+                onClick={handleBuscar}
+                className={`${hayCambiosPendientes ? 'bg-primary hover:bg-primary/90' : ''}`}
+                disabled={!hayCambiosPendientes}
+              >
+                <Filter className="h-4 w-4 mr-1" />
+                {hayCambiosPendientes ? 'Buscar' : 'Aplicado'}
               </Button>
             </div>
           </CardContent>

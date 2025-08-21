@@ -10,7 +10,7 @@ import { generarTelemetria, filtrarTelemetria } from '@/data/mockTelemetria';
 import { exportTelemetriaToPDF, exportTelemetriaToExcel } from '@/services/exportService';
 
 const TelemetriaListado: React.FC = () => {
-  const [filtros, setFiltros] = useState<TelemetriaFiltros>(() => {
+  const [filtrosTemporales, setFiltrosTemporales] = useState<TelemetriaFiltros>(() => {
     const ahora = new Date();
     const inicioHoy = new Date(ahora);
     inicioHoy.setHours(0, 0, 0, 0);
@@ -31,19 +31,21 @@ const TelemetriaListado: React.FC = () => {
     };
   });
 
+  const [filtrosAplicados, setFiltrosAplicados] = useState<TelemetriaFiltros>(filtrosTemporales);
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  // Generar datos de telemetría
+  // Generar datos de telemetría usando filtros aplicados
   const todosLosRegistros = generarTelemetria({
-    desdeUtc: filtros.desdeUtc,
-    hastaUtc: filtros.hastaUtc
+    desdeUtc: filtrosAplicados.desdeUtc,
+    hastaUtc: filtrosAplicados.hastaUtc
   }, 320);
 
-  // Aplicar filtros
-  const registrosFiltrados = filtrarTelemetria(todosLosRegistros, filtros);
+  // Aplicar filtros usando filtros aplicados
+  const registrosFiltrados = filtrarTelemetria(todosLosRegistros, filtrosAplicados);
   
   // Paginación
   const totalRecords = registrosFiltrados.length;
@@ -61,15 +63,15 @@ const TelemetriaListado: React.FC = () => {
     document.title = 'Listado de telemetría | SistemaTransporte';
   }, []);
 
-  // Reset página cuando cambien los filtros
+  // Reset página cuando cambien los filtros aplicados
   useEffect(() => {
     setCurrentPage(1);
-  }, [filtros]);
+  }, [filtrosAplicados]);
 
-  // Limpiar selección cuando cambien los filtros
+  // Limpiar selección cuando cambien los filtros aplicados
   useEffect(() => {
     setSelectedIds(new Set());
-  }, [filtros, currentPage]);
+  }, [filtrosAplicados, currentPage]);
 
   const handleSelectionChange = useCallback((id: string, selected: boolean) => {
     setSelectedIds(prev => {
@@ -92,6 +94,10 @@ const TelemetriaListado: React.FC = () => {
 
   const handleClearAll = useCallback(() => {
     setSelectedIds(new Set());
+  }, []);
+
+  const handleAplicarFiltros = useCallback((nuevosFiltros: TelemetriaFiltros) => {
+    setFiltrosAplicados(nuevosFiltros);
   }, []);
 
   const handleExportPDF = async () => {
@@ -136,8 +142,10 @@ const TelemetriaListado: React.FC = () => {
           {/* Panel izquierdo - Filtros y listado */}
           <div className="flex-1 flex flex-col min-w-0">
             <TelemetriaFilters
-              filtros={filtros}
-              onFiltrosChange={setFiltros}
+              filtros={filtrosTemporales}
+              filtrosAplicados={filtrosAplicados}
+              onFiltrosChange={setFiltrosTemporales}
+              onAplicarFiltros={handleAplicarFiltros}
               onExportPDF={handleExportPDF}
               onExportExcel={handleExportExcel}
               isOpen={filtersOpen}
