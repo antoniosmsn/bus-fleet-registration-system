@@ -65,7 +65,9 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
       doubleClickZoom: true,
       scrollWheelZoom: true,
       boxZoom: true,
-      keyboard: true
+      keyboard: true,
+      zoomSnap: 0.25,
+      zoomDelta: 0.25
     });
 
     // Agregar tile layer
@@ -150,7 +152,7 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
 
   return (
     <div className={`relative ${className}`}>
-      <div ref={mapContainer} className="w-full h-full rounded-lg" style={{ minHeight: '400px' }} />
+      <div ref={mapContainer} className="w-full h-full rounded-lg cursor-grab active:cursor-grabbing" style={{ minHeight: '400px', pointerEvents: 'auto' }} />
       
       {/* Leyenda */}
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-[1000]">
