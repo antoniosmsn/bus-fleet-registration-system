@@ -726,7 +726,7 @@ const TelemetriaListado: React.FC = () => {
         {viewMode === 'split' && !isMobile && (
           <div className="h-full flex gap-4 p-6">
             {/* Lista lado izquierdo */}
-            <div className="w-2/5 h-full">
+            <div className="w-1/2 h-full">
               <Card className="h-full shadow-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg font-semibold">
@@ -810,7 +810,7 @@ const TelemetriaListado: React.FC = () => {
             </div>
 
             {/* Mapa lado derecho */}
-            <div className="w-3/5 h-full">
+            <div className="w-1/2 h-full">
               <Card className="h-full shadow-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg font-semibold">
