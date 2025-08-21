@@ -273,22 +273,26 @@ const TelemetriaListado: React.FC = () => {
   );
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold">Telemetría</h1>
-          <span className="text-sm text-muted-foreground">({datos.length})</span>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {/* View Mode Toggle */}
+      <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 z-10 min-h-[72px]">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-foreground">Telemetría</h1>
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-primary">{datos.length} registros</span>
+            </div>
+          </div>
+          
+          {/* View Mode Toggle - Desktop */}
           {!isMobile && (
-            <div className="flex rounded-lg border p-1">
+            <div className="flex rounded-lg border bg-muted/30 p-1 ml-4">
               <Button 
                 variant={viewMode === 'list' ? 'default' : 'ghost'} 
                 size="sm"
                 onClick={() => setViewMode('list')}
+                className="px-4"
               >
                 Lista
               </Button>
@@ -296,11 +300,35 @@ const TelemetriaListado: React.FC = () => {
                 variant={viewMode === 'split' ? 'default' : 'ghost'} 
                 size="sm"
                 onClick={() => setViewMode('split')}
+                className="px-4"
               >
                 Dividido
               </Button>
               <Button 
                 variant={viewMode === 'map' ? 'default' : 'ghost'} 
+                size="sm"
+                onClick={() => setViewMode('map')}
+                className="px-4"
+              >
+                Mapa
+              </Button>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {/* Mobile View Toggle */}
+          {isMobile && (
+            <div className="flex gap-2">
+              <Button 
+                variant={viewMode === 'list' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setViewMode('list')}
+              >
+                Lista
+              </Button>
+              <Button 
+                variant={viewMode === 'map' ? 'default' : 'outline'} 
                 size="sm"
                 onClick={() => setViewMode('map')}
               >
@@ -309,57 +337,40 @@ const TelemetriaListado: React.FC = () => {
             </div>
           )}
           
-          {isMobile && viewMode === 'list' && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setViewMode('map')}
-            >
-              Mapa
-            </Button>
-          )}
-          
-          {isMobile && viewMode === 'map' && (
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              Lista
-            </Button>
-          )}
-          
           <Button 
-            variant="outline" 
+            variant={showFilters ? 'default' : 'outline'} 
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
+            className="px-4"
           >
-            Filtros
+            {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
           </Button>
           
-          <Button variant="outline" size="sm" onClick={() => exportTelemetriaToPDF(datos)}>
-            <Download className="mr-2 h-4 w-4" /> PDF
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => exportTelemetriaToExcel(datos)}>
-            <Download className="mr-2 h-4 w-4" /> Excel
-          </Button>
+          <div className="flex items-center gap-2 border-l pl-3">
+            <Button variant="outline" size="sm" onClick={() => exportTelemetriaToPDF(datos)}>
+              <Download className="mr-2 h-4 w-4" /> PDF
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => exportTelemetriaToExcel(datos)}>
+              <Download className="mr-2 h-4 w-4" /> Excel
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Filters Panel */}
       {showFilters && (
         <div className={cn(
-          "border-b bg-muted/50 transition-all duration-200 z-30",
-          isMobile ? "fixed inset-x-0 top-16 bg-background border shadow-lg max-h-96 overflow-y-auto" : ""
+          "border-b bg-card/30 backdrop-blur-sm transition-all duration-300 z-30",
+          isMobile ? "fixed inset-x-0 top-[72px] bg-background border shadow-xl max-h-96 overflow-y-auto" : "shadow-sm"
         )}>
-          <div className="p-4">
+          <div className="px-6 py-4">
             <Tabs defaultValue="fechas" className="w-full">
-              <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
-                <TabsTrigger value="fechas">Fechas</TabsTrigger>
-                <TabsTrigger value="servicio">Servicio</TabsTrigger>
-                <TabsTrigger value="vehiculo">Vehículo</TabsTrigger>
-                <TabsTrigger value="conductor">Conductor</TabsTrigger>
-                <TabsTrigger value="empresas">Empresas</TabsTrigger>
+              <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap bg-muted/50">
+                <TabsTrigger value="fechas" className="px-6">Fechas</TabsTrigger>
+                <TabsTrigger value="servicio" className="px-6">Servicio</TabsTrigger>
+                <TabsTrigger value="vehiculo" className="px-6">Vehículo</TabsTrigger>
+                <TabsTrigger value="conductor" className="px-6">Conductor</TabsTrigger>
+                <TabsTrigger value="empresas" className="px-6">Empresas</TabsTrigger>
               </TabsList>
 
               <TabsContent value="fechas" className="mt-0">
@@ -398,7 +409,7 @@ const TelemetriaListado: React.FC = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
-                      <SelectContent className="z-50 bg-popover">
+                      <SelectContent className="z-[60] bg-popover border shadow-md">
                         <SelectItem value="__ALL__">Todos</SelectItem>
                         {rutas.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                       </SelectContent>
@@ -456,7 +467,7 @@ const TelemetriaListado: React.FC = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Todas" />
                       </SelectTrigger>
-                      <SelectContent className="z-50 bg-popover">
+                      <SelectContent className="z-[60] bg-popover border shadow-md">
                         <SelectItem value="__ALL__">Todas</SelectItem>
                         {empresasTrans.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                       </SelectContent>
@@ -471,7 +482,7 @@ const TelemetriaListado: React.FC = () => {
                       <SelectTrigger>
                         <SelectValue placeholder="Todas" />
                       </SelectTrigger>
-                      <SelectContent className="z-50 bg-popover">
+                      <SelectContent className="z-[60] bg-popover border shadow-md">
                         <SelectItem value="__ALL__">Todas</SelectItem>
                         {empresasCli.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}
                       </SelectContent>
@@ -486,7 +497,7 @@ const TelemetriaListado: React.FC = () => {
 
       {/* Main Content */}
       <div className={cn(
-        "flex-1 overflow-hidden",
+        "flex-1 overflow-hidden bg-muted/30",
         showFilters && isMobile ? "pt-96" : ""
       )}>
         {viewMode === 'list' && (
@@ -522,62 +533,89 @@ const TelemetriaListado: React.FC = () => {
                 </div>
               </div>
             ) : (
-              // Desktop Table View
-              <div className="p-4">
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="overflow-auto max-h-[calc(100vh-300px)]">
+              // Desktop Table View - Full Width
+              <div className="h-full p-6">
+                <Card className="h-full shadow-sm">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg font-semibold">
+                        Datos de telemetría
+                      </CardTitle>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span>{selectedForMap.length} seleccionados</span>
+                        <span>•</span>
+                        <span>Página {page} de {totalPages}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 h-[calc(100%-80px)]">
+                    <div className="overflow-auto h-full">
                       <Table>
-                        <TableHeader className="sticky top-0 bg-background">
-                          <TableRow>
-                            <TableHead className="w-8">
+                        <TableHeader className="sticky top-0 bg-background/95 backdrop-blur z-10">
+                          <TableRow className="border-b-2">
+                            <TableHead className="w-12 pl-6">
                               <Checkbox checked={allOnPage} onCheckedChange={toggleAllOnPage} />
                             </TableHead>
-                            <TableHead>Fecha y hora</TableHead>
-                            <TableHead>Placa</TableHead>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Tipo</TableHead>
-                            <TableHead>Velocidad</TableHead>
-                            <TableHead>Pasajeros</TableHead>
-                            <TableHead>Conductor</TableHead>
-                            <TableHead>Ruta</TableHead>
-                            <TableHead>Ubicación</TableHead>
+                            <TableHead className="w-40">Fecha y hora</TableHead>
+                            <TableHead className="w-24">Placa</TableHead>
+                            <TableHead className="w-16">ID</TableHead>
+                            <TableHead className="w-32">Tipo</TableHead>
+                            <TableHead className="w-24">Velocidad</TableHead>
+                            <TableHead className="w-24">Pasajeros</TableHead>
+                            <TableHead className="w-48">Conductor</TableHead>
+                            <TableHead className="w-32">Ruta</TableHead>
+                            <TableHead className="w-24">Ubicación</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {pageData.map((r, idx) => (
-                            <TableRow key={idx} className={selected.has(recKey(r)) ? 'bg-muted/50' : ''}>
-                              <TableCell>
+                            <TableRow 
+                              key={idx} 
+                              className={cn(
+                                "transition-colors hover:bg-muted/50 cursor-pointer",
+                                selected.has(recKey(r)) && 'bg-primary/5 border-l-4 border-l-primary'
+                              )}
+                              onClick={() => toggleOne(recKey(r), !selected.has(recKey(r)))}
+                            >
+                              <TableCell className="pl-6">
                                 <Checkbox 
                                   checked={selected.has(recKey(r))} 
                                   onCheckedChange={c => toggleOne(recKey(r), c)} 
                                 />
                               </TableCell>
-                              <TableCell className="text-xs">
-                                {new Date(r.fechaHoraUtc).toLocaleString()}
+                              <TableCell className="text-xs font-mono">
+                                <div className="flex flex-col">
+                                  <span>{new Date(r.fechaHoraUtc).toLocaleDateString()}</span>
+                                  <span className="text-muted-foreground">{new Date(r.fechaHoraUtc).toLocaleTimeString()}</span>
+                                </div>
                               </TableCell>
-                              <TableCell>{r.placa}</TableCell>
-                              <TableCell>{r.busId}</TableCell>
+                              <TableCell className="font-mono font-medium">{r.placa}</TableCell>
+                              <TableCell className="font-mono">{r.busId}</TableCell>
                               <TableCell>
-                                <div className={cn("px-2 py-1 rounded text-xs font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
+                                <div className={cn("px-3 py-1 rounded-full text-xs font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
                                   {tipoIconCfg[r.tipoRegistro].label}
                                 </div>
                               </TableCell>
-                              <TableCell>{r.velocidadKmH} km/h</TableCell>
-                              <TableCell>{r.pasajeros}</TableCell>
-                              <TableCell>{r.conductorNombre}</TableCell>
-                              <TableCell>{r.ruta || 'N/A'}</TableCell>
+                              <TableCell className="font-mono">{r.velocidadKmH} km/h</TableCell>
+                              <TableCell className="font-mono">{r.pasajeros}</TableCell>
+                              <TableCell className="truncate max-w-48" title={r.conductorNombre}>
+                                {r.conductorNombre}
+                              </TableCell>
+                              <TableCell>{r.ruta || <span className="text-muted-foreground">N/A</span>}</TableCell>
                               <TableCell>
                                 {r.lat && r.lng && r.lat !== 0 && r.lng !== 0 ? (
                                   <Button 
                                     variant="ghost" 
                                     size="sm" 
-                                    className="p-0 h-auto text-primary"
-                                    onClick={() => window.open(`https://www.google.com/maps/place/${r.lat},${r.lng}`, '_blank')}
+                                    className="p-1 h-auto text-primary hover:text-primary/80"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`https://www.google.com/maps/place/${r.lat},${r.lng}`, '_blank');
+                                    }}
                                   >
-                                    Ver mapa
+                                    🗺️
                                   </Button>
-                                ) : 'N/A'}
+                                ) : <span className="text-muted-foreground">N/A</span>}
                               </TableCell>
                             </TableRow>
                           ))}
@@ -585,11 +623,11 @@ const TelemetriaListado: React.FC = () => {
                       </Table>
                     </div>
                     
-                    {/* Pagination */}
-                    <div className="p-4 border-t">
+                    {/* Enhanced Pagination */}
+                    <div className="p-6 border-t bg-card/50">
                       <div className="flex items-center justify-between">
                         <div className="text-sm text-muted-foreground">
-                          Mostrando {Math.min(pageSize, datos.length - (page - 1) * pageSize)} de {datos.length}
+                          Mostrando <span className="font-medium">{Math.min(pageSize, datos.length - (page - 1) * pageSize)}</span> de <span className="font-medium">{datos.length}</span> registros
                         </div>
                         
                         <Pagination>
@@ -613,10 +651,10 @@ const TelemetriaListado: React.FC = () => {
                         </Pagination>
                         
                         <Select value={pageSize.toString()} onValueChange={v => setPageSize(parseInt(v))}>
-                          <SelectTrigger className="w-32">
+                          <SelectTrigger className="w-40">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-[60] bg-popover border shadow-md">
                             {pageSizeOptions.map(size => (
                               <SelectItem key={size} value={size.toString()}>
                                 {size} por página
@@ -686,119 +724,164 @@ const TelemetriaListado: React.FC = () => {
         )}
 
         {viewMode === 'split' && !isMobile && (
-          <div className="h-full flex">
+          <div className="h-full flex gap-4 p-6">
             {/* Lista lado izquierdo */}
-            <div className="w-1/2 h-full overflow-auto border-r">
-              <div className="p-4">
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="overflow-auto max-h-[calc(100vh-300px)]">
-                      <Table>
-                        <TableHeader className="sticky top-0 bg-background">
-                          <TableRow>
-                            <TableHead className="w-8">
-                              <Checkbox checked={allOnPage} onCheckedChange={toggleAllOnPage} />
-                            </TableHead>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead>Placa</TableHead>
-                            <TableHead>Tipo</TableHead>
-                            <TableHead>Conductor</TableHead>
+            <div className="w-2/5 h-full">
+              <Card className="h-full shadow-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-semibold">
+                    Registros de telemetría
+                  </CardTitle>
+                  <div className="text-sm text-muted-foreground">
+                    {selectedForMap.length} seleccionados para el mapa
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0 h-[calc(100%-100px)]">
+                  <div className="overflow-auto h-full">
+                    <Table>
+                      <TableHeader className="sticky top-0 bg-background/95 backdrop-blur z-10">
+                        <TableRow className="border-b-2">
+                          <TableHead className="w-10 pl-6">
+                            <Checkbox checked={allOnPage} onCheckedChange={toggleAllOnPage} />
+                          </TableHead>
+                          <TableHead className="w-32">Fecha</TableHead>
+                          <TableHead className="w-20">Placa</TableHead>
+                          <TableHead className="w-24">Tipo</TableHead>
+                          <TableHead>Conductor</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pageData.map((r, idx) => (
+                          <TableRow 
+                            key={idx} 
+                            className={cn(
+                              "transition-colors hover:bg-muted/50 cursor-pointer",
+                              selected.has(recKey(r)) && 'bg-primary/5 border-l-4 border-l-primary'
+                            )}
+                            onClick={() => toggleOne(recKey(r), !selected.has(recKey(r)))}
+                          >
+                            <TableCell className="pl-6">
+                              <Checkbox 
+                                checked={selected.has(recKey(r))} 
+                                onCheckedChange={c => toggleOne(recKey(r), c)} 
+                              />
+                            </TableCell>
+                            <TableCell className="text-xs font-mono">
+                              <div className="flex flex-col">
+                                <span>{new Date(r.fechaHoraUtc).toLocaleDateString()}</span>
+                                <span className="text-muted-foreground text-[10px]">{new Date(r.fechaHoraUtc).toLocaleTimeString()}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="font-mono font-medium">{r.placa}</TableCell>
+                            <TableCell>
+                              <div className={cn("px-2 py-1 rounded-full text-[10px] font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
+                                {tipoIconCfg[r.tipoRegistro].label}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm truncate max-w-32" title={r.conductorNombre}>
+                              {r.conductorNombre}
+                            </TableCell>
                           </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {pageData.map((r, idx) => (
-                            <TableRow key={idx} className={selected.has(recKey(r)) ? 'bg-muted/50' : ''}>
-                              <TableCell>
-                                <Checkbox 
-                                  checked={selected.has(recKey(r))} 
-                                  onCheckedChange={c => toggleOne(recKey(r), c)} 
-                                />
-                              </TableCell>
-                              <TableCell className="text-xs">
-                                {new Date(r.fechaHoraUtc).toLocaleString()}
-                              </TableCell>
-                              <TableCell>{r.placa}</TableCell>
-                              <TableCell>
-                                <div className={cn("px-2 py-1 rounded text-xs font-medium w-fit", tipoIconCfg[r.tipoRegistro].cls)}>
-                                  {tipoIconCfg[r.tipoRegistro].label}
-                                </div>
-                              </TableCell>
-                              <TableCell>{r.conductorNombre}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                    
-                    {/* Pagination */}
-                    <div className="p-4 border-t">
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  
+                  {/* Compact Pagination */}
+                  <div className="p-4 border-t bg-card/50">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-muted-foreground">
+                        Pág. {page} de {totalPages}
+                      </div>
                       <Pagination>
                         <PaginationContent>
                           <PaginationItem>
                             <PaginationPrevious onClick={() => setPage(Math.max(1, page - 1))} />
                           </PaginationItem>
-                          {Array.from({ length: totalPages }, (_, i) => i + 1)
-                            .slice(Math.max(0, page - 2), Math.min(totalPages, page + 1))
-                            .map(p => (
-                              <PaginationItem key={p}>
-                                <PaginationLink onClick={() => setPage(p)} isActive={p === page}>
-                                  {p}
-                                </PaginationLink>
-                              </PaginationItem>
-                            ))}
                           <PaginationItem>
                             <PaginationNext onClick={() => setPage(Math.min(totalPages, page + 1))} />
                           </PaginationItem>
                         </PaginationContent>
                       </Pagination>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Mapa lado derecho */}
-            <div className="w-1/2 h-full relative">
-              <MapContainer 
-                center={[9.7489, -83.7534]} 
-                zoom={8} 
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer 
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
-                  attribution="&copy; OpenStreetMap contributors" 
-                />
-                
-                {selectedForMap.length > 0 && (
-                  <FitBounds points={selectedForMap.map(r => ({ lat: r.lat!, lng: r.lng! }))} />
-                )}
-                
-                {selectedForMap.map((r, idx) => (
-                  <Marker 
-                    key={idx} 
-                    position={[r.lat!, r.lng!]} 
-                    icon={buildDivIcon(r.tipoRegistro)}
-                  >
-                    <Popup>
-                      <div className="space-y-1 text-sm">
-                        <div><strong>Fecha:</strong> {new Date(r.fechaHoraUtc).toLocaleString()}</div>
-                        <div><strong>Tipo:</strong> {r.tipoRegistro}</div>
-                        <div><strong>Placa:</strong> {r.placa} (ID: {r.busId})</div>
-                        <div><strong>Velocidad:</strong> {r.velocidadKmH} km/h</div>
-                        <div><strong>Conductor:</strong> {r.conductorNombre}</div>
-                        {r.ruta && <div><strong>Ruta:</strong> {r.ruta}</div>}
-                        {r.parada && <div><strong>Parada:</strong> {r.parada}</div>}
+            <div className="w-3/5 h-full">
+              <Card className="h-full shadow-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-semibold">
+                    Mapa de ubicaciones
+                  </CardTitle>
+                  <div className="text-sm text-muted-foreground">
+                    {selectedForMap.length} registros con ubicación
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0 h-[calc(100%-100px)]">
+                  <div className="h-full rounded-md overflow-hidden">
+                    <MapContainer 
+                      center={[9.7489, -83.7534]} 
+                      zoom={8} 
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer 
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" 
+                        attribution="&copy; OpenStreetMap contributors" 
+                      />
+                      
+                      {selectedForMap.length > 0 && (
+                        <FitBounds points={selectedForMap.map(r => ({ lat: r.lat!, lng: r.lng! }))} />
+                      )}
+                      
+                      {selectedForMap.map((r, idx) => (
+                        <Marker 
+                          key={idx} 
+                          position={[r.lat!, r.lng!]} 
+                          icon={buildDivIcon(r.tipoRegistro)}
+                        >
+                          <Popup>
+                            <div className="space-y-2 text-sm min-w-64">
+                              <div className="font-semibold text-base border-b pb-2">
+                                {r.placa} - ID {r.busId}
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div><strong>Fecha:</strong></div>
+                                <div>{new Date(r.fechaHoraUtc).toLocaleDateString()}</div>
+                                <div><strong>Hora:</strong></div>
+                                <div>{new Date(r.fechaHoraUtc).toLocaleTimeString()}</div>
+                                <div><strong>Tipo:</strong></div>
+                                <div>{r.tipoRegistro}</div>
+                                <div><strong>Velocidad:</strong></div>
+                                <div>{r.velocidadKmH} km/h</div>
+                                <div><strong>Pasajeros:</strong></div>
+                                <div>{r.pasajeros}</div>
+                              </div>
+                              <div className="border-t pt-2">
+                                <div><strong>Conductor:</strong> {r.conductorNombre}</div>
+                                {r.ruta && <div><strong>Ruta:</strong> {r.ruta}</div>}
+                                {r.parada && <div><strong>Parada:</strong> {r.parada}</div>}
+                              </div>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </MapContainer>
+                    
+                    {selectedForMap.length === 0 && (
+                      <div className="absolute inset-4 flex items-center justify-center bg-background/90 backdrop-blur-sm rounded-md border-2 border-dashed border-muted">
+                        <div className="text-center">
+                          <div className="text-4xl mb-4">🗺️</div>
+                          <p className="text-muted-foreground mb-2">Selecciona registros para ver en el mapa</p>
+                          <p className="text-sm text-muted-foreground">Haz clic en las filas de la tabla</p>
+                        </div>
                       </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-              
-              {selectedForMap.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
-                  <p className="text-muted-foreground">Selecciona registros para ver en el mapa</p>
-                </div>
-              )}
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         )}
