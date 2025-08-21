@@ -105,8 +105,10 @@ const TelemetriaMap: React.FC<TelemetriaMapProps> = ({ registros, className = ''
     // Limpiar marcadores existentes
     markersRef.current.clearLayers();
 
-    // Filtrar registros con coordenadas válidas
-    const registrosConCoordenadas = registros.filter(r => r.lat && r.lng);
+    // Filtrar registros con coordenadas válidas (no null, no 0,0 que está en el océano)
+    const registrosConCoordenadas = registros.filter(r => 
+      r.lat !== null && r.lng !== null && r.lat !== 0 && r.lng !== 0
+    );
 
     if (registrosConCoordenadas.length === 0) return;
 

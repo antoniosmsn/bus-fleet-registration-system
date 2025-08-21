@@ -240,7 +240,7 @@ const TelemetriaCards: React.FC<TelemetriaCardsProps> = ({
                         </div>
                       )}
 
-                      {registro.lat && registro.lng && (
+                      {registro.lat !== null && registro.lng !== null && registro.lat !== 0 && registro.lng !== 0 && (
                         <div className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
                           <span>{registro.lat.toFixed(6)}, {registro.lng.toFixed(6)}</span>
