@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import Navbar from '@/components/layout/Navbar';
+import Layout from '@/components/layout/Layout';
 import TelemetriaFilters from '@/components/telemetria/TelemetriaFilters';
 import TelemetriaCards from '@/components/telemetria/TelemetriaCards';
 import TelemetriaMap from '@/components/telemetria/TelemetriaMap';
@@ -129,17 +129,13 @@ const TelemetriaListado: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col bg-background">
-      {/* Navbar */}
-      <Navbar />
-
-      {/* Main Content */}
-      <div className="w-full flex-1 overflow-hidden bg-muted/30 p-6">
+    <Layout>
+      <div className="h-[calc(100vh-120px)] w-full flex flex-col bg-background">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground">Telemetría</h1>
         </div>
         
-        <div className="h-[calc(100vh-160px)] flex flex-col lg:flex-row gap-6">
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 overflow-hidden">
           {/* Panel izquierdo - Filtros y listado */}
           <div className="flex-1 flex flex-col min-w-0">
             <TelemetriaFilters
@@ -188,7 +184,7 @@ const TelemetriaListado: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
