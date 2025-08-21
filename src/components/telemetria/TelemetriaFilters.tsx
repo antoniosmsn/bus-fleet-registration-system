@@ -193,14 +193,14 @@ const TelemetriaFilters: React.FC<TelemetriaFiltersProps> = ({
               <div className="space-y-2">
                 <Label>Ruta</Label>
                 <Select
-                  value={filtros.ruta}
-                  onValueChange={(value) => onFiltrosChange({ ...filtros, ruta: value })}
+                  value={filtros.ruta || 'all'}
+                  onValueChange={(value) => onFiltrosChange({ ...filtros, ruta: value === 'all' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Todas las rutas" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las rutas</SelectItem>
+                    <SelectItem value="all">Todas las rutas</SelectItem>
                     {rutas.map(ruta => (
                       <SelectItem key={ruta} value={ruta}>{ruta}</SelectItem>
                     ))}
