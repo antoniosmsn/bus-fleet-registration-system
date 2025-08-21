@@ -134,6 +134,11 @@ const SidebarComponent = () => {
       url: "/telemetria/listado", 
       icon: Activity 
     },
+    { 
+      title: "Alertas de conductor", 
+      url: "/alarmas-conductor/listado", 
+      icon: AlertTriangle 
+    },
   ];
 
   // Rastreo menu items
