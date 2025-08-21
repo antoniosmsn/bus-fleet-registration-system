@@ -273,9 +273,9 @@ const TelemetriaListado: React.FC = () => {
   );
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen w-full flex flex-col bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 z-10 min-h-[72px]">
+      <header className="flex items-center justify-between px-6 py-4 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 z-10 min-h-[72px] w-full">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-foreground">Telemetría</h1>
@@ -360,10 +360,10 @@ const TelemetriaListado: React.FC = () => {
       {/* Filters Panel */}
       {showFilters && (
         <div className={cn(
-          "border-b bg-card/30 backdrop-blur-sm transition-all duration-300 z-30",
+          "w-full border-b bg-card/30 backdrop-blur-sm transition-all duration-300 z-30",
           isMobile ? "fixed inset-x-0 top-[72px] bg-background border shadow-xl max-h-96 overflow-y-auto" : "shadow-sm"
         )}>
-          <div className="px-6 py-4">
+          <div className="w-full px-6 py-4">
             <Tabs defaultValue="fechas" className="w-full">
               <TabsList className="w-full justify-start mb-6 overflow-x-auto flex-nowrap bg-muted/50">
                 <TabsTrigger value="fechas" className="px-6">Fechas</TabsTrigger>
@@ -497,11 +497,11 @@ const TelemetriaListado: React.FC = () => {
 
       {/* Main Content */}
       <div className={cn(
-        "flex-1 overflow-hidden bg-muted/30",
+        "w-full flex-1 overflow-hidden bg-muted/30",
         showFilters && isMobile ? "pt-96" : ""
       )}>
         {viewMode === 'list' && (
-          <div className="h-full overflow-auto">
+          <div className="w-full h-full overflow-auto">
             {isMobile ? (
               // Mobile Cards View
               <div className="p-4">
@@ -534,8 +534,8 @@ const TelemetriaListado: React.FC = () => {
               </div>
             ) : (
               // Desktop Table View - Full Width
-              <div className="h-full p-6">
-                <Card className="h-full shadow-sm">
+              <div className="w-full h-full p-6">
+                <Card className="w-full h-full shadow-sm">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg font-semibold">
@@ -672,8 +672,8 @@ const TelemetriaListado: React.FC = () => {
         )}
 
         {viewMode === 'map' && (
-          <div className="h-full">
-            <div className="h-full border-l">
+          <div className="w-full h-full">
+            <div className="w-full h-full border-l">
               <MapContainer 
                 center={[9.7489, -83.7534]} 
                 zoom={8} 
@@ -724,7 +724,7 @@ const TelemetriaListado: React.FC = () => {
         )}
 
         {viewMode === 'split' && !isMobile && (
-          <div className="h-full flex gap-4 p-6">
+          <div className="w-full h-full flex gap-4 p-6">
             {/* Lista lado izquierdo */}
             <div className="w-1/2 h-full">
               <Card className="h-full shadow-sm">
