@@ -117,6 +117,11 @@ const SidebarComponent = () => {
       icon: FileText 
     },
     { 
+      title: "Bitácoras Cambios de Rutas", 
+      url: "/servicios/bitacora-cambios-rutas", 
+      icon: ArrowRightLeft 
+    },
+    { 
       title: "Asignación de Conductores", 
       url: "/asignaciones-conductores", 
       icon: UserCheck 
