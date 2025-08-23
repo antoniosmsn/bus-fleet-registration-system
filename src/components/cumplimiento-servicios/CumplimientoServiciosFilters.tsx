@@ -149,7 +149,7 @@ const CumplimientoServiciosFilters: React.FC<CumplimientoServiciosFiltersProps> 
           </div>
         </div>
 
-        {/* Active Filters Tags */}
+        {/* Active Filters Display */}
         {activeFilters.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-2">
             {activeFilters.map((filter, index) => (
