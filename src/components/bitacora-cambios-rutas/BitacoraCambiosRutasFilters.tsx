@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Combobox } from '@/components/ui/combobox';
 import { Search, X } from 'lucide-react';
 import { BitacoraCambioRutaFilter } from '@/types/bitacora-cambio-ruta';
 
@@ -147,34 +147,24 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="rutaOriginal">Ruta Original</Label>
-                <Select value={filtrosLocales.rutaOriginal} onValueChange={(value) => updateFiltro('rutaOriginal', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar ruta original" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {rutasOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={rutasOptions}
+                  value={filtrosLocales.rutaOriginal}
+                  onValueChange={(value) => updateFiltro('rutaOriginal', value)}
+                  placeholder="Seleccionar ruta original"
+                  searchPlaceholder="Buscar ruta..."
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="rutaFinal">Ruta Final</Label>
-                <Select value={filtrosLocales.rutaFinal} onValueChange={(value) => updateFiltro('rutaFinal', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar ruta final" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {rutasOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={rutasOptions}
+                  value={filtrosLocales.rutaFinal}
+                  onValueChange={(value) => updateFiltro('rutaFinal', value)}
+                  placeholder="Seleccionar ruta final"
+                  searchPlaceholder="Buscar ruta..."
+                />
               </div>
               
               <div className="space-y-2">
@@ -255,50 +245,35 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
               
               <div className="space-y-2">
                 <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
-                <Select value={filtrosLocales.empresaTransporte} onValueChange={(value) => updateFiltro('empresaTransporte', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar empresa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {empresasOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={empresasOptions}
+                  value={filtrosLocales.empresaTransporte}
+                  onValueChange={(value) => updateFiltro('empresaTransporte', value)}
+                  placeholder="Seleccionar empresa"
+                  searchPlaceholder="Buscar empresa..."
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="autobus">Autobús</Label>
-                <Select value={filtrosLocales.autobus} onValueChange={(value) => updateFiltro('autobus', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar autobús" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {autobusesOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={autobusesOptions}
+                  value={filtrosLocales.autobus}
+                  onValueChange={(value) => updateFiltro('autobus', value)}
+                  placeholder="Seleccionar autobús"
+                  searchPlaceholder="Buscar autobús..."
+                />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="estado">Estado de Solicitud</Label>
-                <Select value={filtrosLocales.estado} onValueChange={(value) => updateFiltro('estado', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {estadosOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={estadosOptions}
+                  value={filtrosLocales.estado}
+                  onValueChange={(value) => updateFiltro('estado', value)}
+                  placeholder="Seleccionar estado"
+                  searchPlaceholder="Buscar estado..."
+                />
               </div>
             </div>
           </TabsContent>

@@ -27,12 +27,12 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
   const datosFiltrados = useMemo(() => {
     let datos = mockBitacoraCambiosRutas.filter(bitacora => {
       // Filter by ruta original
-      if (filtros.rutaOriginal.length > 0 && !filtros.rutaOriginal.includes(bitacora.rutaOriginal.id)) {
+      if (filtros.rutaOriginal !== 'todos' && bitacora.rutaOriginal.id !== filtros.rutaOriginal) {
         return false;
       }
       
       // Filter by ruta final
-      if (filtros.rutaFinal.length > 0 && !filtros.rutaFinal.includes(bitacora.rutaFinal.id)) {
+      if (filtros.rutaFinal !== 'todos' && bitacora.rutaFinal.id !== filtros.rutaFinal) {
         return false;
       }
       
@@ -73,17 +73,17 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
       }
       
       // Filter by empresa transporte
-      if (filtros.empresaTransporte.length > 0 && !filtros.empresaTransporte.includes(bitacora.empresaTransporte.id)) {
+      if (filtros.empresaTransporte !== 'todos' && bitacora.empresaTransporte.id !== filtros.empresaTransporte) {
         return false;
       }
       
       // Filter by autobus
-      if (filtros.autobus.length > 0 && !filtros.autobus.includes(bitacora.autobus.id)) {
+      if (filtros.autobus !== 'todos' && bitacora.autobus.id !== filtros.autobus) {
         return false;
       }
       
       // Filter by estado
-      if (filtros.estado.length > 0 && !filtros.estado.includes(bitacora.estado)) {
+      if (filtros.estado !== 'todos' && bitacora.estado !== filtros.estado) {
         return false;
       }
       
@@ -214,7 +214,14 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {datosVisiblesToCurrentPage.map((bitacora) => (
+              {datosVisiblesToCurrentPage.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
+                    No existen resultados.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                datosVisiblesToCurrentPage.map((bitacora) => (
                 <React.Fragment key={bitacora.id}>
                   <TableRow className="hover:bg-muted/50">
                     <TableCell className="font-medium">{bitacora.rutaOriginal.nombre}</TableCell>
@@ -345,7 +352,8 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                     </TableRow>
                   )}
                 </React.Fragment>
-              ))}
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
