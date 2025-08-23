@@ -5,12 +5,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { MultiSelect } from '@/components/ui/multi-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, X } from 'lucide-react';
 import { BitacoraCambioRutaFilter } from '@/types/bitacora-cambio-ruta';
 
 // Mock options for dropdowns
 const rutasOptions = [
+  { value: 'todos', label: 'Todos' },
   { value: '1', label: 'Ruta Aeropuerto - Centro' },
   { value: '2', label: 'Ruta Norte Industrial' },
   { value: '3', label: 'Ruta Sur Comercial' },
@@ -21,6 +22,7 @@ const rutasOptions = [
 ];
 
 const empresasOptions = [
+  { value: 'todos', label: 'Todos' },
   { value: '1', label: 'Transportes El Coyol S.A.' },
   { value: '2', label: 'Autobuses Unidos Ltda.' },
   { value: '3', label: 'Servicios Rápidos Express' },
@@ -28,6 +30,7 @@ const empresasOptions = [
 ];
 
 const autobusesOptions = [
+  { value: 'todos', label: 'Todos' },
   { value: '1', label: 'BUS-001 (TAX-1234)' },
   { value: '2', label: 'BUS-002 (TAX-5678)' },
   { value: '3', label: 'BUS-003 (TAX-9012)' },
@@ -36,6 +39,7 @@ const autobusesOptions = [
 ];
 
 const estadosOptions = [
+  { value: 'todos', label: 'Todos' },
   { value: 'Aceptada', label: 'Aceptada' },
   { value: 'Rechazada', label: 'Rechazada' },
 ];
@@ -56,17 +60,17 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
 
   const limpiarFiltros = () => {
     const filtrosVacios: BitacoraCambioRutaFilter = {
-      rutaOriginal: [],
-      rutaFinal: [],
+      rutaOriginal: 'todos',
+      rutaFinal: 'todos',
       usuario: '',
       fechaCambioInicio: today,
       fechaCambioFin: today,
       fechaServicioInicio: today,
       fechaServicioFin: today,
       numeroServicio: '',
-      empresaTransporte: [],
-      autobus: [],
-      estado: [],
+      empresaTransporte: 'todos',
+      autobus: 'todos',
+      estado: 'todos',
     };
     setFiltrosLocales(filtrosVacios);
     onFiltrosChange(filtrosVacios);
@@ -81,11 +85,13 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
 
   // Calculate active filters for display
   const activeFilters = [];
-  if (filtrosLocales.rutaOriginal.length > 0) {
-    activeFilters.push(`Ruta Original: ${filtrosLocales.rutaOriginal.length} seleccionada(s)`);
+  if (filtrosLocales.rutaOriginal && filtrosLocales.rutaOriginal !== 'todos') {
+    const rutaLabel = rutasOptions.find(r => r.value === filtrosLocales.rutaOriginal)?.label;
+    activeFilters.push(`Ruta Original: ${rutaLabel}`);
   }
-  if (filtrosLocales.rutaFinal.length > 0) {
-    activeFilters.push(`Ruta Final: ${filtrosLocales.rutaFinal.length} seleccionada(s)`);
+  if (filtrosLocales.rutaFinal && filtrosLocales.rutaFinal !== 'todos') {
+    const rutaLabel = rutasOptions.find(r => r.value === filtrosLocales.rutaFinal)?.label;
+    activeFilters.push(`Ruta Final: ${rutaLabel}`);
   }
   if (filtrosLocales.usuario) {
     activeFilters.push(`Usuario: ${filtrosLocales.usuario}`);
@@ -93,14 +99,17 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
   if (filtrosLocales.numeroServicio) {
     activeFilters.push(`Número Servicio: ${filtrosLocales.numeroServicio}`);
   }
-  if (filtrosLocales.empresaTransporte.length > 0) {
-    activeFilters.push(`Empresa: ${filtrosLocales.empresaTransporte.length} seleccionada(s)`);
+  if (filtrosLocales.empresaTransporte && filtrosLocales.empresaTransporte !== 'todos') {
+    const empresaLabel = empresasOptions.find(e => e.value === filtrosLocales.empresaTransporte)?.label;
+    activeFilters.push(`Empresa: ${empresaLabel}`);
   }
-  if (filtrosLocales.autobus.length > 0) {
-    activeFilters.push(`Autobús: ${filtrosLocales.autobus.length} seleccionado(s)`);
+  if (filtrosLocales.autobus && filtrosLocales.autobus !== 'todos') {
+    const autobusLabel = autobusesOptions.find(a => a.value === filtrosLocales.autobus)?.label;
+    activeFilters.push(`Autobús: ${autobusLabel}`);
   }
-  if (filtrosLocales.estado.length > 0) {
-    activeFilters.push(`Estado: ${filtrosLocales.estado.length} seleccionado(s)`);
+  if (filtrosLocales.estado && filtrosLocales.estado !== 'todos') {
+    const estadoLabel = estadosOptions.find(e => e.value === filtrosLocales.estado)?.label;
+    activeFilters.push(`Estado: ${estadoLabel}`);
   }
 
   return (
@@ -138,24 +147,34 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="rutaOriginal">Ruta Original</Label>
-                <MultiSelect
-                  options={rutasOptions}
-                  value={filtrosLocales.rutaOriginal}
-                  onValueChange={(value) => updateFiltro('rutaOriginal', value)}
-                  placeholder="Seleccionar rutas originales..."
-                  maxDisplay={2}
-                />
+                <Select value={filtrosLocales.rutaOriginal} onValueChange={(value) => updateFiltro('rutaOriginal', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar ruta original" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rutasOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="rutaFinal">Ruta Final</Label>
-                <MultiSelect
-                  options={rutasOptions}
-                  value={filtrosLocales.rutaFinal}
-                  onValueChange={(value) => updateFiltro('rutaFinal', value)}
-                  placeholder="Seleccionar rutas finales..."
-                  maxDisplay={2}
-                />
+                <Select value={filtrosLocales.rutaFinal} onValueChange={(value) => updateFiltro('rutaFinal', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar ruta final" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {rutasOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
@@ -236,35 +255,50 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
               
               <div className="space-y-2">
                 <Label htmlFor="empresaTransporte">Empresa de Transporte</Label>
-                <MultiSelect
-                  options={empresasOptions}
-                  value={filtrosLocales.empresaTransporte}
-                  onValueChange={(value) => updateFiltro('empresaTransporte', value)}
-                  placeholder="Seleccionar empresas..."
-                  maxDisplay={1}
-                />
+                <Select value={filtrosLocales.empresaTransporte} onValueChange={(value) => updateFiltro('empresaTransporte', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar empresa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {empresasOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="autobus">Autobús</Label>
-                <MultiSelect
-                  options={autobusesOptions}
-                  value={filtrosLocales.autobus}
-                  onValueChange={(value) => updateFiltro('autobus', value)}
-                  placeholder="Seleccionar autobuses..."
-                  maxDisplay={1}
-                />
+                <Select value={filtrosLocales.autobus} onValueChange={(value) => updateFiltro('autobus', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar autobús" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {autobusesOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="estado">Estado de Solicitud</Label>
-                <MultiSelect
-                  options={estadosOptions}
-                  value={filtrosLocales.estado}
-                  onValueChange={(value) => updateFiltro('estado', value)}
-                  placeholder="Seleccionar estados..."
-                  maxDisplay={2}
-                />
+                <Select value={filtrosLocales.estado} onValueChange={(value) => updateFiltro('estado', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {estadosOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </TabsContent>

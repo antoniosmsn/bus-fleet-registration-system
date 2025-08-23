@@ -48,15 +48,15 @@ export interface PasajeroAfectado {
 }
 
 export interface BitacoraCambioRutaFilter {
-  rutaOriginal: string[];
-  rutaFinal: string[];
+  rutaOriginal: string;
+  rutaFinal: string;
   usuario: string;
   fechaCambioInicio: string;
   fechaCambioFin: string;
   fechaServicioInicio: string;
   fechaServicioFin: string;
   numeroServicio: string;
-  empresaTransporte: string[];
-  autobus: string[];
-  estado: string[];
+  empresaTransporte: string;
+  autobus: string;
+  estado: string;
 }

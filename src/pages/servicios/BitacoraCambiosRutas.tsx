@@ -8,17 +8,17 @@ const BitacoraCambiosRutasPage = () => {
   const today = new Date().toISOString().split('T')[0];
   
   const [filtros, setFiltros] = useState<BitacoraCambioRutaFilter>({
-    rutaOriginal: [],
-    rutaFinal: [],
+    rutaOriginal: 'todos',
+    rutaFinal: 'todos',
     usuario: '',
     fechaCambioInicio: today,
     fechaCambioFin: today,
     fechaServicioInicio: today,
     fechaServicioFin: today,
     numeroServicio: '',
-    empresaTransporte: [],
-    autobus: [],
-    estado: []
+    empresaTransporte: 'todos',
+    autobus: 'todos',
+    estado: 'todos'
   });
 
   const aplicarFiltros = (nuevosFiltros: BitacoraCambioRutaFilter) => {
