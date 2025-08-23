@@ -112,6 +112,11 @@ const SidebarComponent = () => {
       icon: Truck 
     },
     { 
+      title: "Cumplimiento de Servicios", 
+      url: "/servicios/cumplimiento", 
+      icon: FileText 
+    },
+    { 
       title: "Asignación de Conductores", 
       url: "/asignaciones-conductores", 
       icon: UserCheck 

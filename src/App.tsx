@@ -35,6 +35,7 @@ import RegisterPasajero from "./pages/pasajeros/Register";
 import ServiciosIndex from "./pages/servicios/Index";
 import RegisterServicio from "./pages/servicios/Register";
 import EditServicio from "./pages/servicios/Edit";
+import CumplimientoServiciosPage from "./pages/servicios/CumplimientoServicios";
 import AsignacionesConductoresIndex from "./pages/asignaciones-conductores/Index";
 import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
 import BitacorasLectorasIndex from "./pages/bitacoras-lectoras/Index";
@@ -91,6 +92,7 @@ const App = () => (
             <Route path="/servicios" element={<ServiciosIndex />} />
             <Route path="/servicios/register" element={<RegisterServicio />} />
             <Route path="/servicios/edit/:id" element={<EditServicio />} />
+            <Route path="/servicios/cumplimiento" element={<CumplimientoServiciosPage />} />
             <Route path="/asignaciones-conductores" element={<AsignacionesConductoresIndex />} />
             <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
