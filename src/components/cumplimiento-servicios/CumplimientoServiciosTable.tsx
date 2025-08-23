@@ -160,12 +160,12 @@ const CumplimientoServiciosTable: React.FC<CumplimientoServiciosTableProps> = ({
                 <TableHead>Inicio Realizado</TableHead>
                 <TableHead>Cierre Realizado</TableHead>
                 <TableHead>Última Descarga</TableHead>
-                <TableHead className="text-right">Pasajeros</TableHead>
-                <TableHead className="text-right">Transmitidos</TableHead>
-                <TableHead className="text-right">Faltante</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Cumplimiento</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead className="text-right w-24">Pasajeros</TableHead>
+                <TableHead className="text-right w-24">Transmitidos</TableHead>
+                <TableHead className="text-right w-20">Faltante</TableHead>
+                <TableHead className="w-auto">Estado</TableHead>
+                <TableHead className="w-auto">Cumplimiento</TableHead>
+                <TableHead className="w-auto">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
