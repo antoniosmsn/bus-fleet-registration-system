@@ -9,6 +9,16 @@ const getRandomDateInRange = (daysBack: number, daysForward: number = 0) => {
   return date.toISOString().split('T')[0];
 };
 
+const getTodayDate = () => {
+  return new Date().toISOString().split('T')[0];
+};
+
+const getSpecificDate = (daysOffset: number) => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysOffset);
+  return date.toISOString().split('T')[0];
+};
+
 const getRandomTime = () => {
   const hours = Math.floor(Math.random() * 24);
   const minutes = Math.floor(Math.random() * 60);
@@ -77,6 +87,17 @@ export const mockBitacoraCambiosRutas: BitacoraCambioRuta[] = Array.from({ lengt
   const montoOriginal = Math.floor(Math.random() * 50000) + 10000;
   const montoFinal = Math.floor(Math.random() * 50000) + 10000;
   
+  // Para los primeros 15 registros, usar fechas del día actual para que siempre aparezcan datos
+  let fechaCambio, fechaServicio;
+  if (index < 15) {
+    fechaCambio = getTodayDate();
+    fechaServicio = index < 8 ? getTodayDate() : getSpecificDate(Math.floor(Math.random() * 5) + 1);
+  } else {
+    // Para el resto, usar fechas aleatorias para filtros
+    fechaCambio = getRandomDateInRange(30, 5);
+    fechaServicio = getRandomDateInRange(15, 10);
+  }
+  
   return {
     id: `BCR-${(index + 1).toString().padStart(3, '0')}`,
     rutaOriginal,
@@ -84,8 +105,8 @@ export const mockBitacoraCambiosRutas: BitacoraCambioRuta[] = Array.from({ lengt
     numeroServicioOriginal: `SRV-${Math.floor(Math.random() * 9000) + 1000}`,
     numeroServicioFinal: `SRV-${Math.floor(Math.random() * 9000) + 1000}`,
     usuario,
-    fechaCambio: getRandomDateInRange(30, 5),
-    fechaServicio: getRandomDateInRange(15, 10),
+    fechaCambio,
+    fechaServicio,
     cantidadPasajerosAfectados: cantidadPasajeros,
     montoOriginal,
     montoFinal,

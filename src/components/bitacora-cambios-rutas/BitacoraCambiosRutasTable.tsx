@@ -197,7 +197,6 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-12">Detalle</TableHead>
                 <TableHead>Ruta Original</TableHead>
                 <TableHead>Ruta Final</TableHead>
                 <TableHead>Servicio Original</TableHead>
@@ -216,22 +215,6 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
               {datosVisiblesToCurrentPage.map((bitacora) => (
                 <React.Fragment key={bitacora.id}>
                   <TableRow className="hover:bg-muted/50">
-                    <TableCell>
-                      {bitacora.cantidadPasajerosAfectados > 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleFila(bitacora.id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          {filasExpandidas.has(bitacora.id) ? (
-                            <EyeOff className="h-4 w-4" />
-                          ) : (
-                            <Eye className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                    </TableCell>
                     <TableCell className="font-medium">{bitacora.rutaOriginal.nombre}</TableCell>
                     <TableCell className="font-medium">{bitacora.rutaFinal.nombre}</TableCell>
                     <TableCell>{bitacora.numeroServicioOriginal}</TableCell>
@@ -245,9 +228,25 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                     <TableCell>{formatShortDate(bitacora.fechaCambio)}</TableCell>
                     <TableCell>{formatShortDate(bitacora.fechaServicio)}</TableCell>
                     <TableCell className="text-center">
-                      <Badge variant="outline">
-                        {bitacora.cantidadPasajerosAfectados}
-                      </Badge>
+                      <div className="flex items-center justify-center gap-2">
+                        <Badge variant="outline">
+                          {bitacora.cantidadPasajerosAfectados}
+                        </Badge>
+                        {bitacora.cantidadPasajerosAfectados > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleFila(bitacora.id)}
+                            className="h-8 w-8 p-0"
+                          >
+                            {filasExpandidas.has(bitacora.id) ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>{formatCurrency(bitacora.montoOriginal)}</TableCell>
                     <TableCell>{formatCurrency(bitacora.montoFinal)}</TableCell>
@@ -264,7 +263,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                   {/* Expanded row for passenger details */}
                   {filasExpandidas.has(bitacora.id) && bitacora.cantidadPasajerosAfectados > 0 && (
                     <TableRow>
-                      <TableCell colSpan={13} className="bg-muted/30 p-0">
+                      <TableCell colSpan={12} className="bg-muted/30 p-0">
                         <div className="p-4">
                           <h4 className="font-semibold mb-3 text-sm">
                             Pasajeros Afectados ({bitacora.cantidadPasajerosAfectados})
