@@ -1,14 +1,13 @@
 import { useState } from 'react';
-import { Calendar, Filter, X } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -38,45 +37,29 @@ export function MantenimientoFilters({
   const [fechaFin, setFechaFin] = useState<Date | undefined>(
     filtros.fechaFin ? new Date(filtros.fechaFin) : undefined
   );
-  const [usarRangoFechas, setUsarRangoFechas] = useState(
-    !!(filtros.fechaInicio || filtros.fechaFin)
-  );
 
   const handleFechaInicioChange = (date: Date | undefined) => {
     setFechaInicio(date);
-    if (date && usarRangoFechas) {
+    if (date) {
       onFiltrosChange({
         ...filtros,
         fechaInicio: format(date, 'yyyy-MM-dd')
       });
+    } else {
+      const { fechaInicio: _, ...newFiltros } = filtros;
+      onFiltrosChange(newFiltros);
     }
   };
 
   const handleFechaFinChange = (date: Date | undefined) => {
     setFechaFin(date);
-    if (date && usarRangoFechas) {
+    if (date) {
       onFiltrosChange({
         ...filtros,
         fechaFin: format(date, 'yyyy-MM-dd')
       });
-    }
-  };
-
-  const handleUsarRangoFechasChange = (checked: boolean) => {
-    setUsarRangoFechas(checked);
-    if (checked) {
-      // Aplicar fechas si ya están seleccionadas
-      const newFiltros = { ...filtros };
-      if (fechaInicio) {
-        newFiltros.fechaInicio = format(fechaInicio, 'yyyy-MM-dd');
-      }
-      if (fechaFin) {
-        newFiltros.fechaFin = format(fechaFin, 'yyyy-MM-dd');
-      }
-      onFiltrosChange(newFiltros);
     } else {
-      // Limpiar fechas de los filtros
-      const { fechaInicio: _, fechaFin: __, ...newFiltros } = filtros;
+      const { fechaFin: _, ...newFiltros } = filtros;
       onFiltrosChange(newFiltros);
     }
   };
@@ -105,7 +88,6 @@ export function MantenimientoFilters({
   const limpiarFiltros = () => {
     setFechaInicio(undefined);
     setFechaFin(undefined);
-    setUsarRangoFechas(false);
     onFiltrosChange({});
   };
 
@@ -134,84 +116,70 @@ export function MantenimientoFilters({
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Checkbox para activar rango de fechas */}
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="usar-rango-fechas"
-            checked={usarRangoFechas}
-            onCheckedChange={handleUsarRangoFechasChange}
-          />
-          <Label htmlFor="usar-rango-fechas" className="font-medium">
-            Filtrar por rango de fechas de mantenimiento
-          </Label>
-        </div>
-
         {/* Rango de fechas */}
-        {usarRangoFechas && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
-            {!fechasValidas && (
-              <div className="col-span-2 text-sm text-destructive">
-                La fecha de inicio debe ser menor o igual a la fecha fin
-              </div>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="fecha-inicio">Fecha Inicio</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="fecha-inicio"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !fechaInicio && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {fechaInicio ? format(fechaInicio, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={fechaInicio}
-                    onSelect={handleFechaInicioChange}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+          {!fechasValidas && (
+            <div className="col-span-2 text-sm text-destructive">
+              La fecha de inicio debe ser menor o igual a la fecha fin
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="fecha-fin">Fecha Fin</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="fecha-fin"
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !fechaFin && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {fechaFin ? format(fechaFin, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={fechaFin}
-                    onSelect={handleFechaFinChange}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="fecha-inicio">Fecha Inicio</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="fecha-inicio"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !fechaInicio && "text-muted-foreground"
+                  )}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {fechaInicio ? format(fechaInicio, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={fechaInicio}
+                  onSelect={handleFechaInicioChange}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-        )}
+
+          <div className="space-y-2">
+            <Label htmlFor="fecha-fin">Fecha Fin</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="fecha-fin"
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !fechaFin && "text-muted-foreground"
+                  )}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {fechaFin ? format(fechaFin, "dd/MM/yyyy", { locale: es }) : "Seleccionar fecha"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={fechaFin}
+                  onSelect={handleFechaFinChange}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Categorías */}
