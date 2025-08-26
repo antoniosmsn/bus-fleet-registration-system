@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, ArrowUpDown, Route } from 'lucide-react';
 import { CumplimientoServicioData, FiltrosCumplimientoServicio, EstadoServicio, CumplimientoServicio } from '@/types/cumplimiento-servicio';
 import { mockCumplimientoServicios } from '@/data/mockCumplimientoServicios';
 import { formatShortDate } from '@/lib/dateUtils';
+import CambioRutaModal from './CambioRutaModal';
 
 interface CumplimientoServiciosTableProps {
   filtros: FiltrosCumplimientoServicio;
@@ -20,6 +21,8 @@ const CumplimientoServiciosTable: React.FC<CumplimientoServiciosTableProps> = ({
     campo: 'numeroServicio',
     direccion: 'asc'
   });
+  const [servicioSeleccionado, setServicioSeleccionado] = useState<CumplimientoServicioData | null>(null);
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   // Filter services based on filters
   const serviciosFiltrados = useMemo(() => {
@@ -113,10 +116,20 @@ const CumplimientoServiciosTable: React.FC<CumplimientoServiciosTableProps> = ({
     });
   };
 
-  const handleSolicitarCambioRuta = (servicioId: string) => {
-    // This would navigate to the change route page
-    console.log('Solicitar cambio de ruta para servicio:', servicioId);
-    // TODO: Implement navigation to /servicios/cambio-ruta/{servicioId}
+  const handleSolicitarCambioRuta = (servicio: CumplimientoServicioData) => {
+    setServicioSeleccionado(servicio);
+    setModalAbierto(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalAbierto(false);
+    setServicioSeleccionado(null);
+  };
+
+  // Check if service can request route change (only services with complete download)
+  const puedesolicitarCambioRuta = (servicio: CumplimientoServicioData) => {
+    return servicio.estadoServicio === 'Cierre manual-descarga completa' || 
+           servicio.estadoServicio === 'Cierre automático-descarga completa';
   };
 
   return (
@@ -197,8 +210,8 @@ const CumplimientoServiciosTable: React.FC<CumplimientoServiciosTableProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={!servicio.puedesolicitarCambioRuta}
-                        onClick={() => handleSolicitarCambioRuta(servicio.id)}
+                        disabled={!puedesolicitarCambioRuta(servicio)}
+                        onClick={() => handleSolicitarCambioRuta(servicio)}
                         className="h-8"
                       >
                         <Route className="h-3 w-3 mr-1" />
@@ -267,6 +280,12 @@ const CumplimientoServiciosTable: React.FC<CumplimientoServiciosTableProps> = ({
           </div>
         )}
       </CardContent>
+
+      <CambioRutaModal 
+        servicio={servicioSeleccionado}
+        isOpen={modalAbierto}
+        onClose={handleCloseModal}
+      />
     </Card>
   );
 };
