@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -174,6 +174,15 @@ const SidebarComponent = () => {
     },
   ];
 
+  // Mantenimiento menu items
+  const mantenimientoItems = [
+    { 
+      title: "Historial de Mantenimientos", 
+      url: "/mantenimiento", 
+      icon: Wrench 
+    },
+  ];
+
   return (
     <Sidebar className="border-r bg-sidebar text-sidebar-foreground">
       <SidebarHeader className="p-4">
@@ -341,6 +350,31 @@ const SidebarComponent = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {alertasItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    tooltip={item.title}
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            <Wrench className="mr-2" />
+            Mantenimiento de Vehículos
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {mantenimientoItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
