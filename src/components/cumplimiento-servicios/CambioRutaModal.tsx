@@ -17,16 +17,21 @@ interface CambioRutaModalProps {
 
 const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
-  const [nuevoSentido, setNuevoSentido] = useState<string>('');
+  const [nuevoSentido, setNuevoSentido] = useState<string>('ingreso');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   if (!servicio) return null;
 
-  // Filter available routes by transport company
-  const rutasDisponibles = mockRamales.filter(ramal => 
+  // Filter available routes by transport company, fallback to all routes if none found
+  let rutasDisponibles = mockRamales.filter(ramal => 
     ramal.empresaTransporte === servicio.empresaTransporte
   );
+
+  // If no routes found for this company, show all routes as fallback
+  if (rutasDisponibles.length === 0) {
+    rutasDisponibles = mockRamales.slice(0, 15); // Show first 15 routes as fallback
+  }
 
   // Get unique route names for the selector (showing all available routes)
   const rutasUnicas = rutasDisponibles.reduce((acc, ramal) => {
@@ -36,6 +41,13 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
     }
     return acc;
   }, [] as typeof rutasDisponibles);
+
+  // Set default route when modal opens
+  React.useEffect(() => {
+    if (isOpen && rutasUnicas.length > 0 && !nuevaRutaId) {
+      setNuevaRutaId(rutasUnicas[0].id);
+    }
+  }, [isOpen, rutasUnicas.length, nuevaRutaId]);
 
   const handleSubmit = async () => {
     // Validate required fields
@@ -111,7 +123,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
         // Reset form and close modal
         setNuevaRutaId('');
-        setNuevoSentido('');
+        setNuevoSentido('ingreso');
         onClose();
       } else {
         throw new Error('Error simulado del servidor');
@@ -129,7 +141,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   const handleCancel = () => {
     setNuevaRutaId('');
-    setNuevoSentido('');
+    setNuevoSentido('ingreso');
     onClose();
   };
 
