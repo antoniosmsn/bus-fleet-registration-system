@@ -122,10 +122,7 @@ export function MantenimientoFilters({
   return (
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-          <Filter className="h-5 w-5" />
-          Filtros de Búsqueda
-        </CardTitle>
+        <div></div>
         <Button 
           variant="outline" 
           size="sm" 
