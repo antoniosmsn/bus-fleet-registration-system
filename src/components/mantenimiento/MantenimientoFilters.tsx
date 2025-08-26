@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, X } from 'lucide-react';
+import { Calendar, X, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,63 +31,75 @@ export function MantenimientoFilters({
   isTransportistaUser = false,
   transportistaUsuario
 }: MantenimientoFiltersProps) {
+  // Estados locales para los filtros (no se aplican hasta presionar "Filtrar")
   const [fechaInicio, setFechaInicio] = useState<Date | undefined>(
     filtros.fechaInicio ? new Date(filtros.fechaInicio) : undefined
   );
   const [fechaFin, setFechaFin] = useState<Date | undefined>(
     filtros.fechaFin ? new Date(filtros.fechaFin) : undefined
   );
+  const [categoriasLocales, setCategoriasLocales] = useState<string[]>(
+    filtros.categorias || []
+  );
+  const [placaLocal, setPlacaLocal] = useState<string>(
+    filtros.placa || ''
+  );
+  const [transportistaLocal, setTransportistaLocal] = useState<string>(
+    filtros.transportista || 'todos'
+  );
 
   const handleFechaInicioChange = (date: Date | undefined) => {
     setFechaInicio(date);
-    if (date) {
-      onFiltrosChange({
-        ...filtros,
-        fechaInicio: format(date, 'yyyy-MM-dd')
-      });
-    } else {
-      const { fechaInicio: _, ...newFiltros } = filtros;
-      onFiltrosChange(newFiltros);
-    }
   };
 
   const handleFechaFinChange = (date: Date | undefined) => {
     setFechaFin(date);
-    if (date) {
-      onFiltrosChange({
-        ...filtros,
-        fechaFin: format(date, 'yyyy-MM-dd')
-      });
-    } else {
-      const { fechaFin: _, ...newFiltros } = filtros;
-      onFiltrosChange(newFiltros);
-    }
   };
 
   const handleCategoriasChange = (categorias: string[]) => {
-    onFiltrosChange({
-      ...filtros,
-      categorias: categorias.length > 0 ? categorias : undefined
-    });
+    setCategoriasLocales(categorias);
   };
 
   const handlePlacaChange = (value: string) => {
-    onFiltrosChange({
-      ...filtros,
-      placa: value.trim() ? value : undefined
-    });
+    setPlacaLocal(value);
   };
 
   const handleTransportistaChange = (value: string) => {
-    onFiltrosChange({
-      ...filtros,
-      transportista: value === 'todos' ? undefined : value
-    });
+    setTransportistaLocal(value);
+  };
+
+  const aplicarFiltros = () => {
+    const nuevosFiltros: MantenimientoFilter = {};
+
+    if (fechaInicio) {
+      nuevosFiltros.fechaInicio = format(fechaInicio, 'yyyy-MM-dd');
+    }
+    
+    if (fechaFin) {
+      nuevosFiltros.fechaFin = format(fechaFin, 'yyyy-MM-dd');
+    }
+
+    if (categoriasLocales.length > 0) {
+      nuevosFiltros.categorias = categoriasLocales;
+    }
+
+    if (placaLocal.trim()) {
+      nuevosFiltros.placa = placaLocal.trim();
+    }
+
+    if (transportistaLocal !== 'todos') {
+      nuevosFiltros.transportista = transportistaLocal;
+    }
+
+    onFiltrosChange(nuevosFiltros);
   };
 
   const limpiarFiltros = () => {
     setFechaInicio(undefined);
     setFechaFin(undefined);
+    setCategoriasLocales([]);
+    setPlacaLocal('');
+    setTransportistaLocal('todos');
     onFiltrosChange({});
   };
 
@@ -105,15 +117,25 @@ export function MantenimientoFilters({
     <Card className="mb-6">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <div></div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={limpiarFiltros}
-          className="flex items-center gap-2"
-        >
-          <X className="h-4 w-4" />
-          Limpiar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={aplicarFiltros}
+            disabled={!fechasValidas}
+            className="flex items-center gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Filtrar
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={limpiarFiltros}
+            className="flex items-center gap-2"
+          >
+            <X className="h-4 w-4" />
+            Limpiar
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Rango de fechas */}
@@ -187,7 +209,7 @@ export function MantenimientoFilters({
             <Label htmlFor="categorias">Categorías de Mantenimiento</Label>
             <MultiSelect
               options={categoriasOptions}
-              value={filtros.categorias || []}
+              value={categoriasLocales}
               onValueChange={handleCategoriasChange}
               placeholder="Todas las categorías"
             />
@@ -200,11 +222,11 @@ export function MantenimientoFilters({
               id="placa"
               type="text"
               placeholder="Buscar por placa..."
-              value={filtros.placa || ''}
+              value={placaLocal}
               onChange={(e) => handlePlacaChange(e.target.value)}
               className="w-full"
             />
-            {filtros.placa && filtros.placa.length < 2 && (
+            {placaLocal && placaLocal.length < 2 && (
               <p className="text-xs text-muted-foreground">
                 Mínimo 2 caracteres para búsqueda
               </p>
@@ -215,7 +237,7 @@ export function MantenimientoFilters({
           <div className="space-y-2">
             <Label htmlFor="transportista">Transportista</Label>
             <Select
-              value={filtros.transportista || 'todos'}
+              value={transportistaLocal}
               onValueChange={handleTransportistaChange}
               disabled={isTransportistaUser}
             >
