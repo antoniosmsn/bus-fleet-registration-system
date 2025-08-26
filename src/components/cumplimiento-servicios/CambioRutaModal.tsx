@@ -21,26 +21,32 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  if (!servicio) return null;
-
   // Filter available routes by transport company, fallback to all routes if none found
-  let rutasDisponibles = mockRamales.filter(ramal => 
-    ramal.empresaTransporte === servicio.empresaTransporte
-  );
+  const rutasDisponibles = React.useMemo(() => {
+    if (!servicio) return [];
+    
+    let rutas = mockRamales.filter(ramal => 
+      ramal.empresaTransporte === servicio.empresaTransporte
+    );
 
-  // If no routes found for this company, show all routes as fallback
-  if (rutasDisponibles.length === 0) {
-    rutasDisponibles = mockRamales.slice(0, 15); // Show first 15 routes as fallback
-  }
+    // If no routes found for this company, show all routes as fallback
+    if (rutas.length === 0) {
+      rutas = mockRamales.slice(0, 15); // Show first 15 routes as fallback
+    }
+
+    return rutas;
+  }, [servicio]);
 
   // Get unique route names for the selector (showing all available routes)
-  const rutasUnicas = rutasDisponibles.reduce((acc, ramal) => {
-    const yaExiste = acc.find(r => r.nombre === ramal.nombre && r.sentido === ramal.sentido);
-    if (!yaExiste) {
-      acc.push(ramal);
-    }
-    return acc;
-  }, [] as typeof rutasDisponibles);
+  const rutasUnicas = React.useMemo(() => {
+    return rutasDisponibles.reduce((acc, ramal) => {
+      const yaExiste = acc.find(r => r.nombre === ramal.nombre && r.sentido === ramal.sentido);
+      if (!yaExiste) {
+        acc.push(ramal);
+      }
+      return acc;
+    }, [] as typeof rutasDisponibles);
+  }, [rutasDisponibles]);
 
   // Set default route when modal opens
   React.useEffect(() => {
@@ -48,6 +54,8 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       setNuevaRutaId(rutasUnicas[0].id);
     }
   }, [isOpen, rutasUnicas.length, nuevaRutaId]);
+
+  if (!servicio) return null;
 
   const handleSubmit = async () => {
     // Validate required fields
