@@ -13,11 +13,16 @@ const BitacoraCambiosRutasPage = () => {
     usuario: '',
     fechaCambioInicio: today,
     fechaCambioFin: today,
+    horaCambioInicio: '00:00',
+    horaCambioFin: '23:59',
+    usarFechaServicio: false,
     fechaServicioInicio: today,
     fechaServicioFin: today,
+    horaServicioInicio: '00:00',
+    horaServicioFin: '23:59',
     numeroServicio: '',
     empresaTransporte: 'todos',
-    autobus: 'todos',
+    autobus: '',
     estado: 'todos'
   });
 

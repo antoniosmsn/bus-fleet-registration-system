@@ -53,8 +53,13 @@ export interface BitacoraCambioRutaFilter {
   usuario: string;
   fechaCambioInicio: string;
   fechaCambioFin: string;
+  horaCambioInicio: string;
+  horaCambioFin: string;
+  usarFechaServicio: boolean;
   fechaServicioInicio: string;
   fechaServicioFin: string;
+  horaServicioInicio: string;
+  horaServicioFin: string;
   numeroServicio: string;
   empresaTransporte: string;
   autobus: string;

@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Combobox } from '@/components/ui/combobox';
-import { Search, X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { TimePicker } from '@/components/ui/time-picker';
+import { Search, X, AlertCircle } from 'lucide-react';
 import { BitacoraCambioRutaFilter } from '@/types/bitacora-cambio-ruta';
 
 // Mock options for dropdowns
@@ -65,11 +67,16 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
       usuario: '',
       fechaCambioInicio: today,
       fechaCambioFin: today,
+      horaCambioInicio: '00:00',
+      horaCambioFin: '23:59',
+      usarFechaServicio: false,
       fechaServicioInicio: today,
       fechaServicioFin: today,
+      horaServicioInicio: '00:00',
+      horaServicioFin: '23:59',
       numeroServicio: '',
       empresaTransporte: 'todos',
-      autobus: 'todos',
+      autobus: '',
       estado: 'todos',
     };
     setFiltrosLocales(filtrosVacios);
@@ -81,6 +88,26 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
       ...prev,
       [campo]: valor
     }));
+  };
+
+  // Validation functions
+  const isFechaCambioValid = () => {
+    if (!filtrosLocales.fechaCambioInicio || !filtrosLocales.fechaCambioFin) return true;
+    
+    const fechaInicio = new Date(`${filtrosLocales.fechaCambioInicio}T${filtrosLocales.horaCambioInicio}`);
+    const fechaFin = new Date(`${filtrosLocales.fechaCambioFin}T${filtrosLocales.horaCambioFin}`);
+    
+    return fechaInicio <= fechaFin;
+  };
+
+  const isFechaServicioValid = () => {
+    if (!filtrosLocales.usarFechaServicio) return true;
+    if (!filtrosLocales.fechaServicioInicio || !filtrosLocales.fechaServicioFin) return true;
+    
+    const fechaInicio = new Date(`${filtrosLocales.fechaServicioInicio}T${filtrosLocales.horaServicioInicio}`);
+    const fechaFin = new Date(`${filtrosLocales.fechaServicioFin}T${filtrosLocales.horaServicioFin}`);
+    
+    return fechaInicio <= fechaFin;
   };
 
   // Calculate active filters for display
@@ -103,9 +130,8 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
     const empresaLabel = empresasOptions.find(e => e.value === filtrosLocales.empresaTransporte)?.label;
     activeFilters.push(`Empresa: ${empresaLabel}`);
   }
-  if (filtrosLocales.autobus && filtrosLocales.autobus !== 'todos') {
-    const autobusLabel = autobusesOptions.find(a => a.value === filtrosLocales.autobus)?.label;
-    activeFilters.push(`Autobús: ${autobusLabel}`);
+  if (filtrosLocales.autobus && filtrosLocales.autobus.trim()) {
+    activeFilters.push(`Autobús: ${filtrosLocales.autobus}`);
   }
   if (filtrosLocales.estado && filtrosLocales.estado !== 'todos') {
     const estadoLabel = estadosOptions.find(e => e.value === filtrosLocales.estado)?.label;
@@ -180,53 +206,117 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
           </TabsContent>
 
           <TabsContent value="fechas" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              {/* Fecha del Cambio */}
               <div className="space-y-4">
                 <h4 className="font-medium text-sm text-muted-foreground">Fecha del Cambio</h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="fechaCambioInicio">Desde</Label>
+                    <Label htmlFor="fechaCambioInicio">Fecha Desde</Label>
                     <Input
                       id="fechaCambioInicio"
                       type="date"
                       value={filtrosLocales.fechaCambioInicio}
                       onChange={(e) => updateFiltro('fechaCambioInicio', e.target.value)}
+                      className={!isFechaCambioValid() ? "border-destructive" : ""}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fechaCambioFin">Hasta</Label>
+                    <Label htmlFor="fechaCambioFin">Fecha Hasta</Label>
                     <Input
                       id="fechaCambioFin"
                       type="date"
                       value={filtrosLocales.fechaCambioFin}
                       onChange={(e) => updateFiltro('fechaCambioFin', e.target.value)}
+                      className={!isFechaCambioValid() ? "border-destructive" : ""}
                     />
                   </div>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="horaCambioInicio">Hora Desde</Label>
+                    <TimePicker
+                      value={filtrosLocales.horaCambioInicio}
+                      onValueChange={(value) => updateFiltro('horaCambioInicio', value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="horaCambioFin">Hora Hasta</Label>
+                    <TimePicker
+                      value={filtrosLocales.horaCambioFin}
+                      onValueChange={(value) => updateFiltro('horaCambioFin', value)}
+                    />
+                  </div>
+                </div>
+                {!isFechaCambioValid() && (
+                  <div className="flex items-center gap-2 text-sm text-destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    La fecha/hora inicial no puede ser mayor a la final
+                  </div>
+                )}
               </div>
               
+              {/* Fecha del Servicio */}
               <div className="space-y-4">
-                <h4 className="font-medium text-sm text-muted-foreground">Fecha del Servicio</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fechaServicioInicio">Desde</Label>
-                    <Input
-                      id="fechaServicioInicio"
-                      type="date"
-                      value={filtrosLocales.fechaServicioInicio}
-                      onChange={(e) => updateFiltro('fechaServicioInicio', e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="fechaServicioFin">Hasta</Label>
-                    <Input
-                      id="fechaServicioFin"
-                      type="date"
-                      value={filtrosLocales.fechaServicioFin}
-                      onChange={(e) => updateFiltro('fechaServicioFin', e.target.value)}
-                    />
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="usarFechaServicio"
+                    checked={filtrosLocales.usarFechaServicio}
+                    onCheckedChange={(checked) => updateFiltro('usarFechaServicio', checked)}
+                  />
+                  <Label htmlFor="usarFechaServicio" className="font-medium text-sm text-muted-foreground">
+                    Filtrar por Fecha del Servicio
+                  </Label>
                 </div>
+                
+                {filtrosLocales.usarFechaServicio && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="fechaServicioInicio">Fecha Desde</Label>
+                        <Input
+                          id="fechaServicioInicio"
+                          type="date"
+                          value={filtrosLocales.fechaServicioInicio}
+                          onChange={(e) => updateFiltro('fechaServicioInicio', e.target.value)}
+                          className={!isFechaServicioValid() ? "border-destructive" : ""}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="fechaServicioFin">Fecha Hasta</Label>
+                        <Input
+                          id="fechaServicioFin"
+                          type="date"
+                          value={filtrosLocales.fechaServicioFin}
+                          onChange={(e) => updateFiltro('fechaServicioFin', e.target.value)}
+                          className={!isFechaServicioValid() ? "border-destructive" : ""}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="horaServicioInicio">Hora Desde</Label>
+                        <TimePicker
+                          value={filtrosLocales.horaServicioInicio}
+                          onValueChange={(value) => updateFiltro('horaServicioInicio', value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="horaServicioFin">Hora Hasta</Label>
+                        <TimePicker
+                          value={filtrosLocales.horaServicioFin}
+                          onValueChange={(value) => updateFiltro('horaServicioFin', value)}
+                        />
+                      </div>
+                    </div>
+                    {!isFechaServicioValid() && (
+                      <div className="flex items-center gap-2 text-sm text-destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        La fecha/hora inicial no puede ser mayor a la final
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </TabsContent>
@@ -256,12 +346,11 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
               
               <div className="space-y-2">
                 <Label htmlFor="autobus">Autobús</Label>
-                <Combobox
-                  options={autobusesOptions}
+                <Input
+                  id="autobus"
+                  placeholder="Buscar autobús..."
                   value={filtrosLocales.autobus}
-                  onValueChange={(value) => updateFiltro('autobus', value)}
-                  placeholder="Seleccionar autobús"
-                  searchPlaceholder="Buscar autobús..."
+                  onChange={(e) => updateFiltro('autobus', e.target.value)}
                 />
               </div>
               
