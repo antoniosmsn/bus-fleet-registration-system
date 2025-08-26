@@ -23,29 +23,26 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   // Filter available routes by transport company, fallback to all routes if none found
   const rutasDisponibles = React.useMemo(() => {
-    if (!servicio) return [];
+    console.log('Modal abierto:', isOpen);
+    console.log('Servicio:', servicio);
+    console.log('Total de ramales en mock:', mockRamales.length);
     
-    let rutas = mockRamales.filter(ramal => 
-      ramal.empresaTransporte === servicio.empresaTransporte
-    );
-
-    // If no routes found for this company, show all routes as fallback
-    if (rutas.length === 0) {
-      rutas = mockRamales.slice(0, 15); // Show first 15 routes as fallback
-    }
-
-    return rutas;
-  }, [servicio]);
+    // Por ahora mostrar siempre las primeras 10 rutas para testing
+    const rutasParaMostrar = mockRamales.slice(0, 10);
+    console.log('Rutas que se van a mostrar:', rutasParaMostrar);
+    
+    return rutasParaMostrar;
+  }, [servicio, isOpen]);
 
   // Get unique route names for the selector (showing all available routes)
   const rutasUnicas = React.useMemo(() => {
-    return rutasDisponibles.reduce((acc, ramal) => {
-      const yaExiste = acc.find(r => r.nombre === ramal.nombre && r.sentido === ramal.sentido);
-      if (!yaExiste) {
-        acc.push(ramal);
-      }
-      return acc;
-    }, [] as typeof rutasDisponibles);
+    console.log('Rutas disponibles:', rutasDisponibles);
+    const rutas = rutasDisponibles.map((ruta, index) => ({
+      ...ruta,
+      displayName: `${ruta.nombre} - ${ruta.sentido === 'ingreso' ? 'Ingreso' : 'Salida'}`
+    }));
+    console.log('Rutas únicas procesadas:', rutas);
+    return rutas;
   }, [rutasDisponibles]);
 
   // Set default route when modal opens
