@@ -11,15 +11,13 @@ import { mockMantenimientos, mockCategoriasMantenimiento } from '@/data/mockMant
 import { mockTransportistas } from '@/data/mockTransportistas';
 import { registrarAcceso } from '@/services/bitacoraService';
 import { toast } from '@/hooks/use-toast';
-
 const ITEMS_PER_PAGE = 10;
-
 export default function MantenimientoIndex() {
   const [filtros, setFiltros] = useState<MantenimientoFilter>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Simulación de permisos de usuario
   const [isTransportistaUser] = useState(false); // En implementación real, obtener del contexto de auth
   const [transportistaUsuario] = useState<string | undefined>(undefined);
@@ -30,7 +28,7 @@ export default function MantenimientoIndex() {
   }, []);
 
   // Filtrar mantenimientos según los criterios
-  const filteredMantenimientos = mockMantenimientos.filter((mantenimiento) => {
+  const filteredMantenimientos = mockMantenimientos.filter(mantenimiento => {
     // Filtro por rango de fechas
     if (filtros.fechaInicio && mantenimiento.fechaMantenimiento < filtros.fechaInicio) {
       return false;
@@ -62,36 +60,32 @@ export default function MantenimientoIndex() {
     if (filtros.transportista && mantenimiento.transportista.id !== filtros.transportista) {
       return false;
     }
-
     return true;
   });
 
   // Paginación
   const totalPages = Math.ceil(filteredMantenimientos.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedMantenimientos = filteredMantenimientos.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
-
+  const paginatedMantenimientos = filteredMantenimientos.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   const handleFiltrosChange = (newFiltros: MantenimientoFilter) => {
     setFiltros(newFiltros);
     setCurrentPage(1); // Reset to first page when filters change
     setError(null);
-    
+
     // Simular carga
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 500);
   };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     // Scroll to top when changing pages
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
-
   const handleRetry = () => {
     setError(null);
     setLoading(true);
@@ -100,73 +94,42 @@ export default function MantenimientoIndex() {
       setLoading(false);
       toast({
         title: "Datos actualizados",
-        description: "La información se ha cargado correctamente",
+        description: "La información se ha cargado correctamente"
       });
     }, 1000);
   };
 
   // Filtros de transportistas según permisos
-  const availableTransportistas = isTransportistaUser 
-    ? mockTransportistas.filter(t => t.id === transportistaUsuario)
-    : mockTransportistas;
-
-  return (
-    <Layout>
+  const availableTransportistas = isTransportistaUser ? mockTransportistas.filter(t => t.id === transportistaUsuario) : mockTransportistas;
+  return <Layout>
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Mantenimiento de Autobuses</h1>
+          <h1 className="text-2xl font-bold">Mantenimiento de Vehículos</h1>
         </div>
 
-        {error && (
-          <Alert variant="destructive">
+        {error && <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error temporal</AlertTitle>
             <AlertDescription className="flex items-center justify-between">
               <span>No se pudieron cargar los datos. Por favor, inténtelo de nuevo.</span>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRetry}
-                className="ml-4"
-              >
+              <Button variant="outline" size="sm" onClick={handleRetry} className="ml-4">
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Reintentar
               </Button>
             </AlertDescription>
-          </Alert>
-        )}
+          </Alert>}
 
-        <MantenimientoFilters
-          filtros={filtros}
-          onFiltrosChange={handleFiltrosChange}
-          categorias={mockCategoriasMantenimiento}
-          transportistas={availableTransportistas}
-          isTransportistaUser={isTransportistaUser}
-          transportistaUsuario={transportistaUsuario}
-        />
+        <MantenimientoFilters filtros={filtros} onFiltrosChange={handleFiltrosChange} categorias={mockCategoriasMantenimiento} transportistas={availableTransportistas} isTransportistaUser={isTransportistaUser} transportistaUsuario={transportistaUsuario} />
 
-        <MantenimientoTable
-          mantenimientos={paginatedMantenimientos}
-          filtros={filtros}
-          loading={loading}
-        />
+        <MantenimientoTable mantenimientos={paginatedMantenimientos} filtros={filtros} loading={loading} />
 
-        <MantenimientoPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
+        <MantenimientoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
 
         {/* Información de resultados */}
-        {!loading && !error && (
-          <div className="text-center text-sm text-muted-foreground">
+        {!loading && !error && <div className="text-center text-sm text-muted-foreground">
             Mostrando {startIndex + 1} - {Math.min(startIndex + ITEMS_PER_PAGE, filteredMantenimientos.length)} de {filteredMantenimientos.length} registros
-            {filteredMantenimientos.length !== mockMantenimientos.length && (
-              <span> (filtrados de {mockMantenimientos.length} totales)</span>
-            )}
-          </div>
-        )}
+            {filteredMantenimientos.length !== mockMantenimientos.length && <span> (filtrados de {mockMantenimientos.length} totales)</span>}
+          </div>}
       </div>
-    </Layout>
-  );
+    </Layout>;
 }
