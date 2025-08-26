@@ -46,20 +46,38 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
         }
       }
       
-      // Filter by fecha cambio range
-      if (filtros.fechaCambioInicio && bitacora.fechaCambio < filtros.fechaCambioInicio) {
-        return false;
+      // Filter by fecha cambio range with time
+      if (filtros.fechaCambioInicio && filtros.horaCambioInicio) {
+        const fechaInicioCompleta = `${filtros.fechaCambioInicio}T${filtros.horaCambioInicio}:00`;
+        const fechaCambioCompleta = `${bitacora.fechaCambio}T00:00:00`;
+        if (fechaCambioCompleta < fechaInicioCompleta) {
+          return false;
+        }
       }
-      if (filtros.fechaCambioFin && bitacora.fechaCambio > filtros.fechaCambioFin) {
-        return false;
+      if (filtros.fechaCambioFin && filtros.horaCambioFin) {
+        const fechaFinCompleta = `${filtros.fechaCambioFin}T${filtros.horaCambioFin}:59`;
+        const fechaCambioCompleta = `${bitacora.fechaCambio}T23:59:59`;
+        if (fechaCambioCompleta > fechaFinCompleta) {
+          return false;
+        }
       }
       
-      // Filter by fecha servicio range
-      if (filtros.fechaServicioInicio && bitacora.fechaServicio < filtros.fechaServicioInicio) {
-        return false;
-      }
-      if (filtros.fechaServicioFin && bitacora.fechaServicio > filtros.fechaServicioFin) {
-        return false;
+      // Filter by fecha servicio range with time (only if checkbox is checked)
+      if (filtros.usarFechaServicio) {
+        if (filtros.fechaServicioInicio && filtros.horaServicioInicio) {
+          const fechaInicioCompleta = `${filtros.fechaServicioInicio}T${filtros.horaServicioInicio}:00`;
+          const fechaServicioCompleta = `${bitacora.fechaServicio}T00:00:00`;
+          if (fechaServicioCompleta < fechaInicioCompleta) {
+            return false;
+          }
+        }
+        if (filtros.fechaServicioFin && filtros.horaServicioFin) {
+          const fechaFinCompleta = `${filtros.fechaServicioFin}T${filtros.horaServicioFin}:59`;
+          const fechaServicioCompleta = `${bitacora.fechaServicio}T23:59:59`;
+          if (fechaServicioCompleta > fechaFinCompleta) {
+            return false;
+          }
+        }
       }
       
       // Filter by numero servicio
@@ -77,9 +95,14 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
         return false;
       }
       
-      // Filter by autobus
-      if (filtros.autobus !== 'todos' && bitacora.autobus.id !== filtros.autobus) {
-        return false;
+      // Filter by autobus (text search)
+      if (filtros.autobus && filtros.autobus.trim()) {
+        const autobusText = filtros.autobus.toLowerCase();
+        const matchNumero = bitacora.autobus.numero.toLowerCase().includes(autobusText);
+        const matchPlaca = bitacora.autobus.placa.toLowerCase().includes(autobusText);
+        if (!matchNumero && !matchPlaca) {
+          return false;
+        }
       }
       
       // Filter by estado
