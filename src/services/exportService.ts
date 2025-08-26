@@ -191,7 +191,53 @@ export const exportAlarmasToExcel = async (alarmas: AlarmaRecord[]): Promise<voi
   alert(`Exportando ${alarmas.length} alarmas generadas a Excel (${timestamp})...`);
 };
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' = 'conductores') => {
+// Mantenimiento export functionality
+export const exportMantenimientoToPDF = async (mantenimientos: any[], filtros?: any) => {
+  console.log('Exportando mantenimientos a PDF...', { count: mantenimientos.length, filtros });
+  
+  // Simular generación del PDF
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  const formattedData = formatMantenimientoForExport(mantenimientos);
+  console.log('PDF de mantenimientos generado:', formattedData.slice(0, 2));
+  
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  const fileName = `Mantenimientos_${timestamp}.pdf`;
+  alert(`Se generaría el archivo ${fileName} con ${mantenimientos.length} registros de mantenimiento.`);
+  
+  logExportAction('PDF', 'mantenimiento');
+}
+
+export const exportMantenimientoToExcel = async (mantenimientos: any[], filtros?: any) => {
+  console.log('Exportando mantenimientos a Excel...', { count: mantenimientos.length, filtros });
+  
+  // Simular generación del Excel
+  await new Promise(resolve => setTimeout(resolve, 1200));
+  
+  const formattedData = formatMantenimientoForExport(mantenimientos);
+  console.log('Excel de mantenimientos generado:', formattedData.slice(0, 2));
+  
+  const timestamp = format(new Date(), "dd-MM-yyyy_HH-mm", { locale: es });
+  const fileName = `Mantenimientos_${timestamp}.xlsx`;
+  alert(`Se generaría el archivo ${fileName} con ${mantenimientos.length} registros de mantenimiento.`);
+  
+  logExportAction('Excel', 'mantenimiento');
+}
+
+const formatMantenimientoForExport = (mantenimientos: any[]) => {
+  return mantenimientos.map(m => ({
+    'Fecha del Mantenimiento': new Date(m.fechaMantenimiento).toLocaleDateString('es-ES'),
+    'Placa': m.placa,
+    'Categoría': m.categoria.nombre,
+    'Detalle del Mantenimiento': m.detalle,
+    'Transportista': `${m.transportista.codigo} - ${m.transportista.nombre}`,
+    'Costo': m.costo ? `₡${m.costo.toLocaleString()}` : 'N/A',
+    'Proveedor': m.proveedor || 'N/A',
+    'Kilometraje': m.kilometraje ? `${m.kilometraje.toLocaleString()} km` : 'N/A'
+  }));
+}
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación

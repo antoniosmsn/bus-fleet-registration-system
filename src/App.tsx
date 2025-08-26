@@ -47,6 +47,7 @@ import RecorridosPrevios from "./pages/rastreo/RecorridosPrevios";
 import TelemetriaListado from "./pages/telemetria/Listado";
 import AlarmasListado from "./pages/alarmas/Listado";
 import AlarmasConductorListado from "./pages/alarmas-conductor/Listado";
+import MantenimientoIndex from "./pages/mantenimiento/Index";
 
 // Placeholder pages for new routes
 import PlaceholderPage from "./pages/PlaceholderPage";
@@ -103,6 +104,7 @@ const App = () => (
             <Route path="/alarmas-conductor/listado" element={<AlarmasConductorListado />} />
             <Route path="/rastreo/tiempo-real" element={<TiempoReal />} />
             <Route path="/rastreo/recorridos-previos" element={<RecorridosPrevios />} />
+            <Route path="/mantenimiento" element={<MantenimientoIndex />} />
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
             
             {/* New routes for sidebar navigation */}
