@@ -17,7 +17,7 @@ interface CambioRutaModalProps {
 
 const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
-  const [nuevoSentido, setNuevoSentido] = useState<SentidoRuta>('ingreso');
+  const [nuevoSentido, setNuevoSentido] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -28,19 +28,30 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
     ramal.empresaTransporte === servicio.empresaTransporte
   );
 
-  // Get unique route names for the selector
+  // Get unique route names for the selector (showing all available routes)
   const rutasUnicas = rutasDisponibles.reduce((acc, ramal) => {
-    if (!acc.find(r => r.nombre === ramal.nombre)) {
+    const yaExiste = acc.find(r => r.nombre === ramal.nombre && r.sentido === ramal.sentido);
+    if (!yaExiste) {
       acc.push(ramal);
     }
     return acc;
   }, [] as typeof rutasDisponibles);
 
   const handleSubmit = async () => {
-    if (!nuevaRutaId || !nuevoSentido) {
+    // Validate required fields
+    if (!nuevaRutaId) {
       toast({
         title: "Error",
-        description: "Debe seleccionar una ruta y sentido",
+        description: "Debe seleccionar una ruta",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!nuevoSentido) {
+      toast({
+        title: "Error", 
+        description: "Debe seleccionar un sentido",
         variant: "destructive",
       });
       return;
@@ -100,7 +111,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
         // Reset form and close modal
         setNuevaRutaId('');
-        setNuevoSentido('ingreso');
+        setNuevoSentido('');
         onClose();
       } else {
         throw new Error('Error simulado del servidor');
@@ -118,7 +129,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   const handleCancel = () => {
     setNuevaRutaId('');
-    setNuevoSentido('ingreso');
+    setNuevoSentido('');
     onClose();
   };
 
@@ -145,26 +156,33 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
           {/* Nueva ruta selector */}
           <div className="space-y-2">
-            <Label htmlFor="nueva-ruta">Nueva Ruta</Label>
-            <Select value={nuevaRutaId} onValueChange={setNuevaRutaId}>
-              <SelectTrigger>
+            <Label htmlFor="nueva-ruta">Nueva Ruta <span className="text-destructive">*</span></Label>
+            <Select value={nuevaRutaId} onValueChange={setNuevaRutaId} required>
+              <SelectTrigger className={!nuevaRutaId ? "border-destructive" : ""}>
                 <SelectValue placeholder="Seleccionar nueva ruta" />
               </SelectTrigger>
               <SelectContent>
-                {rutasUnicas.map((ruta) => (
-                  <SelectItem key={ruta.id} value={ruta.id}>
-                    {ruta.nombre} {ruta.empresaCliente ? `(${ruta.empresaCliente})` : ''}
+                {rutasUnicas.length > 0 ? (
+                  rutasUnicas.map((ruta) => (
+                    <SelectItem key={ruta.id} value={ruta.id}>
+                      {ruta.nombre} - {ruta.sentido === 'ingreso' ? 'Ingreso' : 'Salida'}
+                      {ruta.empresaCliente ? ` (${ruta.empresaCliente})` : ''}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="no-routes" disabled>
+                    No hay rutas disponibles para esta empresa
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
           </div>
 
           {/* Sentido selector */}
           <div className="space-y-2">
-            <Label htmlFor="sentido">Sentido</Label>
-            <Select value={nuevoSentido} onValueChange={(value: SentidoRuta) => setNuevoSentido(value)}>
-              <SelectTrigger>
+            <Label htmlFor="sentido">Sentido <span className="text-destructive">*</span></Label>
+            <Select value={nuevoSentido} onValueChange={setNuevoSentido} required>
+              <SelectTrigger className={!nuevoSentido ? "border-destructive" : ""}>
                 <SelectValue placeholder="Seleccionar sentido" />
               </SelectTrigger>
               <SelectContent>
@@ -179,7 +197,10 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={isSubmitting || !nuevaRutaId || !nuevoSentido}
+          >
             {isSubmitting ? 'Enviando...' : 'Solicitar Cambio'}
           </Button>
         </DialogFooter>
