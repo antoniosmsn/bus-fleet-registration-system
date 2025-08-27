@@ -238,10 +238,7 @@ const CategoriasMantenimiento = () => {
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Gestión de Categorías</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             {/* Filtros y Acciones */}
             <div className="flex flex-col md:flex-row gap-4 items-end">
               <div className="flex-1">
