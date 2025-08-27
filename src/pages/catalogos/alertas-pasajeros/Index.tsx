@@ -20,6 +20,10 @@ export default function ListadoTiposAlertaPasajero() {
     nombre: '',
     estado: 'todos'
   });
+  const [filtrosAplicados, setFiltrosAplicados] = useState<AlertaPasajeroFiltros>({
+    nombre: '',
+    estado: 'todos'
+  });
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(10);
   const [tipoParaCambioEstado, setTipoParaCambioEstado] = useState<TipoAlertaPasajero | null>(null);
@@ -32,14 +36,14 @@ export default function ListadoTiposAlertaPasajero() {
 
   const tiposFiltrados = useMemo(() => {
     return tipos.filter(tipo => {
-      const cumpleNombre = tipo.nombre.toLowerCase().includes(filtros.nombre.toLowerCase());
-      const cumpleEstado = filtros.estado === 'todos' || 
-        (filtros.estado === 'activos' && tipo.activo) ||
-        (filtros.estado === 'inactivos' && !tipo.activo);
+      const cumpleNombre = tipo.nombre.toLowerCase().includes(filtrosAplicados.nombre.toLowerCase());
+      const cumpleEstado = filtrosAplicados.estado === 'todos' || 
+        (filtrosAplicados.estado === 'activos' && tipo.activo) ||
+        (filtrosAplicados.estado === 'inactivos' && !tipo.activo);
       
       return cumpleNombre && cumpleEstado;
     });
-  }, [tipos, filtros]);
+  }, [tipos, filtrosAplicados]);
 
   const tiposPaginados = useMemo(() => {
     const inicio = (paginaActual - 1) * itemsPorPagina;
@@ -48,13 +52,20 @@ export default function ListadoTiposAlertaPasajero() {
 
   const totalPaginas = Math.ceil(tiposFiltrados.length / itemsPorPagina);
 
-  // Reset página actual cuando cambian los filtros o tamaño de página
+  // Reset página actual cuando cambian los filtros aplicados o tamaño de página
   useEffect(() => {
     setPaginaActual(1);
-  }, [filtros, itemsPorPagina]);
+  }, [filtrosAplicados, itemsPorPagina]);
+
+  const aplicarFiltros = () => {
+    setFiltrosAplicados(filtros);
+    setPaginaActual(1);
+  };
 
   const limpiarFiltros = () => {
-    setFiltros({ nombre: '', estado: 'todos' });
+    const filtrosVacios = { nombre: '', estado: 'todos' as const };
+    setFiltros(filtrosVacios);
+    setFiltrosAplicados(filtrosVacios);
     setPaginaActual(1);
   };
 
@@ -114,6 +125,7 @@ export default function ListadoTiposAlertaPasajero() {
                 value={filtros.nombre}
                 onChange={(e) => setFiltros(prev => ({ ...prev, nombre: e.target.value }))}
                 className="pl-10"
+                onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
               />
             </div>
             <Select 
@@ -131,6 +143,10 @@ export default function ListadoTiposAlertaPasajero() {
                 <SelectItem value="inactivos">Inactivos</SelectItem>
               </SelectContent>
             </Select>
+            <Button onClick={aplicarFiltros}>
+              <Search className="h-4 w-4" />
+              Buscar
+            </Button>
             <Button variant="outline" onClick={limpiarFiltros}>
               <RotateCcw className="h-4 w-4" />
               Limpiar
