@@ -141,7 +141,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md z-[9998]">
         <DialogHeader>
           <DialogTitle>Cambio de Ruta</DialogTitle>
           <DialogDescription>
@@ -167,7 +167,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
               <SelectTrigger className={!nuevaRutaId ? "border-destructive" : ""}>
                 <SelectValue placeholder="Seleccionar nueva ruta" />
               </SelectTrigger>
-              <SelectContent className="z-[9999]">
+              <SelectContent className="z-[999999] bg-popover" sideOffset={5} position="popper">
                 {rutasUnicas.length > 0 ? (
                   rutasUnicas.map((ruta) => (
                     <SelectItem key={ruta.id} value={ruta.id}>
