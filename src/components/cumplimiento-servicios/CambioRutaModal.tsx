@@ -17,7 +17,7 @@ interface CambioRutaModalProps {
 
 const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
-  const [nuevoSentido, setNuevoSentido] = useState<string>('ingreso');
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -65,14 +65,6 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       return;
     }
 
-    if (!nuevoSentido) {
-      toast({
-        title: "Error", 
-        description: "Debe seleccionar un sentido",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const rutaSeleccionada = mockRamales.find(r => r.id === nuevaRutaId);
     if (!rutaSeleccionada) {
@@ -84,15 +76,15 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       return;
     }
 
-    // Validate that it's not the same route and direction as current
+    // Validate that it's not the same route as current
     const rutaActual = mockRamales.find(r => 
       r.nombre === servicio.ramal && r.empresaTransporte === servicio.empresaTransporte
     );
 
-    if (rutaActual && rutaSeleccionada.nombre === rutaActual.nombre && nuevoSentido === rutaActual.sentido) {
+    if (rutaActual && rutaSeleccionada.nombre === rutaActual.nombre) {
       toast({
         title: "Error",
-        description: "Debe seleccionar una ruta y/o sentido diferente al actual",
+        description: "Debe seleccionar una ruta diferente a la actual",
         variant: "destructive",
       });
       return;
@@ -114,7 +106,6 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           numeroServicio: servicio.numeroServicio,
           rutaOriginal: servicio.ramal,
           rutaNueva: rutaSeleccionada.nombre,
-          sentidoNuevo: nuevoSentido,
           empresaTransporte: servicio.empresaTransporte,
           autobus: servicio.autobus,
           usuario: 'Usuario actual' // In real implementation, get from auth context
@@ -128,7 +119,6 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
         // Reset form and close modal
         setNuevaRutaId('');
-        setNuevoSentido('ingreso');
         onClose();
       } else {
         throw new Error('Error simulado del servidor');
@@ -146,7 +136,6 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   const handleCancel = () => {
     setNuevaRutaId('');
-    setNuevoSentido('ingreso');
     onClose();
   };
 
@@ -178,7 +167,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
               <SelectTrigger className={!nuevaRutaId ? "border-destructive" : ""}>
                 <SelectValue placeholder="Seleccionar nueva ruta" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[9999]">
                 {rutasUnicas.length > 0 ? (
                   rutasUnicas.map((ruta) => (
                     <SelectItem key={ruta.id} value={ruta.id}>
@@ -194,20 +183,6 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
               </SelectContent>
             </Select>
           </div>
-
-          {/* Sentido selector */}
-          <div className="space-y-2">
-            <Label htmlFor="sentido">Sentido <span className="text-destructive">*</span></Label>
-            <Select value={nuevoSentido} onValueChange={setNuevoSentido} required>
-              <SelectTrigger className={!nuevoSentido ? "border-destructive" : ""}>
-                <SelectValue placeholder="Seleccionar sentido" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ingreso">Ingreso</SelectItem>
-                <SelectItem value="salida">Salida</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
 
         <DialogFooter>
@@ -216,7 +191,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={isSubmitting || !nuevaRutaId || !nuevoSentido}
+            disabled={isSubmitting || !nuevaRutaId}
           >
             {isSubmitting ? 'Enviando...' : 'Solicitar Cambio'}
           </Button>
