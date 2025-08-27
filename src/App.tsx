@@ -69,6 +69,12 @@ import ZoneParametersConfig from '@/pages/configuracion/ZoneParametersConfig';
 import ParametrosIndex from '@/pages/configuracion/parametros/index';
 import ProgramacionParametros from '@/pages/programacion/ProgramacionParametros';
 import CategoriasMantenimiento from '@/pages/configuracion/CategoriasMantenimiento';
+import ConfiguracionIndex from '@/pages/configuracion/Index';
+
+// Catálogos Alertas Pasajeros
+import AlertasPasajerosIndex from '@/pages/catalogos/alertas-pasajeros/Index';
+import AlertasPasajerosRegister from '@/pages/catalogos/alertas-pasajeros/Register';
+import AlertasPasajerosEdit from '@/pages/catalogos/alertas-pasajeros/Edit';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -156,10 +162,16 @@ function App() {
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
             
             {/* Configuración routes */}
+            <Route path="/configuracion" element={<ConfiguracionIndex />} />
             <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
             <Route path="/configuracion/zone-parameters" element={<ZoneParametersConfig />} />
             <Route path="/configuracion/parametros" element={<ParametrosIndex />} />
             <Route path="/configuracion/categorias-mantenimiento" element={<CategoriasMantenimiento />} />
+            
+            {/* Catálogos Alertas Pasajeros routes */}
+            <Route path="/catalogos/alertas-pasajeros" element={<AlertasPasajerosIndex />} />
+            <Route path="/catalogos/alertas-pasajeros/registrar" element={<AlertasPasajerosRegister />} />
+            <Route path="/catalogos/alertas-pasajeros/editar/:id" element={<AlertasPasajerosEdit />} />
             
             {/* Programación routes */}
             <Route path="/programacion/parametros" element={<ProgramacionParametros />} />

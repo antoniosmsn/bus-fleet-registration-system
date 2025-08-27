@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +37,11 @@ const SidebarComponent = () => {
       title: "Categorías de mantenimiento", 
       url: "/configuracion/categorias-mantenimiento", 
       icon: Tags 
+    },
+    { 
+      title: "Catálogos de alertas de pasajeros", 
+      url: "/catalogos/alertas-pasajeros", 
+      icon: BookOpen 
     },
     { 
       title: "Perfiles y Permisos", 
