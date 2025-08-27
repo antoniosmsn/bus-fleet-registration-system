@@ -161,7 +161,7 @@ function App() {
             <Route path="/programacion/parametros" element={<ProgramacionParametros />} />
             
             {/* Placeholder routes */}
-            <Route path="/placeholder" element={<PlaceholderPage />} />
+            <Route path="/placeholder" element={<PlaceholderPage title="Página en Construcción" />} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
