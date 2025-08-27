@@ -95,8 +95,7 @@ export default function ListadoTiposAlertaPasajero() {
 
       <Card>
         <CardHeader>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <CardTitle>Tipos de alerta</CardTitle>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-end gap-4">
             <Button asChild>
               <Link to="/catalogos/alertas-pasajeros/registrar">
                 <Plus className="h-4 w-4" />
