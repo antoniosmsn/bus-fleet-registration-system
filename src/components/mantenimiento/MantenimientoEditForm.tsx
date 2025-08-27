@@ -282,63 +282,51 @@ export function MantenimientoEditForm({
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Placa del Autobús *</FormLabel>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="Buscar por placa (mín. 2 caracteres)..."
-                    value={placaBusqueda}
-                    onChange={(e) => setPlacaBusqueda(e.target.value)}
-                    className="w-full"
-                  />
-                  <Popover open={openPlaca} onOpenChange={setOpenPlaca}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={openPlaca}
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                          disabled={!watchTransportista}
-                        >
-                          {field.value && watchTransportista
-                            ? mockAutobuses.find(bus => bus.id.toString() === field.value)?.placa
-                            : !watchTransportista 
-                              ? "Seleccione primero un transportista"
-                              : "Seleccionar placa"}
-                          <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-full p-0">
-                      <Command>
-                        <CommandList>
-                          <CommandEmpty>
-                            {placaBusqueda.length < 2 
-                              ? "Escriba al menos 2 caracteres para buscar"
-                              : "No se encontraron autobuses"
-                            }
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {filteredAutobuses.map((bus) => (
-                              <CommandItem
-                                key={bus.id}
-                                value={bus.placa}
-                                onSelect={() => {
-                                  form.setValue("placaId", bus.id.toString());
-                                  setOpenPlaca(false);
-                                }}
-                              >
-                                {bus.placa}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                <Popover open={openPlaca} onOpenChange={setOpenPlaca}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={openPlaca}
+                        className={cn(
+                          "w-full justify-between",
+                          !field.value && "text-muted-foreground"
+                        )}
+                        disabled={!watchTransportista}
+                      >
+                        {field.value && watchTransportista
+                          ? mockAutobuses.find(bus => bus.id.toString() === field.value)?.placa
+                          : !watchTransportista 
+                            ? "Seleccione primero un transportista"
+                            : "Seleccionar placa"}
+                        <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Buscar por placa..." />
+                      <CommandList>
+                        <CommandEmpty>No se encontraron autobuses</CommandEmpty>
+                        <CommandGroup>
+                          {availableAutobuses.map((bus) => (
+                            <CommandItem
+                              key={bus.id}
+                              value={bus.placa}
+                              onSelect={() => {
+                                form.setValue("placaId", bus.id.toString());
+                                setOpenPlaca(false);
+                              }}
+                            >
+                              {bus.placa}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}
