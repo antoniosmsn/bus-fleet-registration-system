@@ -21,9 +21,9 @@ export default function ListadoTiposAlertaPasajero() {
     estado: 'todos'
   });
   const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(10);
   const [tipoParaCambioEstado, setTipoParaCambioEstado] = useState<TipoAlertaPasajero | null>(null);
   const [accionEstado, setAccionEstado] = useState<'activar' | 'inactivar'>('activar');
-  const itemsPorPagina = 10;
   const { toast } = useToast();
 
   useEffect(() => {
@@ -47,6 +47,11 @@ export default function ListadoTiposAlertaPasajero() {
   }, [tiposFiltrados, paginaActual]);
 
   const totalPaginas = Math.ceil(tiposFiltrados.length / itemsPorPagina);
+
+  // Reset página actual cuando cambian los filtros o tamaño de página
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [filtros, itemsPorPagina]);
 
   const limpiarFiltros = () => {
     setFiltros({ nombre: '', estado: 'todos' });
@@ -187,20 +192,67 @@ export default function ListadoTiposAlertaPasajero() {
             </div>
           </div>
 
-          {totalPaginas > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-muted-foreground">
-                Mostrando {((paginaActual - 1) * itemsPorPagina) + 1} a {Math.min(paginaActual * itemsPorPagina, tiposFiltrados.length)} de {tiposFiltrados.length} tipos de alerta
-              </p>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
-                      className={paginaActual <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((pagina) => (
+          <div className="flex flex-col gap-4 sm:flex-row justify-between items-center mt-6">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground">Registros por página:</span>
+              <Select
+                value={itemsPorPagina.toString()}
+                onValueChange={(value) => {
+                  setItemsPorPagina(parseInt(value));
+                  setPaginaActual(1);
+                }}
+              >
+                <SelectTrigger className="w-[80px]">
+                  <SelectValue placeholder={itemsPorPagina} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="text-sm text-muted-foreground">
+              Mostrando {((paginaActual - 1) * itemsPorPagina) + 1} - {Math.min(paginaActual * itemsPorPagina, tiposFiltrados.length)} de {tiposFiltrados.length} tipos de alerta
+            </div>
+            
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
+                    className={paginaActual <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {(() => {
+                  const getPageNumbers = () => {
+                    const pageNumbers = [];
+                    const maxVisiblePages = 5;
+                    
+                    if (totalPaginas <= maxVisiblePages) {
+                      for (let i = 1; i <= totalPaginas; i++) {
+                        pageNumbers.push(i);
+                      }
+                    } else {
+                      let startPage = Math.max(1, paginaActual - Math.floor(maxVisiblePages / 2));
+                      let endPage = Math.min(totalPaginas, startPage + maxVisiblePages - 1);
+                      
+                      if (endPage === totalPaginas) {
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                      }
+                      
+                      for (let i = startPage; i <= endPage; i++) {
+                        pageNumbers.push(i);
+                      }
+                    }
+                    
+                    return pageNumbers;
+                  };
+
+                  return getPageNumbers().map((pagina) => (
                     <PaginationItem key={pagina}>
                       <PaginationLink
                         onClick={() => setPaginaActual(pagina)}
@@ -210,17 +262,18 @@ export default function ListadoTiposAlertaPasajero() {
                         {pagina}
                       </PaginationLink>
                     </PaginationItem>
-                  ))}
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
-                      className={paginaActual >= totalPaginas ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
+                  ));
+                })()}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
+                    className={paginaActual >= totalPaginas ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         </CardContent>
       </Card>
 
