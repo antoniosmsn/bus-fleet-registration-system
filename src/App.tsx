@@ -68,6 +68,7 @@ import ParametrosLectura from '@/pages/configuracion/ParametrosLectura';
 import ZoneParametersConfig from '@/pages/configuracion/ZoneParametersConfig';
 import ParametrosIndex from '@/pages/configuracion/parametros/index';
 import ProgramacionParametros from '@/pages/programacion/ProgramacionParametros';
+import CategoriasMantenimiento from '@/pages/configuracion/CategoriasMantenimiento';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -158,6 +159,7 @@ function App() {
             <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
             <Route path="/configuracion/zone-parameters" element={<ZoneParametersConfig />} />
             <Route path="/configuracion/parametros" element={<ParametrosIndex />} />
+            <Route path="/configuracion/categorias-mantenimiento" element={<CategoriasMantenimiento />} />
             
             {/* Programación routes */}
             <Route path="/programacion/parametros" element={<ProgramacionParametros />} />
