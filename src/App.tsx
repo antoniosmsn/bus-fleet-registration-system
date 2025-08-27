@@ -10,6 +10,7 @@ import PlaceholderPage from '@/pages/PlaceholderPage';
 // Mantenimiento pages
 import MantenimientoIndex from '@/pages/mantenimiento/Index';
 import MantenimientoRegister from '@/pages/mantenimiento/Register';
+import MantenimientoEdit from '@/pages/mantenimiento/Edit';
 
 // Other pages (keeping existing imports)
 import BusesIndex from '@/pages/buses/Index';
@@ -82,6 +83,7 @@ function App() {
             {/* Mantenimiento routes */}
             <Route path="/mantenimiento" element={<MantenimientoIndex />} />
             <Route path="/mantenimiento/registrar" element={<MantenimientoRegister />} />
+            <Route path="/mantenimiento/editar/:id" element={<MantenimientoEdit />} />
             
             {/* Bus routes */}
             <Route path="/buses" element={<BusesIndex />} />
