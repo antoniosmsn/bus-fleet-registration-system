@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { CategoriaMantenimiento, CategoriaMantenimientoFilter } from '@/types/categoria-mantenimiento';
@@ -20,6 +21,10 @@ const CategoriasMantenimiento = () => {
   
   const [categorias, setCategorias] = useState<CategoriaMantenimiento[]>([]);
   const [filteredCategorias, setFilteredCategorias] = useState<CategoriaMantenimiento[]>([]);
+  const [paginatedCategorias, setPaginatedCategorias] = useState<CategoriaMantenimiento[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState<CategoriaMantenimientoFilter>({
     nombre: '',
     estado: 'todos'
@@ -60,7 +65,23 @@ const CategoriasMantenimiento = () => {
     filtered.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
     setFilteredCategorias(filtered);
-  }, [categorias, filters]);
+    
+    // Calcular páginas
+    const total = Math.ceil(filtered.length / pageSize);
+    setTotalPages(total);
+    
+    // Resetear a la primera página si es necesario
+    if (currentPage > total && total > 0) {
+      setCurrentPage(1);
+    }
+  }, [categorias, filters, pageSize, currentPage]);
+
+  // Efecto para paginación
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setPaginatedCategorias(filteredCategorias.slice(startIndex, endIndex));
+  }, [filteredCategorias, currentPage, pageSize]);
 
   const handleAddCategory = () => {
     const newCategory: CategoriaMantenimiento = {
@@ -73,6 +94,7 @@ const CategoriasMantenimiento = () => {
     };
     
     setCategorias(prev => [newCategory, ...prev]);
+    setCurrentPage(1); // Ir a la primera página para ver el nuevo elemento
     setEditingId(newCategory.id);
     setEditingName('');
     setHasChanges(true);
@@ -212,6 +234,56 @@ const CategoriasMantenimiento = () => {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+
+    return (
+      <div className="flex items-center justify-between mt-6">
+        <div className="text-sm text-muted-foreground">
+          Mostrando {((currentPage - 1) * pageSize) + 1} a {Math.min(currentPage * pageSize, filteredCategorias.length)} de {filteredCategorias.length} categorías
+        </div>
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+            
+            {pages.map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  onClick={() => handlePageChange(page)}
+                  isActive={currentPage === page}
+                  className="cursor-pointer"
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -287,14 +359,14 @@ const CategoriasMantenimiento = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredCategorias.length === 0 ? (
+                  {paginatedCategorias.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                         No se encontraron categorías
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredCategorias.map((categoria) => (
+                    paginatedCategorias.map((categoria) => (
                       <TableRow key={categoria.id}>
                         <TableCell>
                           {editingId === categoria.id ? (
@@ -377,6 +449,9 @@ const CategoriasMantenimiento = () => {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Paginación */}
+            {renderPagination()}
           </CardContent>
         </Card>
       </div>
