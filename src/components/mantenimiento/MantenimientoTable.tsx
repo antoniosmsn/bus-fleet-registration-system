@@ -135,9 +135,7 @@ export function MantenimientoTable({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-lg font-semibold">
-          Historial de Mantenimientos ({mantenimientos.length} registros)
-        </CardTitle>
+        <div></div>
         <div className="flex gap-2">
           <Button
             variant="outline"
