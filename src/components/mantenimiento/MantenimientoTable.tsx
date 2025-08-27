@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Download, FileText, ArrowUpDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, Download, FileText, ArrowUpDown, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -33,6 +34,11 @@ export function MantenimientoTable({
 }: MantenimientoTableProps) {
   const [sortField, setSortField] = useState<SortField>('fechaMantenimiento');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const navigate = useNavigate();
+
+  const handleEdit = (mantenimiento: MantenimientoRecord) => {
+    navigate(`/mantenimiento/editar/${mantenimiento.id}`);
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -204,6 +210,7 @@ export function MantenimientoTable({
                       <SortIcon field="transportista" />
                     </div>
                   </TableHead>
+                  <TableHead className="text-center">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -232,6 +239,16 @@ export function MantenimientoTable({
                         <div className="font-medium">{mantenimiento.transportista.codigo}</div>
                         <div className="text-muted-foreground">{mantenimiento.transportista.nombre}</div>
                       </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(mantenimiento)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
