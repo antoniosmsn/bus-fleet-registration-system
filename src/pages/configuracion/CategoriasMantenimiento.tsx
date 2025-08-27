@@ -298,7 +298,7 @@ const CategoriasMantenimiento = () => {
               <ArrowLeft className="h-4 w-4" />
               <span>Volver</span>
             </Button>
-            <h1 className="text-2xl font-bold">Categorías de Mantenimiento</h1>
+            <h1 className="text-2xl font-bold">Categorías de Mantenimiento de vehículos</h1>
           </div>
           
           {hasChanges && (
