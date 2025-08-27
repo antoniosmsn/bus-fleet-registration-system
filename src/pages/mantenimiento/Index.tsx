@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { MantenimientoFilters } from '@/components/mantenimiento/MantenimientoFilters';
 import { MantenimientoTable } from '@/components/mantenimiento/MantenimientoTable';
@@ -11,8 +12,11 @@ import { mockMantenimientos, mockCategoriasMantenimiento } from '@/data/mockMant
 import { mockTransportistas } from '@/data/mockTransportistas';
 import { registrarAcceso } from '@/services/bitacoraService';
 import { toast } from '@/hooks/use-toast';
+
 const ITEMS_PER_PAGE = 10;
+
 export default function MantenimientoIndex() {
+  const navigate = useNavigate();
   const [filtros, setFiltros] = useState<MantenimientoFilter>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -101,13 +105,25 @@ export default function MantenimientoIndex() {
 
   // Filtros de transportistas según permisos
   const availableTransportistas = isTransportistaUser ? mockTransportistas.filter(t => t.id === transportistaUsuario) : mockTransportistas;
-  return <Layout>
+
+  return (
+    <Layout>
       <div className="container mx-auto py-6 space-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Mantenimiento de Vehículos</h1>
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold">Mantenimiento de Vehículos</h1>
+          </div>
+          <Button 
+            onClick={() => navigate('/mantenimiento/registrar')}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Registrar
+          </Button>
         </div>
 
-        {error && <Alert variant="destructive">
+        {error && (
+          <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error temporal</AlertTitle>
             <AlertDescription className="flex items-center justify-between">
@@ -117,19 +133,40 @@ export default function MantenimientoIndex() {
                 Reintentar
               </Button>
             </AlertDescription>
-          </Alert>}
+          </Alert>
+        )}
 
-        <MantenimientoFilters filtros={filtros} onFiltrosChange={handleFiltrosChange} categorias={mockCategoriasMantenimiento} transportistas={availableTransportistas} isTransportistaUser={isTransportistaUser} transportistaUsuario={transportistaUsuario} />
+        <MantenimientoFilters
+          filtros={filtros}
+          onFiltrosChange={handleFiltrosChange}
+          categorias={mockCategoriasMantenimiento}
+          transportistas={availableTransportistas}
+          isTransportistaUser={isTransportistaUser}
+          transportistaUsuario={transportistaUsuario}
+        />
 
-        <MantenimientoTable mantenimientos={paginatedMantenimientos} filtros={filtros} loading={loading} />
+        <MantenimientoTable
+          mantenimientos={paginatedMantenimientos}
+          filtros={filtros}
+          loading={loading}
+        />
 
-        <MantenimientoPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+        <MantenimientoPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
 
         {/* Información de resultados */}
-        {!loading && !error && <div className="text-center text-sm text-muted-foreground">
+        {!loading && !error && (
+          <div className="text-center text-sm text-muted-foreground">
             Mostrando {startIndex + 1} - {Math.min(startIndex + ITEMS_PER_PAGE, filteredMantenimientos.length)} de {filteredMantenimientos.length} registros
-            {filteredMantenimientos.length !== mockMantenimientos.length && <span> (filtrados de {mockMantenimientos.length} totales)</span>}
-          </div>}
+            {filteredMantenimientos.length !== mockMantenimientos.length && (
+              <span> (filtrados de {mockMantenimientos.length} totales)</span>
+            )}
+          </div>
+        )}
       </div>
-    </Layout>;
+    </Layout>
+  );
 }

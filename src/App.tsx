@@ -1,125 +1,176 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import BusesIndex from "./pages/buses/Index";
-import RegisterBus from "./pages/buses/Register";
-import EditBus from "./pages/buses/Edit";
-import ZoneParametersConfig from "./pages/configuracion/parametros";
-import ParametrosLectura from "./pages/configuracion/ParametrosLectura";
-import ProgramacionParametros from "./pages/programacion/ProgramacionParametros";
-import PerfilesIndex from "./pages/perfiles/Index";
-import RegisterPerfil from "./pages/perfiles/Register";
-import PerfilPermisos from "./pages/perfiles/Permisos";
-import ConductoresIndex from "./pages/conductores/Index";
-import RegisterConductor from "./pages/conductores/Register";
-import EditConductor from "./pages/conductores/Edit";
-import GeocercasIndex from "./pages/geocercas/Index";
-import CrearGeocerca from "./pages/geocercas/Crear";
-import EditarGeocerca from "./pages/geocercas/Editar";
-import RutasIndex from "./pages/rutas/Index";
-import RegisterRuta from "./pages/rutas/Register";
-import EditRuta from "./pages/rutas/Edit";
-import ParadasIndex from "./pages/paradas/Index";
-import RegisterParada from "./pages/paradas/Register";
-import AsignacionesIndex from "./pages/asignaciones/Index";
-import RegisterAsignacion from "./pages/asignaciones/Register";
-import EditAsignacion from "./pages/asignaciones/Edit";
-import PasajerosIndex from "./pages/pasajeros/Index";
-import RegisterPasajero from "./pages/pasajeros/Register";
-import ServiciosIndex from "./pages/servicios/Index";
-import RegisterServicio from "./pages/servicios/Register";
-import EditServicio from "./pages/servicios/Edit";
-import CumplimientoServiciosPage from "./pages/servicios/CumplimientoServicios";
-import BitacoraCambiosRutasPage from "./pages/servicios/BitacoraCambiosRutas";
-import AsignacionesConductoresIndex from "./pages/asignaciones-conductores/Index";
-import AsignarConductor from "./pages/asignaciones-conductores/Asignar";
-import BitacorasLectorasIndex from "./pages/bitacoras-lectoras/Index";
-import SolicitudesTrasladoIndex from "./pages/solicitudes-traslado/Index";
-import CapacidadCumplida from "./pages/buses/CapacidadCumplida";
-import TiempoReal from "./pages/rastreo/TiempoReal";
-import RecorridosPrevios from "./pages/rastreo/RecorridosPrevios";
-import TelemetriaListado from "./pages/telemetria/Listado";
-import AlarmasListado from "./pages/alarmas/Listado";
-import AlarmasConductorListado from "./pages/alarmas-conductor/Listado";
-import MantenimientoIndex from "./pages/mantenimiento/Index";
+// Import pages
+import Index from '@/pages/Index';
+import NotFound from '@/pages/NotFound';
+import PlaceholderPage from '@/pages/PlaceholderPage';
 
-// Placeholder pages for new routes
-import PlaceholderPage from "./pages/PlaceholderPage";
+// Mantenimiento pages
+import MantenimientoIndex from '@/pages/mantenimiento/Index';
+import MantenimientoRegister from '@/pages/mantenimiento/Register';
 
+// Other pages (keeping existing imports)
+import BusesIndex from '@/pages/buses/Index';
+import BusesRegister from '@/pages/buses/Register';
+import BusesEdit from '@/pages/buses/Edit';
+import CapacidadCumplida from '@/pages/buses/CapacidadCumplida';
+import AutobusesCapacidadCumplida from '@/pages/buses/AutobusesCapacidadCumplida';
+
+import ConductoresIndex from '@/pages/conductores/Index';
+import ConductoresRegister from '@/pages/conductores/Register';
+import ConductoresEdit from '@/pages/conductores/Edit';
+
+import PasajerosIndex from '@/pages/pasajeros/Index';
+import PasajerosRegister from '@/pages/pasajeros/Register';
+import PasajerosEdit from '@/pages/pasajeros/Edit';
+
+import RutasIndex from '@/pages/rutas/Index';
+import RutasRegister from '@/pages/rutas/Register';
+import RutasEdit from '@/pages/rutas/Edit';
+
+import ServiciosIndex from '@/pages/servicios/Index';
+import ServiciosRegister from '@/pages/servicios/Register';
+import ServiciosEdit from '@/pages/servicios/Edit';
+import CumplimientoServicios from '@/pages/servicios/CumplimientoServicios';
+import BitacoraCambiosRutas from '@/pages/servicios/BitacoraCambiosRutas';
+
+import AsignacionesIndex from '@/pages/asignaciones/Index';
+import AsignacionesRegister from '@/pages/asignaciones/Register';
+import AsignacionesEdit from '@/pages/asignaciones/Edit';
+
+import AsignacionesConductoresIndex from '@/pages/asignaciones-conductores/Index';
+import AsignacionesConductoresAsignar from '@/pages/asignaciones-conductores/Asignar';
+
+import GeocercasIndex from '@/pages/geocercas/Index';
+import GeocercasCrear from '@/pages/geocercas/Crear';
+import GeocercasEditar from '@/pages/geocercas/Editar';
+
+import ParadasIndex from '@/pages/paradas/Index';
+import ParadasRegister from '@/pages/paradas/Register';
+
+import PerfilesIndex from '@/pages/perfiles/Index';
+import PerfilesRegister from '@/pages/perfiles/Register';
+import PerfilesPermisos from '@/pages/perfiles/Permisos';
+
+import TiempoReal from '@/pages/rastreo/TiempoReal';
+import RecorridosPrevios from '@/pages/rastreo/RecorridosPrevios';
+
+import AlarmasListado from '@/pages/alarmas/Listado';
+import AlarmasConductorListado from '@/pages/alarmas-conductor/Listado';
+import TelemetriaListado from '@/pages/telemetria/Listado';
+import SolicitudesTrasladoIndex from '@/pages/solicitudes-traslado/Index';
+import BitacorasLectorasIndex from '@/pages/bitacoras-lectoras/Index';
+
+import ParametrosLectura from '@/pages/configuracion/ParametrosLectura';
+import ZoneParametersConfig from '@/pages/configuracion/ZoneParametersConfig';
+import ParametrosIndex from '@/pages/configuracion/parametros/index';
+import ProgramacionParametros from '@/pages/programacion/ProgramacionParametros';
+
+// Create a client
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <SidebarProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div className="min-h-screen bg-background">
           <Routes>
             <Route path="/" element={<Index />} />
+            
+            {/* Mantenimiento routes */}
+            <Route path="/mantenimiento" element={<MantenimientoIndex />} />
+            <Route path="/mantenimiento/registrar" element={<MantenimientoRegister />} />
+            
+            {/* Bus routes */}
             <Route path="/buses" element={<BusesIndex />} />
-            <Route path="/buses/register" element={<RegisterBus />} />
-            <Route path="/buses/edit/:id" element={<EditBus />} />
+            <Route path="/buses/register" element={<BusesRegister />} />
+            <Route path="/buses/edit/:id" element={<BusesEdit />} />
             <Route path="/buses/capacidad-cumplida" element={<CapacidadCumplida />} />
-            <Route path="/configuracion/parametros" element={<ZoneParametersConfig />} />
-            <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
-            <Route path="/configuracion/programacion-parametros" element={<ProgramacionParametros />} />
-            <Route path="/perfiles" element={<PerfilesIndex />} />
-            <Route path="/perfiles/register" element={<RegisterPerfil />} />
-            <Route path="/perfiles/permisos" element={<PerfilPermisos />} />
+            <Route path="/buses/autobuses-capacidad-cumplida" element={<AutobusesCapacidadCumplida />} />
+            
+            {/* Conductores routes */}
             <Route path="/conductores" element={<ConductoresIndex />} />
-            <Route path="/conductores/register" element={<RegisterConductor />} />
-            <Route path="/conductores/edit/:id" element={<EditConductor />} />
-            <Route path="/geocercas" element={<GeocercasIndex />} />
-            <Route path="/geocercas/crear" element={<CrearGeocerca />} />
-            <Route path="/geocercas/editar/:id" element={<EditarGeocerca />} />
-            <Route path="/rutas" element={<RutasIndex />} />
-            <Route path="/rutas/register" element={<RegisterRuta />} />
-            <Route path="/rutas/edit/:id" element={<EditRuta />} />
-            <Route path="/paradas" element={<ParadasIndex />} />
-            <Route path="/paradas/register" element={<RegisterParada />} />
-            <Route path="/asignaciones" element={<AsignacionesIndex />} />
-            <Route path="/asignaciones/register" element={<RegisterAsignacion />} />
-            <Route path="/asignaciones/edit/:id" element={<EditAsignacion />} />
+            <Route path="/conductores/register" element={<ConductoresRegister />} />
+            <Route path="/conductores/edit/:id" element={<ConductoresEdit />} />
+            
+            {/* Pasajeros routes */}
             <Route path="/pasajeros" element={<PasajerosIndex />} />
-            <Route path="/pasajeros/register" element={<RegisterPasajero />} />
-            <Route path="/pasajeros/edit/:id" element={<PlaceholderPage title="Editar Pasajero" />} />
-            <Route path="/pasajeros/view/:id" element={<PlaceholderPage title="Ver Pasajero" />} />
+            <Route path="/pasajeros/register" element={<PasajerosRegister />} />
+            <Route path="/pasajeros/edit/:id" element={<PasajerosEdit />} />
+            
+            {/* Rutas routes */}
+            <Route path="/rutas" element={<RutasIndex />} />
+            <Route path="/rutas/register" element={<RutasRegister />} />
+            <Route path="/rutas/edit/:id" element={<RutasEdit />} />
+            
+            {/* Servicios routes */}
             <Route path="/servicios" element={<ServiciosIndex />} />
-            <Route path="/servicios/register" element={<RegisterServicio />} />
-            <Route path="/servicios/edit/:id" element={<EditServicio />} />
-            <Route path="/servicios/cumplimiento" element={<CumplimientoServiciosPage />} />
-            <Route path="/servicios/bitacora-cambios-rutas" element={<BitacoraCambiosRutasPage />} />
+            <Route path="/servicios/register" element={<ServiciosRegister />} />
+            <Route path="/servicios/edit/:id" element={<ServiciosEdit />} />
+            <Route path="/servicios/cumplimiento" element={<CumplimientoServicios />} />
+            <Route path="/servicios/bitacora-cambios-rutas" element={<BitacoraCambiosRutas />} />
+            
+            {/* Asignaciones routes */}
+            <Route path="/asignaciones" element={<AsignacionesIndex />} />
+            <Route path="/asignaciones/register" element={<AsignacionesRegister />} />
+            <Route path="/asignaciones/edit/:id" element={<AsignacionesEdit />} />
+            
+            {/* Asignaciones Conductores routes */}
             <Route path="/asignaciones-conductores" element={<AsignacionesConductoresIndex />} />
-            <Route path="/asignaciones-conductores/asignar" element={<AsignarConductor />} />
-            <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
-            <Route path="/telemetria/listado" element={<TelemetriaListado />} />
-            <Route path="/alarmas/listado" element={<AlarmasListado />} />
-            <Route path="/alarmas-conductor/listado" element={<AlarmasConductorListado />} />
+            <Route path="/asignaciones-conductores/asignar" element={<AsignacionesConductoresAsignar />} />
+            
+            {/* Geocercas routes */}
+            <Route path="/geocercas" element={<GeocercasIndex />} />
+            <Route path="/geocercas/crear" element={<GeocercasCrear />} />
+            <Route path="/geocercas/editar/:id" element={<GeocercasEditar />} />
+            
+            {/* Paradas routes */}
+            <Route path="/paradas" element={<ParadasIndex />} />
+            <Route path="/paradas/register" element={<ParadasRegister />} />
+            
+            {/* Perfiles routes */}
+            <Route path="/perfiles" element={<PerfilesIndex />} />
+            <Route path="/perfiles/register" element={<PerfilesRegister />} />
+            <Route path="/perfiles/permisos/:id" element={<PerfilesPermisos />} />
+            
+            {/* Rastreo routes */}
             <Route path="/rastreo/tiempo-real" element={<TiempoReal />} />
             <Route path="/rastreo/recorridos-previos" element={<RecorridosPrevios />} />
-            <Route path="/mantenimiento" element={<MantenimientoIndex />} />
+            
+            {/* Alarmas routes */}
+            <Route path="/alarmas" element={<AlarmasListado />} />
+            <Route path="/alarmas-conductor" element={<AlarmasConductorListado />} />
+            
+            {/* Telemetría routes */}
+            <Route path="/telemetria" element={<TelemetriaListado />} />
+            
+            {/* Solicitudes Traslado routes */}
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
             
-            {/* New routes for sidebar navigation */}
-            <Route path="/companies" element={<PlaceholderPage title="Empresas Administradoras" />} />
-            <Route path="/zones" element={<PlaceholderPage title="Zonas Francas" />} />
-            <Route path="/clients" element={<PlaceholderPage title="Empresas Cliente" />} />
-            <Route path="/transport" element={<PlaceholderPage title="Empresas Transportistas" />} />
-            <Route path="/users" element={<PlaceholderPage title="Usuarios Administradores" />} />
+            {/* Bitácoras Lectoras routes */}
+            <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
             
+            {/* Configuración routes */}
+            <Route path="/configuracion/parametros-lectura" element={<ParametrosLectura />} />
+            <Route path="/configuracion/zone-parameters" element={<ZoneParametersConfig />} />
+            <Route path="/configuracion/parametros" element={<ParametrosIndex />} />
+            
+            {/* Programación routes */}
+            <Route path="/programacion/parametros" element={<ProgramacionParametros />} />
+            
+            {/* Placeholder routes */}
+            <Route path="/placeholder" element={<PlaceholderPage />} />
+            
+            {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </SidebarProvider>
-  </QueryClientProvider>
-);
+        </div>
+        <Toaster />
+      </Router>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
