@@ -456,16 +456,6 @@ export function MantenimientoEditForm({
             Cancelar
           </Button>
           
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleReset}
-            disabled={isSubmitting}
-            className="sm:w-auto"
-          >
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Restaurar
-          </Button>
           
           <Button
             type="submit"
