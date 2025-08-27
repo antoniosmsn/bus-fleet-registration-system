@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Label } from '@/components/ui/label';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CumplimientoServicioData } from '@/types/cumplimiento-servicio';
 import { SentidoRuta } from '@/types/cambio-ruta';
@@ -17,7 +20,7 @@ interface CambioRutaModalProps {
 
 const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
-  
+  const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -136,6 +139,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   const handleCancel = () => {
     setNuevaRutaId('');
+    setOpen(false);
     onClose();
   };
 
@@ -163,25 +167,59 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           {/* Nueva ruta selector */}
           <div className="space-y-2">
             <Label htmlFor="nueva-ruta">Nueva Ruta <span className="text-destructive">*</span></Label>
-            <Select value={nuevaRutaId} onValueChange={setNuevaRutaId} required>
-              <SelectTrigger className={!nuevaRutaId ? "border-destructive" : ""}>
-                <SelectValue placeholder="Seleccionar nueva ruta" />
-              </SelectTrigger>
-              <SelectContent>
-                {rutasUnicas.length > 0 ? (
-                  rutasUnicas.map((ruta) => (
-                    <SelectItem key={ruta.id} value={ruta.id}>
-                      {ruta.nombre} - {ruta.sentido === 'ingreso' ? 'Ingreso' : 'Salida'}
-                      {ruta.empresaCliente ? ` (${ruta.empresaCliente})` : ''}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="no-routes" disabled>
-                    No hay rutas disponibles para esta empresa
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className={cn(
+                    "w-full justify-between",
+                    !nuevaRutaId && "border-destructive text-muted-foreground"
+                  )}
+                >
+                  {nuevaRutaId
+                    ? rutasUnicas.find((ruta) => ruta.id === nuevaRutaId)?.displayName
+                    : "Seleccionar nueva ruta..."}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
+                <Command>
+                  <CommandInput placeholder="Buscar ruta..." />
+                  <CommandList>
+                    <CommandEmpty>No se encontraron rutas.</CommandEmpty>
+                    <CommandGroup>
+                      {rutasUnicas.length > 0 ? (
+                        rutasUnicas.map((ruta) => (
+                          <CommandItem
+                            key={ruta.id}
+                            value={ruta.displayName}
+                            onSelect={() => {
+                              setNuevaRutaId(ruta.id === nuevaRutaId ? "" : ruta.id);
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                nuevaRutaId === ruta.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {ruta.displayName}
+                            {ruta.empresaCliente ? ` (${ruta.empresaCliente})` : ''}
+                          </CommandItem>
+                        ))
+                      ) : (
+                        <CommandItem disabled>
+                          No hay rutas disponibles
+                        </CommandItem>
+                      )}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
