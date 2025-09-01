@@ -17,7 +17,7 @@ export default function SolicitudesAprobacionIndex() {
   const [solicitudes] = useState<SolicitudAprobacion[]>(getSolicitudesPendientes());
   const [filtros, setFiltros] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
-    empresaTransporte: '',
+    empresaTransporte: 'all',
     fechaInicio: '',
     fechaFin: '',
     placaAutobus: '',
@@ -25,7 +25,7 @@ export default function SolicitudesAprobacionIndex() {
   });
   const [filtrosAplicados, setFiltrosAplicados] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
-    empresaTransporte: '',
+    empresaTransporte: 'all',
     fechaInicio: '',
     fechaFin: '',
     placaAutobus: '',
@@ -46,6 +46,7 @@ export default function SolicitudesAprobacionIndex() {
         solicitud.numeroServicio.toLowerCase().includes(filtrosAplicados.numeroServicio.toLowerCase());
       
       const cumpleEmpresa = !filtrosAplicados.empresaTransporte || 
+        filtrosAplicados.empresaTransporte === 'all' ||
         solicitud.empresaTransporte.toLowerCase().includes(filtrosAplicados.empresaTransporte.toLowerCase());
       
       const cumpleFecha = isDateInRange(
@@ -83,7 +84,7 @@ export default function SolicitudesAprobacionIndex() {
   const limpiarFiltros = () => {
     const filtrosVacios: FiltrosSolicitudAprobacion = {
       numeroServicio: '',
-      empresaTransporte: '',
+      empresaTransporte: 'all',
       fechaInicio: '',
       fechaFin: '',
       placaAutobus: '',

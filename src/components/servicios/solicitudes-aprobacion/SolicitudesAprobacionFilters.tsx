@@ -70,7 +70,7 @@ export function SolicitudesAprobacionFilters({
                     <SelectValue placeholder="Seleccionar empresa" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las empresas</SelectItem>
+                    <SelectItem value="all">Todas las empresas</SelectItem>
                     {mockEmpresasTransporte.map((empresa) => (
                       <SelectItem key={empresa.id} value={empresa.nombre}>
                         {empresa.nombre}
