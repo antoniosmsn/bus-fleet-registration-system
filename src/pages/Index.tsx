@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Building2, Truck, Factory, TrendingUp, Users, MapPin, Bus } from 'lucide-react';
+import { Building2, Truck, Factory, TrendingUp, Users, MapPin, Bus, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
