@@ -107,7 +107,10 @@ export function ModalAprobacionSolicitud({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Aprobación de Solicitud de Cambio de Ruta</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            Aprobación de Solicitud de Cambio de Ruta
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -139,69 +142,32 @@ export function ModalAprobacionSolicitud({
                 <Label className="text-sm font-medium text-muted-foreground">Empresa de Transporte</Label>
                 <p>{solicitud.empresaTransporte}</p>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Comparación de Rutas */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Cambio de Ruta Solicitado</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-muted-foreground">Ruta Original</Label>
-                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
-                    <p className="font-medium">{solicitud.rutaOriginal.nombre}</p>
-                    <Badge variant="outline" className="mt-1">
+              
+              <Separator className="my-4" />
+              
+              {/* Cambio de Ruta en Detalles del Servicio */}
+              <div>
+                <Label className="text-sm font-medium text-muted-foreground">Cambio de Ruta Solicitado</Label>
+                <div className="mt-2 flex items-center gap-3">
+                  <div className="flex-1 p-2 bg-red-50 border border-red-200 rounded text-sm">
+                    <span className="font-medium">{solicitud.rutaOriginal.nombre}</span>
+                    <Badge variant="outline" className="ml-2 text-xs">
                       {solicitud.rutaOriginal.sentido}
                     </Badge>
                   </div>
-                </div>
-                
-                <div className="mx-4">
-                  <ArrowRight className="h-6 w-6 text-muted-foreground" />
-                </div>
-                
-                <div className="flex-1">
-                  <Label className="text-sm font-medium text-muted-foreground">Ruta Solicitada</Label>
-                  <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
-                    <p className="font-medium">{solicitud.rutaNueva.nombre}</p>
-                    <Badge variant="outline" className="mt-1">
+                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-1 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                    <span className="font-medium">{solicitud.rutaNueva.nombre}</span>
+                    <Badge variant="outline" className="ml-2 text-xs">
                       {solicitud.rutaNueva.sentido}
                     </Badge>
                   </div>
                 </div>
               </div>
               
-              <Separator className="my-4" />
-              
               <div>
                 <Label className="text-sm font-medium text-muted-foreground">Motivo de la Solicitud</Label>
-                <p className="mt-1 p-3 bg-muted/50 rounded-md">{solicitud.motivo}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Impacto del Cambio */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Impacto del Cambio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-md">
-                  <p className="text-2xl font-bold text-blue-600">{solicitud.pasajerosAfectados}</p>
-                  <p className="text-sm text-muted-foreground">Pasajeros Afectados</p>
-                </div>
-                <div className="text-center p-4 bg-orange-50 rounded-md">
-                  <p className="text-2xl font-bold text-orange-600">₡{solicitud.montoOriginal.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">Monto Original</p>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded-md">
-                  <p className="text-2xl font-bold text-green-600">₡{solicitud.montoFinal.toLocaleString()}</p>
-                  <p className="text-sm text-muted-foreground">Monto Final</p>
-                </div>
+                <p className="mt-1 p-3 bg-muted/50 rounded-md text-sm">{solicitud.motivo}</p>
               </div>
             </CardContent>
           </Card>
@@ -210,7 +176,6 @@ export function ModalAprobacionSolicitud({
           <Card>
             <CardContent className="pt-6">
               <div className="text-center space-y-4">
-                <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto" />
                 <h3 className="text-xl font-semibold">¿Desea aprobar o rechazar la solicitud pendiente?</h3>
                 
                 {accionSeleccionada === 'rechazar' && (
