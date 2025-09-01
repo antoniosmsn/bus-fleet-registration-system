@@ -49,7 +49,7 @@ const Index = () => {
             { title: 'Autobuses', value: '89', subtitle: 'En Flota', color: 'text-red-600', bgColor: 'bg-red-50' },
             { title: 'Conductores', value: '142', subtitle: 'Certificados', color: 'text-orange-600', bgColor: 'bg-orange-50' },
             { title: 'Asignaciones', value: '67', subtitle: 'Completadas', color: 'text-green-600', bgColor: 'bg-green-50' },
-            { title: 'Autobuses capacidad cumplida', value: '200', subtitle: '', color: 'text-indigo-600', bgColor: 'bg-indigo-50' }
+            { title: 'Solicitudes Pendientes', value: '7', subtitle: 'Cambios de Ruta', color: 'text-purple-600', bgColor: 'bg-purple-50' }
           ]
         };
       case 'empresas':
@@ -107,7 +107,7 @@ const Index = () => {
                   }`}
                   onClick={() => {
                     if (activeTab === 'transportistas' && index === 4) {
-                      navigate('/buses/capacidad-cumplida');
+                      navigate('/servicios/solicitudes-aprobacion');
                     }
                   }}
                 >
@@ -130,7 +130,7 @@ const Index = () => {
                         {activeTab === 'transportistas' && index === 1 && <Truck className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'transportistas' && index === 2 && <Users className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'transportistas' && index === 3 && <Building2 className={`h-6 w-6 ${card.color}`} />}
-                        {activeTab === 'transportistas' && index === 4 && <Bus className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 4 && <AlertTriangle className={`h-6 w-6 ${card.color}`} />}
                         
                         {activeTab === 'empresas' && index === 0 && <Building2 className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'empresas' && index === 1 && <Users className={`h-6 w-6 ${card.color}`} />}

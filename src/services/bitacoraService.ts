@@ -89,3 +89,46 @@ export const registrarActivacionTipoAlerta = (tipoAlerta: any, activar: boolean)
   
   console.log('Registro en bitácora - Cambio Estado Tipo Alerta:', registro);
 };
+
+export const registrarAprobacionSolicitud = (solicitud: any) => {
+  const registro: RegistroBitacora = {
+    usuario: 'Usuario actual',
+    fecha: new Date().toISOString(),
+    accion: 'APROBAR_SOLICITUD',
+    modulo: 'SOLICITUDES_APROBACION_CAMBIO_RUTA',
+    detalles: {
+      solicitudId: solicitud.id,
+      rutaOriginal: solicitud.rutaOriginal.nombre,
+      rutaFinal: solicitud.rutaNueva.nombre,
+      numeroServicio: solicitud.numeroServicio,
+      fechaServicio: solicitud.fechaServicio,
+      pasajerosAfectados: solicitud.pasajerosAfectados,
+      montoOriginal: solicitud.montoOriginal,
+      montoFinal: solicitud.montoFinal
+    }
+  };
+  
+  console.log('Registro en bitácora - Aprobación Solicitud:', registro);
+};
+
+export const registrarRechazoSolicitud = (solicitud: any, motivo: string) => {
+  const registro: RegistroBitacora = {
+    usuario: 'Usuario actual',
+    fecha: new Date().toISOString(),
+    accion: 'RECHAZAR_SOLICITUD',
+    modulo: 'SOLICITUDES_APROBACION_CAMBIO_RUTA',
+    detalles: {
+      solicitudId: solicitud.id,
+      rutaOriginal: solicitud.rutaOriginal.nombre,
+      rutaFinal: solicitud.rutaNueva.nombre,
+      numeroServicio: solicitud.numeroServicio,
+      fechaServicio: solicitud.fechaServicio,
+      pasajerosAfectados: solicitud.pasajerosAfectados,
+      montoOriginal: solicitud.montoOriginal,
+      montoFinal: solicitud.montoFinal,
+      motivo
+    }
+  };
+  
+  console.log('Registro en bitácora - Rechazo Solicitud:', registro);
+};

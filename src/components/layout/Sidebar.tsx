@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen, FileCheck } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -130,6 +130,11 @@ const SidebarComponent = () => {
       title: "Bitácoras Cambios de Rutas", 
       url: "/servicios/bitacora-cambios-rutas", 
       icon: ArrowRightLeft 
+    },
+    { 
+      title: "Solicitudes Aprobaciones Cambios Ruta", 
+      url: "/servicios/solicitudes-aprobacion", 
+      icon: FileCheck 
     },
     { 
       title: "Asignación de Conductores", 
