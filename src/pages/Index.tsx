@@ -130,7 +130,7 @@ const Index = () => {
                         {activeTab === 'transportistas' && index === 1 && <Truck className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'transportistas' && index === 2 && <Users className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'transportistas' && index === 3 && <Building2 className={`h-6 w-6 ${card.color}`} />}
-                        {activeTab === 'transportistas' && index === 4 && <AlertTriangle className={`h-6 w-6 ${card.color}`} />}
+                        {activeTab === 'transportistas' && index === 4 && <Users className={`h-6 w-6 ${card.color}`} />}
                         
                         {activeTab === 'empresas' && index === 0 && <Building2 className={`h-6 w-6 ${card.color}`} />}
                         {activeTab === 'empresas' && index === 1 && <Users className={`h-6 w-6 ${card.color}`} />}
