@@ -164,11 +164,6 @@ export function ModalAprobacionSolicitud({
                   </div>
                 </div>
               </div>
-              
-              <div>
-                <Label className="text-sm font-medium text-muted-foreground">Motivo de la Solicitud</Label>
-                <p className="mt-1 p-3 bg-muted/50 rounded-md text-sm">{solicitud.motivo}</p>
-              </div>
             </CardContent>
           </Card>
 
