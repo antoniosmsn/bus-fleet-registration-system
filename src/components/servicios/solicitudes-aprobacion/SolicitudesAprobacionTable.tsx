@@ -81,7 +81,7 @@ export function SolicitudesAprobacionTable({
                       className="h-8"
                     >
                       <FileCheck className="h-4 w-4 mr-2" />
-                      Solicitar Aprobación
+                      Aprobar/Rechazar
                     </Button>
                   </TableCell>
                 </TableRow>
