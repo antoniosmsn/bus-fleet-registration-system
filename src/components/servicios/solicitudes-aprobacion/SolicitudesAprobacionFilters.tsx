@@ -49,7 +49,7 @@ export function SolicitudesAprobacionFilters({
           </TabsList>
 
           <TabsContent value="basicos" className="space-y-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="numeroServicio">Número de Servicio</Label>
                 <Input
@@ -76,6 +76,23 @@ export function SolicitudesAprobacionFilters({
                         {empresa.nombre}
                       </SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estado">Estado</Label>
+                <Select 
+                  value={filtros.estado} 
+                  onValueChange={(value) => handleFiltroChange('estado', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="pendiente">Pendiente</SelectItem>
+                    <SelectItem value="aprobada">Aprobado</SelectItem>
+                    <SelectItem value="rechazada">Rechazado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

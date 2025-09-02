@@ -36,6 +36,7 @@ export interface FiltrosSolicitudAprobacion {
   fechaFin: string;
   placaAutobus: string;
   idAutobus: string;
+  estado: string;
 }
 
 export interface BitacoraAprobacion {

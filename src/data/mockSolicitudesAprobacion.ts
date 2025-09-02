@@ -68,6 +68,17 @@ export const mockSolicitudesAprobacion: SolicitudAprobacion[] = Array.from({ len
   const montoOriginal = Math.floor(Math.random() * 200000) + 100000;
   const montoFinal = Math.floor(Math.random() * 200000) + 100000;
   
+  // Asignar estados de forma aleatoria: 60% pendiente, 25% aprobada, 15% rechazada
+  const random = Math.random();
+  let estado: 'pendiente' | 'aprobada' | 'rechazada';
+  if (random < 0.6) {
+    estado = 'pendiente';
+  } else if (random < 0.85) {
+    estado = 'aprobada';
+  } else {
+    estado = 'rechazada';
+  }
+  
   return {
     id: `sol_${(index + 1).toString().padStart(3, '0')}`,
     servicioId: `srv_${(Math.floor(Math.random() * 100) + 1).toString().padStart(3, '0')}`,
@@ -79,7 +90,7 @@ export const mockSolicitudesAprobacion: SolicitudAprobacion[] = Array.from({ len
     rutaOriginal,
     rutaNueva,
     motivo: motivos[Math.floor(Math.random() * motivos.length)],
-    estado: 'pendiente',
+    estado,
     fechaSolicitud: getRandomDate(Math.floor(Math.random() * 7)),
     usuario: usuarios[Math.floor(Math.random() * usuarios.length)],
     pasajerosAfectados,
@@ -94,4 +105,8 @@ export const getSolicitudById = (id: string): SolicitudAprobacion | null => {
 
 export const getSolicitudesPendientes = (): SolicitudAprobacion[] => {
   return mockSolicitudesAprobacion.filter(solicitud => solicitud.estado === 'pendiente');
+};
+
+export const getAllSolicitudes = (): SolicitudAprobacion[] => {
+  return mockSolicitudesAprobacion;
 };

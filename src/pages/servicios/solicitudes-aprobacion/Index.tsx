@@ -9,19 +9,20 @@ import SolicitudesAprobacionPagination from '@/components/servicios/solicitudes-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { SolicitudAprobacion, FiltrosSolicitudAprobacion } from '@/types/solicitud-aprobacion';
-import { getSolicitudesPendientes } from '@/data/mockSolicitudesAprobacion';
+import { getAllSolicitudes } from '@/data/mockSolicitudesAprobacion';
 import { isDateInRange } from '@/lib/dateUtils';
 import { registrarAcceso } from '@/services/bitacoraService';
 
 export default function SolicitudesAprobacionIndex() {
-  const [solicitudes] = useState<SolicitudAprobacion[]>(getSolicitudesPendientes());
+  const [solicitudes] = useState<SolicitudAprobacion[]>(getAllSolicitudes());
   const [filtros, setFiltros] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
     empresaTransporte: 'all',
     fechaInicio: '',
     fechaFin: '',
     placaAutobus: '',
-    idAutobus: ''
+    idAutobus: '',
+    estado: 'todos'
   });
   const [filtrosAplicados, setFiltrosAplicados] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
@@ -29,7 +30,8 @@ export default function SolicitudesAprobacionIndex() {
     fechaInicio: '',
     fechaFin: '',
     placaAutobus: '',
-    idAutobus: ''
+    idAutobus: '',
+    estado: 'todos'
   });
   const [paginaActual, setPaginaActual] = useState(1);
   const [itemsPorPagina, setItemsPorPagina] = useState(10);
@@ -60,8 +62,12 @@ export default function SolicitudesAprobacionIndex() {
       
       const cumpleIdAutobus = !filtrosAplicados.idAutobus || 
         solicitud.idAutobus === filtrosAplicados.idAutobus;
+
+      const cumpleEstado = !filtrosAplicados.estado || 
+        filtrosAplicados.estado === 'todos' ||
+        solicitud.estado === filtrosAplicados.estado;
       
-      return cumpleNumeroServicio && cumpleEmpresa && cumpleFecha && cumplePlaca && cumpleIdAutobus;
+      return cumpleNumeroServicio && cumpleEmpresa && cumpleFecha && cumplePlaca && cumpleIdAutobus && cumpleEstado;
     });
   }, [solicitudes, filtrosAplicados]);
 
@@ -88,7 +94,8 @@ export default function SolicitudesAprobacionIndex() {
       fechaInicio: '',
       fechaFin: '',
       placaAutobus: '',
-      idAutobus: ''
+      idAutobus: '',
+      estado: 'todos'
     };
     setFiltros(filtrosVacios);
     setFiltrosAplicados(filtrosVacios);
