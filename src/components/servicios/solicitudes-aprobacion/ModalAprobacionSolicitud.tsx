@@ -25,7 +25,7 @@ export function ModalAprobacionSolicitud({
   onClose,
   onAprobacionComplete
 }: ModalAprobacionSolicitudProps) {
-  const [accionSeleccionada, setAccionSeleccionada] = useState<'aprobar' | 'rechazar' | null>(null);
+  const [accionSeleccionada, setAccionSeleccionada] = useState<'aprobar' | 'rechazar' | 'seleccionar' | null>(null);
   const [motivoRechazo, setMotivoRechazo] = useState('');
   const [procesando, setProcesando] = useState(false);
 
@@ -40,6 +40,10 @@ export function ModalAprobacionSolicitud({
   const handleClose = () => {
     resetModal();
     onClose();
+  };
+
+  const handleSeleccionarAccion = () => {
+    setAccionSeleccionada('seleccionar');
   };
 
   const handleAprobar = async () => {
@@ -227,7 +231,7 @@ export function ModalAprobacionSolicitud({
                   {procesando ? 'Procesando...' : 'Confirmar Rechazo'}
                 </Button>
               </div>
-            ) : (
+            ) : accionSeleccionada === 'seleccionar' ? (
               <div className="flex gap-4">
                 <Button
                   onClick={handleAprobar}
@@ -246,6 +250,18 @@ export function ModalAprobacionSolicitud({
                 >
                   <X className="h-4 w-4 mr-2" />
                   Rechazar
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-4">
+                <Button
+                  onClick={handleSeleccionarAccion}
+                  disabled={procesando}
+                  className="bg-green-600 hover:bg-green-700"
+                  size="lg"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Aprobar/Rechazar
                 </Button>
               </div>
             )}
