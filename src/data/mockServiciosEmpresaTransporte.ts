@@ -3,15 +3,14 @@ import { mockEmpresas } from './mockEmpresas';
 import { mockTransportistas } from './mockTransportistas';
 import { mockRamales } from './mockRamales';
 
-// Helper to generate dates for current month
+// Helper to generate dates for current month in DD/MM/YYYY format
 const generateCurrentMonthDate = (daysAgo: number = 0): string => {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
-  return date.toLocaleDateString('es-CR', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric' 
-  });
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 // Helper to generate time
@@ -47,10 +46,10 @@ const sectores = ['Centro', 'Norte', 'Sur', 'Este', 'Oeste', 'Metropolitano'];
 const sentidos: SentidoServicio[] = ['Ingreso', 'Salida'];
 const estadosSolicitud: EstadoSolicitudCambio[] = ['Sin solicitud', 'Pendiente', 'Aprobado', 'Rechazado'];
 
-export const mockServiciosEmpresaTransporte: ServicioEmpresaTransporte[] = Array.from({ length: 35 }, (_, index) => {
-  const transportista = mockTransportistas[Math.floor(Math.random() * mockTransportistas.length)];
-  const empresa = mockEmpresas[Math.floor(Math.random() * mockEmpresas.length)];
-  const ramal = mockRamales[Math.floor(Math.random() * mockRamales.length)];
+export const mockServiciosEmpresaTransporte: ServicioEmpresaTransporte[] = Array.from({ length: 40 }, (_, index) => {
+  const transportista = mockTransportistas[index % mockTransportistas.length];
+  const empresa = mockEmpresas[index % mockEmpresas.length];
+  const ramal = mockRamales[index % mockRamales.length];
   const ocupacionMax = Math.floor(Math.random() * 40) + 20; // 20-60 pasajeros max
   const ocupacionActual = Math.floor(Math.random() * ocupacionMax);
   const porcentajeOcupacion = Math.round((ocupacionActual / ocupacionMax) * 100);
@@ -58,8 +57,8 @@ export const mockServiciosEmpresaTransporte: ServicioEmpresaTransporte[] = Array
   const exceso = porcentajeOcupacion > 100 ? ocupacionActual - ocupacionMax : 0;
   const serviceTimes = generateServiceTimes();
   
-  // Most services today, some from current month
-  const daysAgo = index < 20 ? 0 : Math.floor(Math.random() * 25);
+  // Most services for today (25), some from current month (15)
+  const daysAgo = index < 25 ? 0 : Math.floor(Math.random() * 25);
   
   return {
     id: `serv-${index + 1}`,
