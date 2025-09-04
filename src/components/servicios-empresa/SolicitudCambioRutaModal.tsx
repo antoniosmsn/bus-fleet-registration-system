@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { CheckCircle, Route, Clock, Building, Check, ChevronsUpDown } from "lucide-react";
+import { Route, Clock, Building, Check, ChevronsUpDown } from "lucide-react";
 import { ServicioEmpresaTransporte, SentidoServicio, RutaDisponible } from "@/types/servicio-empresa-transporte";
 import { mockRutasDisponibles } from "@/data/mockRutasDisponibles";
 import { useToast } from "@/hooks/use-toast";
@@ -29,7 +28,6 @@ export default function SolicitudCambioRutaModal({
 }: SolicitudCambioRutaModalProps) {
   const [rutaSeleccionada, setRutaSeleccionada] = useState<string>("");
   const [sentidoSeleccionado, setSentidoSeleccionado] = useState<SentidoServicio | "">("");
-  const [motivo, setMotivo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openRuta, setOpenRuta] = useState(false);
   const [openSentido, setOpenSentido] = useState(false);
@@ -75,10 +73,10 @@ export default function SolicitudCambioRutaModal({
   }, [rutaSeleccionada]);
 
   const handleConfirmarSolicitud = async () => {
-    if (!servicio || !rutaSeleccionada || !sentidoSeleccionado || !motivo.trim()) {
+    if (!servicio || !rutaSeleccionada || !sentidoSeleccionado) {
       toast({
         title: "Datos incompletos",
-        description: "Por favor complete todos los campos requeridos.",
+        description: "Por favor seleccione la nueva ruta y sentido.",
         variant: "destructive",
       });
       return;
@@ -96,7 +94,6 @@ export default function SolicitudCambioRutaModal({
         rutaNueva: rutasDisponibles.find(r => r.id === rutaSeleccionada)?.nombre,
         sentidoActual: servicio.sentido,
         sentidoNuevo: sentidoSeleccionado,
-        motivo: motivo.trim(),
         fechaSolicitud: new Date().toISOString(),
       };
 
@@ -112,7 +109,6 @@ export default function SolicitudCambioRutaModal({
       // Reset form
       setRutaSeleccionada("");
       setSentidoSeleccionado("");
-      setMotivo("");
       onOpenChange(false);
 
     } catch (error) {
@@ -130,7 +126,6 @@ export default function SolicitudCambioRutaModal({
     if (!isSubmitting) {
       setRutaSeleccionada("");
       setSentidoSeleccionado("");
-      setMotivo("");
       onOpenChange(false);
     }
   };
@@ -320,60 +315,7 @@ export default function SolicitudCambioRutaModal({
                 </Popover>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="motivo">Motivo del Cambio <span className="text-destructive">*</span></Label>
-              <Textarea
-                id="motivo"
-                placeholder="Describa el motivo para solicitar el cambio de ruta..."
-                value={motivo}
-                onChange={(e) => setMotivo(e.target.value)}
-                rows={3}
-                maxLength={500}
-              />
-              <p className="text-xs text-muted-foreground">
-                {motivo.length}/500 caracteres
-              </p>
-            </div>
           </div>
-
-          {/* Resumen del Cambio */}
-          {rutaSeleccionada && sentidoSeleccionado && (
-            <Card className="border-l-4 border-l-primary">
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  Resumen del Cambio Solicitado
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Ruta actual:</span>
-                    <p className="font-medium">{servicio.ramal}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Nueva ruta:</span>
-                    <p className="font-medium text-primary">
-                      {rutasDisponibles.find(r => r.id === rutaSeleccionada)?.nombre}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Sentido actual:</span>
-                    <Badge variant={servicio.sentido === 'Ingreso' ? 'default' : 'secondary'}>
-                      {servicio.sentido}
-                    </Badge>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Nuevo sentido:</span>
-                    <Badge variant={sentidoSeleccionado === 'Ingreso' ? 'default' : 'secondary'}>
-                      {sentidoSeleccionado}
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Botones de Acción */}
           <div className="flex justify-end gap-3 pt-4 border-t">
@@ -386,7 +328,7 @@ export default function SolicitudCambioRutaModal({
             </Button>
             <Button 
               onClick={handleConfirmarSolicitud}
-              disabled={!rutaSeleccionada || !sentidoSeleccionado || !motivo.trim() || isSubmitting}
+              disabled={!rutaSeleccionada || !sentidoSeleccionado || isSubmitting}
             >
               {isSubmitting ? "Enviando..." : "Confirmar Solicitud"}
             </Button>
