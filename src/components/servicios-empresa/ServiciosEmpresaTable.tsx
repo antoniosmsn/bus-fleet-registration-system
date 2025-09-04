@@ -238,7 +238,6 @@ export default function ServiciosEmpresaTable({
                         size="sm"
                         variant="outline"
                         onClick={() => onSolicitarCambioRuta(servicio)}
-                        disabled={servicio.estadoSolicitudCambio === 'Pendiente'}
                       >
                         <RefreshCw className="h-4 w-4 mr-1" />
                         Cambio Ruta

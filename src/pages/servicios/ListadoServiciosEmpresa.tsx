@@ -45,18 +45,21 @@ export default function ListadoServiciosEmpresa() {
   
   const { toast } = useToast();
 
-  // Apply current day filter on initial load
+  // Apply 1 month range filter on initial load
   useEffect(() => {
-    const fechaHoy = getCurrentDate();
-    const filtrosHoy = {
+    const fechaHoy = new Date();
+    const fechaHace1Mes = new Date();
+    fechaHace1Mes.setMonth(fechaHace1Mes.getMonth() - 1);
+    
+    const filtrosMes = {
       ...filtrosIniciales,
-      fechaInicio: fechaHoy,
-      fechaFin: fechaHoy,
+      fechaInicio: fechaHace1Mes.toISOString().split('T')[0],
+      fechaFin: fechaHoy.toISOString().split('T')[0],
       horaInicio: "00:00",
       horaFin: "23:59",
     };
-    setFiltros(filtrosHoy);
-    setFiltrosAplicados(filtrosHoy);
+    setFiltros(filtrosMes);
+    setFiltrosAplicados(filtrosMes);
   }, []);
 
   // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
@@ -216,17 +219,20 @@ export default function ListadoServiciosEmpresa() {
     setFiltrosAplicados(filtrosLimpios);
     setCurrentPage(1);
     
-    // Apply current day filter again after clearing
+    // Apply 1 month range filter again after clearing
     setTimeout(() => {
-      const fechaHoy = getCurrentDate();
-      const filtrosHoy = {
+      const fechaHoy = new Date();
+      const fechaHace1Mes = new Date();
+      fechaHace1Mes.setMonth(fechaHace1Mes.getMonth() - 1);
+      
+      const filtrosMes = {
         ...filtrosIniciales,
-        fechaInicio: fechaHoy,
-        fechaFin: fechaHoy,
+        fechaInicio: fechaHace1Mes.toISOString().split('T')[0],
+        fechaFin: fechaHoy.toISOString().split('T')[0],
         horaInicio: "00:00",
         horaFin: "23:59",
       };
-      setFiltrosAplicados(filtrosHoy);
+      setFiltrosAplicados(filtrosMes);
     }, 100);
   };
 

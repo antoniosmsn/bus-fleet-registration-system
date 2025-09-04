@@ -70,23 +70,6 @@ export default function ServiciosEmpresaFilters({
 
   const filtrosActivos = contarFiltrosActivos();
 
-  // Get current date for default value
-  const getCurrentDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
-
-  const aplicarFiltroFechaActual = () => {
-    const fechaActual = getCurrentDate();
-    updateFiltro('fechaInicio', fechaActual);
-    updateFiltro('fechaFin', fechaActual);
-    updateFiltro('horaInicio', '00:00');
-    updateFiltro('horaFin', '23:59');
-    
-    // Auto-apply the filter
-    setTimeout(() => onAplicarFiltros(), 100);
-  };
-
   return (
     <Card>
       <CardContent className="p-6">
@@ -101,9 +84,6 @@ export default function ServiciosEmpresaFilters({
             )}
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={aplicarFiltroFechaActual}>
-              Hoy
-            </Button>
             <Button variant="outline" size="sm" onClick={onExportarPDF}>
               <FileDown className="h-4 w-4 mr-2" />
               PDF
