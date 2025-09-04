@@ -26,7 +26,7 @@ export default function DetallePasajerosModal({
   servicio
 }: DetallePasajerosModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterTipoPago, setFilterTipoPago] = useState("");
+  const [filterTipoPago, setFilterTipoPago] = useState<string>("todos");
   const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
@@ -47,7 +47,7 @@ export default function DetallePasajerosModal({
         movimiento.numeroEmpleado.toLowerCase().includes(searchTerm.toLowerCase()) ||
         movimiento.parada.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesTipoPago = filterTipoPago === "" || movimiento.tipoPago === filterTipoPago;
+      const matchesTipoPago = filterTipoPago === "todos" || movimiento.tipoPago === filterTipoPago;
 
       return matchesSearch && matchesTipoPago;
     });
@@ -153,7 +153,7 @@ export default function DetallePasajerosModal({
                   <SelectValue placeholder="Filtrar por tipo de pago" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los tipos</SelectItem>
+                  <SelectItem value="todos">Todos los tipos</SelectItem>
                   {tiposPago.map((tipo) => (
                     <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
                   ))}
