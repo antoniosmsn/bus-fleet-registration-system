@@ -351,12 +351,10 @@ export default function ServiciosEmpresaTable({
                                         <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
                                       </div>
                                       <div className="text-muted-foreground">
-                                        <span className="font-medium">Viaje:</span>
+                                        <span className="font-medium">Viaje Adicional:</span>
                                       </div>
-                                      <div>
-                                        <Badge variant={movimiento.viajeAdicional ? "default" : "secondary"}>
-                                          {movimiento.viajeAdicional ? "Adicional" : "Regular"}
-                                        </Badge>
+                                      <div className="text-foreground">
+                                        {movimiento.viajeAdicional ? "Sí" : "No"}
                                       </div>
                                     </div>
                                 </div>
