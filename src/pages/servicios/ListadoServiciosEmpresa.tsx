@@ -4,7 +4,6 @@ import ServiciosEmpresaFilters from "@/components/servicios-empresa/ServiciosEmp
 import ServiciosEmpresaTable from "@/components/servicios-empresa/ServiciosEmpresaTable";
 import ServiciosEmpresaPagination from "@/components/servicios-empresa/ServiciosEmpresaPagination";
 import SolicitudCambioRutaModal from "@/components/servicios-empresa/SolicitudCambioRutaModal";
-import DetallePasajerosModal from "@/components/servicios-empresa/DetallePasajerosModal";
 import { FiltrosServicioEmpresa, ServicioEmpresaTransporte, SentidoServicio } from "@/types/servicio-empresa-transporte";
 import { mockServiciosEmpresaTransporte } from "@/data/mockServiciosEmpresaTransporte";
 import { useToast } from "@/hooks/use-toast";
@@ -39,7 +38,6 @@ export default function ListadoServiciosEmpresa() {
   
   // Modal states
   const [cambioRutaModalOpen, setCambioRutaModalOpen] = useState(false);
-  const [detallePasajerosModalOpen, setDetallePasajerosModalOpen] = useState(false);
   const [servicioSeleccionado, setServicioSeleccionado] = useState<ServicioEmpresaTransporte | null>(null);
   
   const { toast } = useToast();
@@ -251,12 +249,6 @@ export default function ListadoServiciosEmpresa() {
     setCambioRutaModalOpen(true);
   };
 
-  const handleVerDetallePasajeros = (servicio: ServicioEmpresaTransporte) => {
-    console.log('Abriendo modal detalle para servicio:', servicio.id);
-    setServicioSeleccionado(servicio);
-    setDetallePasajerosModalOpen(true);
-  };
-
   const handleConfirmarSolicitud = (solicitud: any) => {
     // In real implementation, this would call an API
     console.log('Solicitud de cambio de ruta:', solicitud);
@@ -309,7 +301,6 @@ export default function ListadoServiciosEmpresa() {
         <ServiciosEmpresaTable
           servicios={serviciosPaginados}
           onSolicitarCambioRuta={handleSolicitarCambioRuta}
-          onVerDetallePasajeros={handleVerDetallePasajeros}
           onSort={handleSort}
           sortField={sortField}
           sortDirection={sortDirection}
@@ -331,12 +322,6 @@ export default function ListadoServiciosEmpresa() {
           onOpenChange={setCambioRutaModalOpen}
           servicio={servicioSeleccionado}
           onConfirmarSolicitud={handleConfirmarSolicitud}
-        />
-
-        <DetallePasajerosModal
-          open={detallePasajerosModalOpen}
-          onOpenChange={setDetallePasajerosModalOpen}
-          servicio={servicioSeleccionado}
         />
       </div>
     </Layout>
