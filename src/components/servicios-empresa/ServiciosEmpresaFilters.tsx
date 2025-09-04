@@ -75,11 +75,6 @@ export default function ServiciosEmpresaFilters({
           <div className="flex items-center gap-2">
             <Filter className="h-5 w-5 text-muted-foreground" />
             <h3 className="text-lg font-semibold">Filtros de Búsqueda</h3>
-            {filtrosActivos > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {filtrosActivos} activo{filtrosActivos !== 1 ? 's' : ''}
-              </Badge>
-            )}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={onExportarPDF}>
