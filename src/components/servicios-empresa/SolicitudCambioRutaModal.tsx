@@ -1,16 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Route, Clock, Building } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { CheckCircle, Route, Clock, Building, Check, ChevronsUpDown } from "lucide-react";
 import { ServicioEmpresaTransporte, SentidoServicio, RutaDisponible } from "@/types/servicio-empresa-transporte";
 import { mockRutasDisponibles } from "@/data/mockRutasDisponibles";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface SolicitudCambioRutaModalProps {
   open: boolean;
@@ -29,22 +31,48 @@ export default function SolicitudCambioRutaModal({
   const [sentidoSeleccionado, setSentidoSeleccionado] = useState<SentidoServicio | "">("");
   const [motivo, setMotivo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openRuta, setOpenRuta] = useState(false);
+  const [openSentido, setOpenSentido] = useState(false);
   const { toast } = useToast();
 
-  // Static data like in filters
-  const rutasDisponibles = mockRutasDisponibles;
-  const sentidosDisponibles: SentidoServicio[] = ['Ingreso', 'Salida'];
+  // Available routes - same pattern as working modal
+  const rutasDisponibles = React.useMemo(() => {
+    console.log('Modal abierto:', open);
+    console.log('Servicio:', servicio);
+    console.log('Total de rutas en mock:', mockRutasDisponibles.length);
+    
+    return mockRutasDisponibles;
+  }, [servicio, open]);
 
-  const handleRutaChange = (rutaId: string) => {
-    setRutaSeleccionada(rutaId);
-    setSentidoSeleccionado(""); // Reset sentido when route changes
-  };
+  // Process routes for display - same pattern as working modal
+  const rutasParaMostrar = React.useMemo(() => {
+    console.log('Rutas disponibles:', rutasDisponibles);
+    const rutas = rutasDisponibles.map((ruta) => ({
+      ...ruta,
+      displayName: `${ruta.nombre} (${ruta.codigo})`
+    }));
+    console.log('Rutas procesadas:', rutas);
+    return rutas;
+  }, [rutasDisponibles]);
 
-  const getSentidosParaRuta = (): SentidoServicio[] => {
+  // Available directions for selected route
+  const sentidosDisponibles = React.useMemo(() => {
     if (!rutaSeleccionada) return [];
     const ruta = rutasDisponibles.find(r => r.id === rutaSeleccionada);
     return ruta?.sentidosDisponibles || [];
-  };
+  }, [rutaSeleccionada, rutasDisponibles]);
+
+  // Set default values when modal opens
+  React.useEffect(() => {
+    if (open && rutasParaMostrar.length > 0 && !rutaSeleccionada) {
+      setRutaSeleccionada(rutasParaMostrar[0].id);
+    }
+  }, [open, rutasParaMostrar.length, rutaSeleccionada]);
+
+  // Reset sentido when ruta changes
+  React.useEffect(() => {
+    setSentidoSeleccionado("");
+  }, [rutaSeleccionada]);
 
   const handleConfirmarSolicitud = async () => {
     if (!servicio || !rutaSeleccionada || !sentidoSeleccionado || !motivo.trim()) {
@@ -178,45 +206,123 @@ export default function SolicitudCambioRutaModal({
             <h3 className="text-lg font-semibold">Nueva Configuración de Ruta</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Nueva Ruta Selector - Using working pattern */}
               <div className="space-y-2">
-                <Label htmlFor="nueva-ruta">Nueva Ruta *</Label>
-                <Select value={rutaSeleccionada} onValueChange={handleRutaChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar nueva ruta" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {rutasDisponibles.map((ruta) => (
-                      <SelectItem key={ruta.id} value={ruta.id}>
-                        {ruta.nombre} ({ruta.codigo})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="nueva-ruta">Nueva Ruta <span className="text-destructive">*</span></Label>
+                <Popover open={openRuta} onOpenChange={setOpenRuta}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openRuta}
+                      className={cn(
+                        "w-full justify-between",
+                        !rutaSeleccionada && "border-destructive text-muted-foreground"
+                      )}
+                    >
+                      {rutaSeleccionada
+                        ? rutasParaMostrar.find((ruta) => ruta.id === rutaSeleccionada)?.displayName
+                        : "Seleccionar nueva ruta..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
+                    <Command>
+                      <CommandInput placeholder="Buscar ruta..." />
+                      <CommandList>
+                        <CommandEmpty>No se encontraron rutas.</CommandEmpty>
+                        <CommandGroup>
+                          {rutasParaMostrar.length > 0 ? (
+                            rutasParaMostrar.map((ruta) => (
+                              <CommandItem
+                                key={ruta.id}
+                                value={ruta.displayName}
+                                onSelect={() => {
+                                  setRutaSeleccionada(ruta.id === rutaSeleccionada ? "" : ruta.id);
+                                  setOpenRuta(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    rutaSeleccionada === ruta.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {ruta.displayName}
+                              </CommandItem>
+                            ))
+                          ) : (
+                            <CommandItem disabled>
+                              No hay rutas disponibles
+                            </CommandItem>
+                          )}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
+              {/* Nuevo Sentido Selector - Using working pattern */}
               <div className="space-y-2">
-                <Label htmlFor="nuevo-sentido">Nuevo Sentido *</Label>
-                <Select 
-                  value={sentidoSeleccionado} 
-                  onValueChange={(value) => setSentidoSeleccionado(value as SentidoServicio)}
-                  disabled={!rutaSeleccionada}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar sentido" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getSentidosParaRuta().map((sentido) => (
-                      <SelectItem key={sentido} value={sentido}>
-                        {sentido}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="nuevo-sentido">Nuevo Sentido <span className="text-destructive">*</span></Label>
+                <Popover open={openSentido} onOpenChange={setOpenSentido}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openSentido}
+                      disabled={!rutaSeleccionada}
+                      className={cn(
+                        "w-full justify-between",
+                        !sentidoSeleccionado && rutaSeleccionada && "border-destructive text-muted-foreground"
+                      )}
+                    >
+                      {sentidoSeleccionado || "Seleccionar sentido..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
+                    <Command>
+                      <CommandList>
+                        <CommandEmpty>No se encontraron sentidos.</CommandEmpty>
+                        <CommandGroup>
+                          {sentidosDisponibles.length > 0 ? (
+                            sentidosDisponibles.map((sentido) => (
+                              <CommandItem
+                                key={sentido}
+                                value={sentido}
+                                onSelect={() => {
+                                  setSentidoSeleccionado(sentido === sentidoSeleccionado ? "" : sentido);
+                                  setOpenSentido(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    sentidoSeleccionado === sentido ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                <Badge variant={sentido === 'Ingreso' ? 'default' : 'secondary'}>
+                                  {sentido}
+                                </Badge>
+                              </CommandItem>
+                            ))
+                          ) : (
+                            <CommandItem disabled>
+                              {!rutaSeleccionada ? "Seleccione una ruta primero" : "No hay sentidos disponibles"}
+                            </CommandItem>
+                          )}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="motivo">Motivo del Cambio *</Label>
+              <Label htmlFor="motivo">Motivo del Cambio <span className="text-destructive">*</span></Label>
               <Textarea
                 id="motivo"
                 placeholder="Describa el motivo para solicitar el cambio de ruta..."
