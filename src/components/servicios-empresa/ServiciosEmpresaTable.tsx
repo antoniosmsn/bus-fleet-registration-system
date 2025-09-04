@@ -300,6 +300,14 @@ export default function ServiciosEmpresaTable({
                                       <span className="font-medium">Placa Autobús:</span>
                                     </div>
                                     <div className="text-foreground font-mono">{movimiento.placaAutobus}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Sentido:</span>
+                                    </div>
+                                    <div>
+                                      <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
+                                        {movimiento.sentido}
+                                      </Badge>
+                                    </div>
                                   </div>
                                   
                                   {/* Column 4: Route Info */}
@@ -330,27 +338,27 @@ export default function ServiciosEmpresaTable({
                                   </div>
                                   
                                   {/* Column 6: Employee & Additional Info */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">N° Empleado:</span>
+                                    <div className="space-y-1">
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">N° Empleado:</span>
+                                      </div>
+                                      <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">Tipo Planilla:</span>
+                                      </div>
+                                      <div className="text-foreground">{movimiento.tipoPlanilla}</div>
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
+                                      </div>
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">Viaje:</span>
+                                      </div>
+                                      <div>
+                                        <Badge variant={movimiento.viajeAdicional ? "default" : "secondary"}>
+                                          {movimiento.viajeAdicional ? "Adicional" : "Regular"}
+                                        </Badge>
+                                      </div>
                                     </div>
-                                    <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Tipo Planilla:</span>
-                                    </div>
-                                    <div className="text-foreground">{movimiento.tipoPlanilla}</div>
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
-                                    </div>
-                                    <div className="flex gap-2">
-                                      <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
-                                        {movimiento.sentido}
-                                      </Badge>
-                                      <Badge variant={movimiento.viajeAdicional ? "default" : "secondary"}>
-                                        {movimiento.viajeAdicional ? "Adicional" : "Regular"}
-                                      </Badge>
-                                    </div>
-                                  </div>
                                 </div>
                               </div>
                             ))}
