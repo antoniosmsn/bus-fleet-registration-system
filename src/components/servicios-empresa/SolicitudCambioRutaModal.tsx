@@ -46,6 +46,11 @@ export default function SolicitudCambioRutaModal({
     const ruta = rutasDisponibles.find(r => r.id === rutaSeleccionada);
     return ruta?.sentidosDisponibles || [];
   };
+  
+  // Debug logs
+  console.log('Rutas disponibles:', rutasDisponibles);
+  console.log('Ruta seleccionada:', rutaSeleccionada);
+  console.log('Sentidos disponibles:', getSentidosDisponibles());
 
   const handleConfirmarSolicitud = async () => {
     if (!servicio || !rutaSeleccionada || !sentidoSeleccionado || !motivo.trim()) {
@@ -112,15 +117,15 @@ export default function SolicitudCambioRutaModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Route className="h-5 w-5" />
             Solicitar Cambio de Ruta
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto space-y-6">
           {/* Información del Servicio Actual */}
           <Card>
             <CardHeader>
@@ -185,7 +190,7 @@ export default function SolicitudCambioRutaModal({
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar nueva ruta" />
                   </SelectTrigger>
-                  <SelectContent className="z-50 bg-background border">
+                  <SelectContent className="z-[60]">
                     {rutasDisponibles.map((ruta) => (
                       <SelectItem key={ruta.id} value={ruta.id}>
                         <div>
@@ -208,7 +213,7 @@ export default function SolicitudCambioRutaModal({
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar sentido" />
                   </SelectTrigger>
-                  <SelectContent className="z-50 bg-background border">
+                  <SelectContent className="z-[60]">
                     {getSentidosDisponibles().map((sentido) => (
                       <SelectItem key={sentido} value={sentido}>
                         <Badge variant={sentido === 'Ingreso' ? 'default' : 'secondary'}>
