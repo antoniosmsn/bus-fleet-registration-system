@@ -95,7 +95,7 @@ export default function ServiciosEmpresaTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Listado de Servicios por Empresa de Transporte</CardTitle>
+        <CardTitle>Listado de Servicios por parte de Empresa de Transporte</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
