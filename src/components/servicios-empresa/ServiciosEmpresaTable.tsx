@@ -259,74 +259,126 @@ export default function ServiciosEmpresaTable({
                           <h4 className="font-semibold mb-3 text-sm">
                             Detalle de Movimientos de Pasajeros
                           </h4>
-                          <div className="grid gap-3 max-h-96 overflow-y-auto">
+                           <div className="grid gap-3 max-h-96 overflow-y-auto">
                             {getDetallePasajerosForService(servicio.id, servicio).map((movimiento) => (
                               <div key={movimiento.id} className="p-4 bg-background rounded-md border">
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
-                                  {/* Column 1: Personal Info */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 text-sm">
+                                  {/* Personal Info */}
                                   {puedeVerDatosPersonales && (
-                                    <div className="space-y-1">
-                                      <div className="font-medium text-foreground">{movimiento.nombrePasajero}</div>
-                                      <div className="text-muted-foreground">
-                                        <span className="font-medium">Cédula:</span> {movimiento.cedula}
+                                    <div className="space-y-2 p-3 bg-muted/50 rounded-md">
+                                      <h5 className="font-semibold text-primary text-xs uppercase tracking-wide">Información Personal</h5>
+                                      <div className="space-y-1">
+                                        <div>
+                                          <span className="text-muted-foreground text-xs">Nombre:</span>
+                                          <div className="font-medium text-foreground">{movimiento.nombrePasajero}</div>
+                                        </div>
+                                        <div>
+                                          <span className="text-muted-foreground text-xs">Cédula:</span>
+                                          <div className="font-mono text-foreground">{movimiento.cedula}</div>
+                                        </div>
                                       </div>
                                     </div>
                                   )}
                                   
-                                  {/* Column 2: Payment Info */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Tipo de Pago:</span>
-                                    </div>
-                                    <Badge variant="outline">{movimiento.tipoPago}</Badge>
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Monto:</span> {formatCurrency(movimiento.monto)}
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Column 3: Transaction Info */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Fecha:</span>
-                                    </div>
-                                    <div className="text-foreground">{movimiento.fechaTransaccion}</div>
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Hora:</span> {movimiento.horaTransaccion}
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Column 4: Location */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Parada:</span>
-                                    </div>
-                                    <div className="text-foreground">{movimiento.parada}</div>
-                                    <div className="text-muted-foreground text-xs">
-                                      {movimiento.latitud.toFixed(4)}, {movimiento.longitud.toFixed(4)}
+                                  {/* Transaction Info */}
+                                  <div className="space-y-2 p-3 bg-muted/50 rounded-md">
+                                    <h5 className="font-semibold text-primary text-xs uppercase tracking-wide">Transacción</h5>
+                                    <div className="space-y-1">
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Tipo de Pago:</span>
+                                        <div><Badge variant="outline">{movimiento.tipoPago}</Badge></div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Fecha:</span>
+                                        <div className="text-foreground">{movimiento.fechaTransaccion}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Hora:</span>
+                                        <div className="text-foreground">{movimiento.horaTransaccion}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Monto:</span>
+                                        <div className="font-medium text-foreground">{formatCurrency(movimiento.monto)}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Subsidio:</span>
+                                        <div className="text-foreground">{formatCurrency(movimiento.subsidio)}</div>
+                                      </div>
                                     </div>
                                   </div>
                                   
-                                  {/* Column 5: Employee Info */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">N° Empleado:</span>
-                                    </div>
-                                    <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Planilla:</span> {movimiento.tipoPlanilla}
+                                  {/* Transport Info */}
+                                  <div className="space-y-2 p-3 bg-muted/50 rounded-md">
+                                    <h5 className="font-semibold text-primary text-xs uppercase tracking-wide">Transporte</h5>
+                                    <div className="space-y-1">
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Empresa Transporte:</span>
+                                        <div className="text-foreground">{movimiento.empresaTransporte}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Placa Autobús:</span>
+                                        <div className="font-mono text-foreground">{movimiento.placaAutobus}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Empresa Cliente:</span>
+                                        <div className="text-foreground">{movimiento.empresaCliente}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Sentido:</span>
+                                        <div>
+                                          <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
+                                            {movimiento.sentido}
+                                          </Badge>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                   
-                                  {/* Column 6: Additional Info */}
-                                  <div className="space-y-1">
-                                    <div className="text-muted-foreground">
-                                      <span className="font-medium">Subsidio:</span>
+                                  {/* Route & Location Info */}
+                                  <div className="space-y-2 p-3 bg-muted/50 rounded-md">
+                                    <h5 className="font-semibold text-primary text-xs uppercase tracking-wide">Ubicación</h5>
+                                    <div className="space-y-1">
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Sector:</span>
+                                        <div className="text-foreground">{movimiento.sector}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Ramal:</span>
+                                        <div className="text-foreground">{movimiento.ramal}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Parada:</span>
+                                        <div className="text-foreground">{movimiento.parada}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Coordenadas:</span>
+                                        <div className="font-mono text-xs text-muted-foreground">
+                                          {movimiento.latitud.toFixed(4)}, {movimiento.longitud.toFixed(4)}
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div className="text-foreground">{formatCurrency(movimiento.subsidio)}</div>
-                                    <div>
-                                      <Badge variant={movimiento.viajeAdicional ? "default" : "secondary"}>
-                                        {movimiento.viajeAdicional ? "Viaje Adicional" : "Regular"}
-                                      </Badge>
+                                  </div>
+                                  
+                                  {/* Employee Info */}
+                                  <div className="space-y-2 p-3 bg-muted/50 rounded-md">
+                                    <h5 className="font-semibold text-primary text-xs uppercase tracking-wide">Empleado</h5>
+                                    <div className="space-y-1">
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">N° Empleado:</span>
+                                        <div className="font-mono text-foreground">{movimiento.numeroEmpleado}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Tipo Planilla:</span>
+                                        <div className="text-foreground">{movimiento.tipoPlanilla}</div>
+                                      </div>
+                                      <div>
+                                        <span className="text-muted-foreground text-xs">Viaje:</span>
+                                        <div>
+                                          <Badge variant={movimiento.viajeAdicional ? "default" : "secondary"}>
+                                            {movimiento.viajeAdicional ? "Adicional" : "Regular"}
+                                          </Badge>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
