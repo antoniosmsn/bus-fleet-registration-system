@@ -31,26 +31,20 @@ export default function SolicitudCambioRutaModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  // Filter available routes (in real implementation, filter by empresa and zona franca)
+  // Static data like in filters
   const rutasDisponibles = mockRutasDisponibles;
-
-  const rutaActual = rutasDisponibles.find(ruta => ruta.nombre.includes(servicio?.ramal || ""));
+  const sentidosDisponibles: SentidoServicio[] = ['Ingreso', 'Salida'];
 
   const handleRutaChange = (rutaId: string) => {
     setRutaSeleccionada(rutaId);
     setSentidoSeleccionado(""); // Reset sentido when route changes
   };
 
-  const getSentidosDisponibles = (): SentidoServicio[] => {
+  const getSentidosParaRuta = (): SentidoServicio[] => {
     if (!rutaSeleccionada) return [];
     const ruta = rutasDisponibles.find(r => r.id === rutaSeleccionada);
     return ruta?.sentidosDisponibles || [];
   };
-  
-  // Debug logs
-  console.log('Rutas disponibles:', rutasDisponibles);
-  console.log('Ruta seleccionada:', rutaSeleccionada);
-  console.log('Sentidos disponibles:', getSentidosDisponibles());
 
   const handleConfirmarSolicitud = async () => {
     if (!servicio || !rutaSeleccionada || !sentidoSeleccionado || !motivo.trim()) {
@@ -186,17 +180,14 @@ export default function SolicitudCambioRutaModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="nueva-ruta">Nueva Ruta *</Label>
-                <Select onValueChange={handleRutaChange} value={rutaSeleccionada}>
+                <Select value={rutaSeleccionada} onValueChange={handleRutaChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar nueva ruta" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60]">
+                  <SelectContent>
                     {rutasDisponibles.map((ruta) => (
                       <SelectItem key={ruta.id} value={ruta.id}>
-                        <div>
-                          <div className="font-medium">{ruta.nombre}</div>
-                          <div className="text-xs text-muted-foreground">{ruta.codigo}</div>
-                        </div>
+                        {ruta.nombre} ({ruta.codigo})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -206,19 +197,17 @@ export default function SolicitudCambioRutaModal({
               <div className="space-y-2">
                 <Label htmlFor="nuevo-sentido">Nuevo Sentido *</Label>
                 <Select 
-                  onValueChange={(value) => setSentidoSeleccionado(value as SentidoServicio)} 
-                  value={sentidoSeleccionado}
+                  value={sentidoSeleccionado} 
+                  onValueChange={(value) => setSentidoSeleccionado(value as SentidoServicio)}
                   disabled={!rutaSeleccionada}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar sentido" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60]">
-                    {getSentidosDisponibles().map((sentido) => (
+                  <SelectContent>
+                    {getSentidosParaRuta().map((sentido) => (
                       <SelectItem key={sentido} value={sentido}>
-                        <Badge variant={sentido === 'Ingreso' ? 'default' : 'secondary'}>
-                          {sentido}
-                        </Badge>
+                        {sentido}
                       </SelectItem>
                     ))}
                   </SelectContent>
