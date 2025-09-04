@@ -36,6 +36,7 @@ import ServiciosRegister from '@/pages/servicios/Register';
 import ServiciosEdit from '@/pages/servicios/Edit';
 import CumplimientoServicios from '@/pages/servicios/CumplimientoServicios';
 import BitacoraCambiosRutas from '@/pages/servicios/BitacoraCambiosRutas';
+import ListadoServiciosEmpresa from '@/pages/servicios/ListadoServiciosEmpresa';
 
 import AsignacionesIndex from '@/pages/asignaciones/Index';
 import AsignacionesRegister from '@/pages/asignaciones/Register';
@@ -122,6 +123,7 @@ function App() {
             <Route path="/servicios/cumplimiento" element={<CumplimientoServicios />} />
             <Route path="/servicios/bitacora-cambios-rutas" element={<BitacoraCambiosRutas />} />
             <Route path="/servicios/solicitudes-aprobacion" element={<SolicitudesAprobacionIndex />} />
+            <Route path="/servicios/listado-empresa-transporte" element={<ListadoServiciosEmpresa />} />
             
             {/* Asignaciones routes */}
             <Route path="/asignaciones" element={<AsignacionesIndex />} />

@@ -122,6 +122,11 @@ const SidebarComponent = () => {
       icon: Truck 
     },
     { 
+      title: "Servicios por Empresa de Transporte", 
+      url: "/servicios/listado-empresa-transporte", 
+      icon: Truck 
+    },
+    { 
       title: "Cumplimiento de Servicios", 
       url: "/servicios/cumplimiento", 
       icon: FileText 
