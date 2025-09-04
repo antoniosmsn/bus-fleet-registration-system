@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUpDown, RefreshCw, Users, Eye } from "lucide-react";
-import { ServicioEmpresaTransporte, EstadoSolicitudCambio } from "@/types/servicio-empresa-transporte";
+import { ServicioEmpresaTransporte } from "@/types/servicio-empresa-transporte";
 import { verificarPermisoExportacion } from "@/services/permisosService";
 
 interface ServiciosEmpresaTableProps {
@@ -22,21 +22,6 @@ const formatCurrency = (amount: number): string => {
     currency: 'CRC',
     minimumFractionDigits: 0,
   }).format(amount);
-};
-
-const getEstadoBadgeVariant = (estado: EstadoSolicitudCambio) => {
-  switch (estado) {
-    case 'Aprobado':
-      return 'default';
-    case 'Pendiente':
-      return 'secondary';
-    case 'Rechazado':
-      return 'destructive';
-    case 'Sin solicitud':
-      return 'outline';
-    default:
-      return 'outline';
-  }
 };
 
 export default function ServiciosEmpresaTable({
@@ -185,7 +170,6 @@ export default function ServiciosEmpresaTable({
                 {puedeVerExceso && (
                   <TableHead className="text-right">Exceso</TableHead>
                 )}
-                <TableHead>Estado Solicitud</TableHead>
                 <TableHead className="text-center">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -227,11 +211,6 @@ export default function ServiciosEmpresaTable({
                       )}
                     </TableCell>
                   )}
-                  <TableCell>
-                    <Badge variant={getEstadoBadgeVariant(servicio.estadoSolicitudCambio)}>
-                      {servicio.estadoSolicitudCambio}
-                    </Badge>
-                  </TableCell>
                   <TableCell>
                     <div className="flex gap-2 justify-center">
                       <Button

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X, Filter, FileDown, Trash2 } from "lucide-react";
-import { FiltrosServicioEmpresa, EstadoSolicitudCambio, SentidoServicio } from "@/types/servicio-empresa-transporte";
+import { FiltrosServicioEmpresa, SentidoServicio } from "@/types/servicio-empresa-transporte";
 import { mockEmpresas } from "@/data/mockEmpresas";
 import { mockTransportistas } from "@/data/mockTransportistas";
 import { mockRamales } from "@/data/mockRamales";
@@ -21,7 +21,6 @@ interface ServiciosEmpresaFiltersProps {
   totalRegistros: number;
 }
 
-const estadosSolicitud: EstadoSolicitudCambio[] = ['Pendiente', 'Aprobado', 'Rechazado', 'Sin solicitud'];
 const sentidos: SentidoServicio[] = ['Ingreso', 'Salida'];
 const tiposRuta = ['Urbano', 'Interurbano', 'Regional', 'Especial'];
 const sectores = ['Centro', 'Norte', 'Sur', 'Este', 'Oeste', 'Metropolitano'];
@@ -60,7 +59,6 @@ export default function ServiciosEmpresaFilters({
     if (filtros.fechaFin) count++;
     if (filtros.horaInicio) count++;
     if (filtros.horaFin) count++;
-    if (filtros.estadoSolicitudCambio.length > 0) count++;
     if (filtros.tipoRuta.length > 0) count++;
     if (filtros.sector.length > 0) count++;
     if (filtros.ramal.length > 0) count++;
@@ -158,33 +156,6 @@ export default function ServiciosEmpresaFilters({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Estado de Solicitud de Cambio</Label>
-                <Select onValueChange={(value) => addToArrayFilter('estadoSolicitudCambio', value as EstadoSolicitudCambio)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    {estadosSolicitud.map((estado) => (
-                      <SelectItem key={estado} value={estado}>
-                        {estado}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="flex flex-wrap gap-1">
-                  {filtros.estadoSolicitudCambio.map((estado) => (
-                    <Badge key={estado} variant="outline" className="text-xs">
-                      {estado}
-                      <X 
-                        className="h-3 w-3 ml-1 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('estadoSolicitudCambio', estado)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              </div>
             </div>
           </TabsContent>
 

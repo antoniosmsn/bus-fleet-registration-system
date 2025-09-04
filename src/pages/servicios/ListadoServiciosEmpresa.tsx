@@ -5,7 +5,7 @@ import ServiciosEmpresaTable from "@/components/servicios-empresa/ServiciosEmpre
 import ServiciosEmpresaPagination from "@/components/servicios-empresa/ServiciosEmpresaPagination";
 import SolicitudCambioRutaModal from "@/components/servicios-empresa/SolicitudCambioRutaModal";
 import DetallePasajerosModal from "@/components/servicios-empresa/DetallePasajerosModal";
-import { FiltrosServicioEmpresa, ServicioEmpresaTransporte, EstadoSolicitudCambio, SentidoServicio } from "@/types/servicio-empresa-transporte";
+import { FiltrosServicioEmpresa, ServicioEmpresaTransporte, SentidoServicio } from "@/types/servicio-empresa-transporte";
 import { mockServiciosEmpresaTransporte } from "@/data/mockServiciosEmpresaTransporte";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +23,6 @@ const filtrosIniciales: FiltrosServicioEmpresa = {
   fechaFin: "",
   horaInicio: "",
   horaFin: "",
-  estadoSolicitudCambio: [],
   tipoRuta: [],
   sector: [],
   ramal: [],
@@ -115,13 +114,6 @@ export default function ListadoServiciosEmpresa() {
           
           if (filtrosAplicados.horaInicio && servicioTime < filtrosAplicados.horaInicio) return false;
           if (filtrosAplicados.horaFin && servicioTime > filtrosAplicados.horaFin) return false;
-        }
-
-        // Estado solicitud cambio filter
-        if (filtrosAplicados.estadoSolicitudCambio?.length > 0) {
-          if (!filtrosAplicados.estadoSolicitudCambio.includes(servicio.estadoSolicitudCambio)) {
-            return false;
-          }
         }
 
         // Tipo ruta filter

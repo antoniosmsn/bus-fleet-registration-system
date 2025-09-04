@@ -33,7 +33,6 @@ export interface FiltrosServicioEmpresa {
   fechaFin: string;
   horaInicio: string;
   horaFin: string;
-  estadoSolicitudCambio: EstadoSolicitudCambio[];
   tipoRuta: string[];
   sector: string[];
   ramal: string[];
