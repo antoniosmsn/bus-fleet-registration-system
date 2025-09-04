@@ -15,14 +15,14 @@ const getCurrentDate = () => {
   return today.toISOString().split('T')[0];
 };
 
-// Initial filter values - start empty to show all data
+// Initial filter values - default to current day
 const filtrosIniciales: FiltrosServicioEmpresa = {
   empresaCliente: [],
   empresaTransporte: [],
-  fechaInicio: "",
-  fechaFin: "",
-  horaInicio: "",
-  horaFin: "",
+  fechaInicio: getCurrentDate(),
+  fechaFin: getCurrentDate(),
+  horaInicio: "00:00",
+  horaFin: "23:59",
   estadoSolicitudCambio: [],
   tipoRuta: [],
   sector: [],
@@ -47,14 +47,7 @@ export default function ListadoServiciosEmpresa() {
 
   // Apply current day filter on initial load
   useEffect(() => {
-    const filtrosConFechaActual = {
-      ...filtrosIniciales,
-      fechaInicio: getCurrentDate(),
-      fechaFin: getCurrentDate(),
-      horaInicio: "00:00",
-      horaFin: "23:59",
-    };
-    setFiltrosAplicados(filtrosConFechaActual);
+    setFiltrosAplicados(filtrosIniciales);
   }, []);
 
   // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
@@ -196,14 +189,7 @@ export default function ListadoServiciosEmpresa() {
     
     // Apply current day filter again after clearing
     setTimeout(() => {
-      const filtrosConFechaActual = {
-        ...filtrosIniciales,
-        fechaInicio: getCurrentDate(),
-        fechaFin: getCurrentDate(),
-        horaInicio: "00:00",
-        horaFin: "23:59",
-      };
-      setFiltrosAplicados(filtrosConFechaActual);
+      setFiltrosAplicados(filtrosIniciales);
     }, 100);
   };
 

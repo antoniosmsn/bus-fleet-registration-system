@@ -185,7 +185,7 @@ export default function SolicitudCambioRutaModal({
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar nueva ruta" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-background border">
                     {rutasDisponibles.map((ruta) => (
                       <SelectItem key={ruta.id} value={ruta.id}>
                         <div>
@@ -208,7 +208,7 @@ export default function SolicitudCambioRutaModal({
                   <SelectTrigger>
                     <SelectValue placeholder="Seleccionar sentido" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-background border">
                     {getSentidosDisponibles().map((sentido) => (
                       <SelectItem key={sentido} value={sentido}>
                         <Badge variant={sentido === 'Ingreso' ? 'default' : 'secondary'}>

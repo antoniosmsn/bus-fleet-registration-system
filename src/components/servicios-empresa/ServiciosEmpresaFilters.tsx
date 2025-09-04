@@ -21,7 +21,7 @@ interface ServiciosEmpresaFiltersProps {
   totalRegistros: number;
 }
 
-const estadosSolicitud: EstadoSolicitudCambio[] = ['Sin solicitud', 'Pendiente', 'Aprobado', 'Rechazado'];
+const estadosSolicitud: EstadoSolicitudCambio[] = ['Pendiente', 'Aprobado', 'Rechazado', 'Sin solicitud'];
 const sentidos: SentidoServicio[] = ['Ingreso', 'Salida'];
 const tiposRuta = ['Urbano', 'Interurbano', 'Regional', 'Especial'];
 const sectores = ['Centro', 'Norte', 'Sur', 'Este', 'Oeste', 'Metropolitano'];
@@ -185,6 +185,7 @@ export default function ServiciosEmpresaFilters({
                     <SelectValue placeholder="Seleccionar estado" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
                     {estadosSolicitud.map((estado) => (
                       <SelectItem key={estado} value={estado}>
                         {estado}

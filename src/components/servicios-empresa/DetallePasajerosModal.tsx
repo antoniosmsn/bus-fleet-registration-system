@@ -177,7 +177,7 @@ export default function DetallePasajerosModal({
             <Card className="h-full flex flex-col">
               <CardContent className="p-0 flex-1 overflow-hidden">
                 <div className="overflow-auto h-full">
-                  <Table>
+                  <Table className="min-w-[1200px]">
                     <TableHeader className="sticky top-0 bg-background z-10">
                       <TableRow>
                         {puedeVerDatosPersonales && (
