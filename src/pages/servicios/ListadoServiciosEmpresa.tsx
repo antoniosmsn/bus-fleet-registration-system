@@ -324,16 +324,14 @@ export default function ListadoServiciosEmpresa() {
         />
 
         {/* Paginación */}
-        {totalPages > 1 && (
-          <ServiciosEmpresaPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            itemsPerPage={itemsPerPage}
-            totalItems={serviciosOrdenados.length}
-            onPageChange={handlePageChange}
-            onItemsPerPageChange={handleItemsPerPageChange}
-          />
-        )}
+        <ServiciosEmpresaPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={serviciosOrdenados.length}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
 
         {/* Modals */}
         <SolicitudCambioRutaModal
