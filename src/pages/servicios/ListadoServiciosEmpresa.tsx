@@ -239,11 +239,15 @@ export default function ListadoServiciosEmpresa() {
   };
 
   return (
-    <Layout
-      title="Servicios por Empresa de Transporte"
-      description="Listado y filtrado de servicios asignados por empresa de transporte con gestión de cambios de ruta"
-    >
+    <Layout>
       <div className="space-y-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Servicios por Empresa de Transporte</h1>
+          <p className="text-muted-foreground mt-1">
+            Listado y filtrado de servicios asignados por empresa de transporte con gestión de cambios de ruta
+          </p>
+        </div>
         {/* Filtros */}
         <ServiciosEmpresaFilters
           filtros={filtros}
