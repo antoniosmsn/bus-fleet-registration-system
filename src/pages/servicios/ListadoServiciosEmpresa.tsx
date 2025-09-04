@@ -67,89 +67,105 @@ export default function ListadoServiciosEmpresa() {
 
   // Filter services based on applied filters
   const serviciosFiltrados = useMemo(() => {
-    const filtered = mockServiciosEmpresaTransporte.filter(servicio => {
-      // Empresa cliente filter
-      if (filtrosAplicados.empresaCliente.length > 0) {
-        if (!filtrosAplicados.empresaCliente.includes(servicio.cliente)) {
-          return false;
-        }
+    try {
+      // Ensure we have valid data
+      if (!Array.isArray(mockServiciosEmpresaTransporte)) {
+        console.error('mockServiciosEmpresaTransporte is not an array');
+        return [];
       }
 
-      // Empresa transporte filter
-      if (filtrosAplicados.empresaTransporte.length > 0) {
-        if (!filtrosAplicados.empresaTransporte.includes(servicio.transportista)) {
-          return false;
+      const filtered = mockServiciosEmpresaTransporte.filter(servicio => {
+        // Empresa cliente filter
+        if (filtrosAplicados.empresaCliente?.length > 0) {
+          if (!filtrosAplicados.empresaCliente.includes(servicio.cliente)) {
+            return false;
+          }
         }
-      }
 
-      // Date range filter
-      if (filtrosAplicados.fechaInicio || filtrosAplicados.fechaFin) {
-        const servicioDate = parseDate(servicio.fechaServicio);
-        
-        if (filtrosAplicados.fechaInicio) {
-          const fechaInicio = new Date(filtrosAplicados.fechaInicio);
-          fechaInicio.setHours(0, 0, 0, 0); // Start of day
-          if (servicioDate < fechaInicio) return false;
+        // Empresa transporte filter
+        if (filtrosAplicados.empresaTransporte?.length > 0) {
+          if (!filtrosAplicados.empresaTransporte.includes(servicio.transportista)) {
+            return false;
+          }
         }
-        
-        if (filtrosAplicados.fechaFin) {
-          const fechaFin = new Date(filtrosAplicados.fechaFin);
-          fechaFin.setHours(23, 59, 59, 999); // End of day
-          if (servicioDate > fechaFin) return false;
+
+        // Date range filter
+        if (filtrosAplicados.fechaInicio || filtrosAplicados.fechaFin) {
+          const servicioDate = parseDate(servicio.fechaServicio);
+          
+          if (filtrosAplicados.fechaInicio) {
+            const fechaInicio = new Date(filtrosAplicados.fechaInicio);
+            fechaInicio.setHours(0, 0, 0, 0); // Start of day
+            if (servicioDate < fechaInicio) return false;
+          }
+          
+          if (filtrosAplicados.fechaFin) {
+            const fechaFin = new Date(filtrosAplicados.fechaFin);
+            fechaFin.setHours(23, 59, 59, 999); // End of day
+            if (servicioDate > fechaFin) return false;
+          }
         }
-      }
 
-      // Time range filter
-      if (filtrosAplicados.horaInicio || filtrosAplicados.horaFin) {
-        const servicioTime = servicio.horaServicio;
-        
-        if (filtrosAplicados.horaInicio && servicioTime < filtrosAplicados.horaInicio) return false;
-        if (filtrosAplicados.horaFin && servicioTime > filtrosAplicados.horaFin) return false;
-      }
-
-      // Estado solicitud cambio filter
-      if (filtrosAplicados.estadoSolicitudCambio.length > 0) {
-        if (!filtrosAplicados.estadoSolicitudCambio.includes(servicio.estadoSolicitudCambio)) {
-          return false;
+        // Time range filter
+        if (filtrosAplicados.horaInicio || filtrosAplicados.horaFin) {
+          const servicioTime = servicio.horaServicio;
+          
+          if (filtrosAplicados.horaInicio && servicioTime < filtrosAplicados.horaInicio) return false;
+          if (filtrosAplicados.horaFin && servicioTime > filtrosAplicados.horaFin) return false;
         }
-      }
 
-      // Tipo ruta filter
-      if (filtrosAplicados.tipoRuta.length > 0) {
-        if (!filtrosAplicados.tipoRuta.includes(servicio.tipoRuta)) {
-          return false;
+        // Estado solicitud cambio filter
+        if (filtrosAplicados.estadoSolicitudCambio?.length > 0) {
+          if (!filtrosAplicados.estadoSolicitudCambio.includes(servicio.estadoSolicitudCambio)) {
+            return false;
+          }
         }
-      }
 
-      // Sector filter
-      if (filtrosAplicados.sector.length > 0) {
-        if (!filtrosAplicados.sector.includes(servicio.sector)) {
-          return false;
+        // Tipo ruta filter
+        if (filtrosAplicados.tipoRuta?.length > 0) {
+          if (!filtrosAplicados.tipoRuta.includes(servicio.tipoRuta)) {
+            return false;
+          }
         }
-      }
 
-      // Ramal filter
-      if (filtrosAplicados.ramal.length > 0) {
-        if (!filtrosAplicados.ramal.includes(servicio.ramal)) {
-          return false;
+        // Sector filter
+        if (filtrosAplicados.sector?.length > 0) {
+          if (!filtrosAplicados.sector.includes(servicio.sector)) {
+            return false;
+          }
         }
-      }
 
-      // Sentido filter
-      if (filtrosAplicados.sentido.length > 0) {
-        if (!filtrosAplicados.sentido.includes(servicio.sentido)) {
-          return false;
+        // Ramal filter
+        if (filtrosAplicados.ramal?.length > 0) {
+          if (!filtrosAplicados.ramal.includes(servicio.ramal)) {
+            return false;
+          }
         }
-      }
 
-      return true;
-    });
-    
-    return filtered;
+        // Sentido filter
+        if (filtrosAplicados.sentido?.length > 0) {
+          if (!filtrosAplicados.sentido.includes(servicio.sentido)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+      
+      return Array.isArray(filtered) ? filtered : [];
+    } catch (error) {
+      console.error('Error filtering services:', error);
+      return [];
+    }
   }, [filtrosAplicados]);
 
   // Sort services
   const serviciosOrdenados = useMemo(() => {
+    if (!Array.isArray(serviciosFiltrados)) {
+      console.error('serviciosFiltrados is not an array:', serviciosFiltrados);
+      return [];
+    }
+
     return [...serviciosFiltrados].sort((a, b) => {
       let valueA: any = a[sortField];
       let valueB: any = b[sortField];
