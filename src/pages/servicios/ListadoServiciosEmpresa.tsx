@@ -15,14 +15,14 @@ const getCurrentDate = () => {
   return today.toISOString().split('T')[0];
 };
 
-// Initial filter values - default to current day
+// Initial filter values - show all data initially, then apply current day
 const filtrosIniciales: FiltrosServicioEmpresa = {
   empresaCliente: [],
   empresaTransporte: [],
-  fechaInicio: getCurrentDate(),
-  fechaFin: getCurrentDate(),
-  horaInicio: "00:00",
-  horaFin: "23:59",
+  fechaInicio: "",
+  fechaFin: "",
+  horaInicio: "",
+  horaFin: "",
   estadoSolicitudCambio: [],
   tipoRuta: [],
   sector: [],
@@ -47,7 +47,16 @@ export default function ListadoServiciosEmpresa() {
 
   // Apply current day filter on initial load
   useEffect(() => {
-    setFiltrosAplicados(filtrosIniciales);
+    const fechaHoy = getCurrentDate();
+    const filtrosHoy = {
+      ...filtrosIniciales,
+      fechaInicio: fechaHoy,
+      fechaFin: fechaHoy,
+      horaInicio: "00:00",
+      horaFin: "23:59",
+    };
+    setFiltros(filtrosHoy);
+    setFiltrosAplicados(filtrosHoy);
   }, []);
 
   // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
@@ -58,7 +67,7 @@ export default function ListadoServiciosEmpresa() {
 
   // Filter services based on applied filters
   const serviciosFiltrados = useMemo(() => {
-    return mockServiciosEmpresaTransporte.filter(servicio => {
+    const filtered = mockServiciosEmpresaTransporte.filter(servicio => {
       // Empresa cliente filter
       if (filtrosAplicados.empresaCliente.length > 0) {
         if (!filtrosAplicados.empresaCliente.includes(servicio.cliente)) {
@@ -79,11 +88,13 @@ export default function ListadoServiciosEmpresa() {
         
         if (filtrosAplicados.fechaInicio) {
           const fechaInicio = new Date(filtrosAplicados.fechaInicio);
+          fechaInicio.setHours(0, 0, 0, 0); // Start of day
           if (servicioDate < fechaInicio) return false;
         }
         
         if (filtrosAplicados.fechaFin) {
           const fechaFin = new Date(filtrosAplicados.fechaFin);
+          fechaFin.setHours(23, 59, 59, 999); // End of day
           if (servicioDate > fechaFin) return false;
         }
       }
@@ -133,6 +144,8 @@ export default function ListadoServiciosEmpresa() {
 
       return true;
     });
+    
+    return filtered;
   }, [filtrosAplicados]);
 
   // Sort services
@@ -189,7 +202,15 @@ export default function ListadoServiciosEmpresa() {
     
     // Apply current day filter again after clearing
     setTimeout(() => {
-      setFiltrosAplicados(filtrosIniciales);
+      const fechaHoy = getCurrentDate();
+      const filtrosHoy = {
+        ...filtrosIniciales,
+        fechaInicio: fechaHoy,
+        fechaFin: fechaHoy,
+        horaInicio: "00:00",
+        horaFin: "23:59",
+      };
+      setFiltrosAplicados(filtrosHoy);
     }, 100);
   };
 
