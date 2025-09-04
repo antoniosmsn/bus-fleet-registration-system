@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import ServiciosEmpresaFilters from "@/components/servicios-empresa/ServiciosEmpresaFilters";
 import ServiciosEmpresaTable from "@/components/servicios-empresa/ServiciosEmpresaTable";
@@ -15,14 +15,14 @@ const getCurrentDate = () => {
   return today.toISOString().split('T')[0];
 };
 
-// Initial filter values - default to current day
+// Initial filter values - start empty to show all data
 const filtrosIniciales: FiltrosServicioEmpresa = {
   empresaCliente: [],
   empresaTransporte: [],
-  fechaInicio: getCurrentDate(),
-  fechaFin: getCurrentDate(),
-  horaInicio: "00:00",
-  horaFin: "23:59",
+  fechaInicio: "",
+  fechaFin: "",
+  horaInicio: "",
+  horaFin: "",
   estadoSolicitudCambio: [],
   tipoRuta: [],
   sector: [],
@@ -44,6 +44,18 @@ export default function ListadoServiciosEmpresa() {
   const [servicioSeleccionado, setServicioSeleccionado] = useState<ServicioEmpresaTransporte | null>(null);
   
   const { toast } = useToast();
+
+  // Apply current day filter on initial load
+  useEffect(() => {
+    const filtrosConFechaActual = {
+      ...filtrosIniciales,
+      fechaInicio: getCurrentDate(),
+      fechaFin: getCurrentDate(),
+      horaInicio: "00:00",
+      horaFin: "23:59",
+    };
+    setFiltrosAplicados(filtrosConFechaActual);
+  }, []);
 
   // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
   const parseDate = (dateStr: string): Date => {
@@ -181,6 +193,18 @@ export default function ListadoServiciosEmpresa() {
     setFiltros(filtrosLimpios);
     setFiltrosAplicados(filtrosLimpios);
     setCurrentPage(1);
+    
+    // Apply current day filter again after clearing
+    setTimeout(() => {
+      const filtrosConFechaActual = {
+        ...filtrosIniciales,
+        fechaInicio: getCurrentDate(),
+        fechaFin: getCurrentDate(),
+        horaInicio: "00:00",
+        horaFin: "23:59",
+      };
+      setFiltrosAplicados(filtrosConFechaActual);
+    }, 100);
   };
 
   const handleSort = (campo: keyof ServicioEmpresaTransporte) => {
@@ -207,6 +231,7 @@ export default function ListadoServiciosEmpresa() {
   };
 
   const handleVerDetallePasajeros = (servicio: ServicioEmpresaTransporte) => {
+    console.log('Abriendo modal detalle para servicio:', servicio.id);
     setServicioSeleccionado(servicio);
     setDetallePasajerosModalOpen(true);
   };
