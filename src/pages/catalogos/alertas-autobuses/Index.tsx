@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mockTiposAlertaAutobus } from "@/data/mockTiposAlertaAutobus";
 import { TipoAlertaAutobus, AlertaAutobusFiltros } from "@/types/alerta-autobus";
 import { Plus, Search, Edit, ChevronLeft, ChevronRight } from "lucide-react";
@@ -123,13 +123,8 @@ export default function AlertasAutobusesIndex() {
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="busqueda" className="w-full">
-            <TabsList>
-              <TabsTrigger value="busqueda">Búsqueda</TabsTrigger>
-              <TabsTrigger value="estado">Estado</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="busqueda" className="space-y-4">
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <Search className="h-4 w-4 text-muted-foreground" />
                 <Input
@@ -139,31 +134,33 @@ export default function AlertasAutobusesIndex() {
                   className="flex-1"
                 />
               </div>
-            </TabsContent>
-            
-            <TabsContent value="estado" className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {["todos", "activos", "inactivos"].map((estado) => (
-                  <Button
-                    key={estado}
-                    variant={filtros.estado === estado ? "default" : "outline"}
-                    onClick={() => setFiltros(prev => ({ ...prev, estado: estado as any }))}
-                    className="capitalize"
-                  >
-                    {estado}
-                  </Button>
-                ))}
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Estado</label>
+                <Select
+                  value={filtros.estado}
+                  onValueChange={(value) => setFiltros(prev => ({ ...prev, estado: value as any }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="activos">Activos</SelectItem>
+                    <SelectItem value="inactivos">Inactivos</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
 
-          <div className="flex items-center space-x-2 mt-4">
-            <Button onClick={aplicarFiltros}>
-              Aplicar Filtros
-            </Button>
-            <Button variant="outline" onClick={limpiarFiltros}>
-              Limpiar
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button onClick={aplicarFiltros}>
+                Aplicar Filtros
+              </Button>
+              <Button variant="outline" onClick={limpiarFiltros}>
+                Limpiar
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
