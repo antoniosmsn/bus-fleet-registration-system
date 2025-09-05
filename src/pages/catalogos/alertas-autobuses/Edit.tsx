@@ -4,14 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TipoAlertaAutobus, TipoAlertaAutobusForm } from "@/types/alerta-autobus";
 import { mockTiposAlertaAutobus } from "@/data/mockTiposAlertaAutobus";
-import { registrarEdicionTipoAlerta, registrarActivacionTipoAlerta } from "@/services/bitacoraService";
+import { registrarEdicionTipoAlerta } from "@/services/bitacoraService";
 
 interface ErroresFormulario {
   nombre?: string;
+  motivos?: { [key: number]: string };
 }
 
 export default function EditarTipoAlertaAutobus() {
@@ -21,8 +24,10 @@ export default function EditarTipoAlertaAutobus() {
 
   const [tipoOriginal, setTipoOriginal] = useState<TipoAlertaAutobus | null>(null);
   const [formulario, setFormulario] = useState<TipoAlertaAutobusForm>({
-    nombre: ""
+    nombre: "",
+    motivos: []
   });
+  const [motivosEliminados, setMotivosEliminados] = useState<number[]>([]);
 
   const [errores, setErrores] = useState<ErroresFormulario>({});
 
@@ -32,7 +37,12 @@ export default function EditarTipoAlertaAutobus() {
     if (tipoEncontrado) {
       setTipoOriginal(tipoEncontrado);
       setFormulario({
-        nombre: tipoEncontrado.nombre
+        nombre: tipoEncontrado.nombre,
+        motivos: tipoEncontrado.motivos.map(motivo => ({
+          id: motivo.id,
+          nombre: motivo.nombre,
+          activo: motivo.activo
+        }))
       });
     } else {
       toast({
@@ -46,6 +56,7 @@ export default function EditarTipoAlertaAutobus() {
 
   const validarFormulario = (): boolean => {
     const nuevosErrores: ErroresFormulario = {};
+    const erroresMotivos: { [key: number]: string } = {};
 
     // Validar nombre
     if (!formulario.nombre.trim()) {
@@ -74,8 +85,88 @@ export default function EditarTipoAlertaAutobus() {
       }
     }
 
+    // Validar motivos
+    formulario.motivos.forEach((motivo, index) => {
+      if (!motivo.nombre.trim()) {
+        erroresMotivos[index] = "El motivo es obligatorio";
+      } else if (motivo.nombre.trim().length < 3) {
+        erroresMotivos[index] = "El motivo debe tener al menos 3 caracteres";
+      } else if (motivo.nombre.trim().length > 200) {
+        erroresMotivos[index] = "El motivo no puede exceder los 200 caracteres";
+      } else if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d10-9\s\-\/,.]+$/.test(motivo.nombre.trim())) {
+        erroresMotivos[index] = "El motivo contiene caracteres no permitidos";
+      }
+    });
+
+    // Verificar motivos duplicados
+    const motivosNormalizados = formulario.motivos.map(motivo => 
+      motivo.nombre.trim().toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    );
+
+    motivosNormalizados.forEach((motivoNormalizado, index) => {
+      if (motivoNormalizado && motivosNormalizados.indexOf(motivoNormalizado) !== index) {
+        erroresMotivos[index] = "Este motivo ya existe en la lista";
+      }
+    });
+
+    if (Object.keys(erroresMotivos).length > 0) {
+      nuevosErrores.motivos = erroresMotivos;
+    }
+
     setErrores(nuevosErrores);
     return Object.keys(nuevosErrores).length === 0;
+  };
+
+  const agregarMotivo = () => {
+    setFormulario(prev => ({
+      ...prev,
+      motivos: [...prev.motivos, { nombre: "", activo: true, esNuevo: true }]
+    }));
+  };
+
+  const eliminarMotivo = (index: number) => {
+    const motivo = formulario.motivos[index];
+    
+    // Si el motivo tiene ID (existe en BD), marcarlo para eliminación lógica
+    if (motivo.id) {
+      setMotivosEliminados(prev => [...prev, motivo.id!]);
+    }
+    
+    // Remover del formulario
+    setFormulario(prev => ({
+      ...prev,
+      motivos: prev.motivos.filter((_, i) => i !== index)
+    }));
+    
+    // Limpiar errores
+    setErrores(prev => {
+      const nuevosErrores = { ...prev };
+      if (nuevosErrores.motivos) {
+        const { [index]: eliminado, ...restantes } = nuevosErrores.motivos;
+        if (Object.keys(restantes).length === 0) {
+          delete nuevosErrores.motivos;
+        } else {
+          nuevosErrores.motivos = restantes;
+        }
+      }
+      return nuevosErrores;
+    });
+  };
+
+  const actualizarMotivo = (index: number, campo: string, valor: any) => {
+    setFormulario(prev => ({
+      ...prev,
+      motivos: prev.motivos.map((motivo, i) =>
+        i === index ? { ...motivo, [campo]: valor } : motivo
+      )
+    }));
+  };
+
+  const puedeEliminarMotivo = (motivo: any): boolean => {
+    // Aquí se puede agregar lógica para determinar si un motivo puede eliminarse
+    return true;
   };
 
   const actualizarTipoAlerta = () => {
@@ -152,6 +243,73 @@ export default function EditarTipoAlertaAutobus() {
             )}
             <p className="text-xs text-muted-foreground">
               Entre 3 y 100 caracteres. Solo letras, números, espacios, guiones y barras.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-medium">
+                Motivos de la Alerta <span className="text-destructive">*</span>
+              </Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={agregarMotivo}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Agregar motivo
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              {formulario.motivos.map((motivo, index) => (
+                <div key={index} className="border border-border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={motivo.activo}
+                        onCheckedChange={(checked) => actualizarMotivo(index, 'activo', checked)}
+                      />
+                      <Label className="text-sm">
+                        {motivo.activo ? 'Activo' : 'Inactivo'}
+                      </Label>
+                    </div>
+                    {puedeEliminarMotivo(motivo) && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => eliminarMotivo(index)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor={`motivo-${index}`}>
+                      Motivo {index + 1} <span className="text-destructive">*</span>
+                    </Label>
+                    <Textarea
+                      id={`motivo-${index}`}
+                      value={motivo.nombre}
+                      onChange={(e) => actualizarMotivo(index, 'nombre', e.target.value)}
+                      placeholder="Ingrese el motivo de la alerta"
+                      className={errores.motivos?.[index] ? "border-destructive" : ""}
+                      maxLength={200}
+                      rows={2}
+                    />
+                    {errores.motivos?.[index] && (
+                      <p className="text-sm text-destructive">{errores.motivos[index]}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Entre 3 y 200 caracteres por motivo. Solo letras, números, espacios, guiones, barras, comas y puntos.
             </p>
           </div>
 

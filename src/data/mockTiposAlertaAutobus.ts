@@ -13,6 +13,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
     id: 1,
     nombre: "Falla mecánica",
     activo: true,
+    motivos: [
+      {
+        id: 1,
+        nombre: "Problema con el motor",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(15, 2)
+      },
+      {
+        id: 2,
+        nombre: "Falla en la transmisión",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(15, 2)
+      }
+    ],
     fechaCreacion: generarFechaDinamica(15, 2),
     fechaModificacion: generarFechaDinamica(3, 8)
   },
@@ -20,6 +34,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
     id: 2,
     nombre: "Trayecto bloqueado",
     activo: true,
+    motivos: [
+      {
+        id: 3,
+        nombre: "Accidente de tránsito",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(12, 5)
+      },
+      {
+        id: 4,
+        nombre: "Obra en construcción",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(12, 5)
+      }
+    ],
     fechaCreacion: generarFechaDinamica(12, 5),
     fechaModificacion: generarFechaDinamica(1, 3)
   },
@@ -27,12 +55,40 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
     id: 3,
     nombre: "Pinchazo de llanta",
     activo: true,
+    motivos: [
+      {
+        id: 5,
+        nombre: "Llanta delantera pinchada",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(8, 12)
+      },
+      {
+        id: 6,
+        nombre: "Llanta trasera pinchada",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(8, 12)
+      }
+    ],
     fechaCreacion: generarFechaDinamica(8, 12),
   },
   {
     id: 4,
     nombre: "Falla eléctrica",
     activo: false,
+    motivos: [
+      {
+        id: 7,
+        nombre: "Problema con batería",
+        activo: false,
+        fechaCreacion: generarFechaDinamica(20, 7)
+      },
+      {
+        id: 8,
+        nombre: "Cortocircuito",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(20, 7)
+      }
+    ],
     fechaCreacion: generarFechaDinamica(20, 7),
     fechaModificacion: generarFechaDinamica(5, 2)
   },
@@ -40,73 +96,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
     id: 5,
     nombre: "Problema de combustible",
     activo: true,
+    motivos: [
+      {
+        id: 9,
+        nombre: "Tanque vacío",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(6, 15)
+      },
+      {
+        id: 10,
+        nombre: "Fuga de combustible",
+        activo: true,
+        fechaCreacion: generarFechaDinamica(6, 15)
+      }
+    ],
     fechaCreacion: generarFechaDinamica(6, 15),
-  },
-  {
-    id: 6,
-    nombre: "Avería del aire acondicionado",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(4, 9),
-    fechaModificacion: generarFechaDinamica(0, 18)
-  },
-  {
-    id: 7,
-    nombre: "Problema con puertas",
-    activo: false,
-    fechaCreacion: generarFechaDinamica(25, 14),
-    fechaModificacion: generarFechaDinamica(10, 6)
-  },
-  {
-    id: 8,
-    nombre: "Falla en sistema de comunicación",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(2, 4),
-  },
-  {
-    id: 9,
-    nombre: "Sobrecalentamiento del motor",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(18, 11),
-    fechaModificacion: generarFechaDinamica(7, 20)
-  },
-  {
-    id: 10,
-    nombre: "Problema de dirección",
-    activo: false,
-    fechaCreacion: generarFechaDinamica(30, 8),
-    fechaModificacion: generarFechaDinamica(15, 3)
-  },
-  {
-    id: 11,
-    nombre: "Falla del sistema de frenos",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(1, 6),
-  },
-  {
-    id: 12,
-    nombre: "Problema con transmisión",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(9, 13),
-    fechaModificacion: generarFechaDinamica(2, 1)
-  },
-  {
-    id: 13,
-    nombre: "Filtros obstruidos",
-    activo: false,
-    fechaCreacion: generarFechaDinamica(14, 18),
-    fechaModificacion: generarFechaDinamica(6, 12)
-  },
-  {
-    id: 14,
-    nombre: "Problema con bomba de combustible",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(0, 8),
-  },
-  {
-    id: 15,
-    nombre: "Sistema de suspensión averiado",
-    activo: true,
-    fechaCreacion: generarFechaDinamica(22, 4),
-    fechaModificacion: generarFechaDinamica(8, 15)
   }
 ];
