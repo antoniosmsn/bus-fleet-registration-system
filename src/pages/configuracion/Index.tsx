@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Settings, Monitor, Calendar, Tags, BookOpen, FileText, MapPin } from 'lucide-react';
+import { Settings, Monitor, Calendar, Tags, BookOpen, FileText, MapPin, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -44,6 +44,14 @@ const ConfiguracionIndex = () => {
       url: '/catalogos/alertas-pasajeros',
       color: 'text-red-600',
       bgColor: 'bg-red-50'
+    },
+    {
+      title: 'Catálogo de Alertas de Autobuses',
+      description: 'Gestión de tipos de alerta para eventos relacionados con autobuses',
+      icon: AlertTriangle,
+      url: '/catalogos/alertas-autobuses',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
     },
     {
       title: 'Perfiles y Permisos',

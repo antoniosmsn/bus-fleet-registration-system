@@ -78,6 +78,11 @@ import AlertasPasajerosIndex from '@/pages/catalogos/alertas-pasajeros/Index';
 import AlertasPasajerosRegister from '@/pages/catalogos/alertas-pasajeros/Register';
 import AlertasPasajerosEdit from '@/pages/catalogos/alertas-pasajeros/Edit';
 
+// Catálogos Alertas Autobuses
+import AlertasAutobusesIndex from '@/pages/catalogos/alertas-autobuses/Index';
+import AlertasAutobusesRegister from '@/pages/catalogos/alertas-autobuses/Register';
+import AlertasAutobusesEdit from '@/pages/catalogos/alertas-autobuses/Edit';
+
 // Create a client
 const queryClient = new QueryClient();
 
@@ -176,6 +181,11 @@ function App() {
             <Route path="/catalogos/alertas-pasajeros" element={<AlertasPasajerosIndex />} />
             <Route path="/catalogos/alertas-pasajeros/registrar" element={<AlertasPasajerosRegister />} />
             <Route path="/catalogos/alertas-pasajeros/editar/:id" element={<AlertasPasajerosEdit />} />
+            
+            {/* Catálogos Alertas Autobuses routes */}
+            <Route path="/catalogos/alertas-autobuses" element={<AlertasAutobusesIndex />} />
+            <Route path="/catalogos/alertas-autobuses/register" element={<AlertasAutobusesRegister />} />
+            <Route path="/catalogos/alertas-autobuses/edit/:id" element={<AlertasAutobusesEdit />} />
             
             {/* Programación routes */}
             <Route path="/programacion/parametros" element={<ProgramacionParametros />} />
