@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TipoAlertaAutobus, TipoAlertaAutobusForm } from "@/types/alerta-autobus";
@@ -21,9 +20,8 @@ export default function EditarTipoAlertaAutobus() {
   const { toast } = useToast();
 
   const [tipoOriginal, setTipoOriginal] = useState<TipoAlertaAutobus | null>(null);
-  const [formulario, setFormulario] = useState<TipoAlertaAutobusForm & { activo: boolean }>({
-    nombre: "",
-    activo: true
+  const [formulario, setFormulario] = useState<TipoAlertaAutobusForm>({
+    nombre: ""
   });
 
   const [errores, setErrores] = useState<ErroresFormulario>({});
@@ -34,8 +32,7 @@ export default function EditarTipoAlertaAutobus() {
     if (tipoEncontrado) {
       setTipoOriginal(tipoEncontrado);
       setFormulario({
-        nombre: tipoEncontrado.nombre,
-        activo: tipoEncontrado.activo
+        nombre: tipoEncontrado.nombre
       });
     } else {
       toast({
@@ -90,17 +87,11 @@ export default function EditarTipoAlertaAutobus() {
     const tipoActualizado = {
       ...tipoOriginal,
       nombre: formulario.nombre.trim(),
-      activo: formulario.activo,
       fechaModificacion: new Date().toISOString()
     };
 
     console.log("Actualizando tipo de alerta:", tipoActualizado);
     registrarEdicionTipoAlerta(tipoActualizado);
-
-    // Si cambió el estado, registrar también el cambio de estado
-    if (tipoOriginal.activo !== formulario.activo) {
-      registrarActivacionTipoAlerta(tipoActualizado, formulario.activo);
-    }
 
     toast({
       title: "Éxito",
@@ -162,14 +153,6 @@ export default function EditarTipoAlertaAutobus() {
             <p className="text-xs text-muted-foreground">
               Entre 3 y 100 caracteres. Solo letras, números, espacios, guiones y barras.
             </p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={formulario.activo}
-              onCheckedChange={(checked) => setFormulario(prev => ({ ...prev, activo: checked }))}
-            />
-            <Label>Activo</Label>
           </div>
 
           <div className="flex items-center space-x-2 pt-4">
