@@ -1,24 +1,39 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Bus, User } from 'lucide-react';
+import { Bus, User, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  
+  // Check if we're inside a SidebarProvider
+  let hasSidebarContext = false;
+  try {
+    useSidebar();
+    hasSidebarContext = true;
+  } catch {
+    hasSidebarContext = false;
+  }
 
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
-            <SidebarTrigger className="mr-2" />
+            {hasSidebarContext ? (
+              <SidebarTrigger className="mr-2" />
+            ) : (
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Menu className="h-4 w-4" />
+              </Button>
+            )}
             <Link to="/" className="flex items-center md:hidden">
               <Bus className="h-8 w-8 text-transport-600" />
               <span className="ml-2 text-xl font-semibold text-gray-900">SistemaTransporte</span>
