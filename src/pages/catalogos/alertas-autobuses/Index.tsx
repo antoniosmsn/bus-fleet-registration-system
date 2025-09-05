@@ -183,6 +183,7 @@ export default function AlertasAutobusesIndex() {
                 <tr className="border-b">
                   <th className="text-left p-4 font-semibold">Tipo de Alerta</th>
                   <th className="text-left p-4 font-semibold">Estado</th>
+                  <th className="text-left p-4 font-semibold">Motivos</th>
                   <th className="text-right p-4 font-semibold">Acciones</th>
                 </tr>
               </thead>
@@ -194,6 +195,11 @@ export default function AlertasAutobusesIndex() {
                       <Badge variant={tipo.activo ? "default" : "secondary"}>
                         {tipo.activo ? "Activo" : "Inactivo"}
                       </Badge>
+                    </td>
+                    <td className="p-4">
+                      <span className="text-sm text-muted-foreground">
+                        {tipo.motivos.length} motivo{tipo.motivos.length !== 1 ? 's' : ''}
+                      </span>
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-end space-x-2">
