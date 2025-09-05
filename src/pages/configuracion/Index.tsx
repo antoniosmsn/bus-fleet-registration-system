@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Settings, Monitor, Calendar, Tags, BookOpen, FileText, MapPin, AlertTriangle } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
+import { ConfiguracionLayout } from '@/components/configuracion/ConfiguracionLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ConfiguracionIndex = () => {
@@ -72,12 +72,12 @@ const ConfiguracionIndex = () => {
   ];
 
   return (
-    <Layout>
+    <ConfiguracionLayout>
       <div className="max-w-7xl mx-auto space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Configuración del Sistema</h1>
-            <p className="text-muted-foreground">Gestión y configuración de parámetros del sistema</p>
+            <h1 className="text-3xl font-bold text-foreground">Panel de Configuración</h1>
+            <p className="text-muted-foreground">Selecciona una opción del menú lateral o haz clic en las tarjetas para acceder a las diferentes configuraciones</p>
           </div>
         </div>
 
@@ -108,7 +108,7 @@ const ConfiguracionIndex = () => {
           ))}
         </div>
       </div>
-    </Layout>
+    </ConfiguracionLayout>
   );
 };
 
