@@ -44,6 +44,11 @@ const SidebarComponent = () => {
       icon: BookOpen 
     },
     { 
+      title: "Catálogos de alertas de autobuses", 
+      url: "/catalogos/alertas-autobuses", 
+      icon: AlertTriangle 
+    },
+    { 
       title: "Perfiles y Permisos", 
       url: "/perfiles", 
       icon: FileText 
