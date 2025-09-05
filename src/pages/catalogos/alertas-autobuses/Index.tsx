@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { mockTiposAlertaAutobus } from "@/data/mockTiposAlertaAutobus";
 import { TipoAlertaAutobus, AlertaAutobusFiltros } from "@/types/alerta-autobus";
 import { Plus, Search, Edit, ChevronLeft, ChevronRight, ArrowLeft, RotateCcw } from "lucide-react";
@@ -30,6 +31,7 @@ export default function AlertasAutobusesIndex() {
     estado: "todos"
   });
   const [paginaActual, setPaginaActual] = useState(1);
+  const [itemsPorPagina, setItemsPorPagina] = useState(10);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<TipoAlertaAutobus | null>(null);
   const [mostrarDialogoCambioEstado, setMostrarDialogoCambioEstado] = useState(false);
 
@@ -55,12 +57,12 @@ export default function AlertasAutobusesIndex() {
 
   // Datos paginados
   const tiposPaginados = useMemo(() => {
-    const inicio = (paginaActual - 1) * ITEMS_POR_PAGINA;
-    const fin = inicio + ITEMS_POR_PAGINA;
+    const inicio = (paginaActual - 1) * itemsPorPagina;
+    const fin = inicio + itemsPorPagina;
     return tiposFiltrados.slice(inicio, fin);
-  }, [tiposFiltrados, paginaActual]);
+  }, [tiposFiltrados, paginaActual, itemsPorPagina]);
 
-  const totalPaginas = Math.ceil(tiposFiltrados.length / ITEMS_POR_PAGINA);
+  const totalPaginas = Math.ceil(tiposFiltrados.length / itemsPorPagina);
 
   // Manejadores
   const aplicarFiltros = () => {
@@ -220,7 +222,6 @@ export default function AlertasAutobusesIndex() {
                 ))}
               </tbody>
             </table>
-            
             {tiposPaginados.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No se encontraron tipos de alerta</p>
@@ -228,50 +229,88 @@ export default function AlertasAutobusesIndex() {
             )}
           </div>
 
-          {/* Paginación */}
-          {totalPaginas > 1 && (
-            <div className="flex items-center justify-between mt-6">
-              <div className="text-sm text-muted-foreground">
-                Mostrando {((paginaActual - 1) * ITEMS_POR_PAGINA) + 1} - {Math.min(paginaActual * ITEMS_POR_PAGINA, tiposFiltrados.length)} de {tiposFiltrados.length} registros
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPaginaActual(paginaActual - 1)}
-                  disabled={paginaActual === 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  Anterior
-                </Button>
-                
-                <div className="flex items-center space-x-1">
-                  {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((pagina) => (
-                    <Button
-                      key={pagina}
-                      variant={paginaActual === pagina ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setPaginaActual(pagina)}
-                      className="w-8 h-8 p-0"
-                    >
-                      {pagina}
-                    </Button>
-                  ))}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPaginaActual(paginaActual + 1)}
-                  disabled={paginaActual === totalPaginas}
-                >
-                  Siguiente
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+          <div className="flex flex-col gap-4 sm:flex-row justify-between items-center mt-6">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-muted-foreground">Registros por página:</span>
+              <Select
+                value={itemsPorPagina.toString()}
+                onValueChange={(value) => {
+                  setItemsPorPagina(parseInt(value));
+                  setPaginaActual(1);
+                }}
+              >
+                <SelectTrigger className="w-[80px]">
+                  <SelectValue placeholder={itemsPorPagina} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          )}
+            
+            <div className="text-sm text-muted-foreground">
+              Mostrando {((paginaActual - 1) * itemsPorPagina) + 1} - {Math.min(paginaActual * itemsPorPagina, tiposFiltrados.length)} de {tiposFiltrados.length} tipos de alerta
+            </div>
+            
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
+                    className={paginaActual <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+                
+                {(() => {
+                  const getPageNumbers = () => {
+                    const pageNumbers = [];
+                    const maxVisiblePages = 5;
+                    
+                    if (totalPaginas <= maxVisiblePages) {
+                      for (let i = 1; i <= totalPaginas; i++) {
+                        pageNumbers.push(i);
+                      }
+                    } else {
+                      let startPage = Math.max(1, paginaActual - Math.floor(maxVisiblePages / 2));
+                      let endPage = Math.min(totalPaginas, startPage + maxVisiblePages - 1);
+                      
+                      if (endPage === totalPaginas) {
+                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                      }
+                      
+                      for (let i = startPage; i <= endPage; i++) {
+                        pageNumbers.push(i);
+                      }
+                    }
+                    
+                    return pageNumbers;
+                  };
+
+                  return getPageNumbers().map((pagina) => (
+                    <PaginationItem key={pagina}>
+                      <PaginationLink
+                        onClick={() => setPaginaActual(pagina)}
+                        isActive={pagina === paginaActual}
+                        className="cursor-pointer"
+                      >
+                        {pagina}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ));
+                })()}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
+                    className={paginaActual >= totalPaginas ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         </CardContent>
       </Card>
 
