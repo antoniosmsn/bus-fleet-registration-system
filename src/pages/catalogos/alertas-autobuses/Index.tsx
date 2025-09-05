@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mockTiposAlertaAutobus } from "@/data/mockTiposAlertaAutobus";
 import { TipoAlertaAutobus, AlertaAutobusFiltros } from "@/types/alerta-autobus";
-import { Plus, Search, Edit, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Search, Edit, ChevronLeft, ChevronRight, ArrowLeft, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registrarTipoAlerta, registrarEdicionTipoAlerta, registrarActivacionTipoAlerta } from "@/services/bitacoraService";
 
@@ -105,13 +105,22 @@ export default function AlertasAutobusesIndex() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <Button variant="outline" asChild>
+          <Link to="/configuracion">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Volver</span>
+          </Link>
+        </Button>
         <div>
           <h1 className="text-3xl font-bold">Catálogo de Alertas de Autobuses</h1>
           <p className="text-muted-foreground mt-2">
             Gestiona los tipos de alerta utilizados para eventos relacionados con autobuses
           </p>
         </div>
+      </div>
+
+      <div className="flex items-center justify-end">
         <Button onClick={() => navigate('/catalogos/alertas-autobuses/register')}>
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Tipo de Alerta
@@ -123,44 +132,40 @@ export default function AlertasAutobusesIndex() {
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center space-x-2">
-                <Search className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar por tipo de alerta..."
-                  value={filtros.nombre}
-                  onChange={(e) => setFiltros(prev => ({ ...prev, nombre: e.target.value }))}
-                  className="flex-1"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Estado</label>
-                <Select
-                  value={filtros.estado}
-                  onValueChange={(value) => setFiltros(prev => ({ ...prev, estado: value as any }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="activos">Activos</SelectItem>
-                    <SelectItem value="inactivos">Inactivos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          <div className="flex flex-col lg:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar por tipo de alerta..."
+                value={filtros.nombre}
+                onChange={(e) => setFiltros(prev => ({ ...prev, nombre: e.target.value }))}
+                className="pl-10"
+                onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
+              />
             </div>
-
-            <div className="flex items-center space-x-2">
-              <Button onClick={aplicarFiltros}>
-                Aplicar Filtros
-              </Button>
-              <Button variant="outline" onClick={limpiarFiltros}>
-                Limpiar
-              </Button>
-            </div>
+            <Select 
+              value={filtros.estado} 
+              onValueChange={(value: 'todos' | 'activos' | 'inactivos') => 
+                setFiltros(prev => ({ ...prev, estado: value }))
+              }
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="activos">Activos</SelectItem>
+                <SelectItem value="inactivos">Inactivos</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={aplicarFiltros}>
+              <Search className="h-4 w-4" />
+              Buscar
+            </Button>
+            <Button variant="outline" onClick={limpiarFiltros}>
+              <RotateCcw className="h-4 w-4" />
+              Limpiar
+            </Button>
           </div>
         </CardContent>
       </Card>
