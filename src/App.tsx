@@ -12,6 +12,10 @@ import MantenimientoIndex from '@/pages/mantenimiento/Index';
 import MantenimientoRegister from '@/pages/mantenimiento/Register';
 import MantenimientoEdit from '@/pages/mantenimiento/Edit';
 
+// Inspecciones pages
+import InspeccionesIndex from '@/pages/mantenimiento/inspecciones/Index';
+import InspeccionesRegister from '@/pages/mantenimiento/inspecciones/Register';
+
 // Other pages (keeping existing imports)
 import BusesIndex from '@/pages/buses/Index';
 import BusesRegister from '@/pages/buses/Register';
