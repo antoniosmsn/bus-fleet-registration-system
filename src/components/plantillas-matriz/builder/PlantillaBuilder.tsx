@@ -216,87 +216,87 @@ export function PlantillaBuilder({
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Toolbox Panel - Estilo SurveyJS */}
-      <div className="w-80 border-r bg-muted/30">
-        <ToolboxPanel />
-      </div>
-
-      {/* Main Builder Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="border-b bg-background p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onCancel}>
-                <ArrowLeft className="h-4 w-4" />
-                Volver
-              </Button>
-              <div>
-                <h1 className="text-lg font-semibold">
-                  {plantilla ? 'Editar Plantilla' : 'Nueva Plantilla'}
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Arrastra elementos del panel lateral a las secciones
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Badge variant={pesoTotal === 100 ? "default" : "destructive"}>
-                Peso Total: {pesoTotal}%
-              </Badge>
-              <Button onClick={handleSave} disabled={loading || pesoTotal !== 100}>
-                <Save className="h-4 w-4 mr-2" />
-                Guardar
-              </Button>
-            </div>
-          </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="flex h-screen bg-background">
+        {/* Toolbox Panel - Estilo SurveyJS */}
+        <div className="w-80 border-r bg-muted/30">
+          <ToolboxPanel />
         </div>
 
-        {/* Builder Content */}
-        <div className="flex-1 overflow-auto p-6">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {/* Información básica */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Información de la Plantilla</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Nombre de la plantilla *</Label>
-                    <Input
-                      value={builderData.nombre}
-                      onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
-                      placeholder="Ingrese el nombre..."
-                      maxLength={100}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Descripción (opcional)</Label>
-                    <Input
-                      value={builderData.descripcion}
-                      onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
-                      placeholder="Descripción breve..."
-                      maxLength={200}
-                    />
-                  </div>
+        {/* Main Builder Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <div className="border-b bg-background p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" onClick={onCancel}>
+                  <ArrowLeft className="h-4 w-4" />
+                  Volver
+                </Button>
+                <div>
+                  <h1 className="text-lg font-semibold">
+                    {plantilla ? 'Editar Plantilla' : 'Nueva Plantilla'}
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Arrastra elementos del panel lateral a las secciones
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Secciones */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Secciones de la Plantilla</h2>
-                <Button onClick={handleAddSeccion} variant="outline">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Agregar Sección
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <Badge variant={pesoTotal === 100 ? "default" : "destructive"}>
+                  Peso Total: {pesoTotal}%
+                </Badge>
+                <Button onClick={handleSave} disabled={loading || pesoTotal !== 100}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Guardar
                 </Button>
               </div>
+            </div>
+          </div>
 
-              <DragDropContext onDragEnd={handleDragEnd}>
+          {/* Builder Content */}
+          <div className="flex-1 overflow-auto p-6">
+            <div className="max-w-4xl mx-auto space-y-6">
+              {/* Información básica */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Información de la Plantilla</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Nombre de la plantilla *</Label>
+                      <Input
+                        value={builderData.nombre}
+                        onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
+                        placeholder="Ingrese el nombre..."
+                        maxLength={100}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Descripción (opcional)</Label>
+                      <Input
+                        value={builderData.descripcion}
+                        onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
+                        placeholder="Descripción breve..."
+                        maxLength={200}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Secciones */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">Secciones de la Plantilla</h2>
+                  <Button onClick={handleAddSeccion} variant="outline">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Agregar Sección
+                  </Button>
+                </div>
+
                 <Droppable droppableId="secciones" type="SECCION">
                   {(provided) => (
                     <div 
@@ -335,22 +335,22 @@ export function PlantillaBuilder({
                     </div>
                   )}
                 </Droppable>
-              </DragDropContext>
 
-              {builderData.secciones.length === 0 && (
-                <Card className="border-dashed">
-                  <CardContent className="p-8 text-center text-muted-foreground">
-                    <div className="space-y-2">
-                      <p>No hay secciones creadas</p>
-                      <p className="text-sm">Haz clic en "Agregar Sección" para comenzar</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+                {builderData.secciones.length === 0 && (
+                  <Card className="border-dashed">
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                      <div className="space-y-2">
+                        <p>No hay secciones creadas</p>
+                        <p className="text-sm">Haz clic en "Agregar Sección" para comenzar</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 }
