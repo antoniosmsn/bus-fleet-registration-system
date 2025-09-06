@@ -15,11 +15,13 @@ import { CalificacionDisplay } from './CalificacionDisplay';
 import { AlertTriangle, Save, FileCheck } from 'lucide-react';
 import { InspeccionRegistro, RespuestaSeccion } from '@/types/inspeccion-autobus';
 import { PlantillaInspeccion } from '@/types/inspeccion-autobus';
-import { Conductor } from '@/data/mockConductores';
-import { AutobusBasico } from '@/data/mockAutobuses';
+import { Conductor, getConductoresByEmpresaTransporte } from '@/data/mockConductores';
+import { AutobusBasico, getAutobusesByTransportista } from '@/data/mockAutobuses';
+import { Transportista } from '@/data/mockTransportistas';
 
 const formSchema = z.object({
-  plantillaId: z.string().min(1, 'Debe seleccionar una plantilla'),
+  plantillaId: z.string().min(1, 'Debe seleccionar una matriz'),
+  empresaTransporteId: z.string().min(1, 'Debe seleccionar una empresa'),
   placa: z.string().min(1, 'Debe seleccionar una placa'),
   conductorId: z.string().min(1, 'Debe seleccionar un conductor'),
   fechaInspeccion: z.string().min(1, 'La fecha es requerida'),
@@ -30,6 +32,7 @@ type FormData = z.infer<typeof formSchema>;
 
 interface InspeccionRegistrationFormProps {
   plantillas: PlantillaInspeccion[];
+  transportistas: Transportista[];
   conductores: Conductor[];
   autobuses: AutobusBasico[];
   onSubmit: (data: InspeccionRegistro) => Promise<void>;
@@ -40,6 +43,7 @@ interface InspeccionRegistrationFormProps {
 // Formulario de registro de inspecciones de autobús  
 export function InspeccionRegistrationForm({
   plantillas,
+  transportistas,
   conductores,
   autobuses,
   onSubmit,
@@ -61,11 +65,15 @@ export function InspeccionRegistrationForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fechaInspeccion: new Date().toISOString().split('T')[0],
-      kilometros: 0
+      kilometros: 0,
+      empresaTransporteId: '',
+      placa: '',
+      conductorId: ''
     }
   });
 
   const watchedPlantillaId = watch('plantillaId');
+  const watchedEmpresaTransporteId = watch('empresaTransporteId');
   const watchedPlaca = watch('placa');
 
   // Actualizar plantilla seleccionada
@@ -79,18 +87,38 @@ export function InspeccionRegistrationForm({
     }
   }, [watchedPlantillaId, plantillas]);
 
+  // Limpiar placa y conductor cuando cambie la empresa
+  useEffect(() => {
+    setValue('placa', '');
+    setValue('conductorId', '');
+  }, [watchedEmpresaTransporteId, setValue]);
+
   // Opciones para combobox
   const plantillaOptions = plantillas.map(p => ({
     value: p.id,
     label: p.nombre
   }));
 
-  const autobusOptions = autobuses.map(a => ({
+  const transportistaOptions = transportistas.map(t => ({
+    value: t.id,
+    label: `${t.nombre} - ${t.codigo}`
+  }));
+
+  // Filtrar autobuses y conductores por empresa seleccionada
+  const autobusesFiltered = watchedEmpresaTransporteId 
+    ? getAutobusesByTransportista(watchedEmpresaTransporteId)
+    : [];
+
+  const conductoresFiltered = watchedEmpresaTransporteId 
+    ? getConductoresByEmpresaTransporte(watchedEmpresaTransporteId)
+    : [];
+
+  const autobusOptions = autobusesFiltered.map(a => ({
     value: a.placa,
     label: `${a.placa} - ${a.modelo} (${a.anio})`
   }));
 
-  const conductorOptions = conductores.map(c => ({
+  const conductorOptions = conductoresFiltered.map(c => ({
     value: c.id,
     label: `${c.nombre} ${c.apellidos} - ${c.codigo}`
   }));
@@ -142,17 +170,32 @@ export function InspeccionRegistrationForm({
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Plantilla de Inspección *</Label>
+                  <Label>Matriz de revisión *</Label>
                   <Combobox
                     options={plantillaOptions}
                     value={watchedPlantillaId || ''}
                     onValueChange={(value) => setValue('plantillaId', value)}
-                    placeholder="Seleccionar plantilla"
-                    searchPlaceholder="Buscar plantilla..."
-                    emptyText="No se encontraron plantillas"
+                    placeholder="Seleccionar matriz"
+                    searchPlaceholder="Buscar matriz..."
+                    emptyText="No se encontraron matrices"
                   />
                   {errors.plantillaId && (
                     <p className="text-sm text-destructive">{errors.plantillaId.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Empresa de transporte *</Label>
+                  <Combobox
+                    options={transportistaOptions}
+                    value={watchedEmpresaTransporteId || ''}
+                    onValueChange={(value) => setValue('empresaTransporteId', value)}
+                    placeholder="Seleccionar empresa"
+                    searchPlaceholder="Buscar empresa..."
+                    emptyText="No se encontraron empresas"
+                  />
+                  {errors.empresaTransporteId && (
+                    <p className="text-sm text-destructive">{errors.empresaTransporteId.message}</p>
                   )}
                 </div>
 
@@ -190,9 +233,9 @@ export function InspeccionRegistrationForm({
                     options={autobusOptions}
                     value={watchedPlaca || ''}
                     onValueChange={(value) => setValue('placa', value)}
-                    placeholder="Seleccionar placa"
+                    placeholder={watchedEmpresaTransporteId ? "Seleccionar placa" : "Seleccione una empresa primero"}
                     searchPlaceholder="Buscar placa..."
-                    emptyText="No hay autobuses disponibles"
+                    emptyText={watchedEmpresaTransporteId ? "No hay autobuses disponibles" : "Seleccione una empresa de transporte"}
                   />
                   {errors.placa && (
                     <p className="text-sm text-destructive">{errors.placa.message}</p>
@@ -205,9 +248,9 @@ export function InspeccionRegistrationForm({
                     options={conductorOptions}
                     value={watch('conductorId') || ''}
                     onValueChange={(value) => setValue('conductorId', value)}
-                    placeholder="Seleccionar conductor"
+                    placeholder={watchedEmpresaTransporteId ? "Seleccionar conductor" : "Seleccione una empresa primero"}
                     searchPlaceholder="Buscar conductor..."
-                    emptyText="No hay conductores disponibles"
+                    emptyText={watchedEmpresaTransporteId ? "No hay conductores disponibles" : "Seleccione una empresa de transporte"}
                   />
                   {errors.conductorId && (
                     <p className="text-sm text-destructive">{errors.conductorId.message}</p>
@@ -235,9 +278,9 @@ export function InspeccionRegistrationForm({
             <Card>
               <CardContent className="p-8 text-center">
                 <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">Seleccione una plantilla</h3>
+                <h3 className="mt-4 text-lg font-semibold">Seleccione una matriz</h3>
                 <p className="mt-2 text-muted-foreground">
-                  Debe seleccionar una plantilla de inspección en la pestaña de información general.
+                  Debe seleccionar una matriz de revisión en la pestaña de información general.
                 </p>
               </CardContent>
             </Card>
