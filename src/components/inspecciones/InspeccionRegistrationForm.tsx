@@ -37,6 +37,7 @@ interface InspeccionRegistrationFormProps {
   isSubmitting?: boolean;
 }
 
+// Formulario de registro de inspecciones de autobús  
 export function InspeccionRegistrationForm({
   plantillas,
   conductores,
