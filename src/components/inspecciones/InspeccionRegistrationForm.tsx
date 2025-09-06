@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Combobox } from '@/components/ui/combobox';
 import { PlantillaRenderer } from './PlantillaRenderer';
@@ -148,149 +147,123 @@ export function InspeccionRegistrationForm({
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="general">Información General</TabsTrigger>
-          <TabsTrigger value="inspeccion" disabled={!selectedPlantilla}>
-            Matriz de Inspección
-            {selectedPlantilla && isPlantillaCompleted && (
-              <FileCheck className="ml-2 h-4 w-4 text-green-600" />
-            )}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="general">
-          <Card>
-            <CardHeader>
-              <CardTitle>Datos Generales de la Inspección</CardTitle>
-              <CardDescription>
-                Complete la información básica para la inspección del autobús
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fechaInspeccion">Fecha de inspección *</Label>
-                  <Input
-                    id="fechaInspeccion"
-                    type="date"
-                    {...register('fechaInspeccion')}
-                    disabled={isSubmitting}
-                  />
-                  {errors.fechaInspeccion && (
-                    <p className="text-sm text-destructive">{errors.fechaInspeccion.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Empresa de transporte *</Label>
-                  <Combobox
-                    options={transportistaOptions}
-                    value={watchedEmpresaTransporteId || ''}
-                    onValueChange={(value) => setValue('empresaTransporteId', value)}
-                    placeholder="Seleccionar empresa"
-                    searchPlaceholder="Buscar empresa..."
-                    emptyText="No se encontraron empresas"
-                    disabled={isSubmitting}
-                  />
-                  {errors.empresaTransporteId && (
-                    <p className="text-sm text-destructive">{errors.empresaTransporteId.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Conductor *</Label>
-                  <Combobox
-                    options={conductorOptions}
-                    value={watch('conductorId') || ''}
-                    onValueChange={(value) => setValue('conductorId', value)}
-                    placeholder={watchedEmpresaTransporteId ? "Seleccionar conductor" : "Seleccione una empresa primero"}
-                    searchPlaceholder="Buscar conductor..."
-                    emptyText={watchedEmpresaTransporteId ? "No hay conductores disponibles" : "Seleccione una empresa de transporte"}
-                    disabled={isSubmitting || !watchedEmpresaTransporteId}
-                  />
-                  {errors.conductorId && (
-                    <p className="text-sm text-destructive">{errors.conductorId.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Placa *</Label>
-                  <Combobox
-                    options={autobusOptions}
-                    value={watchedPlaca || ''}
-                    onValueChange={(value) => setValue('placa', value)}
-                    placeholder={watchedEmpresaTransporteId ? "Seleccionar placa" : "Seleccione una empresa primero"}
-                    searchPlaceholder="Buscar placa..."
-                    emptyText={watchedEmpresaTransporteId ? "No hay autobuses disponibles" : "Seleccione una empresa de transporte"}
-                    disabled={isSubmitting || !watchedEmpresaTransporteId}
-                  />
-                  {errors.placa && (
-                    <p className="text-sm text-destructive">{errors.placa.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="kilometros">Kilómetros *</Label>
-                  <Input
-                    id="kilometros"
-                    type="number"
-                    min="0"
-                    placeholder="Ej: 45000"
-                    {...register('kilometros', { valueAsNumber: true })}
-                    disabled={isSubmitting}
-                  />
-                  {errors.kilometros && (
-                    <p className="text-sm text-destructive">{errors.kilometros.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Matriz de revisión *</Label>
-                  <Combobox
-                    options={plantillaOptions}
-                    value={watchedPlantillaId || ''}
-                    onValueChange={(value) => setValue('plantillaId', value)}
-                    placeholder="Seleccionar matriz"
-                    searchPlaceholder="Buscar matriz..."
-                    emptyText="No se encontraron matrices"
-                    disabled={isSubmitting}
-                  />
-                  {errors.plantillaId && (
-                    <p className="text-sm text-destructive">{errors.plantillaId.message}</p>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="inspeccion">
-          {selectedPlantilla ? (
-            <div className="space-y-6">
-              <PlantillaRenderer
-                plantilla={selectedPlantilla}
-                onRespuestasChange={handleRespuestasChange}
+      <Card>
+        <CardHeader>
+          <CardTitle>Datos Generales de la Inspección</CardTitle>
+          <CardDescription>
+            Complete la información básica para la inspección del autobús
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="fechaInspeccion">Fecha de inspección *</Label>
+              <Input
+                id="fechaInspeccion"
+                type="date"
+                {...register('fechaInspeccion')}
+                disabled={isSubmitting}
               />
-              
-              <CalificacionDisplay 
-                calificacion={calificacionFinal}
-                plantilla={selectedPlantilla}
-              />
+              {errors.fechaInspeccion && (
+                <p className="text-sm text-destructive">{errors.fechaInspeccion.message}</p>
+              )}
             </div>
-          ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <AlertTriangle className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">Seleccione una matriz</h3>
-                <p className="mt-2 text-muted-foreground">
-                  Debe seleccionar una matriz de revisión en la pestaña de información general.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+
+            <div className="space-y-2">
+              <Label>Empresa de transporte *</Label>
+              <Combobox
+                options={transportistaOptions}
+                value={watchedEmpresaTransporteId || ''}
+                onValueChange={(value) => setValue('empresaTransporteId', value)}
+                placeholder="Seleccionar empresa"
+                searchPlaceholder="Buscar empresa..."
+                emptyText="No se encontraron empresas"
+                disabled={isSubmitting}
+              />
+              {errors.empresaTransporteId && (
+                <p className="text-sm text-destructive">{errors.empresaTransporteId.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Conductor *</Label>
+              <Combobox
+                options={conductorOptions}
+                value={watch('conductorId') || ''}
+                onValueChange={(value) => setValue('conductorId', value)}
+                placeholder={watchedEmpresaTransporteId ? "Seleccionar conductor" : "Seleccione una empresa primero"}
+                searchPlaceholder="Buscar conductor..."
+                emptyText={watchedEmpresaTransporteId ? "No hay conductores disponibles" : "Seleccione una empresa de transporte"}
+                disabled={isSubmitting || !watchedEmpresaTransporteId}
+              />
+              {errors.conductorId && (
+                <p className="text-sm text-destructive">{errors.conductorId.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Placa *</Label>
+              <Combobox
+                options={autobusOptions}
+                value={watchedPlaca || ''}
+                onValueChange={(value) => setValue('placa', value)}
+                placeholder={watchedEmpresaTransporteId ? "Seleccionar placa" : "Seleccione una empresa primero"}
+                searchPlaceholder="Buscar placa..."
+                emptyText={watchedEmpresaTransporteId ? "No hay autobuses disponibles" : "Seleccione una empresa de transporte"}
+                disabled={isSubmitting || !watchedEmpresaTransporteId}
+              />
+              {errors.placa && (
+                <p className="text-sm text-destructive">{errors.placa.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="kilometros">Kilómetros *</Label>
+              <Input
+                id="kilometros"
+                type="number"
+                min="0"
+                placeholder="Ej: 45000"
+                {...register('kilometros', { valueAsNumber: true })}
+                disabled={isSubmitting}
+              />
+              {errors.kilometros && (
+                <p className="text-sm text-destructive">{errors.kilometros.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Matriz de revisión *</Label>
+              <Combobox
+                options={plantillaOptions}
+                value={watchedPlantillaId || ''}
+                onValueChange={(value) => setValue('plantillaId', value)}
+                placeholder="Seleccionar matriz"
+                searchPlaceholder="Buscar matriz..."
+                emptyText="No se encontraron matrices"
+                disabled={isSubmitting}
+              />
+              {errors.plantillaId && (
+                <p className="text-sm text-destructive">{errors.plantillaId.message}</p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedPlantilla && (
+        <div className="space-y-6">
+          <PlantillaRenderer
+            plantilla={selectedPlantilla}
+            onRespuestasChange={handleRespuestasChange}
+          />
+          
+          <CalificacionDisplay 
+            calificacion={calificacionFinal}
+            plantilla={selectedPlantilla}
+          />
+        </div>
+      )}
 
       {!isPlantillaCompleted && selectedPlantilla && (
         <Alert>
