@@ -81,7 +81,7 @@ export default function InspeccionesIndex() {
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
           <div>
-            <h1 className="text-2xl font-bold">Registro de Inspecciones de Autobús</h1>
+            <h1 className="text-2xl font-bold">Listado de inspecciones autobuses</h1>
             <p className="text-muted-foreground">Gestión de inspecciones de mantenimiento</p>
           </div>
           <Button onClick={() => navigate('/mantenimiento/inspecciones/registrar')}>
