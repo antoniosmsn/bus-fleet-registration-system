@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Combobox } from '@/components/ui/combobox';
 import { InspeccionFilter } from '@/types/inspeccion-autobus';
@@ -30,7 +30,6 @@ export function InspeccionFilters({
   transportistas,
   loading = false
 }: InspeccionFiltersProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [activeTab, setActiveTab] = useState("general");
 
   // Establecer valores por defecto
@@ -63,14 +62,6 @@ export function InspeccionFilters({
     setActiveTab("general");
   };
 
-  const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  const hasActiveFilters = Object.values(filtros).some(value => 
-    value !== undefined && value !== '' && value !== null
-  );
-
   // Opciones para combobox
   const transportistaOptions = transportistas.map(t => ({
     value: t.id,
@@ -81,32 +72,11 @@ export function InspeccionFilters({
     <Card className="mb-6">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg font-medium">Filtros de búsqueda</CardTitle>
-            {hasActiveFilters && (
-              <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs">
-                Activos
-              </span>
-            )}
-          </div>
-          <Button variant="ghost" size="sm" onClick={toggleExpanded} className="flex items-center gap-1">
-            {isExpanded ? (
-              <>
-                <ChevronUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Ocultar filtros</span>
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-4 w-4" />
-                <span className="hidden sm:inline">Mostrar filtros</span>
-              </>
-            )}
-          </Button>
+          <CardTitle className="text-lg font-medium">Filtros de búsqueda</CardTitle>
         </div>
       </CardHeader>
       
-      {isExpanded && (
-        <CardContent>
+      <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
               <TabsTrigger value="general">Información General</TabsTrigger>
@@ -224,7 +194,6 @@ export function InspeccionFilters({
             </TabsContent>
           </Tabs>
         </CardContent>
-      )}
 
       <CardFooter className="flex justify-between border-t pt-4">
         <Button variant="outline" onClick={clearFilters} disabled={loading} className="flex items-center gap-1">

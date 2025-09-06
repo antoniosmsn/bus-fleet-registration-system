@@ -126,7 +126,7 @@ export default function InspeccionesIndex() {
           </div>
           <Button onClick={() => navigate('/mantenimiento/inspecciones/registrar')}>
             <Plus className="h-4 w-4 mr-2" />
-            Nueva Inspección
+            Registrar
           </Button>
         </div>
 
