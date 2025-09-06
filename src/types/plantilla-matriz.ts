@@ -24,6 +24,8 @@ export interface SeccionPlantilla {
   peso: number;
   campos: CampoPlantilla[];
   orden: number;
+  columnas?: number; // Número de columnas (1-3)
+  camposEnColumnas?: CampoPlantilla[][]; // Campos organizados por columnas
 }
 
 export interface PlantillaMatriz {
@@ -69,6 +71,8 @@ export interface SeccionBuilder {
   campos: CampoBuilder[];
   orden: number;
   expanded: boolean;
+  columnas?: number; // Número de columnas (1-3)
+  camposEnColumnas?: CampoBuilder[][]; // Campos organizados por columnas
 }
 
 export interface CampoBuilder extends CampoPlantilla {

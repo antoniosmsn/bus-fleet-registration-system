@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Edit3 } from 'lucide-react';
+import { GripVertical, Plus, Trash2, ChevronDown, ChevronRight, Edit3, Columns, Columns2, Columns3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,6 +123,37 @@ export function SeccionEditor({
           </div>
 
           <div className="flex items-center gap-1">
+            {!editando && (
+              <>
+                <div className="flex items-center border rounded p-1 gap-1">
+                  <Button
+                    size="sm"
+                    variant={seccion.columnas === 1 || !seccion.columnas ? "default" : "ghost"}
+                    onClick={() => onUpdate({ columnas: 1, camposEnColumnas: undefined })}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Columns className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={seccion.columnas === 2 ? "default" : "ghost"}
+                    onClick={() => onUpdate({ columnas: 2, camposEnColumnas: [[], []] })}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Columns2 className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={seccion.columnas === 3 ? "default" : "ghost"}
+                    onClick={() => onUpdate({ columnas: 3, camposEnColumnas: [[], [], []] })}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Columns3 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </>
+            )}
+            
             {editando ? (
               <>
                 <Button size="sm" variant="outline" onClick={handleSaveEdicion}>
@@ -161,62 +192,126 @@ export function SeccionEditor({
           <CardContent className="pt-0">
             <Separator className="mb-4" />
             
-            {/* Zona de drop para campos */}
-            <Droppable droppableId={`seccion-${seccion.id}`} type="CAMPO">
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={`min-h-24 rounded-lg border-2 border-dashed p-4 transition-all duration-200 ${
-                    snapshot.isDraggingOver 
-                      ? 'border-primary bg-primary/10 shadow-lg' 
-                      : 'border-muted-foreground/30 hover:border-primary/50'
-                  }`}
-                >
-                  {seccion.campos.length === 0 ? (
-                    <div className="text-center text-muted-foreground py-6">
-                      <div className="space-y-2">
-                        <p className="text-lg">📋</p>
-                        <p className="font-medium">Zona de campos</p>
-                        <p className="text-sm">Arrastra elementos desde el panel lateral</p>
-                        <p className="text-xs text-muted-foreground/70">
-                          Los campos aparecerán aquí automáticamente
-                        </p>
+            {/* Layout en columnas o simple */}
+            {seccion.columnas && seccion.columnas > 1 ? (
+              <div className={`grid gap-4 ${
+                seccion.columnas === 2 ? 'grid-cols-2' : 
+                seccion.columnas === 3 ? 'grid-cols-3' : 'grid-cols-1'
+              }`}>
+                {Array.from({ length: seccion.columnas }).map((_, colIndex) => (
+                  <Droppable 
+                    key={`col-${colIndex}`}
+                    droppableId={`seccion-${seccion.id}-col-${colIndex}`} 
+                    type="CAMPO"
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className={`min-h-32 rounded-lg border-2 border-dashed p-3 transition-all duration-200 ${
+                          snapshot.isDraggingOver 
+                            ? 'border-primary bg-primary/10 shadow-lg' 
+                            : 'border-muted-foreground/30 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="text-center text-muted-foreground mb-2">
+                          <p className="text-xs font-medium">Columna {colIndex + 1}</p>
+                        </div>
+                        
+                        {/* Mostrar campos de esta columna */}
+                        <div className="space-y-2">
+                          {seccion.campos
+                            .filter((_, index) => index % seccion.columnas! === colIndex)
+                            .map((campo, index) => (
+                              <Draggable key={campo.id} draggableId={campo.id} index={index}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    className={`transition-transform duration-200 ${
+                                      snapshot.isDragging ? 'rotate-1 scale-105 z-50' : ''
+                                    }`}
+                                  >
+                                    <CampoEditor
+                                      campo={campo}
+                                      dragHandleProps={provided.dragHandleProps}
+                                      onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
+                                      onDelete={() => onDeleteCampo(campo.id)}
+                                    />
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                        </div>
+                        {provided.placeholder}
+                        
+                        {/* Indicador visual cuando se arrastra */}
+                        {snapshot.isDraggingOver && (
+                          <div className="absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none animate-pulse" />
+                        )}
                       </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {seccion.campos.map((campo, index) => (
-                        <Draggable key={campo.id} draggableId={campo.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={`transition-transform duration-200 ${
-                                snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
-                              }`}
-                            >
-                              <CampoEditor
-                                campo={campo}
-                                dragHandleProps={provided.dragHandleProps}
-                                onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
-                                onDelete={() => onDeleteCampo(campo.id)}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                    </div>
-                  )}
-                  {provided.placeholder}
-                  
-                  {/* Indicador visual cuando se arrastra */}
-                  {snapshot.isDraggingOver && (
-                    <div className="absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none animate-pulse" />
-                  )}
-                </div>
-              )}
-            </Droppable>
+                    )}
+                  </Droppable>
+                ))}
+              </div>
+            ) : (
+              /* Layout simple sin columnas */
+              <Droppable droppableId={`seccion-${seccion.id}`} type="CAMPO">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`min-h-24 rounded-lg border-2 border-dashed p-4 transition-all duration-200 ${
+                      snapshot.isDraggingOver 
+                        ? 'border-primary bg-primary/10 shadow-lg' 
+                        : 'border-muted-foreground/30 hover:border-primary/50'
+                    }`}
+                  >
+                    {seccion.campos.length === 0 ? (
+                      <div className="text-center text-muted-foreground py-6">
+                        <div className="space-y-2">
+                          <p className="text-lg">📋</p>
+                          <p className="font-medium">Zona de campos</p>
+                          <p className="text-sm">Arrastra elementos desde el panel lateral</p>
+                          <p className="text-xs text-muted-foreground/70">
+                            Los campos aparecerán aquí automáticamente
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {seccion.campos.map((campo, index) => (
+                          <Draggable key={campo.id} draggableId={campo.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`transition-transform duration-200 ${
+                                  snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
+                                }`}
+                              >
+                                <CampoEditor
+                                  campo={campo}
+                                  dragHandleProps={provided.dragHandleProps}
+                                  onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
+                                  onDelete={() => onDeleteCampo(campo.id)}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                      </div>
+                    )}
+                    {provided.placeholder}
+                    
+                    {/* Indicador visual cuando se arrastra */}
+                    {snapshot.isDraggingOver && (
+                      <div className="absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none animate-pulse" />
+                    )}
+                  </div>
+                )}
+              </Droppable>
+            )}
 
             <div className="flex justify-center mt-3">
               <p className="text-xs text-muted-foreground">

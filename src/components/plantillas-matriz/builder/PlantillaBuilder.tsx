@@ -121,9 +121,12 @@ export function PlantillaBuilder({
     const { source, destination, type } = result;
 
     // Arrastrar elementos del toolbox a secciones
-    if (source.droppableId === 'toolbox' && destination.droppableId.startsWith('seccion-')) {
+    if (source.droppableId === 'toolbox' && destination.droppableId.includes('seccion-')) {
       const elementoId = result.draggableId;
-      const seccionId = destination.droppableId.replace('seccion-', '');
+      
+      // Extraer el ID de la sección del droppableId
+      const match = destination.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
+      const seccionId = match ? match[1] : destination.droppableId.replace('seccion-', '');
       
       // Crear nuevo campo basado en el elemento arrastrado
       const nuevoCampo: CampoBuilder = {
@@ -148,12 +151,17 @@ export function PlantillaBuilder({
     }
 
     // Reordenar campos dentro de una sección
-    if (source.droppableId.startsWith('seccion-') && destination.droppableId.startsWith('seccion-')) {
-      const seccionId = source.droppableId.replace('seccion-', '');
+    if (source.droppableId.includes('seccion-') && destination.droppableId.includes('seccion-')) {
+      // Extraer el ID de la sección del droppableId
+      const sourceMatch = source.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
+      const destMatch = destination.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
+      
+      const sourceSeccionId = sourceMatch ? sourceMatch[1] : source.droppableId.replace('seccion-', '');
+      const destSeccionId = destMatch ? destMatch[1] : destination.droppableId.replace('seccion-', '');
       
       if (source.droppableId === destination.droppableId) {
-        // Reordenar dentro de la misma sección
-        const seccion = builderData.secciones.find(s => s.id === seccionId);
+        // Reordenar dentro de la misma sección/columna
+        const seccion = builderData.secciones.find(s => s.id === sourceSeccionId);
         if (!seccion) return;
 
         const newCampos = Array.from(seccion.campos);
@@ -165,7 +173,7 @@ export function PlantillaBuilder({
           orden: index
         }));
 
-        handleUpdateSeccion(seccionId, { campos: camposConOrden });
+        handleUpdateSeccion(sourceSeccionId, { campos: camposConOrden });
       }
       return;
     }
