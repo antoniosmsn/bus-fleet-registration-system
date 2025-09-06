@@ -80,71 +80,73 @@ export function InspeccionFilters({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
               <TabsTrigger value="general">Información General</TabsTrigger>
+              <TabsTrigger value="matriz">Información Matriz</TabsTrigger>
               <TabsTrigger value="fechas">Fechas y Horas</TabsTrigger>
             </TabsList>
             
             {/* Información General */}
             <TabsContent value="general" className="mt-0">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Empresa transportista</Label>
-                    <Combobox
-                      options={transportistaOptions}
-                      value={filtros.transportista || ''}
-                      onValueChange={(value) => handleInputChange('transportista', value)}
-                      placeholder="Seleccionar empresa transportista"
-                      searchPlaceholder="Buscar empresa..."
-                      emptyText="No se encontraron empresas"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="responsable">Responsable</Label>
-                    <Input
-                      id="responsable"
-                      placeholder="Nombre del usuario responsable"
-                      value={filtros.responsable || ''}
-                      onChange={(e) => handleInputChange('responsable', e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Empresa transportista</Label>
+                  <Combobox
+                    options={transportistaOptions}
+                    value={filtros.transportista || ''}
+                    onValueChange={(value) => handleInputChange('transportista', value)}
+                    placeholder="Seleccionar empresa transportista"
+                    searchPlaceholder="Buscar empresa..."
+                    emptyText="No se encontraron empresas"
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="placa">Placa</Label>
-                    <Input
-                      id="placa"
-                      placeholder="Ej: CRC-1001"
-                      value={filtros.placa || ''}
-                      onChange={(e) => handleInputChange('placa', e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="responsable">Responsable</Label>
+                  <Input
+                    id="responsable"
+                    placeholder="Nombre del usuario responsable"
+                    value={filtros.responsable || ''}
+                    onChange={(e) => handleInputChange('responsable', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="consecutivo">Identificador de matriz</Label>
-                    <Input
-                      id="consecutivo"
-                      type="number"
-                      placeholder="Número consecutivo"
-                      value={filtros.consecutivo || ''}
-                      onChange={(e) => handleInputChange('consecutivo', e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="placa">Placa</Label>
+                  <Input
+                    id="placa"
+                    placeholder="Ej: CRC-1001"
+                    value={filtros.placa || ''}
+                    onChange={(e) => handleInputChange('placa', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+              </div>
+            </TabsContent>
+            
+            {/* Información Matriz */}
+            <TabsContent value="matriz" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="consecutivo">Identificador de matriz</Label>
+                  <Input
+                    id="consecutivo"
+                    type="number"
+                    placeholder="Número consecutivo"
+                    value={filtros.consecutivo || ''}
+                    onChange={(e) => handleInputChange('consecutivo', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="nombreMatriz">Nombre de matriz</Label>
-                    <Input
-                      id="nombreMatriz"
-                      placeholder="Nombre de la matriz"
-                      value={filtros.nombreMatriz || ''}
-                      onChange={(e) => handleInputChange('nombreMatriz', e.target.value)}
-                      disabled={loading}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nombreMatriz">Nombre de matriz</Label>
+                  <Input
+                    id="nombreMatriz"
+                    placeholder="Nombre de la matriz"
+                    value={filtros.nombreMatriz || ''}
+                    onChange={(e) => handleInputChange('nombreMatriz', e.target.value)}
+                    disabled={loading}
+                  />
                 </div>
               </div>
             </TabsContent>
