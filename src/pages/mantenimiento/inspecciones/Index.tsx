@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { InspeccionFilter } from '@/types/inspeccion-autobus';
 import { mockInspeccionesAutobus } from '@/data/mockInspeccionesAutobus';
-import { mockPlantillasInspeccion } from '@/data/mockPlantillasInspeccion';
 import { mockTransportistas } from '@/data/mockTransportistas';
 import { registrarAcceso } from '@/services/bitacoraService';
 import { toast } from '@/hooks/use-toast';
@@ -28,30 +27,72 @@ export default function InspeccionesIndex() {
 
   // Filtrar inspecciones
   const filteredInspecciones = mockInspeccionesAutobus.filter(inspeccion => {
+    // Filtro por fecha
     if (filtros.fechaInicio && inspeccion.fechaInspeccion < filtros.fechaInicio) return false;
     if (filtros.fechaFin && inspeccion.fechaInspeccion > filtros.fechaFin) return false;
+    
+    // Filtro por hora (usar fechaCreacion que tiene hora completa)
+    if (filtros.horaInicio || filtros.horaFin) {
+      const fechaCompleta = new Date(inspeccion.fechaCreacion);
+      const horaInspeccion = fechaCompleta.toTimeString().substring(0, 5);
+      
+      if (filtros.horaInicio && horaInspeccion < filtros.horaInicio) return false;
+      if (filtros.horaFin && horaInspeccion > filtros.horaFin) return false;
+    }
+    
+    // Otros filtros
     if (filtros.placa && !inspeccion.placa.toLowerCase().includes(filtros.placa.toLowerCase())) return false;
-    if (filtros.conductor && !`${inspeccion.conductor.nombre} ${inspeccion.conductor.apellidos}`.toLowerCase().includes(filtros.conductor.toLowerCase())) return false;
+    if (filtros.responsable && !inspeccion.usuarioCreacion.toLowerCase().includes(filtros.responsable.toLowerCase())) return false;
     if (filtros.transportista && inspeccion.transportista.id !== filtros.transportista) return false;
-    if (filtros.plantilla && inspeccion.plantilla.id !== filtros.plantilla) return false;
-    if (filtros.calificacionMin !== undefined && inspeccion.calificacionFinal < filtros.calificacionMin) return false;
-    if (filtros.calificacionMax !== undefined && inspeccion.calificacionFinal > filtros.calificacionMax) return false;
+    if (filtros.consecutivo && !inspeccion.consecutivo.toString().includes(filtros.consecutivo)) return false;
     if (filtros.estado && inspeccion.estado !== filtros.estado) return false;
     return true;
   });
 
+  // Ordenar por fecha de inspección descendente (más recientes primero)
+  const sortedInspecciones = [...filteredInspecciones].sort((a, b) => 
+    new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime()
+  );
+
   // Paginación
-  const totalPages = Math.ceil(filteredInspecciones.length / pageSize);
+  const totalPages = Math.ceil(sortedInspecciones.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedInspecciones = filteredInspecciones.slice(startIndex, startIndex + pageSize);
+  const paginatedInspecciones = sortedInspecciones.slice(startIndex, startIndex + pageSize);
 
   const handleFiltrosChange = (newFiltros: InspeccionFilter) => {
     setFiltros(newFiltros);
     setCurrentPage(1);
     setError(null);
-    
+  };
+
+  const handleBuscar = () => {
     setLoading(true);
-    setTimeout(() => setLoading(false), 300);
+    setCurrentPage(1);
+    setError(null);
+    
+    // Validar fechas
+    if (filtros.fechaInicio && filtros.fechaFin && filtros.fechaInicio > filtros.fechaFin) {
+      toast({
+        title: "Error en fechas",
+        description: "La fecha de inicio no puede ser mayor que la fecha de fin",
+        variant: "destructive"
+      });
+      setLoading(false);
+      return;
+    }
+    
+    // Validar horas
+    if (filtros.horaInicio && filtros.horaFin && filtros.horaInicio > filtros.horaFin) {
+      toast({
+        title: "Error en horas",
+        description: "La hora de inicio no puede ser mayor que la hora de fin",
+        variant: "destructive"
+      });
+      setLoading(false);
+      return;
+    }
+    
+    setTimeout(() => setLoading(false), 500);
   };
 
   const handlePageChange = (page: number) => {
@@ -107,7 +148,7 @@ export default function InspeccionesIndex() {
         <InspeccionFilters
           filtros={filtros}
           onFiltrosChange={handleFiltrosChange}
-          plantillas={mockPlantillasInspeccion}
+          onBuscar={handleBuscar}
           transportistas={mockTransportistas}
           loading={loading}
         />
@@ -121,7 +162,7 @@ export default function InspeccionesIndex() {
           currentPage={currentPage}
           totalPages={totalPages}
           pageSize={pageSize}
-          totalItems={filteredInspecciones.length}
+          totalItems={sortedInspecciones.length}
           onPageChange={handlePageChange}
           onPageSizeChange={handlePageSizeChange}
         />

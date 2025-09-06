@@ -71,12 +71,12 @@ export interface InspeccionAutobus {
 export interface InspeccionFilter {
   fechaInicio?: string;
   fechaFin?: string;
+  horaInicio?: string;
+  horaFin?: string;
   placa?: string;
-  conductor?: string;
+  responsable?: string;
   transportista?: string;
-  plantilla?: string;
-  calificacionMin?: number;
-  calificacionMax?: number;
+  consecutivo?: string;
   estado?: 'completada' | 'pendiente' | '';
 }
 
