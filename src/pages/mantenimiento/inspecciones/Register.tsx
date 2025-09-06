@@ -9,7 +9,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { InspeccionRegistro } from '@/types/inspeccion-autobus';
 import { mockPlantillasInspeccion } from '@/data/mockPlantillasInspeccion';
-import { mockTransportistas } from '@/data/mockTransportistas';
 import { mockConductores } from '@/data/mockConductores';
 import { mockAutobuses } from '@/data/mockAutobuses';
 import { getNextConsecutivo } from '@/data/mockInspeccionesAutobus';
@@ -162,7 +161,6 @@ export default function InspeccionesRegister() {
           <CardContent>
             <InspeccionRegistrationForm
               plantillas={plantillasActivas}
-              transportistas={mockTransportistas}
               conductores={mockConductores}
               autobuses={mockAutobuses}
               onSubmit={handleSubmit}

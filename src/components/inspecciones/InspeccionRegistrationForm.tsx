@@ -15,7 +15,6 @@ import { CalificacionDisplay } from './CalificacionDisplay';
 import { AlertTriangle, Save, FileCheck } from 'lucide-react';
 import { InspeccionRegistro, RespuestaSeccion } from '@/types/inspeccion-autobus';
 import { PlantillaInspeccion } from '@/types/inspeccion-autobus';
-import { Transportista } from '@/data/mockTransportistas';
 import { Conductor } from '@/data/mockConductores';
 import { AutobusBasico } from '@/data/mockAutobuses';
 
@@ -31,7 +30,6 @@ type FormData = z.infer<typeof formSchema>;
 
 interface InspeccionRegistrationFormProps {
   plantillas: PlantillaInspeccion[];
-  transportistas: Transportista[];
   conductores: Conductor[];
   autobuses: AutobusBasico[];
   onSubmit: (data: InspeccionRegistro) => Promise<void>;
@@ -41,7 +39,6 @@ interface InspeccionRegistrationFormProps {
 
 export function InspeccionRegistrationForm({
   plantillas,
-  transportistas,
   conductores,
   autobuses,
   onSubmit,
@@ -49,7 +46,6 @@ export function InspeccionRegistrationForm({
   isSubmitting = false
 }: InspeccionRegistrationFormProps) {
   const [selectedPlantilla, setSelectedPlantilla] = useState<PlantillaInspeccion | null>(null);
-  const [selectedTransportista, setSelectedTransportista] = useState<string>('');
   const [respuestasInspeccion, setRespuestasInspeccion] = useState<RespuestaSeccion[]>([]);
   const [calificacionFinal, setCalificacionFinal] = useState<number>(0);
   const [isPlantillaCompleted, setIsPlantillaCompleted] = useState(false);
@@ -82,33 +78,18 @@ export function InspeccionRegistrationForm({
     }
   }, [watchedPlantillaId, plantillas]);
 
-  // Filtrar autobuses por transportista
-  const autobusesFiltrados = selectedTransportista 
-    ? autobuses.filter(a => a.transportistaId === selectedTransportista)
-    : autobuses;
-
-  // Filtrar conductores por transportista
-  const conductoresFiltrados = selectedTransportista 
-    ? conductores.filter(c => c.empresaTransporteId === selectedTransportista)
-    : conductores;
-
   // Opciones para combobox
   const plantillaOptions = plantillas.map(p => ({
     value: p.id,
     label: p.nombre
   }));
 
-  const transportistaOptions = transportistas.map(t => ({
-    value: t.id,
-    label: t.nombre
-  }));
-
-  const autobusOptions = autobusesFiltrados.map(a => ({
+  const autobusOptions = autobuses.map(a => ({
     value: a.placa,
     label: `${a.placa} - ${a.modelo} (${a.anio})`
   }));
 
-  const conductorOptions = conductoresFiltrados.map(c => ({
+  const conductorOptions = conductores.map(c => ({
     value: c.id,
     label: `${c.nombre} ${c.apellidos} - ${c.codigo}`
   }));
@@ -134,13 +115,6 @@ export function InspeccionRegistrationForm({
     };
 
     await onSubmit(inspeccionData);
-  };
-
-  const handleTransportistaChange = (transportistaId: string) => {
-    setSelectedTransportista(transportistaId);
-    // Limpiar selecciones dependientes
-    setValue('placa', '');
-    setValue('conductorId', '');
   };
 
   return (
@@ -195,18 +169,6 @@ export function InspeccionRegistrationForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Transportista</Label>
-                  <Combobox
-                    options={transportistaOptions}
-                    value={selectedTransportista}
-                    onValueChange={handleTransportistaChange}
-                    placeholder="Seleccionar transportista"
-                    searchPlaceholder="Buscar transportista..."
-                    emptyText="No se encontraron transportistas"
-                  />
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="kilometros">Kilómetros del Vehículo *</Label>
                   <Input
                     id="kilometros"
@@ -229,7 +191,7 @@ export function InspeccionRegistrationForm({
                     onValueChange={(value) => setValue('placa', value)}
                     placeholder="Seleccionar placa"
                     searchPlaceholder="Buscar placa..."
-                    emptyText={selectedTransportista ? "No hay autobuses disponibles" : "Seleccione primero un transportista"}
+                    emptyText="No hay autobuses disponibles"
                   />
                   {errors.placa && (
                     <p className="text-sm text-destructive">{errors.placa.message}</p>
@@ -244,7 +206,7 @@ export function InspeccionRegistrationForm({
                     onValueChange={(value) => setValue('conductorId', value)}
                     placeholder="Seleccionar conductor"
                     searchPlaceholder="Buscar conductor..."
-                    emptyText={selectedTransportista ? "No hay conductores disponibles" : "Seleccione primero un transportista"}
+                    emptyText="No hay conductores disponibles"
                   />
                   {errors.conductorId && (
                     <p className="text-sm text-destructive">{errors.conductorId.message}</p>
