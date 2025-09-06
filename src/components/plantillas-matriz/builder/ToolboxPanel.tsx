@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { mockToolboxElementos } from '@/data/mockToolboxElementos';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 
 const iconMap = {
   Type,
@@ -30,66 +30,64 @@ export function ToolboxPanel() {
             Tipos de Campo Disponibles
           </h3>
 
-          <DragDropContext onDragEnd={() => {}}>
-            <Droppable droppableId="toolbox" isDropDisabled={true}>
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className="space-y-3"
-                >
-                  {mockToolboxElementos.map((elemento, index) => {
-                    const IconComponent = iconMap[elemento.icono as keyof typeof iconMap];
-                    
-                    return (
-                      <Draggable
-                        key={elemento.id}
-                        draggableId={elemento.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <Card
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={`cursor-move transition-all duration-200 hover:shadow-lg border-2 ${
-                              snapshot.isDragging 
-                                ? 'shadow-2xl rotate-3 scale-110 bg-primary/10 border-primary z-50' 
-                                : 'hover:bg-accent/50 border-transparent hover:border-primary/20'
-                            }`}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0 p-2 bg-primary/10 rounded-md">
-                                  {IconComponent && (
-                                    <IconComponent className="h-5 w-5 text-primary" />
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-semibold text-sm truncate text-foreground">
-                                    {elemento.nombre}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                    {elemento.descripcion}
-                                  </p>
-                                </div>
-                                <div className="flex-shrink-0">
-                                  <Badge variant="outline" className="text-xs px-2 py-1">
-                                    Arrastrar
-                                  </Badge>
-                                </div>
+          <Droppable droppableId="toolbox" isDropDisabled={true}>
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-3"
+              >
+                {mockToolboxElementos.map((elemento, index) => {
+                  const IconComponent = iconMap[elemento.icono as keyof typeof iconMap];
+                  
+                  return (
+                    <Draggable
+                      key={elemento.id}
+                      draggableId={elemento.id}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <Card
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`cursor-move transition-all duration-200 hover:shadow-lg border-2 ${
+                            snapshot.isDragging 
+                              ? 'shadow-2xl rotate-3 scale-110 bg-primary/10 border-primary z-50' 
+                              : 'hover:bg-accent/50 border-transparent hover:border-primary/20'
+                          }`}
+                        >
+                          <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 p-2 bg-primary/10 rounded-md">
+                                {IconComponent && (
+                                  <IconComponent className="h-5 w-5 text-primary" />
+                                )}
                               </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </Draggable>
-                    );
-                  })}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm truncate text-foreground">
+                                  {elemento.nombre}
+                                </p>
+                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                                  {elemento.descripcion}
+                                </p>
+                              </div>
+                              <div className="flex-shrink-0">
+                                <Badge variant="outline" className="text-xs px-2 py-1">
+                                  Arrastrar
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </Draggable>
+                  );
+                })}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </div>
 
         <Separator className="my-6" />
