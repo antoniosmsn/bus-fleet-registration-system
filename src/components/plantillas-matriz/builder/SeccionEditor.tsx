@@ -14,21 +14,25 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 interface SeccionEditorProps {
   seccion: SeccionBuilder;
   dragHandleProps?: any;
+  esActiva?: boolean;
   onUpdate: (updates: Partial<SeccionBuilder>) => void;
   onDelete: () => void;
   onAddCampo: (campo: CampoBuilder) => void;
   onUpdateCampo: (campoId: string, updates: Partial<CampoBuilder>) => void;
   onDeleteCampo: (campoId: string) => void;
+  onSeleccionar: () => void;
 }
 
 export function SeccionEditor({
   seccion,
   dragHandleProps,
+  esActiva = false,
   onUpdate,
   onDelete,
   onAddCampo,
   onUpdateCampo,
-  onDeleteCampo
+  onDeleteCampo,
+  onSeleccionar
 }: SeccionEditorProps) {
   const [editando, setEditando] = useState(false);
   const [tempNombre, setTempNombre] = useState(seccion.nombre);
@@ -56,7 +60,14 @@ export function SeccionEditor({
   };
 
   return (
-    <Card className="relative">
+    <Card 
+      onClick={onSeleccionar}
+      className={`relative transition-all duration-200 cursor-pointer border-2 ${
+        esActiva 
+          ? 'border-primary bg-primary/5 shadow-lg' 
+          : 'border-transparent hover:border-primary/30'
+      }`}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
           <div {...dragHandleProps} className="cursor-move p-1">

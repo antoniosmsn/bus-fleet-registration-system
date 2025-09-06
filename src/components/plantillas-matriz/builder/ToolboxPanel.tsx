@@ -1,4 +1,5 @@
 import { Type, Square, ChevronDown, Circle, Calendar, Pen } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -14,14 +15,40 @@ const iconMap = {
   Pen,
 };
 
-export function ToolboxPanel() {
+interface ToolboxPanelProps {
+  elementoSeleccionado: string | null;
+  seccionActiva: string | null;
+  onSeleccionarElemento: (id: string | null) => void;
+  onAgregar: () => void;
+}
+
+export function ToolboxPanel({
+  elementoSeleccionado,
+  seccionActiva,
+  onSeleccionarElemento,
+  onAgregar
+}: ToolboxPanelProps) {
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b">
         <h2 className="text-lg font-semibold">Elementos de Formulario</h2>
         <p className="text-sm text-muted-foreground">
-          Arrastra los elementos a las secciones
+          Selecciona un elemento y una sección
         </p>
+        
+        {/* Botón agregar */}
+        <div className="mt-3">
+          <Button 
+            onClick={onAgregar}
+            disabled={!elementoSeleccionado || !seccionActiva}
+            className="w-full"
+            size="sm"
+          >
+            {elementoSeleccionado && seccionActiva 
+              ? 'Agregar a Sección Activa' 
+              : 'Selecciona elemento y sección'}
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-auto p-4">
@@ -30,64 +57,50 @@ export function ToolboxPanel() {
             Tipos de Campo Disponibles
           </h3>
 
-          <Droppable droppableId="toolbox" isDropDisabled={true}>
-            {(provided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="space-y-3"
-              >
-                {mockToolboxElementos.map((elemento, index) => {
-                  const IconComponent = iconMap[elemento.icono as keyof typeof iconMap];
-                  
-                  return (
-                    <Draggable
-                      key={elemento.id}
-                      draggableId={elemento.id}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <Card
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`cursor-move transition-all duration-200 hover:shadow-lg border-2 ${
-                            snapshot.isDragging 
-                              ? 'shadow-2xl rotate-3 scale-110 bg-primary/10 border-primary z-50' 
-                              : 'hover:bg-accent/50 border-transparent hover:border-primary/20'
-                          }`}
+          <div className="space-y-3">
+            {mockToolboxElementos.map((elemento) => {
+              const IconComponent = iconMap[elemento.icono as keyof typeof iconMap];
+              const esSeleccionado = elementoSeleccionado === elemento.id;
+              
+              return (
+                <Card
+                  key={elemento.id}
+                  onClick={() => onSeleccionarElemento(esSeleccionado ? null : elemento.id)}
+                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg border-2 ${
+                    esSeleccionado
+                      ? 'shadow-lg bg-primary/10 border-primary' 
+                      : 'hover:bg-accent/50 border-transparent hover:border-primary/20'
+                  }`}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 p-2 bg-primary/10 rounded-md">
+                        {IconComponent && (
+                          <IconComponent className="h-5 w-5 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate text-foreground">
+                          {elemento.nombre}
+                        </p>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                          {elemento.descripcion}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <Badge 
+                          variant={esSeleccionado ? "default" : "outline"} 
+                          className="text-xs px-2 py-1"
                         >
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-3">
-                              <div className="flex-shrink-0 p-2 bg-primary/10 rounded-md">
-                                {IconComponent && (
-                                  <IconComponent className="h-5 w-5 text-primary" />
-                                )}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm truncate text-foreground">
-                                  {elemento.nombre}
-                                </p>
-                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                  {elemento.descripcion}
-                                </p>
-                              </div>
-                              <div className="flex-shrink-0">
-                                <Badge variant="outline" className="text-xs px-2 py-1">
-                                  Arrastrar
-                                </Badge>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
-                    </Draggable>
-                  );
-                })}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+                          {esSeleccionado ? 'Seleccionado' : 'Seleccionar'}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
 
         <Separator className="my-6" />
@@ -98,9 +111,9 @@ export function ToolboxPanel() {
             <div className="space-y-2">
               <h4 className="font-semibold text-blue-900 text-sm">💡 Cómo usar:</h4>
               <ul className="text-sm text-blue-700 space-y-1">
-                <li>• Arrastra cualquier elemento a una sección</li>
-                <li>• Los campos se agregan automáticamente</li>
-                <li>• Configura pesos y propiedades después</li>
+                <li>• Haz clic en un elemento para seleccionarlo</li>
+                <li>• Haz clic en una sección para activarla</li>
+                <li>• Usa el botón "Agregar" para insertar</li>
                 <li>• Los pesos deben sumar exactamente 100%</li>
               </ul>
             </div>

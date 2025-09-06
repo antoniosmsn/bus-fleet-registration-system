@@ -36,6 +36,8 @@ export function PlantillaBuilder({
 
   const [editandoSeccion, setEditandoSeccion] = useState<string | null>(null);
   const [editandoCampo, setEditandoCampo] = useState<{ seccionId: string; campoId: string } | null>(null);
+  const [elementoSeleccionado, setElementoSeleccionado] = useState<string | null>(null);
+  const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
 
   // Calcular peso total
   const pesoTotal = builderData.secciones.reduce((total, seccion) => total + seccion.peso, 0);
@@ -242,12 +244,52 @@ export function PlantillaBuilder({
     onSave(builderData);
   };
 
+  const handleAgregarElementoSeleccionado = () => {
+    if (!elementoSeleccionado || !seccionActiva) {
+      toast({
+        title: "Selección incompleta",
+        description: "Selecciona un elemento y una sección activa",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const elementoToolbox = mockToolboxElementos.find(el => el.id === elementoSeleccionado);
+    if (!elementoToolbox) return;
+
+    const nuevoCampo: CampoBuilder = {
+      id: `campo-${Date.now()}`,
+      tipo: elementoToolbox.tipo as any,
+      etiqueta: elementoToolbox.nombre,
+      requerido: true,
+      peso: 5,
+      orden: 0,
+      opciones: (elementoToolbox.tipo === 'select' || elementoToolbox.tipo === 'radio') 
+        ? ['Opción 1', 'Opción 2'] 
+        : undefined
+    };
+
+    handleAddCampoToSeccion(seccionActiva, nuevoCampo);
+    
+    toast({
+      title: "Campo agregado",
+      description: `Se agregó ${elementoToolbox.nombre} a la sección`
+    });
+    
+    setElementoSeleccionado(null);
+  };
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex h-screen bg-background">
         {/* Toolbox Panel - Estilo SurveyJS */}
         <div className="w-80 border-r bg-muted/30">
-          <ToolboxPanel />
+          <ToolboxPanel 
+            elementoSeleccionado={elementoSeleccionado}
+            seccionActiva={seccionActiva}
+            onSeleccionarElemento={setElementoSeleccionado}
+            onAgregar={handleAgregarElementoSeleccionado}
+          />
         </div>
 
         {/* Main Builder Area */}
@@ -348,11 +390,13 @@ export function PlantillaBuilder({
                               <SeccionEditor
                                 seccion={seccion}
                                 dragHandleProps={provided.dragHandleProps}
+                                esActiva={seccionActiva === seccion.id}
                                 onUpdate={(updates) => handleUpdateSeccion(seccion.id, updates)}
                                 onDelete={() => handleDeleteSeccion(seccion.id)}
                                 onAddCampo={(campo) => handleAddCampoToSeccion(seccion.id, campo)}
                                 onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
                                 onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
+                                onSeleccionar={() => setSeccionActiva(seccion.id)}
                               />
                             </div>
                           )}
