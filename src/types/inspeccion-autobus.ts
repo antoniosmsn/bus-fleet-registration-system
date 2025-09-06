@@ -77,6 +77,7 @@ export interface InspeccionFilter {
   responsable?: string;
   transportista?: string;
   consecutivo?: string;
+  nombreMatriz?: string;
 }
 
 export interface InspeccionRegistro {

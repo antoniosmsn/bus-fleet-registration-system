@@ -44,8 +44,9 @@ export default function InspeccionesIndex() {
     if (filtros.placa && !inspeccion.placa.toLowerCase().includes(filtros.placa.toLowerCase())) return false;
     if (filtros.responsable && !inspeccion.usuarioCreacion.toLowerCase().includes(filtros.responsable.toLowerCase())) return false;
     if (filtros.transportista && inspeccion.transportista.id !== filtros.transportista) return false;
-    if (filtros.consecutivo && !inspeccion.consecutivo.toString().includes(filtros.consecutivo)) return false;
-    return true;
+     if (filtros.consecutivo && !inspeccion.consecutivo.toString().includes(filtros.consecutivo)) return false;
+     if (filtros.nombreMatriz && !inspeccion.plantilla.nombre.toLowerCase().includes(filtros.nombreMatriz.toLowerCase())) return false;
+     return true;
   });
 
   // Ordenar por fecha de inspección descendente (más recientes primero)

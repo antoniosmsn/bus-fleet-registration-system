@@ -131,6 +131,17 @@ export function InspeccionFilters({
                     disabled={loading}
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="nombreMatriz">Nombre de matriz</Label>
+                  <Input
+                    id="nombreMatriz"
+                    placeholder="Nombre de la matriz"
+                    value={filtros.nombreMatriz || ''}
+                    onChange={(e) => handleInputChange('nombreMatriz', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
             </TabsContent>
             
