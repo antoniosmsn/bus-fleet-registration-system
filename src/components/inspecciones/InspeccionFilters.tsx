@@ -86,7 +86,7 @@ export function InspeccionFilters({
             
             {/* Información General */}
             <TabsContent value="general" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>Empresa transportista</Label>
                   <Combobox
