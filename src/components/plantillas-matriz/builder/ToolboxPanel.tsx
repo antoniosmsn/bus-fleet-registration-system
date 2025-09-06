@@ -1,15 +1,9 @@
-import { useState } from 'react';
-import { Draggable, Droppable, DragDropContext, DropResult } from '@hello-pangea/dnd';
-import { Type, Square, ChevronDown, Circle, Calendar, Pen, Info } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Type, Square, ChevronDown, Circle, Calendar, Pen } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { mockToolboxElementos } from '@/data/mockToolboxElementos';
-import { CampoBuilder } from '@/types/plantilla-matriz';
-
-interface ToolboxPanelProps {
-  onAddCampo: (seccionId: string, campo: CampoBuilder) => void;
-}
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 const iconMap = {
   Type,
@@ -20,72 +14,29 @@ const iconMap = {
   Pen,
 };
 
-export function ToolboxPanel({ onAddCampo }: ToolboxPanelProps) {
-  const [selectedSeccionId, setSelectedSeccionId] = useState<string>('');
-
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination || !selectedSeccionId) return;
-
-    const elementoId = result.draggableId;
-    const elemento = mockToolboxElementos.find(e => e.id === elementoId);
-    
-    if (!elemento) return;
-
-    const nuevoCampo: CampoBuilder = {
-      id: '',
-      tipo: elemento.tipo,
-      etiqueta: `${elemento.nombre} sin título`,
-      requerido: true,
-      peso: 5,
-      orden: 0,
-      opciones: elemento.tipo === 'select' || elemento.tipo === 'radio' 
-        ? ['Opción 1', 'Opción 2'] 
-        : undefined
-    };
-
-    onAddCampo(selectedSeccionId, nuevoCampo);
-  };
-
+export function ToolboxPanel() {
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold">Caja de Herramientas</h2>
+        <h2 className="text-lg font-semibold">Elementos de Formulario</h2>
         <p className="text-sm text-muted-foreground">
-          Arrastra elementos a las secciones
+          Arrastra los elementos a las secciones
         </p>
       </div>
 
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        {/* Información */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-2">
-              <Info className="h-4 w-4 text-blue-600 mt-0.5" />
-              <div className="text-sm">
-                <p className="font-medium text-blue-900">Cómo usar:</p>
-                <p className="text-blue-700 mt-1">
-                  Selecciona una sección destino y arrastra los elementos desde aquí
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Separator />
-
-        {/* Elementos del Toolbox */}
-        <div className="space-y-2">
-          <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
-            Tipos de Campo
+      <div className="flex-1 overflow-auto p-4">
+        <div className="space-y-3">
+          <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide mb-4">
+            Tipos de Campo Disponibles
           </h3>
-          
-          <DragDropContext onDragEnd={handleDragEnd}>
+
+          <DragDropContext onDragEnd={() => {}}>
             <Droppable droppableId="toolbox" isDropDisabled={true}>
               {(provided) => (
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="space-y-2"
+                  className="space-y-3"
                 >
                   {mockToolboxElementos.map((elemento, index) => {
                     const IconComponent = iconMap[elemento.icono as keyof typeof iconMap];
@@ -101,26 +52,31 @@ export function ToolboxPanel({ onAddCampo }: ToolboxPanelProps) {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className={`cursor-move transition-all hover:shadow-md ${
+                            className={`cursor-move transition-all duration-200 hover:shadow-lg border-2 ${
                               snapshot.isDragging 
-                                ? 'shadow-lg rotate-2 scale-105 bg-primary/10' 
-                                : 'hover:bg-accent/50'
+                                ? 'shadow-2xl rotate-3 scale-110 bg-primary/10 border-primary z-50' 
+                                : 'hover:bg-accent/50 border-transparent hover:border-primary/20'
                             }`}
                           >
-                            <CardContent className="p-3">
+                            <CardContent className="p-4">
                               <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 p-2 bg-primary/10 rounded-md">
                                   {IconComponent && (
                                     <IconComponent className="h-5 w-5 text-primary" />
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-sm truncate">
+                                  <p className="font-semibold text-sm truncate text-foreground">
                                     {elemento.nombre}
                                   </p>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">
+                                  <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
                                     {elemento.descripcion}
                                   </p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                  <Badge variant="outline" className="text-xs px-2 py-1">
+                                    Arrastrar
+                                  </Badge>
                                 </div>
                               </div>
                             </CardContent>
@@ -136,25 +92,52 @@ export function ToolboxPanel({ onAddCampo }: ToolboxPanelProps) {
           </DragDropContext>
         </div>
 
-        <Separator />
+        <Separator className="my-6" />
 
-        {/* Atajos de teclado */}
-        <Card className="bg-muted/50">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Atajos de Teclado</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-1 text-xs">
-            <div className="flex justify-between">
-              <span>Guardar</span>
-              <Badge variant="outline" className="text-xs">Ctrl + S</Badge>
+        {/* Instrucciones */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="p-4">
+            <div className="space-y-2">
+              <h4 className="font-semibold text-blue-900 text-sm">💡 Cómo usar:</h4>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Arrastra cualquier elemento a una sección</li>
+                <li>• Los campos se agregan automáticamente</li>
+                <li>• Configura pesos y propiedades después</li>
+                <li>• Los pesos deben sumar exactamente 100%</li>
+              </ul>
             </div>
-            <div className="flex justify-between">
-              <span>Deshacer</span>
-              <Badge variant="outline" className="text-xs">Ctrl + Z</Badge>
-            </div>
-            <div className="flex justify-between">
-              <span>Vista previa</span>
-              <Badge variant="outline" className="text-xs">Ctrl + P</Badge>
+          </CardContent>
+        </Card>
+
+        {/* Tipos de campo disponibles */}
+        <Card className="mt-4 bg-muted/50">
+          <CardContent className="p-4">
+            <h4 className="font-semibold text-sm mb-3">Tipos de Campo:</h4>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <Type className="h-3 w-3" />
+                <span>Texto</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ChevronDown className="h-3 w-3" />
+                <span>Lista</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Square className="h-3 w-3" />
+                <span>Checkbox</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Circle className="h-3 w-3" />
+                <span>Radio</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-3 w-3" />
+                <span>Fecha</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Pen className="h-3 w-3" />
+                <span>Canvas</span>
+              </div>
             </div>
           </CardContent>
         </Card>

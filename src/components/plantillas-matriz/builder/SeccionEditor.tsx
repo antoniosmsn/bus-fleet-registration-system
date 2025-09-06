@@ -180,16 +180,22 @@ export function SeccionEditor({
                   <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={`min-h-16 rounded border-2 border-dashed p-3 transition-colors ${
+                    className={`min-h-24 rounded-lg border-2 border-dashed p-4 transition-all duration-200 ${
                       snapshot.isDraggingOver 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-muted-foreground/20'
+                        ? 'border-primary bg-primary/10 shadow-lg' 
+                        : 'border-muted-foreground/30 hover:border-primary/50'
                     }`}
                   >
                     {seccion.campos.length === 0 ? (
-                      <div className="text-center text-muted-foreground text-sm py-4">
-                        <p>Arrastra elementos aquí desde el toolbox</p>
-                        <p className="text-xs mt-1">o usa el botón "Agregar Campo"</p>
+                      <div className="text-center text-muted-foreground py-6">
+                        <div className="space-y-2">
+                          <p className="text-lg">📋</p>
+                          <p className="font-medium">Zona de campos</p>
+                          <p className="text-sm">Arrastra elementos desde el panel lateral</p>
+                          <p className="text-xs text-muted-foreground/70">
+                            Los campos aparecerán aquí automáticamente
+                          </p>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -199,8 +205,8 @@ export function SeccionEditor({
                               <div
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
-                                className={`transition-transform ${
-                                  snapshot.isDragging ? 'rotate-1 scale-105' : ''
+                                className={`transition-transform duration-200 ${
+                                  snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
                                 }`}
                               >
                                 <CampoEditor
@@ -216,6 +222,11 @@ export function SeccionEditor({
                       </div>
                     )}
                     {provided.placeholder}
+                    
+                    {/* Indicador visual cuando se arrastra */}
+                    {snapshot.isDraggingOver && (
+                      <div className="absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none animate-pulse" />
+                    )}
                   </div>
                 )}
               </Droppable>

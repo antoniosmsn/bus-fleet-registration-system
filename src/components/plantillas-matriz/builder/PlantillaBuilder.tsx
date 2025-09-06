@@ -120,6 +120,34 @@ export function PlantillaBuilder({
 
     const { source, destination, type } = result;
 
+    // Arrastrar elementos del toolbox a secciones
+    if (source.droppableId === 'toolbox' && destination.droppableId.startsWith('seccion-')) {
+      const elementoId = result.draggableId;
+      const seccionId = destination.droppableId.replace('seccion-', '');
+      
+      // Crear nuevo campo basado en el elemento arrastrado
+      const nuevoCampo: CampoBuilder = {
+        id: `campo-${Date.now()}`,
+        tipo: elementoId as any,
+        etiqueta: `Nuevo ${elementoId}`,
+        requerido: true,
+        peso: 5,
+        orden: destination.index,
+        opciones: (elementoId === 'select' || elementoId === 'radio') 
+          ? ['Opción 1', 'Opción 2'] 
+          : undefined
+      };
+
+      handleAddCampoToSeccion(seccionId, nuevoCampo);
+      
+      toast({
+        title: "Campo agregado",
+        description: `Se agregó un campo de tipo ${elementoId} a la sección.`
+      });
+      return;
+    }
+
+    // Reordenar secciones
     if (type === 'SECCION') {
       const newSecciones = Array.from(builderData.secciones);
       const [reorderedItem] = newSecciones.splice(source.index, 1);
@@ -166,9 +194,9 @@ export function PlantillaBuilder({
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Toolbox Panel */}
+      {/* Toolbox Panel - Estilo SurveyJS */}
       <div className="w-80 border-r bg-muted/30">
-        <ToolboxPanel onAddCampo={handleAddCampoToSeccion} />
+        <ToolboxPanel />
       </div>
 
       {/* Main Builder Area */}
@@ -186,7 +214,7 @@ export function PlantillaBuilder({
                   {plantilla ? 'Editar Plantilla' : 'Nueva Plantilla'}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Arrastra elementos del toolbox para construir tu plantilla
+                  Arrastra elementos del panel lateral a las secciones
                 </p>
               </div>
             </div>
@@ -264,7 +292,7 @@ export function PlantillaBuilder({
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               className={`transform transition-transform ${
-                                snapshot.isDragging ? 'rotate-3 scale-105' : ''
+                                snapshot.isDragging ? 'rotate-1 scale-105' : ''
                               }`}
                             >
                               <SeccionEditor
