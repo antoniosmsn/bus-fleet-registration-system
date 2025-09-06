@@ -121,14 +121,12 @@ export function PlantillaRenderer({ plantilla, onRespuestasChange }: PlantillaRe
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{plantilla.nombre}</CardTitle>
-          {plantilla.descripcion && (
-            <p className="text-sm text-muted-foreground">{plantilla.descripcion}</p>
-          )}
-        </CardHeader>
-      </Card>
+      <div className="space-y-2">
+        <h3 className="text-xl font-semibold">{plantilla.nombre}</h3>
+        {plantilla.descripcion && (
+          <p className="text-sm text-muted-foreground">{plantilla.descripcion}</p>
+        )}
+      </div>
 
       {plantilla.secciones.map((seccion, index) => {
         const progreso = calcularProgresoSeccion(seccion);
