@@ -99,6 +99,10 @@ function App() {
             <Route path="/mantenimiento/registrar" element={<MantenimientoRegister />} />
             <Route path="/mantenimiento/editar/:id" element={<MantenimientoEdit />} />
             
+            {/* Inspecciones routes */}
+            <Route path="/mantenimiento/inspecciones" element={<InspeccionesIndex />} />
+            <Route path="/mantenimiento/inspecciones/registrar" element={<InspeccionesRegister />} />
+            
             {/* Bus routes */}
             <Route path="/buses" element={<BusesIndex />} />
             <Route path="/buses/register" element={<BusesRegister />} />

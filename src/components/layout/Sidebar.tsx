@@ -206,6 +206,11 @@ const SidebarComponent = () => {
       url: "/mantenimiento", 
       icon: Wrench 
     },
+    { 
+      title: "Registro de inspecciones autobús", 
+      url: "/mantenimiento/inspecciones", 
+      icon: FileCheck 
+    },
   ];
 
   return (
