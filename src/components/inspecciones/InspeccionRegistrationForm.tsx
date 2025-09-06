@@ -168,9 +168,9 @@ export function InspeccionRegistrationForm({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fechaInspeccion">Fecha de Inspección *</Label>
+                  <Label htmlFor="fechaInspeccion">Fecha de inspección *</Label>
                   <Input
                     id="fechaInspeccion"
                     type="date"
@@ -215,7 +215,7 @@ export function InspeccionRegistrationForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Placa del Autobús *</Label>
+                  <Label>Placa *</Label>
                   <Combobox
                     options={autobusOptions}
                     value={watchedPlaca || ''}
@@ -231,7 +231,7 @@ export function InspeccionRegistrationForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="kilometros">Kilómetros del Vehículo *</Label>
+                  <Label htmlFor="kilometros">Kilómetros *</Label>
                   <Input
                     id="kilometros"
                     type="number"
