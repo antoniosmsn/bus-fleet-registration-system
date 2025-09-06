@@ -211,6 +211,11 @@ const SidebarComponent = () => {
       url: "/mantenimiento/inspecciones", 
       icon: FileCheck 
     },
+    { 
+      title: "Plantillas de Matriz", 
+      url: "/mantenimiento/plantillas-matriz", 
+      icon: FileText 
+    },
   ];
 
   return (

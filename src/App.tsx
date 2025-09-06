@@ -16,6 +16,11 @@ import MantenimientoEdit from '@/pages/mantenimiento/Edit';
 import InspeccionesIndex from '@/pages/mantenimiento/inspecciones/Index';
 import InspeccionesRegister from '@/pages/mantenimiento/inspecciones/Register';
 
+// Plantillas Matriz pages
+import PlantillasMatrizIndex from '@/pages/mantenimiento/plantillas-matriz/Index';
+import PlantillasMatrizRegister from '@/pages/mantenimiento/plantillas-matriz/Register';
+import PlantillasMatrizEdit from '@/pages/mantenimiento/plantillas-matriz/Edit';
+
 // Other pages (keeping existing imports)
 import BusesIndex from '@/pages/buses/Index';
 import BusesRegister from '@/pages/buses/Register';
@@ -106,6 +111,11 @@ function App() {
             {/* Inspecciones routes */}
             <Route path="/mantenimiento/inspecciones" element={<InspeccionesIndex />} />
             <Route path="/mantenimiento/inspecciones/registrar" element={<InspeccionesRegister />} />
+            
+            {/* Plantillas Matriz routes */}
+            <Route path="/mantenimiento/plantillas-matriz" element={<PlantillasMatrizIndex />} />
+            <Route path="/mantenimiento/plantillas-matriz/registrar" element={<PlantillasMatrizRegister />} />
+            <Route path="/mantenimiento/plantillas-matriz/editar/:id" element={<PlantillasMatrizEdit />} />
             
             {/* Bus routes */}
             <Route path="/buses" element={<BusesIndex />} />
