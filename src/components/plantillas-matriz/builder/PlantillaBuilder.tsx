@@ -73,19 +73,20 @@ export function PlantillaBuilder({
   };
 
   const handleAddCampoToSeccion = (seccionId: string, campo: CampoBuilder) => {
-    const nuevoCampo: CampoBuilder = {
-      id: `campo-${Date.now()}`,
-      ...campo,
-      orden: 0
-    };
-
-    setBuilderData({
-      ...builderData,
-      secciones: builderData.secciones.map(s => 
-        s.id === seccionId 
-          ? { ...s, campos: [...s.campos, nuevoCampo] }
-          : s
-      )
+    console.log('handleAddCampoToSeccion llamado:', { seccionId, campo });
+    
+    setBuilderData(prevData => {
+      const newData = {
+        ...prevData,
+        secciones: prevData.secciones.map(s => 
+          s.id === seccionId 
+            ? { ...s, campos: [...s.campos, campo] }
+            : s
+        )
+      };
+      
+      console.log('Nuevo estado después de agregar campo:', newData);
+      return newData;
     });
   };
 
