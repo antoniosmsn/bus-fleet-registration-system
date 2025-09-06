@@ -77,11 +77,6 @@ export function InspeccionFilters({
     label: t.nombre
   }));
 
-  const estadoOptions = [
-    { value: 'completada', label: 'Completada' },
-    { value: 'pendiente', label: 'Pendiente' }
-  ];
-
   return (
     <Card className="mb-6">
       <CardHeader className="pb-3">
@@ -116,12 +111,11 @@ export function InspeccionFilters({
             <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
               <TabsTrigger value="general">Información General</TabsTrigger>
               <TabsTrigger value="fechas">Fechas y Horas</TabsTrigger>
-              <TabsTrigger value="identificacion">Identificación</TabsTrigger>
             </TabsList>
             
             {/* Información General */}
             <TabsContent value="general" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label>Empresa transportista</Label>
                   <Combobox
@@ -152,6 +146,18 @@ export function InspeccionFilters({
                     placeholder="Nombre del usuario responsable"
                     value={filtros.responsable || ''}
                     onChange={(e) => handleInputChange('responsable', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="consecutivo">Identificador de matriz</Label>
+                  <Input
+                    id="consecutivo"
+                    type="number"
+                    placeholder="Número consecutivo"
+                    value={filtros.consecutivo || ''}
+                    onChange={(e) => handleInputChange('consecutivo', e.target.value)}
                     disabled={loading}
                   />
                 </div>
@@ -213,35 +219,6 @@ export function InspeccionFilters({
                       />
                     </div>
                   </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {/* Identificación */}
-            <TabsContent value="identificacion" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="consecutivo">Identificador de matriz</Label>
-                  <Input
-                    id="consecutivo"
-                    type="number"
-                    placeholder="Número consecutivo"
-                    value={filtros.consecutivo || ''}
-                    onChange={(e) => handleInputChange('consecutivo', e.target.value)}
-                    disabled={loading}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Estado</Label>
-                  <Combobox
-                    options={estadoOptions}
-                    value={filtros.estado || ''}
-                    onValueChange={(value) => handleInputChange('estado', value)}
-                    placeholder="Seleccionar estado"
-                    searchPlaceholder="Buscar estado..."
-                    emptyText="No se encontraron estados"
-                  />
                 </div>
               </div>
             </TabsContent>

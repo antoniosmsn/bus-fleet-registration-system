@@ -77,7 +77,6 @@ export interface InspeccionFilter {
   responsable?: string;
   transportista?: string;
   consecutivo?: string;
-  estado?: 'completada' | 'pendiente' | '';
 }
 
 export interface InspeccionRegistro {

@@ -45,7 +45,6 @@ export default function InspeccionesIndex() {
     if (filtros.responsable && !inspeccion.usuarioCreacion.toLowerCase().includes(filtros.responsable.toLowerCase())) return false;
     if (filtros.transportista && inspeccion.transportista.id !== filtros.transportista) return false;
     if (filtros.consecutivo && !inspeccion.consecutivo.toString().includes(filtros.consecutivo)) return false;
-    if (filtros.estado && inspeccion.estado !== filtros.estado) return false;
     return true;
   });
 
@@ -122,7 +121,7 @@ export default function InspeccionesIndex() {
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
           <div>
-            <h1 className="text-2xl font-bold">Listado de inspecciones autobuses</h1>
+            <h1 className="text-2xl font-bold">Listado Ficha Mantenimientos</h1>
             <p className="text-muted-foreground">Gestión de inspecciones de mantenimiento</p>
           </div>
           <Button onClick={() => navigate('/mantenimiento/inspecciones/registrar')}>
