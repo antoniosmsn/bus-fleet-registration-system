@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
+import { 
+  Card, 
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Search, RotateCcw, Filter } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Combobox } from '@/components/ui/combobox';
 import { InspeccionFilter } from '@/types/inspeccion-autobus';
-import { PlantillaInspeccion } from '@/types/inspeccion-autobus';
 import { Transportista } from '@/data/mockTransportistas';
 
 interface InspeccionFiltersProps {
@@ -25,7 +30,8 @@ export function InspeccionFilters({
   transportistas,
   loading = false
 }: InspeccionFiltersProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [activeTab, setActiveTab] = useState("general");
 
   // Establecer valores por defecto
   useEffect(() => {
@@ -54,6 +60,11 @@ export function InspeccionFilters({
       horaInicio: '00:00',
       horaFin: '23:59'
     });
+    setActiveTab("general");
+  };
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
   };
 
   const hasActiveFilters = Object.values(filtros).some(value => 
@@ -72,170 +83,182 @@ export function InspeccionFilters({
   ];
 
   return (
-    <div className="bg-card rounded-lg border shadow-sm">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex items-center justify-between p-4 border-b">
+    <Card className="mb-6">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">Filtros de búsqueda</span>
+            <CardTitle className="text-lg font-medium">Filtros de búsqueda</CardTitle>
             {hasActiveFilters && (
               <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs">
                 Activos
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            {hasActiveFilters && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={clearFilters}
-                disabled={loading}
-              >
-                <RotateCcw className="h-4 w-4 mr-1" />
-                Limpiar
-              </Button>
+          <Button variant="ghost" size="sm" onClick={toggleExpanded} className="flex items-center gap-1">
+            {isExpanded ? (
+              <>
+                <ChevronUp className="h-4 w-4" />
+                <span className="hidden sm:inline">Ocultar filtros</span>
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4" />
+                <span className="hidden sm:inline">Mostrar filtros</span>
+              </>
             )}
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-              </Button>
-            </CollapsibleTrigger>
-          </div>
+          </Button>
         </div>
+      </CardHeader>
+      
+      {isExpanded && (
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full justify-start mb-4 overflow-x-auto flex-nowrap">
+              <TabsTrigger value="general">Información General</TabsTrigger>
+              <TabsTrigger value="fechas">Fechas y Horas</TabsTrigger>
+              <TabsTrigger value="identificacion">Identificación</TabsTrigger>
+            </TabsList>
+            
+            {/* Información General */}
+            <TabsContent value="general" className="mt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Empresa transportista</Label>
+                  <Combobox
+                    options={transportistaOptions}
+                    value={filtros.transportista || ''}
+                    onValueChange={(value) => handleInputChange('transportista', value)}
+                    placeholder="Seleccionar empresa transportista"
+                    searchPlaceholder="Buscar empresa..."
+                    emptyText="No se encontraron empresas"
+                  />
+                </div>
 
-        <CollapsibleContent>
-          <div className="p-4">
-            <div className="space-y-4">
-              {/* Empresa transportista */}
-              <div className="space-y-2">
-                <Label>Empresa transportista</Label>
-                <Combobox
-                  options={transportistaOptions}
-                  value={filtros.transportista || ''}
-                  onValueChange={(value) => handleInputChange('transportista', value)}
-                  placeholder="Seleccionar empresa transportista"
-                  searchPlaceholder="Buscar empresa..."
-                  emptyText="No se encontraron empresas"
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="placa">Placa</Label>
+                  <Input
+                    id="placa"
+                    placeholder="Ej: CRC-1001"
+                    value={filtros.placa || ''}
+                    onChange={(e) => handleInputChange('placa', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="responsable">Responsable</Label>
+                  <Input
+                    id="responsable"
+                    placeholder="Nombre del usuario responsable"
+                    value={filtros.responsable || ''}
+                    onChange={(e) => handleInputChange('responsable', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
+            </TabsContent>
+            
+            {/* Fechas y Horas */}
+            <TabsContent value="fechas" className="mt-0">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Fecha de inspección</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="fechaInicio">Desde</Label>
+                      <Input
+                        id="fechaInicio"
+                        type="date"
+                        value={filtros.fechaInicio || ''}
+                        onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="fechaFin">Hasta</Label>
+                      <Input
+                        id="fechaFin"
+                        type="date"
+                        value={filtros.fechaFin || ''}
+                        onChange={(e) => handleInputChange('fechaFin', e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              {/* Placa */}
-              <div className="space-y-2">
-                <Label htmlFor="placa">Placa</Label>
-                <Input
-                  id="placa"
-                  placeholder="Ej: CRC-1001"
-                  value={filtros.placa || ''}
-                  onChange={(e) => handleInputChange('placa', e.target.value)}
-                  disabled={loading}
-                />
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Hora de inspección</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="horaInicio">Hora inicio</Label>
+                      <Input
+                        id="horaInicio"
+                        type="time"
+                        value={filtros.horaInicio || ''}
+                        onChange={(e) => handleInputChange('horaInicio', e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="horaFin">Hora fin</Label>
+                      <Input
+                        id="horaFin"
+                        type="time"
+                        value={filtros.horaFin || ''}
+                        onChange={(e) => handleInputChange('horaFin', e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              {/* Fechas de inspección */}
+            </TabsContent>
+            
+            {/* Identificación */}
+            <TabsContent value="identificacion" className="mt-0">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fechaInicio">Fecha inicio</Label>
+                  <Label htmlFor="consecutivo">Identificador de matriz</Label>
                   <Input
-                    id="fechaInicio"
-                    type="date"
-                    value={filtros.fechaInicio || ''}
-                    onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
+                    id="consecutivo"
+                    type="number"
+                    placeholder="Número consecutivo"
+                    value={filtros.consecutivo || ''}
+                    onChange={(e) => handleInputChange('consecutivo', e.target.value)}
                     disabled={loading}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="fechaFin">Fecha fin</Label>
-                  <Input
-                    id="fechaFin"
-                    type="date"
-                    value={filtros.fechaFin || ''}
-                    onChange={(e) => handleInputChange('fechaFin', e.target.value)}
-                    disabled={loading}
+                  <Label>Estado</Label>
+                  <Combobox
+                    options={estadoOptions}
+                    value={filtros.estado || ''}
+                    onValueChange={(value) => handleInputChange('estado', value)}
+                    placeholder="Seleccionar estado"
+                    searchPlaceholder="Buscar estado..."
+                    emptyText="No se encontraron estados"
                   />
                 </div>
               </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      )}
 
-              {/* Horas de inspección */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="horaInicio">Hora inicio</Label>
-                  <Input
-                    id="horaInicio"
-                    type="time"
-                    value={filtros.horaInicio || ''}
-                    onChange={(e) => handleInputChange('horaInicio', e.target.value)}
-                    disabled={loading}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="horaFin">Hora fin</Label>
-                  <Input
-                    id="horaFin"
-                    type="time"
-                    value={filtros.horaFin || ''}
-                    onChange={(e) => handleInputChange('horaFin', e.target.value)}
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-
-              {/* Responsable */}
-              <div className="space-y-2">
-                <Label htmlFor="responsable">Responsable</Label>
-                <Input
-                  id="responsable"
-                  placeholder="Nombre del usuario responsable"
-                  value={filtros.responsable || ''}
-                  onChange={(e) => handleInputChange('responsable', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Identificador de matriz */}
-              <div className="space-y-2">
-                <Label htmlFor="consecutivo">Identificador de matriz</Label>
-                <Input
-                  id="consecutivo"
-                  type="number"
-                  placeholder="Número consecutivo"
-                  value={filtros.consecutivo || ''}
-                  onChange={(e) => handleInputChange('consecutivo', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Estado */}
-              <div className="space-y-2">
-                <Label>Estado</Label>
-                <Combobox
-                  options={estadoOptions}
-                  value={filtros.estado || ''}
-                  onValueChange={(value) => handleInputChange('estado', value)}
-                  placeholder="Seleccionar estado"
-                  searchPlaceholder="Buscar estado..."
-                  emptyText="No se encontraron estados"
-                />
-              </div>
-
-              {/* Botones de acción */}
-              <div className="flex gap-2 pt-4">
-                <Button onClick={onBuscar} disabled={loading}>
-                  <Search className="h-4 w-4 mr-2" />
-                  Buscar
-                </Button>
-                <Button variant="outline" onClick={clearFilters} disabled={loading}>
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  Limpiar filtros
-                </Button>
-              </div>
-            </div>
-
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    </div>
+      <CardFooter className="flex justify-between border-t pt-4">
+        <Button variant="outline" onClick={clearFilters} disabled={loading} className="flex items-center gap-1">
+          <X className="h-4 w-4" />
+          <span className="hidden sm:inline">Limpiar filtros</span>
+        </Button>
+        <Button onClick={onBuscar} disabled={loading} className="flex items-center gap-1">
+          <Search className="h-4 w-4" />
+          <span className="hidden sm:inline">Buscar</span>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
