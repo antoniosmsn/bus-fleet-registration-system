@@ -1,18 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Plus, Trash2, Edit3, Save, ArrowLeft } from 'lucide-react';
+import { Plus, Save, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { PlantillaBuilder as PlantillaBuilderType, SeccionBuilder, CampoBuilder } from '@/types/plantilla-matriz';
-import { ToolboxPanel } from './ToolboxPanel';
-import { SeccionEditor } from './SeccionEditor';
-import { CampoEditor } from './CampoEditor';
+import { GoogleFormsToolbox } from './GoogleFormsToolbox';
+import { GoogleFormsSection } from './GoogleFormsSection';
+import { WeightInputDialog } from './WeightInputDialog';
 import { toast } from '@/hooks/use-toast';
-import { mockToolboxElementos } from '@/data/mockToolboxElementos';
 
 interface PlantillaBuilderProps {
   plantilla?: PlantillaBuilderType;
@@ -34,10 +32,17 @@ export function PlantillaBuilder({
     secciones: plantilla?.secciones || []
   });
 
-  const [editandoSeccion, setEditandoSeccion] = useState<string | null>(null);
-  const [editandoCampo, setEditandoCampo] = useState<{ seccionId: string; campoId: string } | null>(null);
-  const [elementoSeleccionado, setElementoSeleccionado] = useState<string | null>(null);
-  const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
+  const [weightDialog, setWeightDialog] = useState<{
+    open: boolean;
+    elementType: string;
+    elementName: string;
+    sectionId: string | null;
+  }>({
+    open: false,
+    elementType: '',
+    elementName: '',
+    sectionId: null
+  });
 
   // Calcular peso total
   const pesoTotal = builderData.secciones.reduce((total, seccion) => total + seccion.peso, 0);
@@ -45,8 +50,8 @@ export function PlantillaBuilder({
   const handleAddSeccion = () => {
     const nuevaSeccion: SeccionBuilder = {
       id: `seccion-${Date.now()}`,
-      nombre: `Nueva Sección ${builderData.secciones.length + 1}`,
-      peso: 0,
+      nombre: `Sección sin título`,
+      peso: 20, // Default weight
       campos: [],
       orden: builderData.secciones.length,
       expanded: true
@@ -74,21 +79,63 @@ export function PlantillaBuilder({
     });
   };
 
-  const handleAddCampoToSeccion = (seccionId: string, campo: CampoBuilder) => {
-    console.log('handleAddCampoToSeccion llamado:', { seccionId, campo });
-    
-    setBuilderData(prevData => {
-      const newData = {
-        ...prevData,
-        secciones: prevData.secciones.map(s => 
-          s.id === seccionId 
-            ? { ...s, campos: [...s.campos, campo] }
-            : s
-        )
-      };
-      
-      console.log('Nuevo estado después de agregar campo:', newData);
-      return newData;
+  const handleAddField = (tipo: string) => {
+    // Find an active section or use the first one
+    const activeSection = builderData.secciones[0];
+    if (!activeSection) {
+      toast({
+        title: "Error",
+        description: "Debe crear al menos una sección primero",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const fieldNames: Record<string, string> = {
+      texto: 'Respuesta corta',
+      select: 'Lista desplegable', 
+      radio: 'Opción múltiple',
+      checkbox: 'Casillas de verificación',
+      fecha: 'Fecha',
+      canvas: 'Dibujo'
+    };
+
+    setWeightDialog({
+      open: true,
+      elementType: tipo,
+      elementName: fieldNames[tipo] || 'Campo',
+      sectionId: activeSection.id
+    });
+  };
+
+  const handleConfirmWeight = (weight: number) => {
+    const { elementType, sectionId } = weightDialog;
+    if (!sectionId) return;
+
+    const nuevoCampo: CampoBuilder = {
+      id: `campo-${Date.now()}`,
+      tipo: elementType as any,
+      etiqueta: 'Pregunta sin título',
+      requerido: false,
+      peso: weight,
+      orden: 0,
+      opciones: (elementType === 'select' || elementType === 'radio' || elementType === 'checkbox') 
+        ? ['Opción 1', 'Opción 2'] 
+        : undefined
+    };
+
+    setBuilderData(prevData => ({
+      ...prevData,
+      secciones: prevData.secciones.map(s => 
+        s.id === sectionId 
+          ? { ...s, campos: [...s.campos, nuevoCampo] }
+          : s
+      )
+    }));
+
+    toast({
+      title: "Campo agregado",
+      description: `Se agregó un campo ${weightDialog.elementName} con peso ${weight}%`
     });
   };
 
@@ -119,69 +166,41 @@ export function PlantillaBuilder({
     });
   };
 
+  const handleDuplicateCampo = (seccionId: string, campoId: string) => {
+    const seccion = builderData.secciones.find(s => s.id === seccionId);
+    const campo = seccion?.campos.find(c => c.id === campoId);
+    
+    if (!campo) return;
+
+    const duplicatedCampo: CampoBuilder = {
+      ...campo,
+      id: `campo-${Date.now()}`,
+      etiqueta: `${campo.etiqueta} (copia)`,
+      orden: campo.orden + 1
+    };
+
+    setBuilderData({
+      ...builderData,
+      secciones: builderData.secciones.map(s => 
+        s.id === seccionId 
+          ? { ...s, campos: [...s.campos, duplicatedCampo] }
+          : s
+      )
+    });
+  };
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination, type } = result;
 
-    console.log('Drag result:', {
-      source: source.droppableId,
-      destination: destination.droppableId,
-      draggableId: result.draggableId
-    });
-
-    // Arrastrar elementos del toolbox a secciones
-    if (source.droppableId === 'toolbox' && destination.droppableId.includes('seccion-')) {
-      const elementoId = result.draggableId;
-      
-      // Extraer el ID de la sección del droppableId
-      const match = destination.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
-      const seccionId = match ? match[1] : destination.droppableId.replace('seccion-', '');
-      
-      console.log('Adding element to section:', { elementoId, seccionId, match });
-
-      // Buscar el elemento en el toolbox para obtener información correcta
-      const elementoToolbox = mockToolboxElementos.find(el => el.id === elementoId);
-      if (!elementoToolbox) {
-        console.error('Elemento no encontrado en toolbox:', elementoId);
-        return;
-      }
-
-      // Crear nuevo campo basado en el elemento arrastrado
-      const nuevoCampo: CampoBuilder = {
-        id: `campo-${Date.now()}`,
-        tipo: elementoToolbox.tipo as any,
-        etiqueta: elementoToolbox.nombre,
-        requerido: true,
-        peso: 5,
-        orden: destination.index,
-        opciones: (elementoToolbox.tipo === 'select' || elementoToolbox.tipo === 'radio') 
-          ? ['Opción 1', 'Opción 2'] 
-          : undefined
-      };
-
-      console.log('Nuevo campo creado:', nuevoCampo);
-
-      handleAddCampoToSeccion(seccionId, nuevoCampo);
-      
-      toast({
-        title: "Campo agregado",
-        description: `Se agregó un campo de tipo ${elementoToolbox.nombre} a la sección.`
-      });
-      return;
-    }
-
     // Reordenar campos dentro de una sección
     if (source.droppableId.includes('seccion-') && destination.droppableId.includes('seccion-')) {
-      // Extraer el ID de la sección del droppableId
-      const sourceMatch = source.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
-      const destMatch = destination.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
-      
-      const sourceSeccionId = sourceMatch ? sourceMatch[1] : source.droppableId.replace('seccion-', '');
-      const destSeccionId = destMatch ? destMatch[1] : destination.droppableId.replace('seccion-', '');
+      const sourceSeccionId = source.droppableId.replace('seccion-', '');
+      const destSeccionId = destination.droppableId.replace('seccion-', '');
       
       if (source.droppableId === destination.droppableId) {
-        // Reordenar dentro de la misma sección/columna
+        // Reordenar dentro de la misma sección
         const seccion = builderData.secciones.find(s => s.id === sourceSeccionId);
         if (!seccion) return;
 
@@ -244,58 +263,17 @@ export function PlantillaBuilder({
     onSave(builderData);
   };
 
-  const handleAgregarElementoSeleccionado = () => {
-    if (!elementoSeleccionado || !seccionActiva) {
-      toast({
-        title: "Selección incompleta",
-        description: "Selecciona un elemento y una sección activa",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const elementoToolbox = mockToolboxElementos.find(el => el.id === elementoSeleccionado);
-    if (!elementoToolbox) return;
-
-    const nuevoCampo: CampoBuilder = {
-      id: `campo-${Date.now()}`,
-      tipo: elementoToolbox.tipo as any,
-      etiqueta: elementoToolbox.nombre,
-      requerido: true,
-      peso: 5,
-      orden: 0,
-      opciones: (elementoToolbox.tipo === 'select' || elementoToolbox.tipo === 'radio') 
-        ? ['Opción 1', 'Opción 2'] 
-        : undefined
-    };
-
-    handleAddCampoToSeccion(seccionActiva, nuevoCampo);
-    
-    toast({
-      title: "Campo agregado",
-      description: `Se agregó ${elementoToolbox.nombre} a la sección`
-    });
-    
-    setElementoSeleccionado(null);
-  };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex h-screen bg-background">
-        {/* Toolbox Panel - Estilo SurveyJS */}
-        <div className="w-80 border-r bg-muted/30">
-          <ToolboxPanel 
-            elementoSeleccionado={elementoSeleccionado}
-            seccionActiva={seccionActiva}
-            onSeleccionarElemento={setElementoSeleccionado}
-            onAgregar={handleAgregarElementoSeleccionado}
-          />
-        </div>
+      <div className="flex h-screen bg-muted/20">
+        {/* Google Forms Style Toolbox */}
+        <GoogleFormsToolbox onAddField={handleAddField} />
 
-        {/* Main Builder Area */}
+        {/* Main Builder Area - Google Forms Style */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
-          <div className="border-b bg-background p-4">
+          <div className="border-b bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Button variant="ghost" size="sm" onClick={onCancel}>
@@ -303,77 +281,78 @@ export function PlantillaBuilder({
                   Volver
                 </Button>
                 <div>
-                  <h1 className="text-lg font-semibold">
+                  <h1 className="text-2xl font-semibold text-primary">
                     {plantilla ? 'Editar Plantilla' : 'Nueva Plantilla'}
                   </h1>
                   <p className="text-sm text-muted-foreground">
-                    Arrastra elementos del panel lateral a las secciones
+                    Agrega preguntas desde el panel lateral
                   </p>
                 </div>
               </div>
               
               <div className="flex items-center gap-4">
-                <Badge variant={pesoTotal === 100 ? "default" : "destructive"}>
+                <Badge variant={pesoTotal === 100 ? "default" : "destructive"} className="text-sm">
                   Peso Total: {pesoTotal}%
                 </Badge>
-                <Button onClick={handleSave} disabled={loading || pesoTotal !== 100}>
+                <Button onClick={handleSave} disabled={loading || pesoTotal !== 100} className="px-6">
                   <Save className="h-4 w-4 mr-2" />
-                  Guardar
+                  Guardar Plantilla
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Builder Content */}
-          <div className="flex-1 overflow-auto p-6">
-            <div className="max-w-4xl mx-auto space-y-6">
-              {/* Información básica */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Información de la Plantilla</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Nombre de la plantilla *</Label>
-                      <Input
-                        value={builderData.nombre}
-                        onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
-                        placeholder="Ingrese el nombre..."
-                        maxLength={100}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Descripción (opcional)</Label>
-                      <Input
-                        value={builderData.descripcion}
-                        onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
-                        placeholder="Descripción breve..."
-                        maxLength={200}
-                      />
-                    </div>
+          {/* Builder Content - Google Forms Style */}
+          <div className="flex-1 overflow-auto bg-gradient-to-b from-muted/20 to-background">
+            <div className="max-w-4xl mx-auto p-6 space-y-6">
+              {/* Form Header - Google Forms Style */}
+              <Card className="border-t-8 border-t-primary">
+                <CardContent className="p-8">
+                  <div className="space-y-4">
+                    <Input
+                      value={builderData.nombre}
+                      onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
+                      placeholder="Formulario sin título"
+                      className="text-3xl font-normal border-0 border-b-2 border-muted-foreground/20 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary"
+                      maxLength={100}
+                    />
+                    <Input
+                      value={builderData.descripcion}
+                      onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
+                      placeholder="Descripción del formulario"
+                      className="text-base border-0 border-b border-muted-foreground/20 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary"
+                      maxLength={200}
+                    />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Secciones */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold">Secciones de la Plantilla</h2>
-                  <Button onClick={handleAddSeccion} variant="outline">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Agregar Sección
-                  </Button>
-                </div>
-
-                <Droppable droppableId="secciones" type="SECCION">
-                  {(provided) => (
-                    <div 
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="space-y-4"
-                    >
-                      {builderData.secciones.map((seccion, index) => (
+              {/* Sections - Google Forms Style */}
+              <Droppable droppableId="secciones" type="SECCION">
+                {(provided) => (
+                  <div 
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="space-y-6"
+                  >
+                    {builderData.secciones.length === 0 ? (
+                      <Card className="border-dashed border-2 border-muted-foreground/30">
+                        <CardContent className="p-12 text-center text-muted-foreground">
+                          <div className="space-y-4">
+                            <div className="text-6xl">📝</div>
+                            <div>
+                              <h3 className="text-xl font-medium mb-2">Comienza creando una sección</h3>
+                              <p className="text-sm mb-4">Las secciones te ayudan a organizar tu formulario</p>
+                              <Button onClick={handleAddSeccion} className="mt-4">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Crear Primera Sección
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      builderData.secciones.map((seccion, index) => (
                         <Draggable 
                           key={seccion.id} 
                           draggableId={seccion.id} 
@@ -383,45 +362,52 @@ export function PlantillaBuilder({
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              className={`transform transition-transform ${
-                                snapshot.isDragging ? 'rotate-1 scale-105' : ''
+                              className={`transition-transform duration-200 ${
+                                snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
                               }`}
                             >
-                              <SeccionEditor
+                              <GoogleFormsSection
                                 seccion={seccion}
+                                sectionIndex={index}
+                                totalSections={builderData.secciones.length}
                                 dragHandleProps={provided.dragHandleProps}
-                                esActiva={seccionActiva === seccion.id}
                                 onUpdate={(updates) => handleUpdateSeccion(seccion.id, updates)}
                                 onDelete={() => handleDeleteSeccion(seccion.id)}
-                                onAddCampo={(campo) => handleAddCampoToSeccion(seccion.id, campo)}
                                 onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
                                 onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
-                                onSeleccionar={() => setSeccionActiva(seccion.id)}
+                                onDuplicateCampo={(campoId) => handleDuplicateCampo(seccion.id, campoId)}
                               />
                             </div>
                           )}
                         </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-
-                {builderData.secciones.length === 0 && (
-                  <Card className="border-dashed">
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                      <div className="space-y-2">
-                        <p>No hay secciones creadas</p>
-                        <p className="text-sm">Haz clic en "Agregar Sección" para comenzar</p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      ))
+                    )}
+                    {provided.placeholder}
+                  </div>
                 )}
-              </div>
+              </Droppable>
+
+              {/* Add Section Button - Google Forms Style */}
+              {builderData.secciones.length > 0 && (
+                <div className="flex justify-center">
+                  <Button onClick={handleAddSeccion} variant="outline" size="lg" className="border-2 border-dashed">
+                    <Plus className="h-5 w-5 mr-2" />
+                    Agregar Sección
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Weight Input Dialog */}
+      <WeightInputDialog
+        open={weightDialog.open}
+        onClose={() => setWeightDialog(prev => ({ ...prev, open: false }))}
+        onConfirm={handleConfirmWeight}
+        elementName={weightDialog.elementName}
+      />
     </DragDropContext>
   );
 }
