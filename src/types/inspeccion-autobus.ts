@@ -86,7 +86,6 @@ export interface InspeccionRegistro {
   fechaInspeccion: string;
   kilometros: number;
   respuestas: RespuestaSeccion[];
-  observaciones?: string;
 }
 
 export interface InspeccionResponse {

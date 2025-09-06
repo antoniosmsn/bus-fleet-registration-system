@@ -24,8 +24,7 @@ const formSchema = z.object({
   placa: z.string().min(1, 'Debe seleccionar una placa'),
   conductorId: z.string().min(1, 'Debe seleccionar un conductor'),
   fechaInspeccion: z.string().min(1, 'La fecha es requerida'),
-  kilometros: z.number().min(1, 'Los kilómetros deben ser mayor a 0'),
-  observaciones: z.string().optional()
+  kilometros: z.number().min(1, 'Los kilómetros deben ser mayor a 0')
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -131,8 +130,7 @@ export function InspeccionRegistrationForm({
       conductorId: data.conductorId,
       fechaInspeccion: data.fechaInspeccion,
       kilometros: data.kilometros,
-      respuestas: respuestasInspeccion,
-      observaciones: data.observaciones
+      respuestas: respuestasInspeccion
     };
 
     await onSubmit(inspeccionData);
@@ -195,21 +193,34 @@ export function InspeccionRegistrationForm({
                     <p className="text-sm text-destructive">{errors.fechaInspeccion.message}</p>
                   )}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label>Transportista</Label>
-                <Combobox
-                  options={transportistaOptions}
-                  value={selectedTransportista}
-                  onValueChange={handleTransportistaChange}
-                  placeholder="Seleccionar transportista"
-                  searchPlaceholder="Buscar transportista..."
-                  emptyText="No se encontraron transportistas"
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label>Transportista</Label>
+                  <Combobox
+                    options={transportistaOptions}
+                    value={selectedTransportista}
+                    onValueChange={handleTransportistaChange}
+                    placeholder="Seleccionar transportista"
+                    searchPlaceholder="Buscar transportista..."
+                    emptyText="No se encontraron transportistas"
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="kilometros">Kilómetros del Vehículo *</Label>
+                  <Input
+                    id="kilometros"
+                    type="number"
+                    min="0"
+                    placeholder="Ej: 45000"
+                    {...register('kilometros', { valueAsNumber: true })}
+                    disabled={isSubmitting}
+                  />
+                  {errors.kilometros && (
+                    <p className="text-sm text-destructive">{errors.kilometros.message}</p>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label>Placa del Autobús *</Label>
                   <Combobox
@@ -239,32 +250,6 @@ export function InspeccionRegistrationForm({
                     <p className="text-sm text-destructive">{errors.conductorId.message}</p>
                   )}
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="kilometros">Kilómetros del Vehículo *</Label>
-                <Input
-                  id="kilometros"
-                  type="number"
-                  min="0"
-                  placeholder="Ej: 45000"
-                  {...register('kilometros', { valueAsNumber: true })}
-                  disabled={isSubmitting}
-                />
-                {errors.kilometros && (
-                  <p className="text-sm text-destructive">{errors.kilometros.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="observaciones">Observaciones</Label>
-                <Textarea
-                  id="observaciones"
-                  placeholder="Observaciones adicionales sobre la inspección..."
-                  rows={3}
-                  {...register('observaciones')}
-                  disabled={isSubmitting}
-                />
               </div>
             </CardContent>
           </Card>
