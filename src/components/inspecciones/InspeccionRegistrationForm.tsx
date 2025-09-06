@@ -168,19 +168,17 @@ export function InspeccionRegistrationForm({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>Matriz de revisión *</Label>
-                  <Combobox
-                    options={plantillaOptions}
-                    value={watchedPlantillaId || ''}
-                    onValueChange={(value) => setValue('plantillaId', value)}
-                    placeholder="Seleccionar matriz"
-                    searchPlaceholder="Buscar matriz..."
-                    emptyText="No se encontraron matrices"
+                  <Label htmlFor="fechaInspeccion">Fecha de Inspección *</Label>
+                  <Input
+                    id="fechaInspeccion"
+                    type="date"
+                    {...register('fechaInspeccion')}
+                    disabled={isSubmitting}
                   />
-                  {errors.plantillaId && (
-                    <p className="text-sm text-destructive">{errors.plantillaId.message}</p>
+                  {errors.fechaInspeccion && (
+                    <p className="text-sm text-destructive">{errors.fechaInspeccion.message}</p>
                   )}
                 </div>
 
@@ -193,6 +191,7 @@ export function InspeccionRegistrationForm({
                     placeholder="Seleccionar empresa"
                     searchPlaceholder="Buscar empresa..."
                     emptyText="No se encontraron empresas"
+                    disabled={isSubmitting}
                   />
                   {errors.empresaTransporteId && (
                     <p className="text-sm text-destructive">{errors.empresaTransporteId.message}</p>
@@ -200,15 +199,34 @@ export function InspeccionRegistrationForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fechaInspeccion">Fecha de Inspección *</Label>
-                  <Input
-                    id="fechaInspeccion"
-                    type="date"
-                    {...register('fechaInspeccion')}
-                    disabled={isSubmitting}
+                  <Label>Conductor *</Label>
+                  <Combobox
+                    options={conductorOptions}
+                    value={watch('conductorId') || ''}
+                    onValueChange={(value) => setValue('conductorId', value)}
+                    placeholder={watchedEmpresaTransporteId ? "Seleccionar conductor" : "Seleccione una empresa primero"}
+                    searchPlaceholder="Buscar conductor..."
+                    emptyText={watchedEmpresaTransporteId ? "No hay conductores disponibles" : "Seleccione una empresa de transporte"}
+                    disabled={isSubmitting || !watchedEmpresaTransporteId}
                   />
-                  {errors.fechaInspeccion && (
-                    <p className="text-sm text-destructive">{errors.fechaInspeccion.message}</p>
+                  {errors.conductorId && (
+                    <p className="text-sm text-destructive">{errors.conductorId.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Placa del Autobús *</Label>
+                  <Combobox
+                    options={autobusOptions}
+                    value={watchedPlaca || ''}
+                    onValueChange={(value) => setValue('placa', value)}
+                    placeholder={watchedEmpresaTransporteId ? "Seleccionar placa" : "Seleccione una empresa primero"}
+                    searchPlaceholder="Buscar placa..."
+                    emptyText={watchedEmpresaTransporteId ? "No hay autobuses disponibles" : "Seleccione una empresa de transporte"}
+                    disabled={isSubmitting || !watchedEmpresaTransporteId}
+                  />
+                  {errors.placa && (
+                    <p className="text-sm text-destructive">{errors.placa.message}</p>
                   )}
                 </div>
 
@@ -228,32 +246,18 @@ export function InspeccionRegistrationForm({
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Placa del Autobús *</Label>
+                  <Label>Matriz de revisión *</Label>
                   <Combobox
-                    options={autobusOptions}
-                    value={watchedPlaca || ''}
-                    onValueChange={(value) => setValue('placa', value)}
-                    placeholder={watchedEmpresaTransporteId ? "Seleccionar placa" : "Seleccione una empresa primero"}
-                    searchPlaceholder="Buscar placa..."
-                    emptyText={watchedEmpresaTransporteId ? "No hay autobuses disponibles" : "Seleccione una empresa de transporte"}
+                    options={plantillaOptions}
+                    value={watchedPlantillaId || ''}
+                    onValueChange={(value) => setValue('plantillaId', value)}
+                    placeholder="Seleccionar matriz"
+                    searchPlaceholder="Buscar matriz..."
+                    emptyText="No se encontraron matrices"
+                    disabled={isSubmitting}
                   />
-                  {errors.placa && (
-                    <p className="text-sm text-destructive">{errors.placa.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Conductor *</Label>
-                  <Combobox
-                    options={conductorOptions}
-                    value={watch('conductorId') || ''}
-                    onValueChange={(value) => setValue('conductorId', value)}
-                    placeholder={watchedEmpresaTransporteId ? "Seleccionar conductor" : "Seleccione una empresa primero"}
-                    searchPlaceholder="Buscar conductor..."
-                    emptyText={watchedEmpresaTransporteId ? "No hay conductores disponibles" : "Seleccione una empresa de transporte"}
-                  />
-                  {errors.conductorId && (
-                    <p className="text-sm text-destructive">{errors.conductorId.message}</p>
+                  {errors.plantillaId && (
+                    <p className="text-sm text-destructive">{errors.plantillaId.message}</p>
                   )}
                 </div>
               </div>
