@@ -147,6 +147,29 @@ export function PlantillaBuilder({
       return;
     }
 
+    // Reordenar campos dentro de una sección
+    if (source.droppableId.startsWith('seccion-') && destination.droppableId.startsWith('seccion-')) {
+      const seccionId = source.droppableId.replace('seccion-', '');
+      
+      if (source.droppableId === destination.droppableId) {
+        // Reordenar dentro de la misma sección
+        const seccion = builderData.secciones.find(s => s.id === seccionId);
+        if (!seccion) return;
+
+        const newCampos = Array.from(seccion.campos);
+        const [reorderedItem] = newCampos.splice(source.index, 1);
+        newCampos.splice(destination.index, 0, reorderedItem);
+
+        const camposConOrden = newCampos.map((campo, index) => ({
+          ...campo,
+          orden: index
+        }));
+
+        handleUpdateSeccion(seccionId, { campos: camposConOrden });
+      }
+      return;
+    }
+
     // Reordenar secciones
     if (type === 'SECCION') {
       const newSecciones = Array.from(builderData.secciones);
