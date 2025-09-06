@@ -12,6 +12,7 @@ import { ToolboxPanel } from './ToolboxPanel';
 import { SeccionEditor } from './SeccionEditor';
 import { CampoEditor } from './CampoEditor';
 import { toast } from '@/hooks/use-toast';
+import { mockToolboxElementos } from '@/data/mockToolboxElementos';
 
 interface PlantillaBuilderProps {
   plantilla?: PlantillaBuilderType;
@@ -120,6 +121,12 @@ export function PlantillaBuilder({
 
     const { source, destination, type } = result;
 
+    console.log('Drag result:', {
+      source: source.droppableId,
+      destination: destination.droppableId,
+      draggableId: result.draggableId
+    });
+
     // Arrastrar elementos del toolbox a secciones
     if (source.droppableId === 'toolbox' && destination.droppableId.includes('seccion-')) {
       const elementoId = result.draggableId;
@@ -128,24 +135,35 @@ export function PlantillaBuilder({
       const match = destination.droppableId.match(/seccion-(.+?)(?:-col-\d+)?$/);
       const seccionId = match ? match[1] : destination.droppableId.replace('seccion-', '');
       
+      console.log('Adding element to section:', { elementoId, seccionId, match });
+
+      // Buscar el elemento en el toolbox para obtener información correcta
+      const elementoToolbox = mockToolboxElementos.find(el => el.id === elementoId);
+      if (!elementoToolbox) {
+        console.error('Elemento no encontrado en toolbox:', elementoId);
+        return;
+      }
+
       // Crear nuevo campo basado en el elemento arrastrado
       const nuevoCampo: CampoBuilder = {
         id: `campo-${Date.now()}`,
-        tipo: elementoId as any,
-        etiqueta: `Nuevo ${elementoId}`,
+        tipo: elementoToolbox.tipo as any,
+        etiqueta: elementoToolbox.nombre,
         requerido: true,
         peso: 5,
         orden: destination.index,
-        opciones: (elementoId === 'select' || elementoId === 'radio') 
+        opciones: (elementoToolbox.tipo === 'select' || elementoToolbox.tipo === 'radio') 
           ? ['Opción 1', 'Opción 2'] 
           : undefined
       };
+
+      console.log('Nuevo campo creado:', nuevoCampo);
 
       handleAddCampoToSeccion(seccionId, nuevoCampo);
       
       toast({
         title: "Campo agregado",
-        description: `Se agregó un campo de tipo ${elementoId} a la sección.`
+        description: `Se agregó un campo de tipo ${elementoToolbox.nombre} a la sección.`
       });
       return;
     }
