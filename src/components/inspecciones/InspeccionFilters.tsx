@@ -147,59 +147,49 @@ export function InspeccionFilters({
             
             {/* Fechas y Horas */}
             <TabsContent value="fechas" className="mt-0">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Fecha de inspección</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="fechaInicio">Desde</Label>
-                      <Input
-                        id="fechaInicio"
-                        type="date"
-                        value={filtros.fechaInicio || ''}
-                        onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
-                        disabled={loading}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="fechaFin">Hasta</Label>
-                      <Input
-                        id="fechaFin"
-                        type="date"
-                        value={filtros.fechaFin || ''}
-                        onChange={(e) => handleInputChange('fechaFin', e.target.value)}
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fechaInicio">Fecha inicio</Label>
+                  <Input
+                    id="fechaInicio"
+                    type="date"
+                    value={filtros.fechaInicio || ''}
+                    onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
+                    disabled={loading}
+                  />
                 </div>
-
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Hora de inspección</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="horaInicio">Hora inicio</Label>
-                      <Input
-                        id="horaInicio"
-                        type="time"
-                        value={filtros.horaInicio || ''}
-                        onChange={(e) => handleInputChange('horaInicio', e.target.value)}
-                        disabled={loading}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="horaFin">Hora fin</Label>
-                      <Input
-                        id="horaFin"
-                        type="time"
-                        value={filtros.horaFin || ''}
-                        onChange={(e) => handleInputChange('horaFin', e.target.value)}
-                        disabled={loading}
-                      />
-                    </div>
-                  </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="horaInicio">Hora inicio</Label>
+                  <Input
+                    id="horaInicio"
+                    type="time"
+                    value={filtros.horaInicio || ''}
+                    onChange={(e) => handleInputChange('horaInicio', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fechaFin">Fecha fin</Label>
+                  <Input
+                    id="fechaFin"
+                    type="date"
+                    value={filtros.fechaFin || ''}
+                    onChange={(e) => handleInputChange('fechaFin', e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="horaFin">Hora fin</Label>
+                  <Input
+                    id="horaFin"
+                    type="time"
+                    value={filtros.horaFin || ''}
+                    onChange={(e) => handleInputChange('horaFin', e.target.value)}
+                    disabled={loading}
+                  />
                 </div>
               </div>
             </TabsContent>
