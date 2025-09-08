@@ -136,13 +136,14 @@ export default function PlantillasMatrizIndex() {
       description: `La plantilla "${plantillaSeleccionada.nombre}" ha sido ${accion} correctamente.`
     });
     
-    handleCloseDialog();
+    // Limpiar estado inmediatamente
+    setDialogoEstadoAbierto(false);
+    setPlantillaSeleccionada(null);
   };
 
-  const handleCloseDialog = (open?: boolean) => {
-    // Solo cerrar si open es false o undefined
-    if (open !== true) {
-      setDialogoEstadoAbierto(false);
+  const handleDialogOpenChange = (open: boolean) => {
+    setDialogoEstadoAbierto(open);
+    if (!open) {
       setPlantillaSeleccionada(null);
     }
   };
@@ -217,7 +218,7 @@ export default function PlantillasMatrizIndex() {
         <ConfirmarCambioEstadoDialog
           plantilla={plantillaSeleccionada}
           open={dialogoEstadoAbierto}
-          onOpenChange={handleCloseDialog}
+          onOpenChange={handleDialogOpenChange}
           onConfirm={handleConfirmarCambioEstado}
         />
       </div>
