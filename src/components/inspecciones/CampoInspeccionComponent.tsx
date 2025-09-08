@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CanvasSignature } from './CanvasSignature';
+import { CanvasDrawing } from './CanvasDrawing';
 import { CampoInspeccion } from '@/types/inspeccion-autobus';
 import { Trash2, Edit3 } from 'lucide-react';
 
@@ -102,18 +102,18 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
                 className="w-full"
               >
                 <Edit3 className="mr-2 h-4 w-4" />
-                Abrir área de firma
+                Abrir área de dibujo
               </Button>
             )}
             
             {(showCanvas || valor) && (
               <div className="space-y-2">
-                <CanvasSignature
-                  onSignatureChange={(signature) => {
-                    onChange(signature);
-                    if (signature) setShowCanvas(false);
+                <CanvasDrawing
+                  onCanvasChange={(canvas) => {
+                    onChange(canvas);
+                    if (canvas) setShowCanvas(false);
                   }}
-                  initialSignature={valor as string}
+                  initialImage={valor as string}
                 />
                 {valor && (
                   <div className="flex gap-2">
@@ -124,7 +124,7 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
                       onClick={() => setShowCanvas(true)}
                     >
                       <Edit3 className="mr-2 h-4 w-4" />
-                      Editar firma
+                      Editar dibujo
                     </Button>
                     <Button 
                       type="button" 
@@ -136,7 +136,7 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
                       }}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
-                      Borrar firma
+                      Borrar dibujo
                     </Button>
                   </div>
                 )}

@@ -109,8 +109,13 @@ export function GoogleFormsField({
       
       case 'canvas':
         return (
-          <div className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg flex items-center justify-center">
-            <span className="text-muted-foreground text-sm">Área de dibujo</span>
+          <div className="w-full">
+            <div className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg flex items-center justify-center bg-muted/30">
+              <span className="text-muted-foreground text-sm">Área de dibujo - Vista previa</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Los usuarios podrán cargar una imagen y dibujar encima en el formulario final
+            </p>
           </div>
         );
       
@@ -124,8 +129,6 @@ export function GoogleFormsField({
       className={`transition-all duration-200 ${
         focused ? 'border-primary shadow-md' : 'border-border hover:border-muted-foreground/50'
       }`}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
     >
       <CardContent className="p-6">
         <div className="space-y-4">
@@ -149,7 +152,7 @@ export function GoogleFormsField({
               </div>
               
               {/* Options editor for select/radio/checkbox */}
-              {(campo.tipo === 'select' || campo.tipo === 'radio' || campo.tipo === 'checkbox') && focused && (
+              {(campo.tipo === 'select' || campo.tipo === 'radio' || campo.tipo === 'checkbox') && (
                 <div className="space-y-2 mt-4">
                   {(campo.opciones || []).map((opcion, index) => (
                     <div key={index} className="flex items-center gap-2">
