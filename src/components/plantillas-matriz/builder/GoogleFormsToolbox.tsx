@@ -47,10 +47,10 @@ export function GoogleFormsToolbox({ onAddField }: GoogleFormsToolboxProps) {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className={`cursor-pointer hover:bg-accent/50 transition-all border-2 hover:border-primary/30 ${
-                        snapshot.isDragging ? 'shadow-lg scale-105 rotate-2 z-50' : ''
+                      className={`cursor-grab active:cursor-grabbing hover:bg-accent/50 transition-all border-2 hover:border-primary/30 ${
+                        snapshot.isDragging ? 'shadow-lg scale-105 rotate-2 z-50 cursor-grabbing' : ''
                       }`}
-                      onClick={() => onAddField(type.id)}
+                      onClick={() => !snapshot.isDragging && onAddField(type.id)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">

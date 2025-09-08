@@ -80,10 +80,10 @@ export function GoogleFormsSection({
                 <Input
                   value={tempWeight}
                   onChange={(e) => setTempWeight(e.target.value)}
-                  className={`w-16 h-6 text-xs ${
+                  className={`w-16 h-6 text-xs text-foreground bg-background ${
                     !tempWeight || parseInt(tempWeight) === 0 
                       ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                      : ''
+                      : 'text-foreground'
                   }`}
                   type="number"
                   min="1"
@@ -176,16 +176,22 @@ export function GoogleFormsSection({
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className={`space-y-4 transition-all duration-200 ${
-                  snapshot.isDraggingOver ? 'bg-primary/5 rounded-lg p-4' : ''
+                className={`min-h-[100px] space-y-4 transition-all duration-200 ${
+                  snapshot.isDraggingOver ? 'bg-primary/10 rounded-lg p-4 border-2 border-primary border-dashed' : 'p-2'
                 }`}
               >
                 {seccion.campos.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className={`text-center py-8 text-muted-foreground transition-all duration-200 ${
+                    snapshot.isDraggingOver ? 'text-primary font-medium' : ''
+                  }`}>
                     <div className="space-y-2">
                       <p className="text-lg">📝</p>
-                      <p className="font-medium">Agrega tu primera pregunta</p>
-                      <p className="text-sm">Selecciona un tipo de pregunta del panel lateral</p>
+                      <p className="font-medium">
+                        {snapshot.isDraggingOver ? 'Suelta aquí para agregar' : 'Agrega tu primera pregunta'}
+                      </p>
+                      <p className="text-sm">
+                        {snapshot.isDraggingOver ? 'el elemento' : 'Selecciona un tipo de pregunta del panel lateral'}
+                      </p>
                     </div>
                   </div>
                 ) : (

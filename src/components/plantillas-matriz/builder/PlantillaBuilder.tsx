@@ -173,12 +173,16 @@ export function PlantillaBuilder({
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
-    const { source, destination, type } = result;
+    const { source, destination, type, draggableId } = result;
+
+    console.log('Drag end:', { source, destination, type, draggableId });
 
     // Manejar drag desde toolbox hacia sección
     if (source.droppableId === 'toolbox' && destination.droppableId.includes('seccion-')) {
-      const tipoElemento = result.draggableId.replace('toolbox-', '');
+      const tipoElemento = draggableId.replace('toolbox-', '');
       const seccionDestino = destination.droppableId.replace('seccion-', '');
+      
+      console.log('Drag from toolbox to section:', { tipoElemento, seccionDestino });
       
       const fieldNames: Record<string, string> = {
         texto: 'Texto',
