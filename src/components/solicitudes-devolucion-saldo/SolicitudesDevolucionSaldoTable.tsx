@@ -13,7 +13,7 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
   const filteredData = mockSolicitudesDevolucionSaldo.filter((solicitud) => {
     if (!filters) return true;
 
-    const matchesEstado = !filters.estadoDevolucion || solicitud.estado === filters.estadoDevolucion;
+    const matchesEstado = !filters.estadoDevolucion || filters.estadoDevolucion === 'todos' || solicitud.estado === filters.estadoDevolucion;
     const matchesNumero = !filters.numeroDevolucion || 
       solicitud.numeroDevolucion.toLowerCase().includes(filters.numeroDevolucion.toLowerCase());
     const matchesCedula = !filters.cedulaPasajero || 

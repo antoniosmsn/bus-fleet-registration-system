@@ -6,7 +6,7 @@ import { FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 
 export default function SolicitudesDevolucionSaldo() {
   const [filters, setFilters] = useState<FiltrosSolicitudDevolucion>({
-    estadoDevolucion: '',
+    estadoDevolucion: 'todos',
     numeroDevolucion: '',
     cedulaPasajero: '',
     nombrePasajero: '',

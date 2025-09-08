@@ -17,7 +17,7 @@ interface SolicitudesDevolucionSaldoFiltersProps {
 
 export default function SolicitudesDevolucionSaldoFilters({ onFilter }: SolicitudesDevolucionSaldoFiltersProps) {
   const [filters, setFilters] = useState<FiltrosSolicitudDevolucion>({
-    estadoDevolucion: '',
+    estadoDevolucion: 'todos',
     numeroDevolucion: '',
     cedulaPasajero: '',
     nombrePasajero: '',
@@ -54,7 +54,7 @@ export default function SolicitudesDevolucionSaldoFilters({ onFilter }: Solicitu
 
   const handleReset = () => {
     const resetFilters = {
-      estadoDevolucion: '',
+      estadoDevolucion: 'todos',
       numeroDevolucion: '',
       cedulaPasajero: '',
       nombrePasajero: '',
@@ -86,7 +86,7 @@ export default function SolicitudesDevolucionSaldoFilters({ onFilter }: Solicitu
                     <SelectValue placeholder="Todos" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="pendiente_aprobacion">Pendiente aprobación</SelectItem>
                     <SelectItem value="aprobada">Aprobada</SelectItem>
                     <SelectItem value="rechazada">Rechazada</SelectItem>
