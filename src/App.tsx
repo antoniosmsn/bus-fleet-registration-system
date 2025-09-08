@@ -81,6 +81,7 @@ import ProgramacionParametros from '@/pages/programacion/ProgramacionParametros'
 import CategoriasMantenimiento from '@/pages/configuracion/CategoriasMantenimiento';
 import ConfiguracionIndex from '@/pages/configuracion/Index';
 import SolicitudesAprobacionIndex from '@/pages/servicios/solicitudes-aprobacion/Index';
+import SolicitudesDevolucionSaldo from '@/pages/servicios/SolicitudesDevolucionSaldo';
 
 // Catálogos Alertas Pasajeros
 import AlertasPasajerosIndex from '@/pages/catalogos/alertas-pasajeros/Index';
@@ -146,6 +147,7 @@ function App() {
             <Route path="/servicios/cumplimiento" element={<CumplimientoServicios />} />
             <Route path="/servicios/bitacora-cambios-rutas" element={<BitacoraCambiosRutas />} />
             <Route path="/servicios/solicitudes-aprobacion" element={<SolicitudesAprobacionIndex />} />
+            <Route path="/servicios/saldo" element={<SolicitudesDevolucionSaldo />} />
             <Route path="/servicios/listado-empresa-transporte" element={<ListadoServiciosEmpresa />} />
             
             {/* Asignaciones routes */}
