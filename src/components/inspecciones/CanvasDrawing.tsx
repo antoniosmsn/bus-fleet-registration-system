@@ -129,33 +129,57 @@ export function CanvasDrawing({
     img.src = url;
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const getEventPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+
+    const rect = canvas.getBoundingClientRect();
+    
+    if ('touches' in e) {
+      // Touch event
+      const touch = e.touches[0] || e.changedTouches[0];
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+    } else {
+      // Mouse event
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+  };
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawingMode) return;
     
+    e.preventDefault(); // Prevent scrolling on touch
     setIsDrawing(true);
     
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
     const context = canvas.getContext('2d');
     if (!context) return;
 
+    const pos = getEventPos(e);
     context.beginPath();
-    context.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    context.moveTo(pos.x, pos.y);
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !isDrawingMode) return;
 
+    e.preventDefault(); // Prevent scrolling on touch
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    context.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const pos = getEventPos(e);
+    context.lineTo(pos.x, pos.y);
     context.stroke();
   };
 
@@ -330,6 +354,10 @@ export function CanvasDrawing({
               onMouseMove={draw}
               onMouseUp={stopDrawing}
               onMouseLeave={stopDrawing}
+              onTouchStart={startDrawing}
+              onTouchMove={draw}
+              onTouchEnd={stopDrawing}
+              style={{ touchAction: 'none' }}
             />
           </div>
         </>
