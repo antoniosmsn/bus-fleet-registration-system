@@ -84,6 +84,9 @@ import SolicitudesAprobacionIndex from '@/pages/servicios/solicitudes-aprobacion
 import SolicitudesDevolucionSaldo from '@/pages/servicios/SolicitudesDevolucionSaldo';
 import SolicitudPago from '@/pages/servicios/SolicitudPago';
 
+// Bancos pages
+import BancosIndex from '@/pages/bancos/Index';
+
 // Catálogos Alertas Pasajeros
 import AlertasPasajerosIndex from '@/pages/catalogos/alertas-pasajeros/Index';
 import AlertasPasajerosRegister from '@/pages/catalogos/alertas-pasajeros/Register';
@@ -191,6 +194,9 @@ function App() {
             
             {/* Bitácoras Lectoras routes */}
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
+            
+            {/* Bancos routes */}
+            <Route path="/bancos" element={<BancosIndex />} />
             
             {/* Configuración routes */}
             <Route path="/configuracion" element={<ConfiguracionIndex />} />
