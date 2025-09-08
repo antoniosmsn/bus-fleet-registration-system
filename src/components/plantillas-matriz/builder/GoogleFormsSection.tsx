@@ -32,7 +32,9 @@ export function GoogleFormsSection({
   onDuplicateCampo
 }: GoogleFormsSectionProps) {
   const [editingTitle, setEditingTitle] = useState(false);
+  const [editingWeight, setEditingWeight] = useState(false);
   const [tempTitle, setTempTitle] = useState(seccion.nombre);
+  const [tempWeight, setTempWeight] = useState(seccion.peso.toString());
 
   const pesoTotalCampos = seccion.campos.reduce((total, campo) => total + campo.peso, 0);
 
@@ -44,6 +46,17 @@ export function GoogleFormsSection({
   const handleCancelTitle = () => {
     setTempTitle(seccion.nombre);
     setEditingTitle(false);
+  };
+
+  const handleSaveWeight = () => {
+    const peso = parseInt(tempWeight) || 0;
+    onUpdate({ peso: peso });
+    setEditingWeight(false);
+  };
+
+  const handleCancelWeight = () => {
+    setTempWeight(seccion.peso.toString());
+    setEditingWeight(false);
   };
 
   return (
@@ -61,9 +74,43 @@ export function GoogleFormsSection({
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              Peso: {seccion.peso}% ({pesoTotalCampos}%)
-            </Badge>
+            {editingWeight ? (
+              <div className="flex items-center gap-1">
+                <span className="text-xs">Peso:</span>
+                <Input
+                  value={tempWeight}
+                  onChange={(e) => setTempWeight(e.target.value)}
+                  className={`w-16 h-6 text-xs ${
+                    !tempWeight || parseInt(tempWeight) === 0 
+                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                      : ''
+                  }`}
+                  type="number"
+                  min="1"
+                  max="100"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveWeight();
+                    if (e.key === 'Escape') handleCancelWeight();
+                  }}
+                />
+                <span className="text-xs">%</span>
+                <Button size="sm" onClick={handleSaveWeight} className="h-6 px-2 text-xs">
+                  ✓
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleCancelWeight} className="h-6 px-2 text-xs">
+                  ✕
+                </Button>
+              </div>
+            ) : (
+              <Badge 
+                variant="secondary" 
+                className="text-xs cursor-pointer hover:bg-secondary/80 transition-colors"
+                onClick={() => setEditingWeight(true)}
+              >
+                Peso: {seccion.peso}% ({pesoTotalCampos}%)
+              </Badge>
+            )}
             <Button
               size="sm"
               variant="ghost"

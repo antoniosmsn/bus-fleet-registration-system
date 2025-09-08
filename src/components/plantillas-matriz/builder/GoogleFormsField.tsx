@@ -239,7 +239,11 @@ export function GoogleFormsField({
                   type="number"
                   value={campo.peso}
                   onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || 0 })}
-                  className="w-16 h-7 text-xs"
+                  className={`w-16 h-7 text-xs ${
+                    !campo.peso || campo.peso === 0 
+                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                      : ''
+                  }`}
                   min="1"
                   max="100"
                 />

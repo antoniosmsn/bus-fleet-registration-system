@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { PlantillaBuilder as PlantillaBuilderType, SeccionBuilder, CampoBuilder } from '@/types/plantilla-matriz';
 import { GoogleFormsToolbox } from './GoogleFormsToolbox';
 import { GoogleFormsSection } from './GoogleFormsSection';
-import { WeightInputDialog } from './WeightInputDialog';
+// Removed WeightInputDialog import - no longer needed
 import { toast } from '@/hooks/use-toast';
 
 interface PlantillaBuilderProps {
@@ -32,17 +32,7 @@ export function PlantillaBuilder({
     secciones: plantilla?.secciones || []
   });
 
-  const [weightDialog, setWeightDialog] = useState<{
-    open: boolean;
-    elementType: string;
-    elementName: string;
-    sectionId: string | null;
-  }>({
-    open: false,
-    elementType: '',
-    elementName: '',
-    sectionId: null
-  });
+  // Removed weightDialog state - fields are created directly with default weight
 
   // Calcular peso total
   const pesoTotal = builderData.secciones.reduce((total, seccion) => total + seccion.peso, 0);
@@ -100,26 +90,15 @@ export function PlantillaBuilder({
       canvas: 'Dibujo'
     };
 
-    setWeightDialog({
-      open: true,
-      elementType: tipo,
-      elementName: fieldNames[tipo] || 'Campo',
-      sectionId: activeSection.id
-    });
-  };
-
-  const handleConfirmWeight = (weight: number) => {
-    const { elementType, sectionId } = weightDialog;
-    if (!sectionId) return;
-
+    // Create field directly with default weight of 5
     const nuevoCampo: CampoBuilder = {
       id: `campo-${Date.now()}`,
-      tipo: elementType as any,
+      tipo: tipo as any,
       etiqueta: 'Pregunta sin título',
       requerido: false,
-      peso: weight,
+      peso: 5, // Default weight, user can edit later
       orden: 0,
-      opciones: (elementType === 'select' || elementType === 'radio' || elementType === 'checkbox') 
+      opciones: (tipo === 'select' || tipo === 'radio' || tipo === 'checkbox') 
         ? ['Opción 1', 'Opción 2'] 
         : undefined
     };
@@ -127,7 +106,7 @@ export function PlantillaBuilder({
     setBuilderData(prevData => ({
       ...prevData,
       secciones: prevData.secciones.map(s => 
-        s.id === sectionId 
+        s.id === activeSection.id 
           ? { ...s, campos: [...s.campos, nuevoCampo] }
           : s
       )
@@ -135,9 +114,11 @@ export function PlantillaBuilder({
 
     toast({
       title: "Campo agregado",
-      description: `Se agregó un campo ${weightDialog.elementName} con peso ${weight}%`
+      description: `Se agregó un campo ${fieldNames[tipo] || 'Campo'}. Recuerda configurar su peso.`
     });
   };
+
+  // Removed handleConfirmWeight - fields are created directly
 
   const handleUpdateCampo = (seccionId: string, campoId: string, updates: Partial<CampoBuilder>) => {
     setBuilderData({
@@ -401,13 +382,7 @@ export function PlantillaBuilder({
         </div>
       </div>
 
-      {/* Weight Input Dialog */}
-      <WeightInputDialog
-        open={weightDialog.open}
-        onClose={() => setWeightDialog(prev => ({ ...prev, open: false }))}
-        onConfirm={handleConfirmWeight}
-        elementName={weightDialog.elementName}
-      />
+      {/* Weight dialog removed - fields are editable inline */}
     </DragDropContext>
   );
 }
