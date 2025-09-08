@@ -73,9 +73,11 @@ export interface SeccionBuilder {
   expanded: boolean;
   columnas?: number; // Número de columnas (1-3)
   camposEnColumnas?: CampoBuilder[][]; // Campos organizados por columnas
+  gridLayout?: 'default' | '1-column' | '2-columns' | '3-columns' | 'sidebar-main' | 'header-content' | '2-rows'; // Nuevo layout de grid
 }
 
 export interface CampoBuilder extends CampoPlantilla {
   dragging?: boolean;
   editing?: boolean;
+  areaId?: string; // Para identificar en qué área del grid está el campo
 }

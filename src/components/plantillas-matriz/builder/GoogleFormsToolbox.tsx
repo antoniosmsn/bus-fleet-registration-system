@@ -23,10 +23,10 @@ export function GoogleFormsToolbox({ onAddField, seccionActiva, secciones }: Goo
   const seccionActivaNombre = secciones.find(s => s.id === seccionActiva)?.nombre || 'Ninguna';
   
   return (
-    <div className="w-80 bg-background border-r border-border h-full">
-      <div className="p-4 border-b">
-        <h3 className="font-semibold text-lg">Tipos de pregunta</h3>
-        <p className="text-sm text-muted-foreground">
+    <div className="h-full bg-background border-r border-border">
+      <div className="p-3 border-b">
+        <h3 className="font-semibold text-base">Tipos de pregunta</h3>
+        <p className="text-xs text-muted-foreground">
           Haz clic para agregar a sección activa
         </p>
         {secciones.length > 0 && (
@@ -41,7 +41,7 @@ export function GoogleFormsToolbox({ onAddField, seccionActiva, secciones }: Goo
           <div 
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className="p-4 space-y-3 h-full overflow-auto"
+            className="p-3 space-y-2 h-full overflow-auto"
           >
             {fieldTypes.map((type, index) => {
               const IconComponent = type.icon;
@@ -61,16 +61,16 @@ export function GoogleFormsToolbox({ onAddField, seccionActiva, secciones }: Goo
                       }`}
                       onClick={() => !snapshot.isDragging && onAddField(type.id)}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-primary/10">
-                            <IconComponent className="h-5 w-5 text-primary" />
+                      <CardContent className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1 rounded-lg bg-primary/10">
+                            <IconComponent className="h-4 w-4 text-primary" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm truncate">{type.name}</h4>
+                            <h4 className="font-medium text-xs truncate">{type.name}</h4>
                             <p className="text-xs text-muted-foreground truncate">{type.description}</p>
                           </div>
-                          <Plus className="h-4 w-4 text-muted-foreground" />
+                          <Plus className="h-3 w-3 text-muted-foreground" />
                         </div>
                       </CardContent>
                     </Card>
@@ -80,7 +80,7 @@ export function GoogleFormsToolbox({ onAddField, seccionActiva, secciones }: Goo
             })}
             {provided.placeholder}
             
-            <Separator className="my-6" />
+            <Separator className="my-4" />
             
             <div className="text-center text-xs text-muted-foreground">
               <p>💡 Configura el peso y propiedades</p>
