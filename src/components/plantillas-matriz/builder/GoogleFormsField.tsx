@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CampoBuilder } from '@/types/plantilla-matriz';
+import { CanvasDrawing } from './CanvasDrawing';
 
 interface GoogleFormsFieldProps {
   campo: CampoBuilder;
@@ -109,23 +110,13 @@ export function GoogleFormsField({
       
       case 'canvas':
         return (
-          <div className="w-full space-y-2">
-            <div className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg flex flex-col items-center justify-center bg-muted/30 gap-2">
-              <span className="text-muted-foreground text-sm font-medium">Área de dibujo</span>
-              <span className="text-muted-foreground text-xs">Vista previa del canvas</span>
-            </div>
-            <div className="flex gap-1 text-xs text-muted-foreground">
-              <span>•</span>
-              <span>Los usuarios podrán cargar una imagen de fondo</span>
-            </div>
-            <div className="flex gap-1 text-xs text-muted-foreground">
-              <span>•</span>
-              <span>Activar modo dibujo para rayar sobre la imagen</span>
-            </div>
-            <div className="flex gap-1 text-xs text-muted-foreground">
-              <span>•</span>
-              <span>Descargar el resultado final</span>
-            </div>
+          <div className="w-full">
+            <CanvasDrawing
+              initialImage={campo.imagenBase}
+              onCanvasChange={(imageData) => onUpdate({ imagenBase: imageData })}
+              width={400}
+              height={200}
+            />
           </div>
         );
       
