@@ -102,7 +102,7 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
                 className="w-full"
               >
                 <Edit3 className="mr-2 h-4 w-4" />
-                Abrir área de dibujo
+                Abrir canvas para dibujar
               </Button>
             )}
             

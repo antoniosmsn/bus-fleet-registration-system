@@ -109,13 +109,23 @@ export function GoogleFormsField({
       
       case 'canvas':
         return (
-          <div className="w-full">
-            <div className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg flex items-center justify-center bg-muted/30">
-              <span className="text-muted-foreground text-sm">Área de dibujo - Vista previa</span>
+          <div className="w-full space-y-2">
+            <div className="w-full h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg flex flex-col items-center justify-center bg-muted/30 gap-2">
+              <span className="text-muted-foreground text-sm font-medium">Área de dibujo</span>
+              <span className="text-muted-foreground text-xs">Vista previa del canvas</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Los usuarios podrán cargar una imagen y dibujar encima en el formulario final
-            </p>
+            <div className="flex gap-1 text-xs text-muted-foreground">
+              <span>•</span>
+              <span>Los usuarios podrán cargar una imagen de fondo</span>
+            </div>
+            <div className="flex gap-1 text-xs text-muted-foreground">
+              <span>•</span>
+              <span>Activar modo dibujo para rayar sobre la imagen</span>
+            </div>
+            <div className="flex gap-1 text-xs text-muted-foreground">
+              <span>•</span>
+              <span>Descargar el resultado final</span>
+            </div>
           </div>
         );
       
