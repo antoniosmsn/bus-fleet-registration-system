@@ -82,7 +82,7 @@ export function PlantillaBuilder({
     }
 
     const fieldNames: Record<string, string> = {
-      texto: 'Respuesta corta',
+      texto: 'Texto',
       select: 'Lista desplegable', 
       radio: 'Opción múltiple',
       checkbox: 'Casillas de verificación',
@@ -175,7 +175,61 @@ export function PlantillaBuilder({
 
     const { source, destination, type } = result;
 
-    // Reordenar campos dentro de una sección
+    // Manejar drag desde toolbox hacia sección
+    if (source.droppableId === 'toolbox' && destination.droppableId.includes('seccion-')) {
+      const tipoElemento = result.draggableId.replace('toolbox-', '');
+      const seccionDestino = destination.droppableId.replace('seccion-', '');
+      
+      const fieldNames: Record<string, string> = {
+        texto: 'Texto',
+        select: 'Lista desplegable', 
+        radio: 'Opción múltiple',
+        checkbox: 'Casillas de verificación',
+        fecha: 'Fecha',
+        canvas: 'Dibujo'
+      };
+
+      // Crear campo en la posición específica donde se soltó
+      const nuevoCampo: CampoBuilder = {
+        id: `campo-${Date.now()}`,
+        tipo: tipoElemento as any,
+        etiqueta: 'Pregunta sin título',
+        requerido: false,
+        peso: 5,
+        orden: destination.index,
+        opciones: (tipoElemento === 'select' || tipoElemento === 'radio' || tipoElemento === 'checkbox') 
+          ? ['Opción 1', 'Opción 2'] 
+          : undefined
+      };
+
+      // Insertar el campo en la posición correcta
+      setBuilderData(prevData => ({
+        ...prevData,
+        secciones: prevData.secciones.map(s => {
+          if (s.id === seccionDestino) {
+            const nuevosCampos = [...s.campos];
+            nuevosCampos.splice(destination.index, 0, nuevoCampo);
+            // Reordenar los campos
+            return {
+              ...s, 
+              campos: nuevosCampos.map((campo, index) => ({
+                ...campo,
+                orden: index
+              }))
+            };
+          }
+          return s;
+        })
+      }));
+
+      toast({
+        title: "Campo agregado",
+        description: `Se agregó un campo ${fieldNames[tipoElemento] || 'Campo'}. Recuerda configurar su peso.`
+      });
+      return;
+    }
+
+    // Reordenar campos dentro de una sección o entre secciones
     if (source.droppableId.includes('seccion-') && destination.droppableId.includes('seccion-')) {
       const sourceSeccionId = source.droppableId.replace('seccion-', '');
       const destSeccionId = destination.droppableId.replace('seccion-', '');
@@ -195,6 +249,34 @@ export function PlantillaBuilder({
         }));
 
         handleUpdateSeccion(sourceSeccionId, { campos: camposConOrden });
+      } else {
+        // Mover campo entre secciones diferentes
+        const sourceSeccion = builderData.secciones.find(s => s.id === sourceSeccionId);
+        const destSeccion = builderData.secciones.find(s => s.id === destSeccionId);
+        
+        if (!sourceSeccion || !destSeccion) return;
+
+        const [movedCampo] = sourceSeccion.campos.splice(source.index, 1);
+        destSeccion.campos.splice(destination.index, 0, movedCampo);
+
+        setBuilderData({
+          ...builderData,
+          secciones: builderData.secciones.map(s => {
+            if (s.id === sourceSeccionId) {
+              return {
+                ...s,
+                campos: s.campos.map((campo, index) => ({ ...campo, orden: index }))
+              };
+            }
+            if (s.id === destSeccionId) {
+              return {
+                ...s,
+                campos: s.campos.map((campo, index) => ({ ...campo, orden: index }))
+              };
+            }
+            return s;
+          })
+        });
       }
       return;
     }

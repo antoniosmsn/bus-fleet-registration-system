@@ -5,7 +5,7 @@ export const mockToolboxElementos: ElementoToolbox[] = [
     id: 'texto',
     tipo: 'texto',
     icono: 'Type',
-    nombre: 'Caja de Texto',
+    nombre: 'Texto',
     descripcion: 'Campo de texto libre para observaciones y comentarios'
   },
   {
