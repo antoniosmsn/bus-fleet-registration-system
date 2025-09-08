@@ -1,13 +1,18 @@
-import { Banco, BancoFilter } from '@/types/banco';
+import { useState } from 'react';
+import { Banco, BancoFilter, BancoForm } from '@/types/banco';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Check, X, Edit2, Plus } from 'lucide-react';
 
 interface BancosTableProps {
   bancos: Banco[];
   filtros: BancoFilter;
   loading?: boolean;
   onToggleEstado: (banco: Banco) => void;
-  onEdit: (banco: Banco) => void;
+  onSave: (data: BancoForm, banco?: Banco) => void;
+  onAdd: () => void;
 }
 
 export function BancosTable({ 
@@ -15,8 +20,13 @@ export function BancosTable({
   filtros, 
   loading = false,
   onToggleEstado,
-  onEdit
+  onSave,
+  onAdd
 }: BancosTableProps) {
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [addingNew, setAddingNew] = useState(false);
+  const [editValue, setEditValue] = useState('');
+  const [errors, setErrors] = useState<string>('');
 
   const highlightText = (text: string, search?: string) => {
     if (!search || search.length < 2) return text;
@@ -31,6 +41,46 @@ export function BancosTable({
         </mark>
       ) : part
     );
+  };
+
+  const validateName = (name: string): string => {
+    if (!name.trim()) return 'El nombre es requerido';
+    if (name.length < 2) return 'El nombre debe tener al menos 2 caracteres';
+    return '';
+  };
+
+  const handleEdit = (banco: Banco) => {
+    setEditingId(banco.id);
+    setEditValue(banco.nombre);
+    setErrors('');
+  };
+
+  const handleSave = (banco?: Banco) => {
+    const error = validateName(editValue);
+    if (error) {
+      setErrors(error);
+      return;
+    }
+
+    onSave({ nombre: editValue.trim() }, banco);
+    setEditingId(null);
+    setAddingNew(false);
+    setEditValue('');
+    setErrors('');
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setAddingNew(false);
+    setEditValue('');
+    setErrors('');
+  };
+
+  const handleAddNew = () => {
+    setAddingNew(true);
+    setEditValue('');
+    setErrors('');
+    onAdd();
   };
 
   if (loading) {
@@ -67,39 +117,138 @@ export function BancosTable({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
           <h3 className="text-sm font-medium text-muted-foreground">Nombre</h3>
-          <h3 className="text-sm font-medium text-muted-foreground">Estado</h3>
+          <div className="flex items-center gap-4">
+            <h3 className="text-sm font-medium text-muted-foreground">Estado</h3>
+            <Button
+              onClick={handleAddNew}
+              size="sm"
+              className="flex items-center gap-1"
+              disabled={addingNew || editingId !== null}
+            >
+              <Plus className="h-3 w-3" />
+              Agregar
+            </Button>
+          </div>
         </div>
+
+        {/* Add new row */}
+        {addingNew && (
+          <div className="flex items-center justify-between py-4 border-b border-border bg-muted/20">
+            <div className="flex-1 pr-4">
+              <Input
+                value={editValue}
+                onChange={(e) => {
+                  setEditValue(e.target.value);
+                  setErrors('');
+                }}
+                placeholder="Nombre del banco"
+                className={errors ? 'border-destructive' : ''}
+                autoFocus
+              />
+              {errors && (
+                <p className="text-xs text-destructive mt-1">{errors}</p>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => handleSave()}
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={handleCancel}
+                size="sm"
+                variant="outline"
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Rows */}
         <div className="space-y-0">
           {bancos.map((banco, index) => (
             <div 
               key={banco.id} 
-              className={`flex items-center justify-between py-4 cursor-pointer hover:bg-muted/50 transition-colors ${
-                index < bancos.length - 1 ? 'border-b border-border' : ''
+              className={`flex items-center justify-between py-4 hover:bg-muted/50 transition-colors ${
+                index < bancos.length - 1 || addingNew ? 'border-b border-border' : ''
               }`}
-              onClick={() => onEdit(banco)}
             >
-              <div className="flex-1">
-                <span className="text-foreground font-medium">
-                  {highlightText(banco.nombre, filtros.nombre)}
-                </span>
+              <div className="flex-1 pr-4">
+                {editingId === banco.id ? (
+                  <div>
+                    <Input
+                      value={editValue}
+                      onChange={(e) => {
+                        setEditValue(e.target.value);
+                        setErrors('');
+                      }}
+                      className={errors ? 'border-destructive' : ''}
+                      autoFocus
+                    />
+                    {errors && (
+                      <p className="text-xs text-destructive mt-1">{errors}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 group">
+                    <span className="text-foreground font-medium">
+                      {highlightText(banco.nombre, filtros.nombre)}
+                    </span>
+                    <Button
+                      onClick={() => handleEdit(banco)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      disabled={editingId !== null || addingNew}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
               </div>
               
-              <div 
-                className="flex items-center gap-3"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Badge 
-                  variant={banco.activo ? "default" : "secondary"}
-                  className="text-xs"
-                >
-                  {banco.activo ? 'Activo' : 'Inactivo'}
-                </Badge>
-                <Switch
-                  checked={banco.activo}
-                  onCheckedChange={() => onToggleEstado(banco)}
-                />
+              <div className="flex items-center gap-3">
+                {editingId === banco.id ? (
+                  <>
+                    <Button
+                      onClick={() => handleSave(banco)}
+                      size="sm"
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={handleCancel}
+                      size="sm"
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Badge 
+                      variant={banco.activo ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {banco.activo ? 'Activo' : 'Inactivo'}
+                    </Badge>
+                    <Switch
+                      checked={banco.activo}
+                      onCheckedChange={() => onToggleEstado(banco)}
+                      disabled={editingId !== null || addingNew}
+                    />
+                  </>
+                )}
               </div>
             </div>
           ))}

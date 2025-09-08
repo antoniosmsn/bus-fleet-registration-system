@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { BancosFilter } from '@/components/bancos/BancosFilter';
 import { BancosTable } from '@/components/bancos/BancosTable';
-import { BancoFormDialog } from '@/components/bancos/BancoFormDialog';
-import { Button } from '@/components/ui/button';
 import { Banco, BancoFilter, BancoForm } from '@/types/banco';
 import { mockBancos } from '@/data/mockBancos';
 import { registrarAcceso } from '@/services/bitacoraService';
@@ -13,8 +10,6 @@ import { toast } from '@/hooks/use-toast';
 export default function BancosIndex() {
   const [filtros, setFiltros] = useState<BancoFilter>({});
   const [loading, setLoading] = useState(false);
-  const [formDialogOpen, setFormDialogOpen] = useState(false);
-  const [selectedBanco, setSelectedBanco] = useState<Banco | null>(null);
   const [formLoading, setFormLoading] = useState(false);
 
   // Registrar acceso al módulo
@@ -68,26 +63,21 @@ export default function BancosIndex() {
     });
   };
 
-  const handleEdit = (banco: Banco) => {
-    setSelectedBanco(banco);
-    setFormDialogOpen(true);
-  };
-
   const handleAgregar = () => {
-    setSelectedBanco(null);
-    setFormDialogOpen(true);
+    // Esta función ahora es solo para indicar que se va a agregar
+    // La lógica real está en la tabla
   };
 
-  const handleSave = async (data: BancoForm) => {
+  const handleSave = async (data: BancoForm, banco?: Banco) => {
     setFormLoading(true);
 
     try {
       // Simular guardado
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (selectedBanco) {
+      if (banco) {
         // Editar banco existente
-        const bancoIndex = mockBancos.findIndex(b => b.id === selectedBanco.id);
+        const bancoIndex = mockBancos.findIndex(b => b.id === banco.id);
         if (bancoIndex !== -1) {
           mockBancos[bancoIndex] = {
             ...mockBancos[bancoIndex],
@@ -117,9 +107,6 @@ export default function BancosIndex() {
           description: `El banco "${data.nombre}" ha sido creado correctamente.`
         });
       }
-
-      setFormDialogOpen(false);
-      setSelectedBanco(null);
     } catch (error) {
       toast({
         title: "Error",
@@ -141,13 +128,6 @@ export default function BancosIndex() {
               Gestión de bancos del sistema
             </p>
           </div>
-          <Button 
-            onClick={handleAgregar}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Agregar banco
-          </Button>
         </div>
 
         <BancosFilter
@@ -161,7 +141,8 @@ export default function BancosIndex() {
           filtros={filtros}
           loading={loading}
           onToggleEstado={handleToggleEstado}
-          onEdit={handleEdit}
+          onSave={handleSave}
+          onAdd={handleAgregar}
         />
 
         {/* Información de resultados */}
@@ -174,18 +155,6 @@ export default function BancosIndex() {
           </div>
         )}
 
-        <BancoFormDialog
-          open={formDialogOpen}
-          onOpenChange={(open) => {
-            setFormDialogOpen(open);
-            if (!open) {
-              setSelectedBanco(null);
-            }
-          }}
-          banco={selectedBanco}
-          onSave={handleSave}
-          loading={formLoading}
-        />
       </div>
     </Layout>
   );
