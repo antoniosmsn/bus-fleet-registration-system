@@ -120,20 +120,24 @@ export default function PlantillasMatrizIndex() {
   const handleConfirmarCambioEstado = () => {
     if (!plantillaSeleccionada) return;
 
-    // Simular cambio de estado
-    setLoading(true);
-    setTimeout(() => {
-      const accion = plantillaSeleccionada.activa ? 'desactivada' : 'activada';
-      
-      toast({
-        title: `Plantilla ${accion}`,
-        description: `La plantilla "${plantillaSeleccionada.nombre}" ha sido ${accion} correctamente.`
-      });
-      
-      setLoading(false);
-      setDialogoEstadoAbierto(false);
-      setPlantillaSeleccionada(null);
-    }, 1000);
+    // Actualizar el estado de la plantilla en el mock data
+    const plantillaIndex = mockPlantillasMatriz.findIndex(p => p.id === plantillaSeleccionada.id);
+    if (plantillaIndex !== -1) {
+      mockPlantillasMatriz[plantillaIndex] = {
+        ...mockPlantillasMatriz[plantillaIndex],
+        activa: !mockPlantillasMatriz[plantillaIndex].activa
+      };
+    }
+
+    const accion = plantillaSeleccionada.activa ? 'desactivada' : 'activada';
+    
+    toast({
+      title: `Plantilla ${accion}`,
+      description: `La plantilla "${plantillaSeleccionada.nombre}" ha sido ${accion} correctamente.`
+    });
+    
+    setDialogoEstadoAbierto(false);
+    setPlantillaSeleccionada(null);
   };
 
   const handleRegistrar = () => {
