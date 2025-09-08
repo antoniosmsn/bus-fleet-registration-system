@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Plus, Save, ArrowLeft } from 'lucide-react';
+import { Plus, Save, ArrowLeft, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -341,6 +341,146 @@ export function PlantillaBuilder({
     onSave(builderData);
   };
 
+  const handlePreview = () => {
+    // Crear el HTML para la vista previa
+    const previewHTML = `
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vista Previa - ${builderData.nombre || 'Plantilla'}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+          body { font-family: system-ui, -apple-system, sans-serif; }
+        </style>
+      </head>
+      <body class="bg-gray-50 min-h-screen p-6">
+        <div class="max-w-4xl mx-auto space-y-6">
+          <!-- Header -->
+          <div class="bg-white rounded-lg shadow-sm border-t-8 border-blue-600 p-8">
+            <h1 class="text-3xl font-normal text-gray-900 mb-4">
+              ${builderData.nombre || 'Formulario sin título'}
+            </h1>
+            ${builderData.descripcion ? `<p class="text-base text-gray-600">${builderData.descripcion}</p>` : ''}
+          </div>
+
+          <!-- Secciones -->
+          ${builderData.secciones.map(seccion => `
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-blue-600">${seccion.nombre}</h2>
+              </div>
+              <div class="p-6 space-y-6">
+                ${seccion.campos
+                  .sort((a, b) => a.orden - b.orden)
+                  .map(campo => {
+                    const required = campo.requerido ? '<span class="text-red-500">*</span>' : '';
+                    
+                    switch (campo.tipo) {
+                      case 'texto':
+                        return `
+                          <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu respuesta">
+                          </div>
+                        `;
+                      case 'select':
+                        return `
+                          <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                              <option>Selecciona una opción</option>
+                              ${campo.opciones?.map(opcion => `<option value="${opcion}">${opcion}</option>`).join('') || ''}
+                            </select>
+                          </div>
+                        `;
+                      case 'radio':
+                        return `
+                          <div class="space-y-3">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <div class="space-y-2">
+                              ${campo.opciones?.map((opcion, index) => `
+                                <div class="flex items-center">
+                                  <input type="radio" name="${campo.id}" value="${opcion}" class="mr-2">
+                                  <label class="text-sm text-gray-700">${opcion}</label>
+                                </div>
+                              `).join('') || ''}
+                            </div>
+                          </div>
+                        `;
+                      case 'checkbox':
+                        return `
+                          <div class="space-y-3">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <div class="space-y-2">
+                              ${campo.opciones?.map((opcion, index) => `
+                                <div class="flex items-center">
+                                  <input type="checkbox" value="${opcion}" class="mr-2">
+                                  <label class="text-sm text-gray-700">${opcion}</label>
+                                </div>
+                              `).join('') || ''}
+                            </div>
+                          </div>
+                        `;
+                      case 'fecha':
+                        return `
+                          <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                          </div>
+                        `;
+                      case 'canvas':
+                        return `
+                          <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                              ${campo.etiqueta} ${required}
+                            </label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+                              <div class="text-gray-500">
+                                <div class="text-4xl mb-2">✏️</div>
+                                <p>Área de dibujo</p>
+                              </div>
+                            </div>
+                          </div>
+                        `;
+                      default:
+                        return '';
+                    }
+                  }).join('')}
+              </div>
+            </div>
+          `).join('')}
+
+          <!-- Footer -->
+          <div class="text-center py-8">
+            <p class="text-sm text-gray-500">
+              Vista previa de la plantilla - Los datos no se guardan
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Abrir en nueva ventana
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(previewHTML);
+      newWindow.document.close();
+    }
+  };
+
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -376,6 +516,15 @@ export function PlantillaBuilder({
                 <Badge variant={pesoTotal === 100 ? "default" : "destructive"} className="text-sm">
                   Peso Total: {pesoTotal}%
                 </Badge>
+                <Button 
+                  variant="outline" 
+                  onClick={handlePreview}
+                  disabled={builderData.secciones.length === 0}
+                  className="px-4"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Vista Previa
+                </Button>
                 <Button onClick={handleSave} disabled={loading || pesoTotal !== 100} className="px-6">
                   <Save className="h-4 w-4 mr-2" />
                   Guardar Plantilla
