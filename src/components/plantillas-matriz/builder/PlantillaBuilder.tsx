@@ -345,17 +345,15 @@ export function PlantillaBuilder({
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex h-screen bg-muted/20">
-        {/* Google Forms Style Toolbox - Narrower */}
-        <div className="w-56 flex-shrink-0">
-          <GoogleFormsToolbox 
-            onAddField={handleAddField}
-            seccionActiva={seccionActiva}
-            secciones={builderData.secciones}
-          />
-        </div>
+        {/* Google Forms Style Toolbox */}
+        <GoogleFormsToolbox 
+          onAddField={handleAddField}
+          seccionActiva={seccionActiva}
+          secciones={builderData.secciones}
+        />
 
-        {/* Main Builder Area - Wider */}
-        <div className="flex-1 flex flex-col min-w-0">
+        {/* Main Builder Area - Google Forms Style */}
+        <div className="flex-1 flex flex-col">
           {/* Header */}
           <div className="border-b bg-background p-4 shadow-sm">
             <div className="flex items-center justify-between">
@@ -386,9 +384,9 @@ export function PlantillaBuilder({
             </div>
           </div>
 
-          {/* Builder Content - Wider Layout */}
+          {/* Builder Content - Google Forms Style */}
           <div className="flex-1 overflow-auto bg-gradient-to-b from-muted/20 to-background">
-            <div className="max-w-6xl mx-auto p-6 space-y-6">
+            <div className="max-w-4xl mx-auto p-6 space-y-6">
               {/* Form Header - Google Forms Style */}
               <Card className="border-t-8 border-t-primary">
                 <CardContent className="p-8">

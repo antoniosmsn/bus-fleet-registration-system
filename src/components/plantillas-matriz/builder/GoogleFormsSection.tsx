@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GripVertical, Trash2, Edit3, Plus, Grid, Rows, Columns } from 'lucide-react';
+import { GripVertical, Trash2, Edit3, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,8 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { SeccionBuilder, CampoBuilder } from '@/types/plantilla-matriz';
 import { GoogleFormsField } from './GoogleFormsField';
 import { Droppable, Draggable } from '@hello-pangea/dnd';
-import { GridLayoutSelector, GridLayout } from './GridLayoutSelector';
-import { SectionGridManager } from './SectionGridManager';
 
 interface GoogleFormsSectionProps {
   seccion: SeccionBuilder;
@@ -146,8 +144,8 @@ export function GoogleFormsSection({
       {/* Section Content */}
       <Card className="rounded-t-none border-t-0">
         <CardContent className="p-6">
-          {/* Section Title and Grid Layout Selector */}
-          <div className="mb-6 space-y-4">
+          {/* Section Title */}
+          <div className="mb-6">
             {editingTitle ? (
               <div className="flex items-center gap-2">
                 <Input
@@ -188,102 +186,70 @@ export function GoogleFormsSection({
               </div>
             )}
             
-            {/* Grid Layout Selector */}
-            <div className="border-t pt-4">
-              <GridLayoutSelector
-                currentLayout={(seccion.gridLayout as GridLayout) || '1-column'}
-                onLayoutChange={(layout) => onUpdate({ gridLayout: layout })}
-              />
-            </div>
           </div>
 
-          {/* Fields with Grid System */}
-          {seccion.gridLayout && seccion.gridLayout !== 'default' && seccion.gridLayout !== '1-column' ? (
-            <SectionGridManager
-              layout={seccion.gridLayout as GridLayout}
-              campos={seccion.campos}
-              onAddField={(tipo, areaId) => {
-                // Crear el campo con areaId para el grid
-                onAddField(tipo);
-                
-                // Si necesitamos asignar el área específica, actualizamos el último campo creado
-                if (areaId && areaId !== 'main') {
-                  setTimeout(() => {
-                    const ultimoCampo = seccion.campos[seccion.campos.length - 1];
-                    if (ultimoCampo) {
-                      onUpdateCampo(ultimoCampo.id, { areaId });
-                    }
-                  }, 100);
-                }
-              }}
-              onUpdateCampo={onUpdateCampo}
-              onDeleteCampo={onDeleteCampo}
-              onDuplicateCampo={onDuplicateCampo}
-            />
-          ) : (
-            // Traditional single column layout
-            <Droppable droppableId={`seccion-${seccion.id}`} type="CAMPO">
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={`min-h-[100px] space-y-4 transition-all duration-200 ${
-                    snapshot.isDraggingOver ? 'bg-primary/10 rounded-lg p-4 border-2 border-primary border-dashed' : 'p-2'
-                  }`}
-                >
-                  {seccion.campos.length === 0 ? (
-                    <div className={`text-center py-8 text-muted-foreground transition-all duration-200 ${
-                      snapshot.isDraggingOver ? 'text-primary font-medium' : ''
-                    }`}>
-                      <div className="space-y-2">
-                        <p className="text-lg">📝</p>
-                        <p className="font-medium">
-                          {snapshot.isDraggingOver ? 'Suelta aquí para agregar' : 'Agrega tu primera pregunta'}
-                        </p>
-                        <p className="text-sm">
-                          {snapshot.isDraggingOver ? 'el elemento' : 'Haz clic en un elemento del panel lateral'}
-                        </p>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onAddField('texto');
-                          }}
-                          size="sm"
-                          className="mt-2"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Agregar Campo de Texto
-                        </Button>
-                      </div>
+          {/* Fields */}
+          <Droppable droppableId={`seccion-${seccion.id}`} type="CAMPO">
+            {(provided, snapshot) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`min-h-[100px] space-y-4 transition-all duration-200 ${
+                  snapshot.isDraggingOver ? 'bg-primary/10 rounded-lg p-4 border-2 border-primary border-dashed' : 'p-2'
+                }`}
+              >
+                {seccion.campos.length === 0 ? (
+                  <div className={`text-center py-8 text-muted-foreground transition-all duration-200 ${
+                    snapshot.isDraggingOver ? 'text-primary font-medium' : ''
+                  }`}>
+                    <div className="space-y-2">
+                      <p className="text-lg">📝</p>
+                      <p className="font-medium">
+                        {snapshot.isDraggingOver ? 'Suelta aquí para agregar' : 'Agrega tu primera pregunta'}
+                      </p>
+                      <p className="text-sm">
+                        {snapshot.isDraggingOver ? 'el elemento' : 'Haz clic en un elemento del panel lateral'}
+                      </p>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddField('texto');
+                        }}
+                        size="sm"
+                        className="mt-2"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Campo de Texto
+                      </Button>
                     </div>
-                  ) : (
-                    seccion.campos.map((campo, index) => (
-                      <Draggable key={campo.id} draggableId={campo.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`transition-transform duration-200 ${
-                              snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
-                            }`}
-                          >
-                            <GoogleFormsField
-                              campo={campo}
-                              dragHandleProps={provided.dragHandleProps}
-                              onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
-                              onDelete={() => onDeleteCampo(campo.id)}
-                              onDuplicate={() => onDuplicateCampo(campo.id)}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          )}
+                  </div>
+                ) : (
+                  seccion.campos.map((campo, index) => (
+                    <Draggable key={campo.id} draggableId={campo.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`transition-transform duration-200 ${
+                            snapshot.isDragging ? 'rotate-2 scale-105 z-50' : ''
+                          }`}
+                        >
+                          <GoogleFormsField
+                            campo={campo}
+                            dragHandleProps={provided.dragHandleProps}
+                            onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
+                            onDelete={() => onDeleteCampo(campo.id)}
+                            onDuplicate={() => onDuplicateCampo(campo.id)}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </CardContent>
       </Card>
     </div>
