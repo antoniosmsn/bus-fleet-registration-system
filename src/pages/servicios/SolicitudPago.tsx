@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,17 +11,12 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Download, FileCheck, UserCheck } from 'lucide-react';
+import { CalendarIcon, Download, FileCheck, UserCheck, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { SolicitudDevolucionSaldo } from '@/types/solicitud-devolucion-saldo';
-
-interface SolicitudPagoModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  solicitud: SolicitudDevolucionSaldo | null;
-}
+import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
 
 interface SolicitudPago {
   id?: string;
@@ -42,8 +38,12 @@ interface SolicitudPago {
   fechaAutorizacion?: Date;
 }
 
-export default function SolicitudPagoModal({ open, onOpenChange, solicitud }: SolicitudPagoModalProps) {
+export default function SolicitudPago() {
+  const { numeroDevolucion } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
+  
+  const [solicitud, setSolicitud] = useState<SolicitudDevolucionSaldo | null>(null);
   const [fechaElaboracion, setFechaElaboracion] = useState<Date>(new Date());
   const [fechaValor, setFechaValor] = useState<Date>(new Date());
 
@@ -51,16 +51,35 @@ export default function SolicitudPagoModal({ open, onOpenChange, solicitud }: So
     tipoPago: 'transferencia',
     fechaElaboracion: new Date(),
     fechaValor: new Date(),
-    nombrePasajero: solicitud?.nombrePasajero || '',
-    detalle: `Devolución de saldo pasajero: ${solicitud?.nombrePasajero || ''}, cédula: ${solicitud?.cedulaPasajero || ''}`,
+    nombrePasajero: '',
+    detalle: '',
     centroCosto: 'Trans-01',
     cuentaContable: '602030201',
-    monto: solicitud?.monto || 0,
+    monto: 0,
     numeroDocumento: '',
     estado: 'borrador',
     realizadoPor: 'Usuario Actual', // En producción sería el usuario autenticado
     fechaRealizacion: new Date()
   });
+
+  // Cargar datos de la solicitud de devolución
+  useEffect(() => {
+    if (numeroDevolucion) {
+      const solicitudEncontrada = mockSolicitudesDevolucionSaldo.find(
+        s => s.numeroDevolucion === numeroDevolucion
+      );
+      
+      if (solicitudEncontrada) {
+        setSolicitud(solicitudEncontrada);
+        setSolicitudPago(prev => ({
+          ...prev,
+          nombrePasajero: solicitudEncontrada.nombrePasajero,
+          detalle: `Devolución de saldo pasajero: ${solicitudEncontrada.nombrePasajero}, cédula: ${solicitudEncontrada.cedulaPasajero}`,
+          monto: solicitudEncontrada.monto
+        }));
+      }
+    }
+  }, [numeroDevolucion]);
 
   const handleInputChange = (field: keyof SolicitudPago, value: any) => {
     setSolicitudPago(prev => ({ ...prev, [field]: value }));
@@ -149,17 +168,49 @@ export default function SolicitudPagoModal({ open, onOpenChange, solicitud }: So
     }
   };
 
-  if (!solicitud) return null;
+  if (!solicitud) {
+    return (
+      <Layout>
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/servicios/saldo')}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Solicitud de Pago</h1>
+              <p className="text-muted-foreground">Solicitud no encontrada</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            Solicitud de Pago - {solicitud.numeroDevolucion}
-            {getEstadoBadge()}
-          </DialogTitle>
-        </DialogHeader>
+    <Layout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/servicios/saldo')}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Volver
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Solicitud de Pago - {solicitud.numeroDevolucion}</h1>
+              <p className="text-muted-foreground">Gestión de solicitud de pago</p>
+            </div>
+          </div>
+          {getEstadoBadge()}
+        </div>
 
         <div className="space-y-6">
           {/* Encabezado del Formulario */}
@@ -430,13 +481,6 @@ export default function SolicitudPagoModal({ open, onOpenChange, solicitud }: So
             </Button>
 
             <div className="space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                Cerrar
-              </Button>
-              
               {solicitudPago.estado === 'borrador' && (
                 <Button onClick={handleFinalizar}>
                   Finalizar
@@ -445,7 +489,7 @@ export default function SolicitudPagoModal({ open, onOpenChange, solicitud }: So
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </Layout>
   );
 }

@@ -3,18 +3,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CreditCard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { SolicitudDevolucionSaldo, FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
-import SolicitudPagoModal from './SolicitudPagoModal';
-import { useState } from 'react';
 
 interface SolicitudesDevolucionSaldoTableProps {
   filters?: FiltrosSolicitudDevolucion;
 }
 
 export default function SolicitudesDevolucionSaldoTable({ filters }: SolicitudesDevolucionSaldoTableProps) {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedSolicitud, setSelectedSolicitud] = useState<SolicitudDevolucionSaldo | null>(null);
+  const navigate = useNavigate();
 
   // Filtrar los datos según los filtros aplicados
   const filteredData = mockSolicitudesDevolucionSaldo.filter((solicitud) => {
@@ -70,8 +68,7 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
   };
 
   const handleSolicitudPago = (solicitud: SolicitudDevolucionSaldo) => {
-    setSelectedSolicitud(solicitud);
-    setModalOpen(true);
+    navigate(`/servicios/saldo/solicitud-pago/${solicitud.numeroDevolucion}`);
   };
 
   return (
@@ -136,12 +133,6 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
           </TableBody>
         </Table>
       </CardContent>
-      
-      <SolicitudPagoModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        solicitud={selectedSolicitud}
-      />
     </Card>
   );
 }
