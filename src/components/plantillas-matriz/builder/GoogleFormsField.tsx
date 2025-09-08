@@ -20,7 +20,7 @@ interface GoogleFormsFieldProps {
 }
 
 const tipoLabels = {
-  texto: 'Respuesta corta',
+  texto: 'Texto',
   checkbox: 'Casillas de verificación', 
   select: 'Lista desplegable',
   radio: 'Opción múltiple',
@@ -62,16 +62,22 @@ export function GoogleFormsField({
           <Input
             placeholder="Respuesta corta"
             className="border-0 border-b border-muted-foreground/30 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary"
-            disabled
           />
         );
       
       case 'select':
         return (
-          <Select disabled>
+          <Select>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Elegir" />
             </SelectTrigger>
+            <SelectContent>
+              {(campo.opciones || ['Opción 1']).map((opcion, index) => (
+                <SelectItem key={index} value={`opcion-${index}`}>
+                  {opcion}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         );
       
@@ -104,7 +110,6 @@ export function GoogleFormsField({
           <Input
             type="date"
             className="w-48"
-            disabled
           />
         );
       
@@ -197,7 +202,7 @@ export function GoogleFormsField({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="texto">Respuesta corta</SelectItem>
+                  <SelectItem value="texto">Texto</SelectItem>
                   <SelectItem value="select">Lista desplegable</SelectItem>
                   <SelectItem value="radio">Opción múltiple</SelectItem>
                   <SelectItem value="checkbox">Casillas de verificación</SelectItem>

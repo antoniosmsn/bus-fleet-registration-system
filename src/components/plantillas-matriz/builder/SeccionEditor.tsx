@@ -78,21 +78,21 @@ export function SeccionEditor({
             {editando ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs">Nombre de la sección</Label>
+                  <Label className="text-xs text-foreground">Nombre de la sección</Label>
                   <Input
                     value={tempNombre}
                     onChange={(e) => setTempNombre(e.target.value)}
-                    className="h-8"
+                    className="h-8 text-foreground"
                     maxLength={100}
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Peso (%)</Label>
+                  <Label className="text-xs text-foreground">Peso (%)</Label>
                   <Input
                     type="number"
                     value={tempPeso}
                     onChange={(e) => setTempPeso(e.target.value)}
-                    className="h-8"
+                    className="h-8 text-foreground"
                     min="0"
                     max="100"
                   />
