@@ -21,8 +21,13 @@ export default function PlantillasMatrizIndex() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [plantillaSeleccionada, setPlantillaSeleccionada] = useState<PlantillaMatriz | null>(null);
-  const [dialogoEstadoAbierto, setDialogoEstadoAbierto] = useState(false);
+  const [dialogState, setDialogState] = useState<{
+    open: boolean;
+    plantilla: PlantillaMatriz | null;
+  }>({
+    open: false,
+    plantilla: null
+  });
 
   // Registrar acceso al módulo
   useEffect(() => {
@@ -113,15 +118,17 @@ export default function PlantillasMatrizIndex() {
   };
 
   const handleToggleEstado = (plantilla: PlantillaMatriz) => {
-    setPlantillaSeleccionada(plantilla);
-    setDialogoEstadoAbierto(true);
+    setDialogState({
+      open: true,
+      plantilla
+    });
   };
 
   const handleConfirmarCambioEstado = () => {
-    if (!plantillaSeleccionada) return;
+    if (!dialogState.plantilla) return;
 
     // Actualizar el estado de la plantilla en el mock data
-    const plantillaIndex = mockPlantillasMatriz.findIndex(p => p.id === plantillaSeleccionada.id);
+    const plantillaIndex = mockPlantillasMatriz.findIndex(p => p.id === dialogState.plantilla!.id);
     if (plantillaIndex !== -1) {
       mockPlantillasMatriz[plantillaIndex] = {
         ...mockPlantillasMatriz[plantillaIndex],
@@ -129,23 +136,15 @@ export default function PlantillasMatrizIndex() {
       };
     }
 
-    const accion = plantillaSeleccionada.activa ? 'desactivada' : 'activada';
+    const accion = dialogState.plantilla.activa ? 'desactivada' : 'activada';
     
     toast({
       title: `Plantilla ${accion}`,
-      description: `La plantilla "${plantillaSeleccionada.nombre}" ha sido ${accion} correctamente.`
+      description: `La plantilla "${dialogState.plantilla.nombre}" ha sido ${accion} correctamente.`
     });
     
-    // Limpiar estado inmediatamente
-    setDialogoEstadoAbierto(false);
-    setPlantillaSeleccionada(null);
-  };
-
-  const handleDialogOpenChange = (open: boolean) => {
-    setDialogoEstadoAbierto(open);
-    if (!open) {
-      setPlantillaSeleccionada(null);
-    }
+    // Cerrar el dialog
+    setDialogState(prev => ({ ...prev, open: false }));
   };
 
   const handleRegistrar = () => {
@@ -216,9 +215,9 @@ export default function PlantillasMatrizIndex() {
         )}
 
         <ConfirmarCambioEstadoDialog
-          plantilla={plantillaSeleccionada}
-          open={dialogoEstadoAbierto}
-          onOpenChange={handleDialogOpenChange}
+          plantilla={dialogState.plantilla}
+          open={dialogState.open}
+          onOpenChange={(open) => setDialogState(prev => ({ ...prev, open }))}
           onConfirm={handleConfirmarCambioEstado}
         />
       </div>
