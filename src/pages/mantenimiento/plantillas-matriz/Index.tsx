@@ -3,7 +3,7 @@ import { AlertCircle, RefreshCw, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { PlantillasMatrizFilters } from '@/components/plantillas-matriz/PlantillasMatrizFilters';
-import { PlantillasMatrizTable } from '@/components/plantillas-matriz/PlantillasMatrizTable';
+import { PlantillasMatrizCards } from '@/components/plantillas-matriz/PlantillasMatrizCards';
 import { PlantillasMatrizPagination } from '@/components/plantillas-matriz/PlantillasMatrizPagination';
 import { ConfirmarCambioEstadoDialog } from '@/components/plantillas-matriz/ConfirmarCambioEstadoDialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -179,7 +179,7 @@ export default function PlantillasMatrizIndex() {
           loading={loading}
         />
 
-        <PlantillasMatrizTable
+        <PlantillasMatrizCards
           plantillas={paginatedPlantillas}
           filtros={filtros}
           loading={loading}
