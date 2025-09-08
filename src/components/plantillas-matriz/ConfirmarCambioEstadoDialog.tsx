@@ -38,14 +38,6 @@ export function ConfirmarCambioEstadoDialog({
           <AlertDialogDescription>
             ¿Estás seguro de que deseas {accion} la plantilla 
             <strong> "{plantilla.nombre}"</strong> (ID: {plantilla.identificador})?
-            
-            <br /><br />
-            
-            Al {accion}la, la plantilla quedará {estado} y 
-            {plantilla.activa 
-              ? ' no estará disponible para crear nuevas inspecciones.' 
-              : ' estará disponible para su uso en inspecciones.'
-            }
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
