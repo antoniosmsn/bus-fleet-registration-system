@@ -32,7 +32,8 @@ export function PlantillaBuilder({
     secciones: plantilla?.secciones || []
   });
 
-  // Removed weightDialog state - fields are created directly with default weight
+  // Estado para sección activa
+  const [seccionActiva, setSeccionActiva] = useState<string | null>(null);
 
   // Calcular peso total
   const pesoTotal = builderData.secciones.reduce((total, seccion) => total + seccion.peso, 0);
@@ -51,6 +52,9 @@ export function PlantillaBuilder({
       ...builderData,
       secciones: [...builderData.secciones, nuevaSeccion]
     });
+
+    // Activar la nueva sección automáticamente
+    setSeccionActiva(nuevaSeccion.id);
   };
 
   const handleDeleteSeccion = (seccionId: string) => {
@@ -69,10 +73,17 @@ export function PlantillaBuilder({
     });
   };
 
-  const handleAddField = (tipo: string) => {
-    // Find an active section or use the first one
-    const activeSection = builderData.secciones[0];
-    if (!activeSection) {
+  const handleAddField = (tipo: string, seccionId?: string) => {
+    // Usar la sección especificada, la activa, o la primera disponible
+    let targetSeccionId = seccionId || seccionActiva;
+    
+    if (!targetSeccionId && builderData.secciones.length > 0) {
+      targetSeccionId = builderData.secciones[0].id;
+      setSeccionActiva(targetSeccionId);
+    }
+    
+    const targetSection = builderData.secciones.find(s => s.id === targetSeccionId);
+    if (!targetSection) {
       toast({
         title: "Error",
         description: "Debe crear al menos una sección primero",
@@ -97,7 +108,7 @@ export function PlantillaBuilder({
       etiqueta: 'Pregunta sin título',
       requerido: false,
       peso: 5, // Default weight, user can edit later
-      orden: 0,
+      orden: targetSection.campos.length,
       opciones: (tipo === 'select' || tipo === 'radio' || tipo === 'checkbox') 
         ? ['Opción 1', 'Opción 2'] 
         : undefined
@@ -106,7 +117,7 @@ export function PlantillaBuilder({
     setBuilderData(prevData => ({
       ...prevData,
       secciones: prevData.secciones.map(s => 
-        s.id === activeSection.id 
+        s.id === targetSeccionId 
           ? { ...s, campos: [...s.campos, nuevoCampo] }
           : s
       )
@@ -114,7 +125,7 @@ export function PlantillaBuilder({
 
     toast({
       title: "Campo agregado",
-      description: `Se agregó un campo ${fieldNames[tipo] || 'Campo'}. Recuerda configurar su peso.`
+      description: `Se agregó un campo ${fieldNames[tipo] || 'Campo'} a ${targetSection.nombre}.`
     });
   };
 
@@ -335,7 +346,11 @@ export function PlantillaBuilder({
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex h-screen bg-muted/20">
         {/* Google Forms Style Toolbox */}
-        <GoogleFormsToolbox onAddField={handleAddField} />
+        <GoogleFormsToolbox 
+          onAddField={handleAddField}
+          seccionActiva={seccionActiva}
+          secciones={builderData.secciones}
+        />
 
         {/* Main Builder Area - Google Forms Style */}
         <div className="flex-1 flex flex-col">
@@ -443,6 +458,9 @@ export function PlantillaBuilder({
                                 onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
                                 onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
                                 onDuplicateCampo={(campoId) => handleDuplicateCampo(seccion.id, campoId)}
+                                onAddField={(tipo) => handleAddField(tipo, seccion.id)}
+                                esActiva={seccionActiva === seccion.id}
+                                onSeleccionar={() => setSeccionActiva(seccion.id)}
                               />
                             </div>
                           )}

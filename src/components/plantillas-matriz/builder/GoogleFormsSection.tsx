@@ -18,6 +18,9 @@ interface GoogleFormsSectionProps {
   onUpdateCampo: (campoId: string, updates: Partial<CampoBuilder>) => void;
   onDeleteCampo: (campoId: string) => void;
   onDuplicateCampo: (campoId: string) => void;
+  onAddField: (tipo: string) => void;
+  esActiva: boolean;
+  onSeleccionar: () => void;
 }
 
 export function GoogleFormsSection({
@@ -29,7 +32,10 @@ export function GoogleFormsSection({
   onDelete,
   onUpdateCampo,
   onDeleteCampo,
-  onDuplicateCampo
+  onDuplicateCampo,
+  onAddField,
+  esActiva,
+  onSeleccionar
 }: GoogleFormsSectionProps) {
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
@@ -60,18 +66,30 @@ export function GoogleFormsSection({
   };
 
   return (
-    <div className="space-y-1">
+    <div 
+      className={`space-y-1 cursor-pointer transition-all duration-200 ${
+        esActiva ? 'ring-2 ring-primary ring-offset-2 rounded-lg' : 'hover:ring-1 hover:ring-primary/50 hover:ring-offset-1 rounded-lg'
+      }`}
+      onClick={onSeleccionar}
+    >
       {/* Section Header - Google Forms style */}
-      <div className="bg-primary text-primary-foreground rounded-t-lg px-4 py-3">
+      <div className={`rounded-t-lg px-4 py-3 transition-colors ${
+        esActiva ? 'bg-primary text-primary-foreground' : 'bg-primary/80 text-primary-foreground hover:bg-primary'
+      }`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div {...dragHandleProps} className="cursor-move p-1">
-              <GripVertical className="h-4 w-4" />
+            <div className="flex items-center gap-3">
+              <div {...dragHandleProps} className="cursor-move p-1">
+                <GripVertical className="h-4 w-4" />
+              </div>
+              <span className="text-sm font-medium">
+                Sección {sectionIndex + 1} de {totalSections}
+              </span>
+              {esActiva && (
+                <Badge variant="secondary" className="text-xs bg-white/20 text-white">
+                  Activa
+                </Badge>
+              )}
             </div>
-            <span className="text-sm font-medium">
-              Sección {sectionIndex + 1} de {totalSections}
-            </span>
-          </div>
           
           <div className="flex items-center gap-2">
             {editingWeight ? (
@@ -190,8 +208,19 @@ export function GoogleFormsSection({
                         {snapshot.isDraggingOver ? 'Suelta aquí para agregar' : 'Agrega tu primera pregunta'}
                       </p>
                       <p className="text-sm">
-                        {snapshot.isDraggingOver ? 'el elemento' : 'Selecciona un tipo de pregunta del panel lateral'}
+                        {snapshot.isDraggingOver ? 'el elemento' : 'Haz clic en un elemento del panel lateral'}
                       </p>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddField('texto');
+                        }}
+                        size="sm"
+                        className="mt-2"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Campo de Texto
+                      </Button>
                     </div>
                   </div>
                 ) : (

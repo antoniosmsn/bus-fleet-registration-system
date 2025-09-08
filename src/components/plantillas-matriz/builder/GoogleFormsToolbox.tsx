@@ -5,7 +5,9 @@ import { Separator } from '@/components/ui/separator';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 
 interface GoogleFormsToolboxProps {
-  onAddField: (tipo: string) => void;
+  onAddField: (tipo: string, seccionId?: string) => void;
+  seccionActiva: string | null;
+  secciones: any[];
 }
 
 const fieldTypes = [
@@ -17,14 +19,21 @@ const fieldTypes = [
   { id: 'canvas', name: 'Dibujo', icon: Pen, description: 'Área de dibujo libre' }
 ];
 
-export function GoogleFormsToolbox({ onAddField }: GoogleFormsToolboxProps) {
+export function GoogleFormsToolbox({ onAddField, seccionActiva, secciones }: GoogleFormsToolboxProps) {
+  const seccionActivaNombre = secciones.find(s => s.id === seccionActiva)?.nombre || 'Ninguna';
+  
   return (
     <div className="w-80 bg-background border-r border-border h-full">
       <div className="p-4 border-b">
         <h3 className="font-semibold text-lg">Tipos de pregunta</h3>
         <p className="text-sm text-muted-foreground">
-          Haz clic o arrastra para agregar
+          Haz clic para agregar a sección activa
         </p>
+        {secciones.length > 0 && (
+          <div className="mt-2 p-2 bg-primary/10 rounded text-xs">
+            <span className="font-medium">Sección activa:</span> {seccionActivaNombre}
+          </div>
+        )}
       </div>
       
       <Droppable droppableId="toolbox" isDropDisabled={true}>
