@@ -1,6 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CreditCard } from 'lucide-react';
 import { SolicitudDevolucionSaldo, FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
 
@@ -62,6 +64,11 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
     }).format(monto);
   };
 
+  const handleSolicitudPago = (solicitud: SolicitudDevolucionSaldo) => {
+    console.log('Procesando solicitud de pago para:', solicitud.numeroDevolucion);
+    // Aquí se implementaría la lógica para procesar la solicitud de pago
+  };
+
   return (
     <Card>
       <CardContent className="p-0">
@@ -77,12 +84,13 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
               <TableHead>Monto</TableHead>
               <TableHead>Motivo de devolución</TableHead>
               <TableHead>Aprobadores</TableHead>
+              <TableHead>Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={10} className="h-24 text-center text-muted-foreground">
                   No se encontraron solicitudes de devolución
                 </TableCell>
               </TableRow>
@@ -105,6 +113,17 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
                   </TableCell>
                   <TableCell>
                     {solicitud.aprobadores.length > 0 ? solicitud.aprobadores.join(', ') : '-'}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleSolicitudPago(solicitud)}
+                      className="gap-2"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      Solicitud de pago
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
