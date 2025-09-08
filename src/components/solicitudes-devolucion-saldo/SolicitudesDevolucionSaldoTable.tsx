@@ -5,12 +5,17 @@ import { Button } from '@/components/ui/button';
 import { CreditCard } from 'lucide-react';
 import { SolicitudDevolucionSaldo, FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
+import SolicitudPagoModal from './SolicitudPagoModal';
+import { useState } from 'react';
 
 interface SolicitudesDevolucionSaldoTableProps {
   filters?: FiltrosSolicitudDevolucion;
 }
 
 export default function SolicitudesDevolucionSaldoTable({ filters }: SolicitudesDevolucionSaldoTableProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSolicitud, setSelectedSolicitud] = useState<SolicitudDevolucionSaldo | null>(null);
+
   // Filtrar los datos según los filtros aplicados
   const filteredData = mockSolicitudesDevolucionSaldo.filter((solicitud) => {
     if (!filters) return true;
@@ -65,8 +70,8 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
   };
 
   const handleSolicitudPago = (solicitud: SolicitudDevolucionSaldo) => {
-    console.log('Procesando solicitud de pago para:', solicitud.numeroDevolucion);
-    // Aquí se implementaría la lógica para procesar la solicitud de pago
+    setSelectedSolicitud(solicitud);
+    setModalOpen(true);
   };
 
   return (
@@ -131,6 +136,12 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
           </TableBody>
         </Table>
       </CardContent>
+      
+      <SolicitudPagoModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        solicitud={selectedSolicitud}
+      />
     </Card>
   );
 }
