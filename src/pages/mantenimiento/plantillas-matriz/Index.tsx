@@ -217,7 +217,11 @@ export default function PlantillasMatrizIndex() {
         <ConfirmarCambioEstadoDialog
           plantilla={dialogState.plantilla}
           open={dialogState.open}
-          onOpenChange={(open) => setDialogState(prev => ({ ...prev, open }))}
+          onOpenChange={(open) => setDialogState(prev => ({ 
+            ...prev, 
+            open, 
+            plantilla: open ? prev.plantilla : null 
+          }))}
           onConfirm={handleConfirmarCambioEstado}
         />
       </div>
