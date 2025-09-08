@@ -16,6 +16,7 @@ import { toast } from '@/hooks/use-toast';
 const ITEMS_PER_PAGE = 10;
 
 export default function PlantillasMatrizIndex() {
+  console.log('PlantillasMatrizIndex component loaded - no dialogState should exist');
   const navigate = useNavigate();
   const [filtros, setFiltros] = useState<PlantillaMatrizFilter>({ estado: 'todos' });
   const [currentPage, setCurrentPage] = useState(1);
