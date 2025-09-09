@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CampoBuilder } from '@/types/plantilla-matriz';
+import { CanvasDrawing } from './CanvasDrawing';
 
 interface GoogleFormsFieldV2Props {
   campo: CampoBuilder;
@@ -105,8 +106,13 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
         );
       case 'canvas':
         return (
-          <div className="w-full h-32 border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center bg-muted/20">
-            <span className="text-muted-foreground">Área de dibujo</span>
+          <div className="w-full">
+            <CanvasDrawing
+              initialImage={campo.imagenBase}
+              onCanvasChange={(imageData) => onUpdate({ imagenBase: imageData })}
+              width={400}
+              height={200}
+            />
           </div>
         );
       default:
