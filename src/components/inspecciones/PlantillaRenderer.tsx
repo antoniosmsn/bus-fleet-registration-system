@@ -1,170 +1,209 @@
-import { useState, useEffect } from 'react';
+import { PlantillaMatriz, SeccionPlantilla, CampoPlantilla } from '@/types/plantilla-matriz';
+import { RespuestaSeccion, RespuestaCampo } from '@/types/inspeccion-autobus';
+import { CampoInspeccionComponent } from './CampoInspeccionComponent';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CampoInspeccionComponent } from './CampoInspeccionComponent';
-import { PlantillaInspeccion, SeccionInspeccion, RespuestaSeccion, RespuestaCampo } from '@/types/inspeccion-autobus';
+import { useEffect, useState } from 'react';
 
 interface PlantillaRendererProps {
-  plantilla: PlantillaInspeccion;
+  plantilla: PlantillaMatriz;
   onRespuestasChange: (respuestas: RespuestaSeccion[], calificacionFinal: number, completed: boolean) => void;
 }
 
+// Función para filtrar campos de firma (canvas que contengan "firma" en la etiqueta)
+const filtrarCamposFirma = (campos: CampoPlantilla[]): CampoPlantilla[] => {
+  return campos.filter(campo => 
+    !(campo.tipo === 'canvas' && campo.etiqueta.toLowerCase().includes('firma'))
+  );
+};
+
+// Función para filtrar secciones y sus campos
+const filtrarPlantilla = (plantilla: PlantillaMatriz): PlantillaMatriz => {
+  return {
+    ...plantilla,
+    secciones: plantilla.secciones.map(seccion => ({
+      ...seccion,
+      campos: filtrarCamposFirma(seccion.campos)
+    })).filter(seccion => seccion.campos.length > 0) // Remover secciones sin campos
+  };
+};
+
 export function PlantillaRenderer({ plantilla, onRespuestasChange }: PlantillaRendererProps) {
   const [respuestasSecciones, setRespuestasSecciones] = useState<RespuestaSeccion[]>([]);
+  
+  // Filtrar la plantilla para remover campos de firma
+  const plantillaFiltrada = filtrarPlantilla(plantilla);
 
+  // Inicializar respuestas cuando cambie la plantilla
   useEffect(() => {
-    // Inicializar respuestas vacías para todas las secciones
-    const respuestasIniciales: RespuestaSeccion[] = plantilla.secciones.map(seccion => ({
-      seccionId: seccion.id,
-      respuestas: [],
-      puntuacionSeccion: 0
-    }));
-    setRespuestasSecciones(respuestasIniciales);
-  }, [plantilla]);
+    const inicializarRespuestas = () => {
+      const respuestasIniciales: RespuestaSeccion[] = plantillaFiltrada.secciones.map((seccion) => ({
+        seccionId: seccion.id,
+        respuestas: seccion.campos.map((campo) => ({
+          campoId: campo.id,
+          valor: campo.valorDefecto || (campo.tipo === 'checkbox' ? false : ''),
+        })),
+        puntuacionSeccion: 0,
+      }));
+      
+      setRespuestasSecciones(respuestasIniciales);
+    };
 
+    inicializarRespuestas();
+  }, [plantillaFiltrada]);
+
+  // Calcular puntuaciones y verificar completitud
   const handleCampoChange = (seccionId: string, campoId: string, valor: string | boolean | Date) => {
-    setRespuestasSecciones(prev => {
-      const nuevasRespuestas = prev.map(seccionResp => {
-        if (seccionResp.seccionId === seccionId) {
-          const nuevasRespuestasCampos = [...seccionResp.respuestas];
-          const indiceExistente = nuevasRespuestasCampos.findIndex(r => r.campoId === campoId);
-          
-          // Calcular puntuación del campo
-          const seccion = plantilla.secciones.find(s => s.id === seccionId);
-          const campo = seccion?.campos.find(c => c.id === campoId);
-          let puntuacion = 0;
-          
-          if (campo) {
-            if (campo.tipo === 'checkbox') {
-              puntuacion = valor === true ? campo.peso : 0;
-            } else if (campo.tipo === 'select' || campo.tipo === 'radio') {
-              // Puntuación basada en la opción seleccionada
-              const opciones = campo.opciones || [];
-              const indiceOpcion = opciones.indexOf(valor as string);
-              if (indiceOpcion !== -1) {
-                // Puntuación proporcional: primera opción = peso completo, última = peso mínimo
-                puntuacion = Math.round(campo.peso * (opciones.length - indiceOpcion) / opciones.length);
-              }
-            } else if (campo.tipo === 'texto' || campo.tipo === 'fecha' || campo.tipo === 'canvas') {
-              // Para campos de texto, fecha y canvas, dar puntuación completa si hay valor
-              puntuacion = valor && valor.toString().trim() !== '' ? campo.peso : 0;
+    setRespuestasSecciones(prevRespuestas => {
+      const nuevasRespuestas = prevRespuestas.map(respuestaSeccion => {
+        if (respuestaSeccion.seccionId === seccionId) {
+          const nuevasRespuestasCampos = respuestaSeccion.respuestas.map(respuestaCampo => {
+            if (respuestaCampo.campoId === campoId) {
+              return { ...respuestaCampo, valor };
             }
-          }
-          
-          const nuevaRespuesta: RespuestaCampo = {
-            campoId,
-            valor,
-            puntuacion
-          };
+            return respuestaCampo;
+          });
 
-          if (indiceExistente >= 0) {
-            nuevasRespuestasCampos[indiceExistente] = nuevaRespuesta;
-          } else {
-            nuevasRespuestasCampos.push(nuevaRespuesta);
-          }
+          // Encontrar la sección actual para calcular puntuación
+          const seccionActual = plantillaFiltrada.secciones.find(s => s.id === seccionId);
+          if (!seccionActual) return respuestaSeccion;
 
           // Calcular puntuación de la sección
-          const puntuacionSeccion = nuevasRespuestasCampos.reduce((sum, resp) => sum + (resp.puntuacion || 0), 0);
+          let puntuacionSeccion = 0;
+          nuevasRespuestasCampos.forEach(respuestaCampo => {
+            const campo = seccionActual.campos.find(c => c.id === respuestaCampo.campoId);
+            if (!campo) return;
+
+            let puntuacionCampo = 0;
+            const valor = respuestaCampo.valor;
+
+            // Lógica de puntuación basada en el tipo de campo
+            switch (campo.tipo) {
+              case 'checkbox':
+                puntuacionCampo = valor === true ? campo.peso : 0;
+                break;
+              case 'select':
+              case 'radio':
+                puntuacionCampo = valor !== '' ? campo.peso : 0;
+                break;
+              case 'texto':
+              case 'fecha':
+              case 'canvas':
+                puntuacionCampo = valor !== '' ? campo.peso : 0;
+                break;
+            }
+
+            puntuacionSeccion += puntuacionCampo;
+          });
 
           return {
-            ...seccionResp,
+            ...respuestaSeccion,
             respuestas: nuevasRespuestasCampos,
             puntuacionSeccion
           };
         }
-        return seccionResp;
+        return respuestaSeccion;
       });
 
-      // Calcular calificación final
-      const puntuacionTotal = nuevasRespuestas.reduce((sum, seccion) => sum + seccion.puntuacionSeccion, 0);
-      const calificacionFinal = Math.round((puntuacionTotal / plantilla.pesoTotal) * 100);
-
-      // Verificar si está completo
-      let todosLosRequeridosCompletos = true;
-      for (const seccion of plantilla.secciones) {
+      // Calcular puntuación final y verificar completitud
+      const calificacionFinal = nuevasRespuestas.reduce((total, seccion) => total + seccion.puntuacionSeccion, 0);
+      
+      // Verificar si todos los campos requeridos están completados
+      let todosCompletados = true;
+      
+      for (const seccion of plantillaFiltrada.secciones) {
         const respuestaSeccion = nuevasRespuestas.find(r => r.seccionId === seccion.id);
-        if (respuestaSeccion) {
-          for (const campo of seccion.campos) {
-            if (campo.requerido) {
-              const respuestaCampo = respuestaSeccion.respuestas.find(r => r.campoId === campo.id);
-              if (!respuestaCampo || respuestaCampo.valor === '' || respuestaCampo.valor === null || respuestaCampo.valor === undefined) {
-                todosLosRequeridosCompletos = false;
-                break;
-              }
-            }
-          }
-        } else {
-          todosLosRequeridosCompletos = false;
+        if (!respuestaSeccion) {
+          todosCompletados = false;
           break;
         }
+
+        for (const campo of seccion.campos) {
+          if (campo.requerido) {
+            const respuestaCampo = respuestaSeccion.respuestas.find(r => r.campoId === campo.id);
+            if (!respuestaCampo || respuestaCampo.valor === '' || respuestaCampo.valor === false) {
+              todosCompletados = false;
+              break;
+            }
+          }
+        }
+
+        if (!todosCompletados) break;
       }
 
       // Notificar cambios al componente padre
-      onRespuestasChange(nuevasRespuestas, calificacionFinal, todosLosRequeridosCompletos);
+      onRespuestasChange(nuevasRespuestas, calificacionFinal, todosCompletados);
 
       return nuevasRespuestas;
     });
   };
 
-  const calcularProgresoSeccion = (seccion: SeccionInspeccion): number => {
-    const respuestaSeccion = respuestasSecciones.find(r => r.seccionId === seccion.id);
-    if (!respuestaSeccion) return 0;
+  // Función auxiliar para calcular progreso de una sección
+  const calcularProgresoSeccion = (seccion: SeccionPlantilla, respuestas: RespuestaCampo[]): number => {
+    const camposRequeridos = seccion.campos.filter(campo => campo.requerido);
+    if (camposRequeridos.length === 0) return 100;
 
-    const camposRequeridos = seccion.campos.filter(c => c.requerido);
-    const camposCompletados = camposRequeridos.filter(campo => {
-      const respuesta = respuestaSeccion.respuestas.find(r => r.campoId === campo.id);
-      return respuesta && respuesta.valor !== '' && respuesta.valor !== null && respuesta.valor !== undefined;
+    let completados = 0;
+    camposRequeridos.forEach(campo => {
+      const respuesta = respuestas.find(r => r.campoId === campo.id);
+      if (respuesta && respuesta.valor !== '' && respuesta.valor !== false) {
+        completados++;
+      }
     });
 
-    return camposRequeridos.length > 0 ? (camposCompletados.length / camposRequeridos.length) * 100 : 100;
+    return Math.round((completados / camposRequeridos.length) * 100);
   };
 
   return (
     <div className="space-y-6">
+      <div className="grid gap-6">
+        {plantillaFiltrada.secciones.map((seccion) => {
+          const respuestaSeccion = respuestasSecciones.find(r => r.seccionId === seccion.id);
+          const progreso = respuestaSeccion ? calcularProgresoSeccion(seccion, respuestaSeccion.respuestas) : 0;
 
-      {plantilla.secciones.map((seccion, index) => {
-        const progreso = calcularProgresoSeccion(seccion);
-        const respuestaSeccion = respuestasSecciones.find(r => r.seccionId === seccion.id);
-        
-        return (
-          <Card key={seccion.id}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">
-                  {index + 1}. {seccion.nombre}
-                </CardTitle>
-                <span className="text-sm text-muted-foreground">
-                  Peso: {seccion.peso} pts
-                </span>
-              </div>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Progreso de la sección</span>
-                  <span>{Math.round(progreso)}%</span>
-                </div>
-                <Progress value={progreso} className="h-2" />
-                {respuestaSeccion && (
-                  <div className="text-sm text-muted-foreground">
-                    Puntuación obtenida: {respuestaSeccion.puntuacionSeccion} / {seccion.peso}
+          return (
+            <Card key={seccion.id} className="shadow-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{seccion.nombre}</CardTitle>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-muted-foreground">
+                      Peso: {seccion.peso} pts
+                    </span>
+                    <span className="text-sm font-medium">
+                      Score: {respuestaSeccion?.puntuacionSeccion || 0}/{seccion.peso}
+                    </span>
                   </div>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {seccion.campos.map(campo => (
-                <CampoInspeccionComponent
-                  key={campo.id}
-                  campo={campo}
-                  valor={respuestasSecciones
-                    .find(r => r.seccionId === seccion.id)
-                    ?.respuestas.find(r => r.campoId === campo.id)?.valor}
-                  onChange={(valor) => handleCampoChange(seccion.id, campo.id, valor)}
-                />
-              ))}
-            </CardContent>
-          </Card>
-        );
-      })}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Progreso de campos requeridos</span>
+                    <span>{progreso}%</span>
+                  </div>
+                  <Progress value={progreso} className="h-2" />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="grid gap-4">
+                  {seccion.campos.map((campo) => {
+                    const respuestaCampo = respuestaSeccion?.respuestas.find(r => r.campoId === campo.id);
+                    const valor = respuestaCampo?.valor;
+
+                    return (
+                      <CampoInspeccionComponent
+                        key={campo.id}
+                        campo={campo}
+                        valor={valor}
+                        onChange={(valor) => handleCampoChange(seccion.id, campo.id, valor)}
+                      />
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
