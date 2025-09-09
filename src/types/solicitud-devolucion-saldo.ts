@@ -5,10 +5,16 @@ export interface SolicitudDevolucionSaldo {
   nombrePasajero: string;
   fechaSolicitud: string;
   fechaDevolucion: string;
-  estado: 'pendiente_aprobacion' | 'aprobada' | 'rechazada' | 'procesada';
+  estado: 'pendiente_aprobacion' | 'aprobada_pendiente_autorizacion' | 'completamente_aprobada' | 'rechazada' | 'procesada';
   monto: number;
   motivoDevolucion: string;
-  aprobadores: string[];
+  aprobadoPor?: string;
+  fechaAprobacion?: string;
+  autorizadoPor?: string;
+  fechaAutorizacion?: string;
+  motivoRechazo?: string;
+  rechazadoPor?: string;
+  fechaRechazo?: string;
 }
 
 export interface FiltrosSolicitudDevolucion {

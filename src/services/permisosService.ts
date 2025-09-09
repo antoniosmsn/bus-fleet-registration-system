@@ -24,6 +24,21 @@ export const verificarPermisoExportacion = (): boolean => {
   return permisosActuales.puedeExportarReportes;
 };
 
+// Extender servicios de permisos para solicitudes de devolución
+export const verificarPermisoAprobador = (): boolean => {
+  // En implementación real, verificar permisos específicos del usuario
+  return permisosActuales.puedeAtenderAlertas; // Reutilizando permiso similar
+};
+
+export const verificarPermisoAutorizador = (): boolean => {
+  // En implementación real, verificar permisos específicos del usuario
+  return permisosActuales.puedeExportarReportes; // Reutilizando permiso similar
+};
+
+export const verificarPermisoVisualizacionSolicitud = (): boolean => {
+  return permisosActuales.puedeAccederCapacidadCumplida;
+};
+
 export const obtenerUsuarioActual = (): string => {
   // En implementación real, obtener del contexto de autenticación
   return 'Usuario Administrador';

@@ -1,18 +1,31 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CreditCard } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Eye, CheckCircle, Shield, X } from 'lucide-react';
 import { SolicitudDevolucionSaldo, FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
+import { verificarPermisoAprobador, verificarPermisoAutorizador, verificarPermisoVisualizacionSolicitud } from '@/services/permisosService';
+import ModalVisualizarSolicitud from './ModalVisualizarSolicitud';
+import ModalConfirmacionAprobacion from './ModalConfirmacionAprobacion';
+import ModalConfirmacionRechazo from './ModalConfirmacionRechazo';
 
 interface SolicitudesDevolucionSaldoTableProps {
   filters?: FiltrosSolicitudDevolucion;
+  onSolicitudUpdate?: () => void;
 }
 
-export default function SolicitudesDevolucionSaldoTable({ filters }: SolicitudesDevolucionSaldoTableProps) {
-  const navigate = useNavigate();
+export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUpdate }: SolicitudesDevolucionSaldoTableProps) {
+  const [selectedSolicitud, setSelectedSolicitud] = useState<SolicitudDevolucionSaldo | null>(null);
+  const [showVisualizarModal, setShowVisualizarModal] = useState(false);
+  const [showAprobacionModal, setShowAprobacionModal] = useState(false);
+  const [showRechazoModal, setShowRechazoModal] = useState(false);
+  const [tipoAccion, setTipoAccion] = useState<'aprobar' | 'autorizar'>('aprobar');
+
+  const puedeAprobar = verificarPermisoAprobador();
+  const puedeAutorizar = verificarPermisoAutorizador();
+  const puedeVisualizar = verificarPermisoVisualizacionSolicitud();
 
   // Filtrar los datos según los filtros aplicados
   const filteredData = mockSolicitudesDevolucionSaldo.filter((solicitud) => {
@@ -33,8 +46,10 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
     switch (estado) {
       case 'pendiente_aprobacion':
         return 'secondary';
-      case 'aprobada':
+      case 'aprobada_pendiente_autorizacion':
         return 'default';
+      case 'completamente_aprobada':
+        return 'outline';
       case 'rechazada':
         return 'destructive';
       case 'procesada':
@@ -47,13 +62,15 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
   const getEstadoText = (estado: string) => {
     switch (estado) {
       case 'pendiente_aprobacion':
-        return 'pendiente aprobación';
-      case 'aprobada':
-        return 'aprobada';
+        return 'Pendiente Aprobación';
+      case 'aprobada_pendiente_autorizacion':
+        return 'Pendiente Autorización';
+      case 'completamente_aprobada':
+        return 'Completamente Aprobada';
       case 'rechazada':
-        return 'rechazada';
+        return 'Rechazada';
       case 'procesada':
-        return 'procesada';
+        return 'Procesada';
       default:
         return estado;
     }
@@ -67,72 +84,177 @@ export default function SolicitudesDevolucionSaldoTable({ filters }: Solicitudes
     }).format(monto);
   };
 
-  const handleSolicitudPago = (solicitud: SolicitudDevolucionSaldo) => {
-    navigate(`/servicios/saldo/solicitud-pago/${solicitud.numeroDevolucion}`);
+  const handleVisualizar = (solicitud: SolicitudDevolucionSaldo) => {
+    setSelectedSolicitud(solicitud);
+    setShowVisualizarModal(true);
+  };
+
+  const handleAprobar = (solicitud: SolicitudDevolucionSaldo) => {
+    setSelectedSolicitud(solicitud);
+    setTipoAccion('aprobar');
+    setShowAprobacionModal(true);
+  };
+
+  const handleAutorizar = (solicitud: SolicitudDevolucionSaldo) => {
+    setSelectedSolicitud(solicitud);
+    setTipoAccion('autorizar');
+    setShowAprobacionModal(true);
+  };
+
+  const handleRechazar = (solicitud: SolicitudDevolucionSaldo) => {
+    setSelectedSolicitud(solicitud);
+    setShowRechazoModal(true);
+  };
+
+  const puedeAprobarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
+    return puedeAprobar && solicitud.estado === 'pendiente_aprobacion';
+  };
+
+  const puedeAutorizarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
+    return puedeAutorizar && solicitud.estado === 'aprobada_pendiente_autorizacion';
+  };
+
+  const puedeRechazarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
+    return (puedeAprobar || puedeAutorizar) && 
+           (solicitud.estado === 'pendiente_aprobacion' || solicitud.estado === 'aprobada_pendiente_autorizacion');
+  };
+
+  const getAprobadores = (solicitud: SolicitudDevolucionSaldo) => {
+    const aprobadores = [];
+    if (solicitud.aprobadoPor) aprobadores.push(`Aprobado: ${solicitud.aprobadoPor}`);
+    if (solicitud.autorizadoPor) aprobadores.push(`Autorizado: ${solicitud.autorizadoPor}`);
+    if (solicitud.rechazadoPor) aprobadores.push(`Rechazado: ${solicitud.rechazadoPor}`);
+    return aprobadores.length > 0 ? aprobadores.join(', ') : '-';
   };
 
   return (
-    <Card>
-      <CardContent className="p-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>No. Devolución</TableHead>
-              <TableHead>Cédula pasajero</TableHead>
-              <TableHead>Nombre pasajero</TableHead>
-              <TableHead>Fecha de solicitud</TableHead>
-              <TableHead>Fecha de devolución</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Monto</TableHead>
-              <TableHead>Motivo de devolución</TableHead>
-              <TableHead>Aprobadores</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.length === 0 ? (
+    <>
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={10} className="h-24 text-center text-muted-foreground">
-                  No se encontraron solicitudes de devolución
-                </TableCell>
+                <TableHead>No. Devolución</TableHead>
+                <TableHead>Cédula pasajero</TableHead>
+                <TableHead>Nombre pasajero</TableHead>
+                <TableHead>Fecha de solicitud</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Monto</TableHead>
+                <TableHead>Motivo de devolución</TableHead>
+                <TableHead>Aprobadores</TableHead>
+                <TableHead>Acciones</TableHead>
               </TableRow>
-            ) : (
-              filteredData.map((solicitud) => (
-                <TableRow key={solicitud.id}>
-                  <TableCell>{solicitud.numeroDevolucion}</TableCell>
-                  <TableCell>{solicitud.cedulaPasajero}</TableCell>
-                  <TableCell>{solicitud.nombrePasajero}</TableCell>
-                  <TableCell>{solicitud.fechaSolicitud}</TableCell>
-                  <TableCell>{solicitud.fechaDevolucion || '-'}</TableCell>
-                  <TableCell>
-                    <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
-                      {getEstadoText(solicitud.estado)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatMonto(solicitud.monto)}</TableCell>
-                  <TableCell className="max-w-xs truncate" title={solicitud.motivoDevolucion}>
-                    {solicitud.motivoDevolucion}
-                  </TableCell>
-                  <TableCell>
-                    {solicitud.aprobadores.length > 0 ? solicitud.aprobadores.join(', ') : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleSolicitudPago(solicitud)}
-                      className="gap-2"
-                    >
-                      <CreditCard className="h-4 w-4" />
-                      Solicitud de pago
-                    </Button>
+            </TableHeader>
+            <TableBody>
+              {filteredData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                    No se encontraron solicitudes de devolución
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+              ) : (
+                filteredData.map((solicitud) => (
+                  <TableRow key={solicitud.id}>
+                    <TableCell>{solicitud.numeroDevolucion}</TableCell>
+                    <TableCell>{solicitud.cedulaPasajero}</TableCell>
+                    <TableCell>{solicitud.nombrePasajero}</TableCell>
+                    <TableCell>{solicitud.fechaSolicitud}</TableCell>
+                    <TableCell>
+                      <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
+                        {getEstadoText(solicitud.estado)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatMonto(solicitud.monto)}</TableCell>
+                    <TableCell className="max-w-xs truncate" title={solicitud.motivoDevolucion}>
+                      {solicitud.motivoDevolucion}
+                    </TableCell>
+                    <TableCell className="max-w-xs truncate" title={getAprobadores(solicitud)}>
+                      {getAprobadores(solicitud)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        {puedeVisualizar && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleVisualizar(solicitud)}
+                            className="gap-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            Visualizar
+                          </Button>
+                        )}
+                        {puedeAprobarSolicitud(solicitud) && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleAprobar(solicitud)}
+                            className="gap-1"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                            Aprobar
+                          </Button>
+                        )}
+                        {puedeAutorizarSolicitud(solicitud) && (
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => handleAutorizar(solicitud)}
+                            className="gap-1"
+                          >
+                            <Shield className="h-4 w-4" />
+                            Autorizar
+                          </Button>
+                        )}
+                        {puedeRechazarSolicitud(solicitud) && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRechazar(solicitud)}
+                            className="gap-1"
+                          >
+                            <X className="h-4 w-4" />
+                            Rechazar
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {selectedSolicitud && (
+        <>
+          <ModalVisualizarSolicitud
+            open={showVisualizarModal}
+            onOpenChange={setShowVisualizarModal}
+            solicitud={selectedSolicitud}
+          />
+          <ModalConfirmacionAprobacion
+            open={showAprobacionModal}
+            onOpenChange={setShowAprobacionModal}
+            solicitud={selectedSolicitud}
+            tipoAccion={tipoAccion}
+            onConfirm={() => {
+              setShowAprobacionModal(false);
+              onSolicitudUpdate?.();
+            }}
+          />
+          <ModalConfirmacionRechazo
+            open={showRechazoModal}
+            onOpenChange={setShowRechazoModal}
+            solicitud={selectedSolicitud}
+            onConfirm={() => {
+              setShowRechazoModal(false);
+              onSolicitudUpdate?.();
+            }}
+          />
+        </>
+      )}
+    </>
   );
 }
