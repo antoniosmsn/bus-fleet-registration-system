@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { InspeccionRegistro } from '@/types/inspeccion-autobus';
-import { mockPlantillasInspeccion } from '@/data/mockPlantillasInspeccion';
+import { getPlantillasMatrizActivas } from '@/data/mockPlantillasMatriz';
 import { mockConductores } from '@/data/mockConductores';
 import { mockAutobuses } from '@/data/mockAutobuses';
 import { getNextConsecutivo } from '@/data/mockInspeccionesAutobus';
@@ -129,7 +129,7 @@ export default function InspeccionesRegister() {
     navigate('/mantenimiento/inspecciones');
   };
 
-  const plantillasActivas = mockPlantillasInspeccion.filter(p => p.activa);
+  const plantillasActivas = getPlantillasMatrizActivas();
 
   return (
     <Layout>

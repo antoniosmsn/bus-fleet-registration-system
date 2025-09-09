@@ -8,11 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CanvasDrawing } from './CanvasDrawing';
-import { CampoInspeccion } from '@/types/inspeccion-autobus';
+import { CampoPlantilla } from '@/types/plantilla-matriz';
 import { Trash2, Edit3 } from 'lucide-react';
 
 interface CampoInspeccionComponentProps {
-  campo: CampoInspeccion;
+  campo: CampoPlantilla;
   valor?: string | boolean | Date;
   onChange: (valor: string | boolean | Date) => void;
 }
@@ -113,7 +113,7 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
                     onChange(canvas);
                     if (canvas) setShowCanvas(false);
                   }}
-                  initialImage={valor as string}
+                  initialImage={campo.imagenBase || valor as string}
                 />
                 {valor && (
                   <div className="flex gap-2">
