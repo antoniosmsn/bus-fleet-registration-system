@@ -36,6 +36,7 @@ export default function EditarTipoAlertaPasajero() {
         motivos: tipoEncontrado.motivos.map(m => ({
           id: m.id,
           nombre: m.nombre,
+          nombreIngles: m.nombreIngles,
           activo: m.activo,
           esNuevo: false
         }))
@@ -73,6 +74,7 @@ export default function EditarTipoAlertaPasajero() {
     // Validar cada motivo
     const motivosValidos = formulario.motivos.filter(m => m.nombre.trim());
     const nombresMotivos = motivosValidos.map(m => m.nombre.toLowerCase().trim());
+    const nombresInglesMotivos = motivosValidos.map(m => m.nombreIngles.toLowerCase().trim());
     
     formulario.motivos.forEach((motivo, index) => {
       if (motivo.nombre.trim()) {
@@ -88,6 +90,18 @@ export default function EditarTipoAlertaPasajero() {
           nuevosErrores[`motivo_${index}`] = 'No se permiten motivos duplicados';
         }
       }
+      
+      if (motivo.nombreIngles.trim()) {
+        if (motivo.nombreIngles.length < 3 || motivo.nombreIngles.length > 300) {
+          nuevosErrores[`motivoIngles_${index}`] = 'El nombre en inglés debe tener entre 3 y 300 caracteres';
+        }
+        
+        // Verificar duplicados en inglés
+        const motivoInglesNormalizado = motivo.nombreIngles.toLowerCase().trim();
+        if (nombresInglesMotivos.filter(n => n === motivoInglesNormalizado).length > 1) {
+          nuevosErrores[`motivoIngles_${index}`] = 'No se permiten motivos en inglés duplicados';
+        }
+      }
     });
 
     setErrores(nuevosErrores);
@@ -97,7 +111,7 @@ export default function EditarTipoAlertaPasajero() {
   const agregarMotivo = () => {
     setFormulario(prev => ({
       ...prev,
-      motivos: [...prev.motivos, { nombre: '', activo: true, esNuevo: true }]
+      motivos: [...prev.motivos, { nombre: '', nombreIngles: '', activo: true, esNuevo: true }]
     }));
   };
 
@@ -248,17 +262,34 @@ export default function EditarTipoAlertaPasajero() {
                     )}
                   </div>
                   
-                  <div className="space-y-1">
-                    <Textarea
-                      value={motivo.nombre}
-                      onChange={(e) => actualizarMotivo(index, 'nombre', e.target.value)}
-                      placeholder="Ej: Conduce muy rápido"
-                      className={`min-h-[60px] ${errores[`motivo_${index}`] ? 'border-destructive' : ''}`}
-                      disabled={!motivo.activo}
-                    />
-                    {errores[`motivo_${index}`] && (
-                      <p className="text-sm text-destructive">{errores[`motivo_${index}`]}</p>
-                    )}
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <Label>Motivo en español *</Label>
+                      <Textarea
+                        value={motivo.nombre}
+                        onChange={(e) => actualizarMotivo(index, 'nombre', e.target.value)}
+                        placeholder="Ej: Conduce muy rápido"
+                        className={`min-h-[60px] ${errores[`motivo_${index}`] ? 'border-destructive' : ''}`}
+                        disabled={!motivo.activo}
+                      />
+                      {errores[`motivo_${index}`] && (
+                        <p className="text-sm text-destructive">{errores[`motivo_${index}`]}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <Label>Motivo en inglés *</Label>
+                      <Textarea
+                        value={motivo.nombreIngles}
+                        onChange={(e) => actualizarMotivo(index, 'nombreIngles', e.target.value)}
+                        placeholder="Ex: Drives too fast"
+                        className={`min-h-[60px] ${errores[`motivoIngles_${index}`] ? 'border-destructive' : ''}`}
+                        disabled={!motivo.activo}
+                      />
+                      {errores[`motivoIngles_${index}`] && (
+                        <p className="text-sm text-destructive">{errores[`motivoIngles_${index}`]}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

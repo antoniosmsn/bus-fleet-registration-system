@@ -1,6 +1,7 @@
 export interface MotivoAlerta {
   id: number;
   nombre: string;
+  nombreIngles: string;
   activo: boolean;
   fechaCreacion: string;
   fechaModificacion?: string;
@@ -25,6 +26,7 @@ export interface TipoAlertaPasajeroForm {
 export interface MotivoAlertaForm {
   id?: number;
   nombre: string;
+  nombreIngles: string;
   activo: boolean;
   esNuevo?: boolean;
 }
