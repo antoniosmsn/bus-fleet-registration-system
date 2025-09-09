@@ -31,6 +31,7 @@ const CategoriasMantenimiento = () => {
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [editingNameEn, setEditingNameEn] = useState('');
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'activate' | 'deactivate';
@@ -46,11 +47,12 @@ const CategoriasMantenimiento = () => {
   useEffect(() => {
     let filtered = [...categorias];
 
-    // Filtro por nombre
+    // Filtro por nombre (español o inglés)
     if (filters.nombre) {
       const searchTerm = filters.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       filtered = filtered.filter(cat => 
-        cat.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchTerm)
+        cat.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchTerm) ||
+        cat.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(searchTerm)
       );
     }
 
@@ -87,6 +89,7 @@ const CategoriasMantenimiento = () => {
     const newCategory: CategoriaMantenimiento = {
       id: `temp-${Date.now()}`,
       nombre: '',
+      name: '',
       activo: true,
       fechaCreacion: new Date().toISOString().split('T')[0],
       ultimaActualizacion: new Date().toISOString().split('T')[0],
@@ -97,6 +100,7 @@ const CategoriasMantenimiento = () => {
     setCurrentPage(1); // Ir a la primera página para ver el nuevo elemento
     setEditingId(newCategory.id);
     setEditingName('');
+    setEditingNameEn('');
     setHasChanges(true);
   };
 
@@ -104,17 +108,20 @@ const CategoriasMantenimiento = () => {
     setCategorias(prev => prev.filter(cat => cat.id !== id));
     setEditingId(null);
     setEditingName('');
+    setEditingNameEn('');
     setHasChanges(categorias.some(cat => cat.isNew && cat.id !== id));
   };
 
   const handleEditStart = (categoria: CategoriaMantenimiento) => {
     setEditingId(categoria.id);
     setEditingName(categoria.nombre);
+    setEditingNameEn(categoria.name);
   };
 
   const handleEditCancel = () => {
     setEditingId(null);
     setEditingName('');
+    setEditingNameEn('');
   };
 
   const handleEditSave = (id: string) => {
@@ -127,10 +134,28 @@ const CategoriasMantenimiento = () => {
       return;
     }
 
+    if (!editingNameEn.trim()) {
+      toast({
+        title: "Error",
+        description: "El nombre en inglés de la categoría es obligatorio",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (editingName.length < 3 || editingName.length > 100) {
       toast({
         title: "Error", 
         description: "El nombre debe tener entre 3 y 100 caracteres",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (editingNameEn.length < 3 || editingNameEn.length > 100) {
+      toast({
+        title: "Error", 
+        description: "El nombre en inglés debe tener entre 3 y 100 caracteres",
         variant: "destructive"
       });
       return;
@@ -147,17 +172,43 @@ const CategoriasMantenimiento = () => {
       return;
     }
 
-    // Validar unicidad
+    const validNameEn = /^[a-zA-Z0-9\s]+$/.test(editingNameEn);
+    if (!validNameEn) {
+      toast({
+        title: "Error",
+        description: "El nombre en inglés solo puede contener letras, números y espacios",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validar unicidad para nombre en español
     const normalizedNewName = editingName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const isDuplicate = categorias.some(cat => 
+    const isDuplicateEs = categorias.some(cat => 
       cat.id !== id && 
       cat.nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === normalizedNewName
     );
 
-    if (isDuplicate) {
+    if (isDuplicateEs) {
       toast({
         title: "Error",
-        description: "Ya existe una categoría con ese nombre",
+        description: "Ya existe una categoría con ese nombre en español",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validar unicidad para nombre en inglés
+    const normalizedNewNameEn = editingNameEn.toLowerCase();
+    const isDuplicateEn = categorias.some(cat => 
+      cat.id !== id && 
+      cat.name.toLowerCase() === normalizedNewNameEn
+    );
+
+    if (isDuplicateEn) {
+      toast({
+        title: "Error",
+        description: "Ya existe una categoría con ese nombre en inglés",
         variant: "destructive"
       });
       return;
@@ -168,6 +219,7 @@ const CategoriasMantenimiento = () => {
         ? { 
             ...cat, 
             nombre: editingName.trim(),
+            name: editingNameEn.trim(),
             ultimaActualizacion: new Date().toISOString().split('T')[0]
           }
         : cat
@@ -175,6 +227,7 @@ const CategoriasMantenimiento = () => {
     
     setEditingId(null);
     setEditingName('');
+    setEditingNameEn('');
     setHasChanges(true);
   };
 
@@ -352,6 +405,7 @@ const CategoriasMantenimiento = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nombre</TableHead>
+                    <TableHead>Name</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead>Fecha de creación</TableHead>
                     <TableHead>Última actualización</TableHead>
@@ -361,7 +415,7 @@ const CategoriasMantenimiento = () => {
                 <TableBody>
                   {paginatedCategorias.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                         No se encontraron categorías
                       </TableCell>
                     </TableRow>
@@ -383,6 +437,23 @@ const CategoriasMantenimiento = () => {
                           ) : (
                             <span className={categoria.isNew && !categoria.nombre ? 'text-muted-foreground' : ''}>
                               {categoria.nombre || 'Nueva categoría'}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingId === categoria.id ? (
+                            <Input
+                              value={editingNameEn}
+                              onChange={(e) => setEditingNameEn(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleEditSave(categoria.id);
+                                if (e.key === 'Escape') handleEditCancel();
+                              }}
+                              placeholder="Category name"
+                            />
+                          ) : (
+                            <span className={categoria.isNew && !categoria.name ? 'text-muted-foreground' : ''}>
+                              {categoria.name || 'New category'}
                             </span>
                           )}
                         </TableCell>

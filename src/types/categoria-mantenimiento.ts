@@ -1,6 +1,7 @@
 export interface CategoriaMantenimiento {
   id: string;
   nombre: string;
+  name: string; // English name
   activo: boolean;
   fechaCreacion: string;
   ultimaActualizacion: string;
@@ -9,6 +10,7 @@ export interface CategoriaMantenimiento {
 
 export interface CategoriaMantenimientoFilter {
   nombre?: string;
+  name?: string;
   estado?: 'todos' | 'activos' | 'inactivos';
 }
 
