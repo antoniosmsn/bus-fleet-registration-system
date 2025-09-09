@@ -62,24 +62,34 @@ export default function ModalVisualizarSolicitud({
           <DialogTitle>Detalles de la Solicitud</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Número de solicitud
-              </label>
-              <p className="text-sm font-medium">{solicitud.numeroDevolucion}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Monto solicitado
-              </label>
-              <p className="text-sm font-medium">{formatMonto(solicitud.monto)}</p>
-            </div>
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">
+              Usuario que ejecutó la acción
+            </label>
+            <p className="text-sm font-medium">
+              {solicitud.aprobadoPor || solicitud.autorizadoPor || solicitud.rechazadoPor || 'Sin acción ejecutada'}
+            </p>
           </div>
           
           <div>
             <label className="text-sm font-medium text-muted-foreground">
-              Estado actual
+              Fecha/hora (UTC)
+            </label>
+            <p className="text-sm font-medium">
+              {solicitud.fechaAprobacion || solicitud.fechaAutorizacion || solicitud.fechaRechazo || 'Sin fecha registrada'}
+            </p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">
+              Monto
+            </label>
+            <p className="text-sm font-medium">{formatMonto(solicitud.monto)}</p>
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium text-muted-foreground">
+              Estado de la acción
             </label>
             <div className="mt-1">
               <Badge variant={getEstadoBadgeVariant(solicitud.estado)}>
@@ -87,59 +97,6 @@ export default function ModalVisualizarSolicitud({
               </Badge>
             </div>
           </div>
-
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Pasajero
-            </label>
-            <p className="text-sm">{solicitud.nombrePasajero} - {solicitud.cedulaPasajero}</p>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Motivo de devolución
-            </label>
-            <p className="text-sm">{solicitud.motivoDevolucion}</p>
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Fecha de solicitud
-            </label>
-            <p className="text-sm">{solicitud.fechaSolicitud}</p>
-          </div>
-
-          {solicitud.aprobadoPor && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Aprobado por
-              </label>
-              <p className="text-sm">{solicitud.aprobadoPor} - {solicitud.fechaAprobacion}</p>
-            </div>
-          )}
-
-          {solicitud.autorizadoPor && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Autorizado por
-              </label>
-              <p className="text-sm">{solicitud.autorizadoPor} - {solicitud.fechaAutorizacion}</p>
-            </div>
-          )}
-
-          {solicitud.rechazadoPor && (
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Rechazado por
-              </label>
-              <p className="text-sm">{solicitud.rechazadoPor} - {solicitud.fechaRechazo}</p>
-              {solicitud.motivoRechazo && (
-                <p className="text-sm text-destructive mt-1">
-                  Motivo: {solicitud.motivoRechazo}
-                </p>
-              )}
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>
