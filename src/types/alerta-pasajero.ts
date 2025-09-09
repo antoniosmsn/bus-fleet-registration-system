@@ -9,6 +9,7 @@ export interface MotivoAlerta {
 export interface TipoAlertaPasajero {
   id: number;
   nombre: string;
+  alertType: string;
   activo: boolean;
   motivos: MotivoAlerta[];
   fechaCreacion: string;
@@ -17,6 +18,7 @@ export interface TipoAlertaPasajero {
 
 export interface TipoAlertaPasajeroForm {
   nombre: string;
+  alertType: string;
   motivos: MotivoAlertaForm[];
 }
 
@@ -29,5 +31,6 @@ export interface MotivoAlertaForm {
 
 export interface AlertaPasajeroFiltros {
   nombre: string;
+  alertType: string;
   estado: 'todos' | 'activos' | 'inactivos';
 }

@@ -18,10 +18,12 @@ export default function ListadoTiposAlertaPasajero() {
   const [tipos, setTipos] = useState<TipoAlertaPasajero[]>(mockTiposAlertaPasajero);
   const [filtros, setFiltros] = useState<AlertaPasajeroFiltros>({
     nombre: '',
+    alertType: '',
     estado: 'todos'
   });
   const [filtrosAplicados, setFiltrosAplicados] = useState<AlertaPasajeroFiltros>({
     nombre: '',
+    alertType: '',
     estado: 'todos'
   });
   const [paginaActual, setPaginaActual] = useState(1);
@@ -37,11 +39,12 @@ export default function ListadoTiposAlertaPasajero() {
   const tiposFiltrados = useMemo(() => {
     return tipos.filter(tipo => {
       const cumpleNombre = tipo.nombre.toLowerCase().includes(filtrosAplicados.nombre.toLowerCase());
+      const cumpleAlertType = tipo.alertType.toLowerCase().includes(filtrosAplicados.alertType.toLowerCase());
       const cumpleEstado = filtrosAplicados.estado === 'todos' || 
         (filtrosAplicados.estado === 'activos' && tipo.activo) ||
         (filtrosAplicados.estado === 'inactivos' && !tipo.activo);
       
-      return cumpleNombre && cumpleEstado;
+      return cumpleNombre && cumpleAlertType && cumpleEstado;
     });
   }, [tipos, filtrosAplicados]);
 
@@ -63,7 +66,7 @@ export default function ListadoTiposAlertaPasajero() {
   };
 
   const limpiarFiltros = () => {
-    const filtrosVacios = { nombre: '', estado: 'todos' as const };
+    const filtrosVacios = { nombre: '', alertType: '', estado: 'todos' as const };
     setFiltros(filtrosVacios);
     setFiltrosAplicados(filtrosVacios);
     setPaginaActual(1);
@@ -128,6 +131,16 @@ export default function ListadoTiposAlertaPasajero() {
                 onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
               />
             </div>
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar por Alert Type..."
+                value={filtros.alertType}
+                onChange={(e) => setFiltros(prev => ({ ...prev, alertType: e.target.value }))}
+                className="pl-10"
+                onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
+              />
+            </div>
             <Select 
               value={filtros.estado} 
               onValueChange={(value: 'todos' | 'activos' | 'inactivos') => 
@@ -159,6 +172,7 @@ export default function ListadoTiposAlertaPasajero() {
                 <thead>
                   <tr className="border-b bg-muted/50">
                     <th className="text-left p-4 font-medium">Tipo de alerta</th>
+                    <th className="text-left p-4 font-medium">Alert Type</th>
                     <th className="text-left p-4 font-medium">Estado</th>
                     <th className="text-left p-4 font-medium">Motivos</th>
                     <th className="text-center p-4 font-medium">Acciones</th>
@@ -169,6 +183,7 @@ export default function ListadoTiposAlertaPasajero() {
                     tiposPaginados.map((tipo) => (
                       <tr key={tipo.id} className="border-b hover:bg-muted/30">
                         <td className="p-4 font-medium">{tipo.nombre}</td>
+                        <td className="p-4 text-muted-foreground">{tipo.alertType}</td>
                         <td className="p-4">
                           <Badge variant={tipo.activo ? "default" : "secondary"}>
                             {tipo.activo ? 'Activo' : 'Inactivo'}
@@ -197,7 +212,7 @@ export default function ListadoTiposAlertaPasajero() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-muted-foreground">
+                      <td colSpan={5} className="p-8 text-center text-muted-foreground">
                         No se encontraron tipos de alerta
                       </td>
                     </tr>

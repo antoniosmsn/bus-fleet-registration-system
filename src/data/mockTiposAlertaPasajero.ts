@@ -4,6 +4,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 1,
     nombre: 'Forma de conducir',
+    alertType: 'Driving Behavior',
     activo: true,
     fechaCreacion: '2024-01-15T10:00:00Z',
     fechaModificacion: '2024-01-20T14:30:00Z',
@@ -37,6 +38,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 2,
     nombre: 'Comportamiento con pasajeros',
+    alertType: 'Passenger Interaction',
     activo: true,
     fechaCreacion: '2024-01-20T08:15:00Z',
     motivos: [
@@ -63,6 +65,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 3,
     nombre: 'Puntualidad',
+    alertType: 'Punctuality',
     activo: true,
     fechaCreacion: '2024-01-25T09:30:00Z',
     motivos: [
@@ -83,6 +86,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 4,
     nombre: 'Estado del vehículo',
+    alertType: 'Vehicle Condition',
     activo: false,
     fechaCreacion: '2024-02-01T11:45:00Z',
     motivos: [
@@ -109,6 +113,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 5,
     nombre: 'Seguridad',
+    alertType: 'Safety',
     activo: true,
     fechaCreacion: '2024-02-10T16:20:00Z',
     motivos: [
@@ -129,6 +134,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 6,
     nombre: 'Aseo y presentación personal',
+    alertType: 'Personal Hygiene',
     activo: true,
     fechaCreacion: '2024-02-15T10:30:00Z',
     motivos: [
@@ -149,6 +155,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 7,
     nombre: 'Comunicación',
+    alertType: 'Communication',
     activo: true,
     fechaCreacion: '2024-02-20T14:15:00Z',
     motivos: [
@@ -175,6 +182,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 8,
     nombre: 'Manejo defensivo',
+    alertType: 'Defensive Driving',
     activo: true,
     fechaCreacion: '2024-02-25T09:45:00Z',
     motivos: [
@@ -195,6 +203,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 9,
     nombre: 'Servicio al cliente',
+    alertType: 'Customer Service',
     activo: false,
     fechaCreacion: '2024-03-01T12:00:00Z',
     motivos: [
@@ -215,6 +224,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 10,
     nombre: 'Uso de tecnología',
+    alertType: 'Technology Usage',
     activo: true,
     fechaCreacion: '2024-03-05T15:30:00Z',
     motivos: [
@@ -235,6 +245,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 11,
     nombre: 'Emergencias',
+    alertType: 'Emergency Response',
     activo: true,
     fechaCreacion: '2024-03-10T08:20:00Z',
     motivos: [
@@ -255,6 +266,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 12,
     nombre: 'Documentación',
+    alertType: 'Documentation',
     activo: true,
     fechaCreacion: '2024-03-15T13:10:00Z',
     motivos: [
@@ -275,6 +287,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 13,
     nombre: 'Capacitación',
+    alertType: 'Training',
     activo: false,
     fechaCreacion: '2024-03-20T16:40:00Z',
     motivos: [
@@ -295,6 +308,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 14,
     nombre: 'Mantenimiento preventivo',
+    alertType: 'Preventive Maintenance',
     activo: true,
     fechaCreacion: '2024-03-25T11:25:00Z',
     motivos: [
@@ -315,6 +329,7 @@ export const mockTiposAlertaPasajero: TipoAlertaPasajero[] = [
   {
     id: 15,
     nombre: 'Horarios y rutas',
+    alertType: 'Schedule & Routes',
     activo: true,
     fechaCreacion: '2024-03-30T14:50:00Z',
     motivos: [

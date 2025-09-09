@@ -20,6 +20,7 @@ export default function EditarTipoAlertaPasajero() {
   const [tipoOriginal, setTipoOriginal] = useState<TipoAlertaPasajero | null>(null);
   const [formulario, setFormulario] = useState<TipoAlertaPasajeroForm>({
     nombre: '',
+    alertType: '',
     motivos: []
   });
   const [errores, setErrores] = useState<{[key: string]: string}>({});
@@ -31,6 +32,7 @@ export default function EditarTipoAlertaPasajero() {
       setTipoOriginal(tipoEncontrado);
       setFormulario({
         nombre: tipoEncontrado.nombre,
+        alertType: tipoEncontrado.alertType,
         motivos: tipoEncontrado.motivos.map(m => ({
           id: m.id,
           nombre: m.nombre,
@@ -53,6 +55,13 @@ export default function EditarTipoAlertaPasajero() {
       nuevosErrores.nombre = 'El nombre debe tener entre 3 y 100 caracteres';
     } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s\-\/]+$/.test(formulario.nombre)) {
       nuevosErrores.nombre = 'Solo se permiten letras, números, espacios, guiones y barras';
+    }
+    
+    // Validar Alert Type
+    if (!formulario.alertType.trim()) {
+      nuevosErrores.alertType = 'El Alert Type es obligatorio';
+    } else if (formulario.alertType.length < 3 || formulario.alertType.length > 100) {
+      nuevosErrores.alertType = 'El Alert Type debe tener entre 3 y 100 caracteres';
     }
 
     // Validar que hay al menos un motivo activo
@@ -183,6 +192,20 @@ export default function EditarTipoAlertaPasajero() {
             />
             {errores.nombre && (
               <p className="text-sm text-destructive">{errores.nombre}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="alertType">Alert Type *</Label>
+            <Input
+              id="alertType"
+              value={formulario.alertType}
+              onChange={(e) => setFormulario(prev => ({ ...prev, alertType: e.target.value }))}
+              placeholder="Ej: Driving Behavior"
+              className={errores.alertType ? 'border-destructive' : ''}
+            />
+            {errores.alertType && (
+              <p className="text-sm text-destructive">{errores.alertType}</p>
             )}
           </div>
 
