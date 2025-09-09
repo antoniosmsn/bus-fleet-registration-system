@@ -3,7 +3,7 @@ import { Search, Filter, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlantillaMatrizFilter } from '@/types/plantilla-matriz';
@@ -47,86 +47,35 @@ export function PlantillasMatrizFilters({
           <h3 className="text-lg font-medium">Filtros de Búsqueda</h3>
         </div>
 
-        <Tabs defaultValue="general" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="general">Información General</TabsTrigger>
-            <TabsTrigger value="identificacion">Identificación</TabsTrigger>
-            <TabsTrigger value="fechas">Fechas</TabsTrigger>
-          </TabsList>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Nombre de plantilla</Label>
+            <Input
+              placeholder="Buscar por nombre..."
+              value={localFiltros.nombre || ''}
+              onChange={(e) => handleInputChange('nombre', e.target.value)}
+              disabled={loading}
+            />
+          </div>
           
-          {/* Información General */}
-          <TabsContent value="general" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Nombre de plantilla</Label>
-                <Input
-                  placeholder="Buscar por nombre..."
-                  value={localFiltros.nombre || ''}
-                  onChange={(e) => handleInputChange('nombre', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Estado</Label>
-                <Select 
-                  value={localFiltros.estado || 'todos'} 
-                  onValueChange={(value) => handleInputChange('estado', value as 'todos' | 'activos' | 'inactivos')}
-                  disabled={loading}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="activos">Activos</SelectItem>
-                    <SelectItem value="inactivos">Inactivos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Identificación */}
-          <TabsContent value="identificacion" className="mt-0">
-            <div className="grid grid-cols-1 gap-4">
-              <div className="space-y-2">
-                <Label>Identificador de plantilla</Label>
-                <Input
-                  placeholder="Buscar por identificador..."
-                  value={localFiltros.identificador || ''}
-                  onChange={(e) => handleInputChange('identificador', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Fechas */}
-          <TabsContent value="fechas" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Fecha de creación (inicio)</Label>
-                <Input
-                  type="date"
-                  value={localFiltros.fechaInicio || ''}
-                  onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Fecha de creación (fin)</Label>
-                <Input
-                  type="date"
-                  value={localFiltros.fechaFin || ''}
-                  onChange={(e) => handleInputChange('fechaFin', e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+          <div className="space-y-2">
+            <Label>Estado</Label>
+            <Select 
+              value={localFiltros.estado || 'todos'} 
+              onValueChange={(value) => handleInputChange('estado', value as 'todos' | 'activos' | 'inactivos')}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="activos">Activos</SelectItem>
+                <SelectItem value="inactivos">Inactivos</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mt-6">
           <Button 

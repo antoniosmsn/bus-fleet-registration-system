@@ -516,15 +516,6 @@ export function PlantillaBuilder({
                 <Badge variant={pesoTotal === 100 ? "default" : "destructive"} className="text-sm">
                   Peso Total: {pesoTotal}%
                 </Badge>
-                <Button 
-                  variant="outline" 
-                  onClick={handlePreview}
-                  disabled={builderData.secciones.length === 0}
-                  className="px-4"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Vista Previa
-                </Button>
                 <Button onClick={handleSave} disabled={loading || pesoTotal !== 100} className="px-6">
                   <Save className="h-4 w-4 mr-2" />
                   Guardar Plantilla

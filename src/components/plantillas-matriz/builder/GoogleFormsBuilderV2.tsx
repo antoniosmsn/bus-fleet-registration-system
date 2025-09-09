@@ -217,10 +217,6 @@ export function GoogleFormsBuilderV2({
               <Badge variant="secondary">
                 Peso: {pesoTotal}%
               </Badge>
-              <Button variant="outline" size="sm" onClick={handleSave} disabled={loading}>
-                <Eye className="h-4 w-4 mr-2" />
-                Vista Previa
-              </Button>
               <Button onClick={handleSave} disabled={loading}>
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Guardando...' : 'Guardar'}
