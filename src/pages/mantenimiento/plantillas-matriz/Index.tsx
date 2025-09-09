@@ -156,13 +156,23 @@ export default function PlantillasMatrizIndex() {
               Gestión de plantillas personalizadas para inspecciones de vehículos
             </p>
           </div>
-          <Button 
-            onClick={handleRegistrar}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Registrar Plantilla
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleRegistrar}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Registrar Plantilla
+            </Button>
+            <Button 
+              onClick={() => navigate('/mantenimiento/plantillas-matriz/registrar-v2')}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Registrar V2
+            </Button>
+          </div>
         </div>
 
         {error && (
