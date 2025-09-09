@@ -161,12 +161,24 @@ export function GoogleFormsSectionV2({
           seccion.campos
             .sort((a, b) => a.orden - b.orden)
             .map((campo) => (
-              <GoogleFormsFieldV2
-                key={campo.id}
-                campo={campo}
-                onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
-                onDelete={() => onDeleteCampo(campo.id)}
-              />
+                <GoogleFormsFieldV2
+                  key={campo.id}
+                  campo={campo}
+                  onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
+                  onDelete={() => onDeleteCampo(campo.id)}
+                  onDuplicate={() => {
+                    // Create a duplicate of the field
+                    const duplicatedCampo = {
+                      ...campo,
+                      id: `campo-${Date.now()}`,
+                      etiqueta: `${campo.etiqueta} (copia)`,
+                      orden: campo.orden + 1
+                    };
+                    // This would need to be handled at the parent level
+                    // For now, just show a toast
+                    console.log('Duplicate field:', duplicatedCampo);
+                  }}
+                />
             ))
         )}
       </CardContent>

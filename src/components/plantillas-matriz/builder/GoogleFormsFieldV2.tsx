@@ -1,149 +1,112 @@
 import { useState } from 'react';
-import { Trash2, Settings, Plus, X, GripVertical } from 'lucide-react';
+import { Trash2, Settings, Plus, X, GripVertical, MoreVertical, Copy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { CampoBuilder } from '@/types/plantilla-matriz';
 
 interface GoogleFormsFieldV2Props {
   campo: CampoBuilder;
   onUpdate: (updates: Partial<CampoBuilder>) => void;
   onDelete: () => void;
+  onDuplicate?: () => void;
 }
 
-export function GoogleFormsFieldV2({ campo, onUpdate, onDelete }: GoogleFormsFieldV2Props) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-
+export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: GoogleFormsFieldV2Props) {
   const handleAddOption = () => {
-    const newOptions = [...(campo.opciones || []), `Opción ${(campo.opciones?.length || 0) + 1}`];
-    onUpdate({ opciones: newOptions });
+    const opciones = campo.opciones || [];
+    onUpdate({
+      opciones: [...opciones, `Opción ${opciones.length + 1}`]
+    });
   };
 
   const handleUpdateOption = (index: number, value: string) => {
-    if (!campo.opciones) return;
-    const newOptions = [...campo.opciones];
-    newOptions[index] = value;
-    onUpdate({ opciones: newOptions });
+    const opciones = [...(campo.opciones || [])];
+    opciones[index] = value;
+    onUpdate({ opciones });
   };
 
   const handleDeleteOption = (index: number) => {
-    if (!campo.opciones) return;
-    const newOptions = campo.opciones.filter((_, i) => i !== index);
-    onUpdate({ opciones: newOptions });
+    const opciones = (campo.opciones || []).filter((_, i) => i !== index);
+    onUpdate({ opciones });
+  };
+
+  const handleTypeChange = (newType: string) => {
+    const updates: Partial<CampoBuilder> = { tipo: newType as any };
+    
+    // Add default options for select/radio/checkbox types
+    if ((newType === 'select' || newType === 'radio' || newType === 'checkbox') && !campo.opciones) {
+      updates.opciones = ['Opción 1'];
+    }
+    
+    // Remove options for other types
+    if (newType !== 'select' && newType !== 'radio' && newType !== 'checkbox') {
+      updates.opciones = undefined;
+    }
+    
+    onUpdate(updates);
   };
 
   const renderFieldPreview = () => {
     switch (campo.tipo) {
       case 'texto':
         return (
-          <div className="mt-4">
-            <Input placeholder="Respuesta corta" disabled className="max-w-md" />
-          </div>
+          <Input
+            placeholder="Respuesta corta"
+            className="border-0 border-b border-muted-foreground/30 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+            disabled
+          />
         );
       case 'select':
         return (
-          <div className="mt-4">
-            <Select disabled>
-              <SelectTrigger className="max-w-md">
-                <SelectValue placeholder="Selecciona una opción" />
-              </SelectTrigger>
-            </Select>
-          </div>
+          <Select disabled>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Elegir" />
+            </SelectTrigger>
+            <SelectContent>
+              {(campo.opciones || ['Opción 1']).map((opcion, index) => (
+                <SelectItem key={index} value={`opcion-${index}`}>
+                  {opcion}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         );
       case 'radio':
         return (
-          <div className="mt-4 space-y-2">
-            {campo.opciones?.map((opcion, index) => (
+          <div className="space-y-2">
+            {(campo.opciones || ['Opción 1']).map((opcion, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded-full border-2 border-muted-foreground" />
-                {isEditing ? (
-                  <div className="flex items-center gap-2 flex-1">
-                    <Input
-                      value={opcion}
-                      onChange={(e) => handleUpdateOption(index, e.target.value)}
-                      className="max-w-xs"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteOption(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <span>{opcion}</span>
-                )}
+                <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/40" />
+                <span className="text-sm">{opcion}</span>
               </div>
             ))}
-            {isEditing && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleAddOption}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Agregar opción
-              </Button>
-            )}
           </div>
         );
       case 'checkbox':
         return (
-          <div className="mt-4 space-y-2">
-            {campo.opciones?.map((opcion, index) => (
+          <div className="space-y-2">
+            {(campo.opciones || ['Opción 1']).map((opcion, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-muted-foreground" />
-                {isEditing ? (
-                  <div className="flex items-center gap-2 flex-1">
-                    <Input
-                      value={opcion}
-                      onChange={(e) => handleUpdateOption(index, e.target.value)}
-                      className="max-w-xs"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteOption(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <span>{opcion}</span>
-                )}
+                <div className="w-4 h-4 border-2 border-muted-foreground/40 rounded-sm" />
+                <span className="text-sm">{opcion}</span>
               </div>
             ))}
-            {isEditing && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleAddOption}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Agregar opción
-              </Button>
-            )}
           </div>
         );
       case 'fecha':
         return (
-          <div className="mt-4">
-            <Input type="date" disabled className="max-w-md" />
-          </div>
+          <Input type="date" disabled className="w-48" />
         );
       case 'canvas':
         return (
-          <div className="mt-4">
-            <div className="w-full h-32 border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center bg-muted/20">
-              <span className="text-muted-foreground">Área de dibujo</span>
-            </div>
+          <div className="w-full h-32 border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center bg-muted/20">
+            <span className="text-muted-foreground">Área de dibujo</span>
           </div>
         );
       default:
@@ -152,81 +115,135 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete }: GoogleFormsFie
   };
 
   return (
-    <Card className="hover:shadow-sm transition-shadow">
+    <Card className="hover:shadow-sm transition-shadow border-border hover:border-muted-foreground/50">
       <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <GripVertical className="h-4 w-4 text-muted-foreground" />
-            <Badge variant="outline" className="text-xs">
-              {campo.tipo}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              {campo.peso}%
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setIsEditing(!isEditing);
-                setShowSettings(false);
-              }}
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm" onClick={onDelete}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Field Label */}
-        <div className="mb-4">
-          {isEditing ? (
-            <Input
-              value={campo.etiqueta}
-              onChange={(e) => onUpdate({ etiqueta: e.target.value })}
-              className="text-base font-medium border-none p-0 h-auto focus-visible:ring-0"
-              placeholder="Pregunta sin título"
-            />
-          ) : (
-            <h4 
-              className="text-base font-medium cursor-text hover:bg-muted/50 p-1 rounded"
-              onClick={() => setIsEditing(true)}
-            >
-              {campo.etiqueta}
-            </h4>
-          )}
-        </div>
-
-        {/* Field Preview */}
-        {renderFieldPreview()}
-
-        {/* Settings Panel */}
-        {isEditing && (
-          <div className="mt-6 pt-4 border-t space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Requerido</span>
-              <Switch
-                checked={campo.requerido}
-                onCheckedChange={(checked) => onUpdate({ requerido: checked })}
-              />
+        <div className="space-y-4">
+          {/* Header with drag handle, question input, and controls */}
+          <div className="flex items-start gap-3">
+            <div className="cursor-move p-1 mt-2">
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Peso:</span>
+            
+            <div className="flex-1 space-y-3">
               <Input
-                type="number"
-                value={campo.peso}
-                onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || 0 })}
-                className="w-20"
-                min="0"
-                max="100"
+                value={campo.etiqueta}
+                onChange={(e) => onUpdate({ etiqueta: e.target.value })}
+                placeholder="Pregunta sin título"
+                className="text-base font-medium border-0 border-b-2 border-muted-foreground/20 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-primary"
               />
-              <span className="text-sm text-muted-foreground">%</span>
+              
+              {/* Field Preview */}
+              <div className="mt-4">
+                {renderFieldPreview()}
+              </div>
+              
+              {/* Options editor for select/radio/checkbox */}
+              {(campo.tipo === 'select' || campo.tipo === 'radio' || campo.tipo === 'checkbox') && (
+                <div className="space-y-2 mt-4">
+                  {(campo.opciones || []).map((opcion, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className={`w-4 h-4 ${
+                        campo.tipo === 'radio' ? 'rounded-full' : 'rounded-sm'
+                      } border-2 border-muted-foreground/40`} />
+                      <Input
+                        value={opcion}
+                        onChange={(e) => handleUpdateOption(index, e.target.value)}
+                        placeholder={`Opción ${index + 1}`}
+                        className="border-0 border-b border-muted-foreground/30 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteOption(index)}
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAddOption}
+                    className="text-primary hover:text-primary/80"
+                  >
+                    Agregar opción
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            {/* Type selector and actions */}
+            <div className="flex items-center gap-1">
+              <Select
+                value={campo.tipo}
+                onValueChange={handleTypeChange}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="texto">Texto</SelectItem>
+                  <SelectItem value="select">Lista desplegable</SelectItem>
+                  <SelectItem value="radio">Opción múltiple</SelectItem>
+                  <SelectItem value="checkbox">Casillas de verificación</SelectItem>
+                  <SelectItem value="fecha">Fecha</SelectItem>
+                  <SelectItem value="canvas">Dibujo</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {onDuplicate && (
+                    <DropdownMenuItem onClick={onDuplicate}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Duplicar
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Eliminar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
-        )}
+          
+          {/* Footer with required toggle and weight */}
+          <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={campo.requerido}
+                  onCheckedChange={(checked) => onUpdate({ requerido: checked })}
+                />
+                <Label className="text-sm">Obligatoria</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Label className="text-sm text-muted-foreground">Peso:</Label>
+                <Input
+                  type="number"
+                  value={campo.peso}
+                  onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || 0 })}
+                  className={`w-16 h-7 text-xs ${
+                    !campo.peso || campo.peso === 0 
+                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                      : ''
+                  }`}
+                  min="1"
+                  max="100"
+                />
+                <span className="text-xs text-muted-foreground">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
