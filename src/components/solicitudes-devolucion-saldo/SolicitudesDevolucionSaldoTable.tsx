@@ -3,13 +3,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, CheckCircle, Shield, X } from 'lucide-react';
+import { Eye, CheckCircle, Shield } from 'lucide-react';
 import { SolicitudDevolucionSaldo, FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';
 import { verificarPermisoAprobador, verificarPermisoAutorizador, verificarPermisoVisualizacionSolicitud } from '@/services/permisosService';
 import ModalVisualizarSolicitud from './ModalVisualizarSolicitud';
 import ModalConfirmacionAprobacion from './ModalConfirmacionAprobacion';
-import ModalConfirmacionRechazo from './ModalConfirmacionRechazo';
 
 interface SolicitudesDevolucionSaldoTableProps {
   filters?: FiltrosSolicitudDevolucion;
@@ -20,7 +19,6 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
   const [selectedSolicitud, setSelectedSolicitud] = useState<SolicitudDevolucionSaldo | null>(null);
   const [showVisualizarModal, setShowVisualizarModal] = useState(false);
   const [showAprobacionModal, setShowAprobacionModal] = useState(false);
-  const [showRechazoModal, setShowRechazoModal] = useState(false);
   const [tipoAccion, setTipoAccion] = useState<'aprobar' | 'autorizar'>('aprobar');
 
   const puedeAprobar = verificarPermisoAprobador();
@@ -89,7 +87,7 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
     setShowVisualizarModal(true);
   };
 
-  const handleAprobar = (solicitud: SolicitudDevolucionSaldo) => {
+  const handleRevisar = (solicitud: SolicitudDevolucionSaldo) => {
     setSelectedSolicitud(solicitud);
     setTipoAccion('aprobar');
     setShowAprobacionModal(true);
@@ -101,22 +99,12 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
     setShowAprobacionModal(true);
   };
 
-  const handleRechazar = (solicitud: SolicitudDevolucionSaldo) => {
-    setSelectedSolicitud(solicitud);
-    setShowRechazoModal(true);
-  };
-
-  const puedeAprobarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
+  const puedeRevisarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
     return puedeAprobar && solicitud.estado === 'pendiente_aprobacion';
   };
 
   const puedeAutorizarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
     return puedeAutorizar && solicitud.estado === 'aprobada_pendiente_autorizacion';
-  };
-
-  const puedeRechazarSolicitud = (solicitud: SolicitudDevolucionSaldo) => {
-    return (puedeAprobar || puedeAutorizar) && 
-           (solicitud.estado === 'pendiente_aprobacion' || solicitud.estado === 'aprobada_pendiente_autorizacion');
   };
 
   const getAprobadores = (solicitud: SolicitudDevolucionSaldo) => {
@@ -184,15 +172,15 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
                             Visualizar
                           </Button>
                         )}
-                        {puedeAprobarSolicitud(solicitud) && (
+                        {puedeRevisarSolicitud(solicitud) && (
                           <Button
                             size="sm"
                             variant="default"
-                            onClick={() => handleAprobar(solicitud)}
+                            onClick={() => handleRevisar(solicitud)}
                             className="gap-1"
                           >
                             <CheckCircle className="h-4 w-4" />
-                            Aprobar
+                            Revisar
                           </Button>
                         )}
                         {puedeAutorizarSolicitud(solicitud) && (
@@ -204,17 +192,6 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
                           >
                             <Shield className="h-4 w-4" />
                             Autorizar
-                          </Button>
-                        )}
-                        {puedeRechazarSolicitud(solicitud) && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleRechazar(solicitud)}
-                            className="gap-1"
-                          >
-                            <X className="h-4 w-4" />
-                            Rechazar
                           </Button>
                         )}
                       </div>
@@ -241,15 +218,6 @@ export default function SolicitudesDevolucionSaldoTable({ filters, onSolicitudUp
             tipoAccion={tipoAccion}
             onConfirm={() => {
               setShowAprobacionModal(false);
-              onSolicitudUpdate?.();
-            }}
-          />
-          <ModalConfirmacionRechazo
-            open={showRechazoModal}
-            onOpenChange={setShowRechazoModal}
-            solicitud={selectedSolicitud}
-            onConfirm={() => {
-              setShowRechazoModal(false);
               onSolicitudUpdate?.();
             }}
           />
