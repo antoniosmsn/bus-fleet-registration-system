@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { GoogleFormsFieldV2 } from './GoogleFormsFieldV2';
+import { GoogleFormsToolboxV2 } from './GoogleFormsToolboxV2';
 import { SeccionBuilder, CampoBuilder } from '@/types/plantilla-matriz';
 
 interface GoogleFormsSectionV2Props {
@@ -12,11 +13,14 @@ interface GoogleFormsSectionV2Props {
   index: number;
   totalSecciones: number;
   isActive: boolean;
+  showToolbox: boolean;
   onUpdate: (updates: Partial<SeccionBuilder>) => void;
   onDelete: () => void;
   onUpdateCampo: (campoId: string, updates: Partial<CampoBuilder>) => void;
   onDeleteCampo: (campoId: string) => void;
   onClick: () => void;
+  onAddField: (tipo: string) => void;
+  onCloseToolbox: () => void;
 }
 
 export function GoogleFormsSectionV2({
@@ -24,11 +28,14 @@ export function GoogleFormsSectionV2({
   index,
   totalSecciones,
   isActive,
+  showToolbox,
   onUpdate,
   onDelete,
   onUpdateCampo,
   onDeleteCampo,
-  onClick
+  onClick,
+  onAddField,
+  onCloseToolbox
 }: GoogleFormsSectionV2Props) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
@@ -51,12 +58,13 @@ export function GoogleFormsSectionV2({
   };
 
   return (
-    <Card 
-      className={`transition-all duration-200 cursor-pointer ${
-        isActive ? 'ring-2 ring-primary shadow-md' : 'hover:shadow-sm'
-      }`}
-      onClick={onClick}
-    >
+    <div className="flex gap-4">
+      <Card 
+        className={`flex-1 transition-all duration-200 cursor-pointer ${
+          isActive ? 'ring-2 ring-primary shadow-md' : 'hover:shadow-sm'
+        }`}
+        onClick={onClick}
+      >
       {/* Section Header */}
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
@@ -163,5 +171,16 @@ export function GoogleFormsSectionV2({
         )}
       </CardContent>
     </Card>
+
+    {/* Toolbox attached to active section */}
+    {showToolbox && (
+      <div className="w-20 flex-shrink-0">
+        <GoogleFormsToolboxV2
+          onAddField={onAddField}
+          onClose={onCloseToolbox}
+        />
+      </div>
+    )}
+  </div>
   );
 }

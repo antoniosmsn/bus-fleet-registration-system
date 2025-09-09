@@ -231,14 +231,7 @@ export function GoogleFormsBuilderV2({
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-4xl relative">
-        {/* Toolbox */}
-        {showToolbox && seccionActiva && (
-          <GoogleFormsToolboxV2
-            onAddField={handleAddField}
-            onClose={() => setShowToolbox(false)}
-          />
-        )}
+      <div className="container mx-auto px-4 py-8 max-w-6xl">{/* Increased max width */}
 
         <DragDropContext onDragEnd={() => {}}>
           <div className="space-y-6">
@@ -270,11 +263,14 @@ export function GoogleFormsBuilderV2({
                 index={index}
                 totalSecciones={builderData.secciones.length}
                 isActive={seccionActiva === seccion.id}
+                showToolbox={showToolbox && seccionActiva === seccion.id}
                 onUpdate={(updates) => handleUpdateSeccion(seccion.id, updates)}
                 onDelete={() => handleDeleteSeccion(seccion.id)}
                 onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
                 onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
                 onClick={() => handleSeccionClick(seccion.id)}
+                onAddField={handleAddField}
+                onCloseToolbox={() => setShowToolbox(false)}
               />
             ))}
 

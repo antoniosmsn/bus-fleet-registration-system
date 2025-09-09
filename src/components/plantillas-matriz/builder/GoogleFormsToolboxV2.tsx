@@ -19,8 +19,8 @@ const fieldTypes = [
 
 export function GoogleFormsToolboxV2({ onAddField, onClose }: GoogleFormsToolboxV2Props) {
   return (
-    <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50">
-      <Card className="w-16 shadow-lg border-2">
+    <div className="sticky top-24">
+      <Card className="w-16 shadow-lg border-2 bg-background">
         <div className="p-2 space-y-2">
           {/* Close Button */}
           <Button
