@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Eye, CheckCircle, AlertTriangle, XCircle, CreditCard } from 'lucide-react';
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HistorialArchivoSinpe, DetalleConciliacionSinpe } from '@/types/recarga-sinpe';
+import ModalConciliarRegistro from './ModalConciliarRegistro';
 
 interface Props {
   archivos: HistorialArchivoSinpe[];
@@ -24,6 +26,27 @@ export default function TablaHistorialSinpe({
   onCargarCreditos, 
   onConciliar 
 }: Props) {
+  const [modalConciliarAbierto, setModalConciliarAbierto] = useState(false);
+  const [detalleAConciliar, setDetalleAConciliar] = useState<DetalleConciliacionSinpe | null>(null);
+  const handleAbrirModalConciliar = (detalle: DetalleConciliacionSinpe) => {
+    setDetalleAConciliar(detalle);
+    setModalConciliarAbierto(true);
+  };
+
+  const handleConfirmarConciliacion = (detalle: DetalleConciliacionSinpe, pasajero: any) => {
+    // Actualizar el detalle con la nueva información
+    const detalleActualizado = {
+      ...detalle,
+      cedula: pasajero.cedula,
+      nombre: pasajero.nombre,
+      conciliado: true
+    };
+    
+    onConciliar(detalleActualizado);
+    setModalConciliarAbierto(false);
+    setDetalleAConciliar(null);
+  };
+
   const getEstadoBadge = (estado: HistorialArchivoSinpe['estadoConciliacion']) => {
     switch (estado) {
       case 'Éxito':
@@ -195,7 +218,7 @@ export default function TablaHistorialSinpe({
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => onConciliar(detalle)}
+                              onClick={() => handleAbrirModalConciliar(detalle)}
                               className="gap-2"
                             >
                               <CheckCircle className="h-4 w-4" />
@@ -227,6 +250,14 @@ export default function TablaHistorialSinpe({
           </CardContent>
         </Card>
       )}
+
+      {/* Modal de conciliación */}
+      <ModalConciliarRegistro
+        isOpen={modalConciliarAbierto}
+        onClose={() => setModalConciliarAbierto(false)}
+        detalle={detalleAConciliar}
+        onConfirmarConciliacion={handleConfirmarConciliacion}
+      />
     </div>
   );
 }
