@@ -198,7 +198,9 @@ export default function TablaHistorialSinpe({
                       <TableRow key={detalle.id}>
                         <TableCell>{detalle.linea}</TableCell>
                         <TableCell className="font-mono">{detalle.cedula}</TableCell>
-                        <TableCell className="font-medium">{detalle.nombre}</TableCell>
+                        <TableCell className="font-medium">
+                          {detalle.conciliado ? detalle.nombre : '-'}
+                        </TableCell>
                         <TableCell className="font-medium">{formatearMonto(detalle.monto)}</TableCell>
                         <TableCell>
                           {detalle.conciliado ? (
