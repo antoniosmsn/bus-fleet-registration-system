@@ -19,7 +19,7 @@ interface PasajeroEncontrado {
   cedula: string;
   nombre: string;
   empresaCliente: string;
-  tipoContrato: 'Permanente' | 'Temporal' | 'Contratista';
+  tipoContrato: 'Directo' | 'Indirecto';
 }
 
 interface Props {
@@ -36,21 +36,21 @@ const mockPasajeros: PasajeroEncontrado[] = [
     cedula: '123456789',
     nombre: 'Juan Carlos Rodríguez',
     empresaCliente: 'TechCorp S.A.',
-    tipoContrato: 'Permanente'
+    tipoContrato: 'Directo'
   },
   {
     id: '2',
     cedula: '987654321',
     nombre: 'María Elena González',
     empresaCliente: 'InnovateLab Ltd.',
-    tipoContrato: 'Temporal'
+    tipoContrato: 'Indirecto'
   },
   {
     id: '3',
     cedula: '456789123',
     nombre: 'Carlos Alberto Martínez',
     empresaCliente: 'GlobalTrade Inc.',
-    tipoContrato: 'Contratista'
+    tipoContrato: 'Directo'
   }
 ];
 
@@ -101,9 +101,8 @@ export default function ModalConciliarRegistro({
 
   const getTipoContratoBadge = (tipo: PasajeroEncontrado['tipoContrato']) => {
     const variants = {
-      'Permanente': 'default',
-      'Temporal': 'secondary',
-      'Contratista': 'outline'
+      'Directo': 'default',
+      'Indirecto': 'secondary'
     } as const;
     
     return <Badge variant={variants[tipo]}>{tipo}</Badge>;
