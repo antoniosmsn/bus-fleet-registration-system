@@ -85,6 +85,9 @@ import SolicitudesAprobacionIndex from '@/pages/servicios/solicitudes-aprobacion
 import SolicitudesDevolucionSaldo from '@/pages/servicios/SolicitudesDevolucionSaldo';
 import SolicitudPago from '@/pages/servicios/SolicitudPago';
 
+// Recargas SINPE pages
+import RecargasSinpeIndex from '@/pages/recargas-sinpe/Index';
+
 // Bancos pages
 import BancosIndex from '@/pages/bancos/Index';
 
@@ -153,9 +156,12 @@ function App() {
             <Route path="/servicios/cumplimiento" element={<CumplimientoServicios />} />
             <Route path="/servicios/bitacora-cambios-rutas" element={<BitacoraCambiosRutas />} />
             <Route path="/servicios/solicitudes-aprobacion" element={<SolicitudesAprobacionIndex />} />
-        <Route path="/servicios/saldo" element={<SolicitudesDevolucionSaldo />} />
+            <Route path="/servicios/saldo" element={<SolicitudesDevolucionSaldo />} />
         <Route path="/servicios/saldo/solicitud-pago/:numeroDevolucion" element={<SolicitudPago />} />
             <Route path="/servicios/listado-empresa-transporte" element={<ListadoServiciosEmpresa />} />
+            
+            {/* Recargas SINPE routes */}
+            <Route path="/recargas-sinpe" element={<RecargasSinpeIndex />} />
             
             {/* Asignaciones routes */}
             <Route path="/asignaciones" element={<AsignacionesIndex />} />

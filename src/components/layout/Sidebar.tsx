@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen, FileCheck, DollarSign, Building } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen, FileCheck, DollarSign, Building, CreditCard } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -160,6 +160,11 @@ const SidebarComponent = () => {
       title: "Solicitudes de Devolución de Saldo", 
       url: "/servicios/saldo", 
       icon: DollarSign 
+    },
+    { 
+      title: "Recargas SINPE", 
+      url: "/recargas-sinpe", 
+      icon: CreditCard 
     },
   ];
 
