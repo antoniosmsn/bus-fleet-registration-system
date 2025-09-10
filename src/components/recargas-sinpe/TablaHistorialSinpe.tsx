@@ -186,15 +186,25 @@ export default function TablaHistorialSinpe({
                   Procesado por {archivoSeleccionado.usuario} el {format(archivoSeleccionado.fecha, 'dd/MM/yyyy HH:mm', { locale: es })}
                 </p>
               </div>
-              {detallesConciliados.length > 0 && (
+              <div className="flex gap-2">
+                {detallesConciliados.length > 0 && (
+                  <Button 
+                    onClick={() => onCargarCreditos(detallesConciliados)}
+                    className="gap-2"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    Cargar créditos ({detallesConciliados.length})
+                  </Button>
+                )}
                 <Button 
-                  onClick={() => onCargarCreditos(detallesConciliados)}
+                  variant="outline"
+                  onClick={() => setMostrarDialogoSap(true)}
                   className="gap-2"
                 >
-                  <CreditCard className="h-4 w-4" />
-                  Cargar créditos ({detallesConciliados.length})
+                  <Download className="h-4 w-4" />
+                  Archivo Facturación
                 </Button>
-              )}
+              </div>
             </div>
           </CardHeader>
           <CardContent>
