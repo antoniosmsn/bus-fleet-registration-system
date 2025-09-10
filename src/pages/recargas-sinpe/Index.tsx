@@ -23,7 +23,6 @@ export default function RecargasSinpeIndex() {
   const [detalles, setDetalles] = useState(mockDetalleConciliacion);
   const [filtros, setFiltros] = useState<FiltrosHistorial>({});
   const [archivoSeleccionado, setArchivoSeleccionado] = useState<HistorialArchivoSinpe | null>(null);
-  const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const [mostrarCargarCreditos, setMostrarCargarCreditos] = useState(false);
   const [detallesParaCargar, setDetallesParaCargar] = useState<DetalleConciliacionSinpe[]>([]);
 
@@ -46,7 +45,6 @@ export default function RecargasSinpeIndex() {
 
   const handleVerResultado = (archivo: HistorialArchivoSinpe) => {
     setArchivoSeleccionado(archivo);
-    setMostrarDetalle(true);
   };
 
   const handleCargarArchivo = () => {
@@ -165,21 +163,21 @@ export default function RecargasSinpeIndex() {
         archivos={historialFiltrado}
         onVerResultado={handleVerResultado}
         onCargarArchivo={handleCargarArchivo}
+        archivoSeleccionado={archivoSeleccionado}
+        detalles={archivoSeleccionado ? detalles[archivoSeleccionado.id] || [] : []}
+        onCargarCreditos={handleCargarCreditos}
+        onConciliar={(detalle) => {
+          // Simular conciliación
+          if (archivoSeleccionado) {
+            setDetalles(prev => ({
+              ...prev,
+              [archivoSeleccionado.id]: prev[archivoSeleccionado.id].map(d => 
+                d.id === detalle.id ? { ...d, conciliado: true } : d
+              )
+            }));
+          }
+        }}
       />
-
-      {/* Modal de detalle */}
-      {archivoSeleccionado && (
-        <ModalDetalleResultado
-          archivo={archivoSeleccionado}
-          detalles={detalles[archivoSeleccionado.id] || []}
-          isOpen={mostrarDetalle}
-          onClose={() => {
-            setMostrarDetalle(false);
-            setArchivoSeleccionado(null);
-          }}
-          onCargarCreditos={handleCargarCreditos}
-        />
-      )}
 
       {/* Modal de cargar créditos */}
       <ModalCargarCreditos
