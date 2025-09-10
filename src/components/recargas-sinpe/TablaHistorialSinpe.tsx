@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Eye, Upload, CheckCircle, AlertTriangle, XCircle, CreditCard } from 'lucide-react';
+import { Eye, CheckCircle, AlertTriangle, XCircle, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,7 +10,6 @@ import { HistorialArchivoSinpe, DetalleConciliacionSinpe } from '@/types/recarga
 interface Props {
   archivos: HistorialArchivoSinpe[];
   onVerResultado: (archivo: HistorialArchivoSinpe) => void;
-  onCargarArchivo: () => void;
   archivoSeleccionado: HistorialArchivoSinpe | null;
   detalles: DetalleConciliacionSinpe[];
   onCargarCreditos: (detallesConciliados: DetalleConciliacionSinpe[]) => void;
@@ -20,7 +19,6 @@ interface Props {
 export default function TablaHistorialSinpe({ 
   archivos, 
   onVerResultado, 
-  onCargarArchivo, 
   archivoSeleccionado, 
   detalles, 
   onCargarCreditos, 
@@ -58,12 +56,8 @@ export default function TablaHistorialSinpe({
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-lg border">
-        <div className="p-4 border-b flex justify-between items-center">
+        <div className="p-4 border-b">
           <h3 className="text-lg font-semibold">Historial de Archivos SINPE</h3>
-          <Button onClick={onCargarArchivo} className="gap-2">
-            <Upload className="h-4 w-4" />
-            Cargar archivo SINPE
-          </Button>
         </div>
 
         <div className="overflow-x-auto">

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import FiltrosHistorialSinpe from '@/components/recargas-sinpe/FiltrosHistorialSinpe';
 import TablaHistorialSinpe from '@/components/recargas-sinpe/TablaHistorialSinpe';
 import ModalDetalleResultado from '@/components/recargas-sinpe/ModalDetalleResultado';
@@ -151,6 +152,10 @@ export default function RecargasSinpeIndex() {
             Gestión del historial de archivos SINPE y conciliación de recargas
           </p>
         </div>
+        <Button onClick={handleCargarArchivo} className="gap-2">
+          <Upload className="h-4 w-4" />
+          Cargar archivo SINPE
+        </Button>
       </div>
 
       <FiltrosHistorialSinpe
@@ -162,7 +167,6 @@ export default function RecargasSinpeIndex() {
       <TablaHistorialSinpe
         archivos={historialFiltrado}
         onVerResultado={handleVerResultado}
-        onCargarArchivo={handleCargarArchivo}
         archivoSeleccionado={archivoSeleccionado}
         detalles={archivoSeleccionado ? detalles[archivoSeleccionado.id] || [] : []}
         onCargarCreditos={handleCargarCreditos}
