@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Eye, CheckCircle, AlertTriangle, XCircle, CreditCard } from 'lucide-react';
+import { Eye, CheckCircle, AlertTriangle, XCircle, CreditCard, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { HistorialArchivoSinpe, DetalleConciliacionSinpe } from '@/types/recarga-sinpe';
+import { toast } from 'sonner';
 import ModalConciliarRegistro from './ModalConciliarRegistro';
 
 interface Props {
@@ -28,6 +30,7 @@ export default function TablaHistorialSinpe({
 }: Props) {
   const [modalConciliarAbierto, setModalConciliarAbierto] = useState(false);
   const [detalleAConciliar, setDetalleAConciliar] = useState<DetalleConciliacionSinpe | null>(null);
+  const [mostrarDialogoSap, setMostrarDialogoSap] = useState(false);
   const handleAbrirModalConciliar = (detalle: DetalleConciliacionSinpe) => {
     setDetalleAConciliar(detalle);
     setModalConciliarAbierto(true);
@@ -45,6 +48,27 @@ export default function TablaHistorialSinpe({
     onConciliar(detalleActualizado);
     setModalConciliarAbierto(false);
     setDetalleAConciliar(null);
+  };
+
+  // Verificar si todas las filas están conciliadas
+  useEffect(() => {
+    if (archivoSeleccionado && detalles.length > 0) {
+      const todasConciliadas = detalles.every(detalle => detalle.conciliado);
+      if (todasConciliadas && !mostrarDialogoSap) {
+        setMostrarDialogoSap(true);
+      }
+    }
+  }, [detalles, archivoSeleccionado, mostrarDialogoSap]);
+
+  const handleConfirmarDescargaSap = () => {
+    setMostrarDialogoSap(false);
+    toast.success('Generando archivo de facturación SAP', {
+      description: 'El archivo con las pestañas "Fact Cabecera" y "Fact Datos" se está preparando...'
+    });
+  };
+
+  const handleCancelarDescargaSap = () => {
+    setMostrarDialogoSap(false);
   };
 
   const getEstadoBadge = (estado: HistorialArchivoSinpe['estadoConciliacion']) => {
@@ -260,6 +284,32 @@ export default function TablaHistorialSinpe({
         detalle={detalleAConciliar}
         onConfirmarConciliacion={handleConfirmarConciliacion}
       />
+
+      {/* Dialog para confirmar descarga de archivo SAP */}
+      <AlertDialog open={mostrarDialogoSap} onOpenChange={setMostrarDialogoSap}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Download className="h-5 w-5 text-primary" />
+              Archivo de Facturación SAP
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Todas las filas del archivo <strong>{archivoSeleccionado?.nombreArchivo}</strong> han sido conciliadas exitosamente.
+              <br /><br />
+              ¿Desea descargar el archivo de facturación SAP con las pestañas "Fact Cabecera" y "Fact Datos"?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelarDescargaSap}>
+              No
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmarDescargaSap} className="gap-2">
+              <Download className="h-4 w-4" />
+              Sí, descargar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
