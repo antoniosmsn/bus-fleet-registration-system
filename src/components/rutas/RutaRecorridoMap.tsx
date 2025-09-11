@@ -42,8 +42,8 @@ const MapClickHandler: React.FC<{
 }> = ({ onAgregarPunto, dibujarActivo, recorridoFinalizado }) => {
   useMapEvents({
     click: (e) => {
-      // Según la solicitud, cuando el botón Dibujar está en OFF se pueden marcar puntos
-      if (!dibujarActivo && !recorridoFinalizado) {
+      // Cuando el botón Dibujar está en ON se pueden marcar puntos
+      if (dibujarActivo && !recorridoFinalizado) {
         const { lat, lng } = e.latlng;
         onAgregarPunto(lat, lng);
       }
@@ -108,7 +108,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         center={center}
         zoom={8}
         bounds={bounds}
-        className={`h-full w-full ${(!dibujarActivo && !recorridoFinalizado) ? 'cursor-crosshair' : 'cursor-default'}`}
+        className={`h-full w-full ${(dibujarActivo && !recorridoFinalizado) ? 'cursor-crosshair' : 'cursor-default'}`}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
