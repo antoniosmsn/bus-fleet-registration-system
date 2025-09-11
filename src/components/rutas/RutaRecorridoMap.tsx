@@ -30,25 +30,33 @@ interface RutaRecorridoMapProps {
   onAgregarPunto: (lat: number, lng: number) => void;
   onLimpiarRecorrido: () => void;
   onDeshacerUltimo: () => void;
+  dibujarActivo: boolean;
+  recorridoFinalizado: boolean;
 }
 
 // Componente para manejar los clicks en el mapa
-const MapClickHandler: React.FC<{ onAgregarPunto: (lat: number, lng: number) => void }> = ({ onAgregarPunto }) => {
+const MapClickHandler: React.FC<{ 
+  onAgregarPunto: (lat: number, lng: number) => void;
+  dibujarActivo: boolean;
+}> = ({ onAgregarPunto, dibujarActivo }) => {
   useMapEvents({
     click: (e) => {
-      const { lat, lng } = e.latlng;
-      onAgregarPunto(lat, lng);
+      if (dibujarActivo) {
+        const { lat, lng } = e.latlng;
+        onAgregarPunto(lat, lng);
+      }
     },
   });
   return null;
 };
 
 // Crear icono personalizado para puntos del recorrido
-const createNumberedIcon = (numero: number) => {
+const createNumberedIcon = (numero: number, finalizado: boolean = false) => {
+  const backgroundColor = finalizado ? '#22c55e' : '#ef4444'; // Verde si finalizado, rojo si no
   return L.divIcon({
     className: 'custom-numbered-icon',
     html: `<div style="
-      background-color: #ef4444;
+      background-color: ${backgroundColor};
       border: 2px solid white;
       border-radius: 50%;
       width: 24px;
@@ -71,7 +79,9 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
   puntosRecorrido,
   onAgregarPunto,
   onLimpiarRecorrido,
-  onDeshacerUltimo
+  onDeshacerUltimo,
+  dibujarActivo,
+  recorridoFinalizado
 }) => {
   // Centro del mapa en Costa Rica
   const center: [number, number] = [9.7489, -83.7534];
@@ -96,7 +106,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         center={center}
         zoom={8}
         bounds={bounds}
-        className="h-full w-full cursor-crosshair"
+        className={`h-full w-full ${dibujarActivo ? 'cursor-crosshair' : 'cursor-default'}`}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -104,7 +114,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         />
         
         {/* Componente para manejar clicks en el mapa */}
-        <MapClickHandler onAgregarPunto={onAgregarPunto} />
+        <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} />
         
         {/* Marcadores de paradas (sin conectar) */}
         {paradas.map((parada) => (
@@ -129,13 +139,15 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
           <Marker
             key={`punto-${punto.orden}`}
             position={[punto.lat, punto.lng]}
-            icon={createNumberedIcon(punto.orden)}
+            icon={createNumberedIcon(punto.orden, recorridoFinalizado)}
           >
             <Popup>
               <div className="text-sm">
                 <strong>Punto {punto.orden}</strong>
                 <br />
-                <span className="text-gray-600">Punto del recorrido</span>
+                <span className="text-gray-600">
+                  {recorridoFinalizado ? 'Punto finalizado' : 'Punto del recorrido'}
+                </span>
                 <br />
                 <small>Lat: {punto.lat.toFixed(6)}, Lng: {punto.lng.toFixed(6)}</small>
               </div>
@@ -143,11 +155,11 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
           </Marker>
         ))}
         
-        {/* Polilínea roja conectando los puntos del recorrido */}
+        {/* Polilínea conectando los puntos del recorrido */}
         {puntosRecorrido.length > 1 && (
           <Polyline
             positions={puntosRecorrido.map(p => [p.lat, p.lng] as [number, number])}
-            color="#ef4444"
+            color={recorridoFinalizado ? "#22c55e" : "#ef4444"}
             weight={4}
             opacity={0.8}
           />

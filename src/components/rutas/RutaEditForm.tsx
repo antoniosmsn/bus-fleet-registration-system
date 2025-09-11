@@ -158,6 +158,11 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
   const [busquedaGeocercas, setBusquedaGeocercas] = useState('');
   const [busquedaRecorrido, setBusquedaRecorrido] = useState('');
 
+  // Estados para dibujo del recorrido
+  const [dibujarActivo, setDibujarActivo] = useState(false);
+  const [recorridoFinalizado, setRecorridoFinalizado] = useState(false);
+  const [puntosRecorridoDibujados, setPuntosRecorridoDibujados] = useState<{lat: number, lng: number, orden: number}[]>([]);
+
   // Inicializar el formulario con los datos de la ruta
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -292,6 +297,36 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
         [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
         return newList;
       });
+    }
+  };
+
+  // Funciones para dibujo del recorrido
+  const toggleDibujar = () => {
+    setDibujarActivo(prev => !prev);
+    if (recorridoFinalizado) {
+      setRecorridoFinalizado(false);
+    }
+  };
+
+  const limpiarRecorrido = () => {
+    setPuntosRecorridoDibujados([]);
+    setRecorridoFinalizado(false);
+    setDibujarActivo(false);
+  };
+
+  const finalizarRecorrido = () => {
+    if (puntosRecorridoDibujados.length >= 2) {
+      setRecorridoFinalizado(true);
+      setDibujarActivo(false);
+    }
+  };
+
+  const agregarPuntoDibujado = (lat: number, lng: number) => {
+    if (dibujarActivo && !recorridoFinalizado) {
+      setPuntosRecorridoDibujados(prev => [
+        ...prev,
+        { lat, lng, orden: prev.length + 1 }
+      ]);
     }
   };
 
@@ -844,14 +879,67 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                     </div>
                   </div>
 
-                  {/* Map - Compact height */}
+                   {/* Map - Compact height */}
                   <div className="space-y-3">
                     <h3 className="text-base font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[350px]">
-                      <RutaMap 
+                      <RutaRecorridoMap 
                         paradas={puntosRecorrido}
-                        geocercas={geocercasAsignadas}
+                        puntosRecorrido={puntosRecorridoDibujados}
+                        onAgregarPunto={agregarPuntoDibujado}
+                        onLimpiarRecorrido={limpiarRecorrido}
+                        onDeshacerUltimo={() => {}}
+                        dibujarActivo={dibujarActivo}
+                        recorridoFinalizado={recorridoFinalizado}
                       />
+                    </div>
+                    
+                    {/* Control Buttons */}
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <Button
+                        type="button"
+                        variant={dibujarActivo ? "default" : "outline"}
+                        size="sm"
+                        onClick={toggleDibujar}
+                        disabled={recorridoFinalizado}
+                      >
+                        Dibujar Recorrido {dibujarActivo ? 'ON' : 'OFF'}
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={limpiarRecorrido}
+                        disabled={puntosRecorridoDibujados.length === 0}
+                      >
+                        Limpiar
+                      </Button>
+                      
+                      {!recorridoFinalizado ? (
+                        <Button
+                          type="button"
+                          variant="default"
+                          size="sm"
+                          onClick={finalizarRecorrido}
+                          disabled={puntosRecorridoDibujados.length < 2}
+                        >
+                          Finalizar Recorrido
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={toggleDibujar}
+                        >
+                          Editar Recorrido
+                        </Button>
+                      )}
+                      
+                      <div className="text-sm text-muted-foreground self-center">
+                        {puntosRecorridoDibujados.length} puntos marcados
+                      </div>
                     </div>
                   </div>
                 </div>
