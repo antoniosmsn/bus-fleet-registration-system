@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,10 +5,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { CanvasDrawing } from './CanvasDrawing';
 import { CampoPlantilla } from '@/types/plantilla-matriz';
-import { Trash2, Edit3 } from 'lucide-react';
 
 interface CampoInspeccionComponentProps {
   campo: CampoPlantilla;
@@ -18,7 +15,6 @@ interface CampoInspeccionComponentProps {
 }
 
 export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspeccionComponentProps) {
-  const [showCanvas, setShowCanvas] = useState(false);
 
   const renderCampoContent = () => {
     switch (campo.tipo) {
@@ -93,56 +89,10 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
 
       case 'canvas':
         return (
-          <div className="space-y-4">
-            {!showCanvas && !valor && (
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowCanvas(true)}
-                className="w-full"
-              >
-                <Edit3 className="mr-2 h-4 w-4" />
-                Abrir canvas para dibujar
-              </Button>
-            )}
-            
-            {(showCanvas || valor) && (
-              <div className="space-y-2">
-                <CanvasDrawing
-                  onCanvasChange={(canvas) => {
-                    onChange(canvas);
-                    if (canvas) setShowCanvas(false);
-                  }}
-                  initialImage={campo.imagenBase || valor as string}
-                />
-                {valor && (
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowCanvas(true)}
-                    >
-                      <Edit3 className="mr-2 h-4 w-4" />
-                      Editar dibujo
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        onChange('');
-                        setShowCanvas(false);
-                      }}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Borrar dibujo
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <CanvasDrawing
+            onCanvasChange={(canvas) => onChange(canvas)}
+            initialImage={campo.imagenBase || valor as string}
+          />
         );
 
       default:
@@ -167,7 +117,7 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
               {campo.requerido && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {campo.peso} pts
+              {campo.peso}%
             </span>
           </div>
           
