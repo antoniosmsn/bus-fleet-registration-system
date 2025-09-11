@@ -48,18 +48,17 @@ export function GoogleFormsSectionV2({
   };
 
   const handleSaveWeight = () => {
-    const weight = parseInt(tempWeight);
-    if (!isNaN(weight) && weight > 0 && weight <= 100) {
+    const weight = parseFloat(tempWeight);
+    if (!isNaN(weight) && weight >= 0 && weight <= 100) {
       onUpdate({ peso: weight });
-      // Recalculate proportional weights for checkbox/radio fields
-      redistributeFieldWeights(weight);
-      setIsEditingWeight(false);
-    } else {
-      // Keep the current input if invalid, don't reset
-      if (tempWeight === '') {
-        onUpdate({ peso: 0 });
-        setIsEditingWeight(false);
+      // Redistribute field weights proportionally if section weight > 0
+      if (weight > 0) {
+        redistributeFieldWeights(weight);
       }
+      setIsEditingWeight(false);
+    } else if (tempWeight === '' || weight === 0) {
+      onUpdate({ peso: 0 });
+      setIsEditingWeight(false);
     }
   };
 
@@ -68,7 +67,7 @@ export function GoogleFormsSectionV2({
       campo.tipo === 'checkbox' || campo.tipo === 'radio'
     );
     
-    if (checkboxRadioFields.length > 0) {
+    if (checkboxRadioFields.length > 0 && sectionWeight > 0) {
       const weightPerField = Math.floor(sectionWeight / checkboxRadioFields.length);
       const remainder = sectionWeight % checkboxRadioFields.length;
       
@@ -106,13 +105,13 @@ export function GoogleFormsSectionV2({
                         handleSaveWeight();
                       }
                     }}
-                    className={`w-16 h-6 text-xs ${
-                      !tempWeight || parseInt(tempWeight) <= 0 
-                        ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                        : ''
-                    }`}
+                  className={`w-16 h-6 text-xs ${
+                    tempWeight === '' || (!tempWeight && parseFloat(tempWeight) !== 0)
+                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                      : ''
+                  }`}
                     type="number"
-                    min="1"
+                    min="0"
                     max="100"
                     placeholder="Peso"
                     autoFocus
@@ -123,9 +122,11 @@ export function GoogleFormsSectionV2({
                 <Badge 
                   variant="outline" 
                   className={`cursor-pointer ${
-                    !seccion.peso || seccion.peso === 0 
+                    !seccion.peso && seccion.peso !== 0 
                       ? 'border-destructive text-destructive' 
-                      : ''
+                      : seccion.peso === 0 
+                        ? 'border-amber-500 text-amber-600' 
+                        : ''
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -133,7 +134,7 @@ export function GoogleFormsSectionV2({
                     setIsEditingWeight(true);
                   }}
                 >
-                  {seccion.peso && seccion.peso > 0 ? `${seccion.peso}%` : 'Sin peso'}
+                  {seccion.peso !== undefined ? `${seccion.peso}%` : 'Sin peso'}
                 </Badge>
               )}
             </div>

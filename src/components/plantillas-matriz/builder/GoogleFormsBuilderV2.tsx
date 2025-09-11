@@ -35,13 +35,18 @@ export function GoogleFormsBuilderV2({
   const [showToolbox, setShowToolbox] = useState(false);
 
   // Calcular peso total
-  const pesoTotal = builderData.secciones.reduce((total, seccion) => total + seccion.peso, 0);
+  const pesoTotal = builderData.secciones.reduce((total, seccion) => total + (seccion.peso || 0), 0);
+
+  // Check if weights are being correctly calculated in real time
+  const hasValidWeights = builderData.secciones.every(seccion => 
+    seccion.peso !== undefined && seccion.peso !== null
+  );
 
   const handleAddSeccion = () => {
     const nuevaSeccion: SeccionBuilder = {
       id: `seccion-${Date.now()}`,
       nombre: '', // Empty by default, user must fill
-      peso: 0, // User must set the weight
+      peso: undefined, // User must set the weight
       campos: [],
       orden: builderData.secciones.length,
       expanded: true
@@ -171,16 +176,19 @@ export function GoogleFormsBuilderV2({
       return;
     }
 
-    if (builderData.secciones.length === 0) {
-      toast({
-        title: "Error de validación", 
-        description: "Debe agregar al menos una sección",
-        variant: "destructive"
-      });
-      return;
+    // Ensure sections have at least one field (except sections with 0 weight)
+    for (const seccion of builderData.secciones) {
+      if (seccion.peso > 0 && seccion.campos.length === 0) {
+        toast({
+          title: "Error de validación",
+          description: `La sección "${seccion.nombre}" con peso ${seccion.peso}% debe tener al menos un campo`,
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
-    // Check if any section has empty name
+    // Check if any section has empty name or undefined weight
     const seccionSinNombre = builderData.secciones.find(s => !s.nombre.trim());
     if (seccionSinNombre) {
       toast({
@@ -189,6 +197,60 @@ export function GoogleFormsBuilderV2({
         variant: "destructive"
       });
       return;
+    }
+
+    const seccionSinPeso = builderData.secciones.find(s => s.peso === undefined || s.peso === null);
+    if (seccionSinPeso) {
+      toast({
+        title: "Error de validación",
+        description: "Todas las secciones deben tener un peso asignado (puede ser 0%)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate that sections with weight > 0 have at least one field with weight
+    for (const seccion of builderData.secciones) {
+      if (seccion.peso > 0) {
+        const camposConPeso = seccion.campos.filter(campo => 
+          (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso > 0
+        );
+        
+        if (camposConPeso.length === 0) {
+          const tieneCheckboxRadio = seccion.campos.some(campo => 
+            campo.tipo === 'checkbox' || campo.tipo === 'radio'
+          );
+          
+          if (tieneCheckboxRadio) {
+            toast({
+              title: "Error de validación",
+              description: `La sección "${seccion.nombre}" tiene peso pero sus campos checkbox/radio no tienen peso asignado`,
+              variant: "destructive"
+            });
+            return;
+          }
+        }
+      }
+    }
+
+    // Check each section's field weights sum to section weight
+    for (const seccion of builderData.secciones) {
+      if (seccion.peso > 0) {
+        const camposConPeso = seccion.campos.filter(campo => 
+          (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso > 0
+        );
+        
+        const pesoTotalCampos = camposConPeso.reduce((total, campo) => total + (campo.peso || 0), 0);
+        
+        if (Math.abs(pesoTotalCampos - seccion.peso) > 0.1) { // Allow small floating point differences
+          toast({
+            title: "Error de validación",
+            description: `En la sección "${seccion.nombre}", la suma de pesos de campos (${pesoTotalCampos}%) debe ser igual al peso de la sección (${seccion.peso}%)`,
+            variant: "destructive"
+          });
+          return;
+        }
+      }
     }
 
     if (pesoTotal !== 100) {
@@ -225,9 +287,14 @@ export function GoogleFormsBuilderV2({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary">
-                Peso: {pesoTotal}%
+              <Badge variant={pesoTotal === 100 ? "default" : "destructive"}>
+                Peso: {pesoTotal.toFixed(1)}%
               </Badge>
+              {!hasValidWeights && (
+                <Badge variant="outline" className="border-amber-500 text-amber-600">
+                  Pesos incompletos
+                </Badge>
+              )}
               <Button onClick={handleSave} disabled={loading}>
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Guardando...' : 'Guardar'}

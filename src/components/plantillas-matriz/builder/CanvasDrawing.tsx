@@ -103,7 +103,6 @@ export function CanvasDrawing({
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawingMode) return;
     
     e.preventDefault(); // Prevent scrolling on touch
     setIsDrawing(true);
@@ -120,7 +119,7 @@ export function CanvasDrawing({
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !isDrawingMode) return;
+    if (!isDrawing) return;
 
     e.preventDefault(); // Prevent scrolling on touch
     const canvas = canvasRef.current;
@@ -198,16 +197,6 @@ export function CanvasDrawing({
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
-          variant={isDrawingMode ? "default" : "outline"}
-          size="sm"
-          onClick={() => setIsDrawingMode(!isDrawingMode)}
-        >
-          <Pen className="mr-2 h-4 w-4" />
-          {isDrawingMode ? 'Modo dibujo ON' : 'Activar dibujo'}
-        </Button>
-        
-        <Button
-          type="button"
           variant="outline"
           size="sm"
           onClick={() => fileInputRef.current?.click()}
@@ -235,24 +224,14 @@ export function CanvasDrawing({
           onClick={clearCanvas}
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Limpiar todo
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={downloadCanvas}
-        >
-          <Download className="mr-2 h-4 w-4" />
-          Descargar
+          Limpiar canvas
         </Button>
       </div>
 
       <div className="border border-gray-300 rounded overflow-hidden">
         <canvas
           ref={canvasRef}
-          className={`w-full ${isDrawingMode ? 'cursor-crosshair' : 'cursor-default'}`}
+          className="w-full cursor-crosshair"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -273,9 +252,7 @@ export function CanvasDrawing({
       />
 
       <p className="text-xs text-muted-foreground">
-        {isDrawingMode 
-          ? 'Modo dibujo activado. Haz clic y arrastra para dibujar sobre el canvas.'
-          : 'Activa el modo dibujo para poder dibujar. Puedes cargar una imagen de fondo primero.'}
+        Haz clic y arrastra para dibujar sobre el canvas. Puedes cargar una imagen de fondo primero.
       </p>
     </Card>
   );

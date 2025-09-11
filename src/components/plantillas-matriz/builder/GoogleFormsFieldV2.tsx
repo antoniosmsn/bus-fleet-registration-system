@@ -21,19 +21,69 @@ interface GoogleFormsFieldV2Props {
 export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: GoogleFormsFieldV2Props) {
   const handleAddOption = () => {
     const opcionesConPeso = campo.opcionesConPeso || [];
-    onUpdate({
-      opcionesConPeso: [...opcionesConPeso, {
-        id: `opcion-${Date.now()}`,
-        texto: `Opción ${opcionesConPeso.length + 1}`,
-        peso: undefined
-      }]
+    const newOption = {
+      id: `opcion-${Date.now()}`,
+      texto: `Opción ${opcionesConPeso.length + 1}`,
+      peso: undefined
+    };
+    
+    const updatedOptions = [...opcionesConPeso, newOption];
+    onUpdate({ opcionesConPeso: updatedOptions });
+    
+    // Auto-distribute weights if campo has peso and this is checkbox/radio
+    if ((campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso && campo.peso > 0) {
+      redistributeOptionWeights(updatedOptions, campo.peso);
+    }
+  };
+
+  const redistributeOptionWeights = (opciones: any[], campoWeight: number) => {
+    if (opciones.length === 0) return;
+    
+    const updatedOptions = opciones.map((opcion, index) => {
+      if (opciones.length === 1) {
+        return { ...opcion, peso: campoWeight };
+      } else if (opciones.length === 2) {
+        // For 2 options, assign weights to extremes
+        return { ...opcion, peso: campoWeight / 2 };
+      } else {
+        // For 3+ options, assign weights to extremes and distribute evenly for middle
+        if (index === 0 || index === opciones.length - 1) {
+          // Assign extremes (first and last)
+          const extremeWeight = Math.floor(campoWeight * 0.3); // 30% each for extremes
+          return { ...opcion, peso: extremeWeight };
+        } else {
+          // Distribute remaining weight evenly among middle options
+          const middleCount = opciones.length - 2;
+          const remainingWeight = campoWeight - (Math.floor(campoWeight * 0.3) * 2);
+          const middleWeight = Math.floor(remainingWeight / middleCount);
+          return { ...opcion, peso: middleWeight };
+        }
+      }
     });
+    
+    // Adjust for rounding differences
+    const totalAssigned = updatedOptions.reduce((sum, opt) => sum + (opt.peso || 0), 0);
+    const difference = campoWeight - totalAssigned;
+    if (difference !== 0 && updatedOptions.length > 0) {
+      updatedOptions[0].peso = (updatedOptions[0].peso || 0) + difference;
+    }
+    
+    onUpdate({ opcionesConPeso: updatedOptions });
   };
 
   const handleUpdateOption = (index: number, updates: { texto?: string; peso?: number }) => {
     const opcionesConPeso = [...(campo.opcionesConPeso || [])];
     opcionesConPeso[index] = { ...opcionesConPeso[index], ...updates };
     onUpdate({ opcionesConPeso });
+    
+    // If updating peso and this is the first/last option, suggest redistribution
+    if (updates.peso !== undefined && (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso) {
+      const totalOptionWeight = opcionesConPeso.reduce((sum, opt) => sum + (opt.peso || 0), 0);
+      if (Math.abs(totalOptionWeight - campo.peso) > 0.1) {
+        // Weights don't match - could show warning or auto-adjust
+        console.log(`Warning: Option weights (${totalOptionWeight}) don't match field weight (${campo.peso})`);
+      }
+    }
   };
 
   const handleDeleteOption = (index: number) => {
@@ -151,15 +201,16 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                         <Input
                           type="number"
                           value={opcion.peso || ''}
-                          onChange={(e) => handleUpdateOption(index, { peso: parseInt(e.target.value) || undefined })}
+                          onChange={(e) => handleUpdateOption(index, { peso: parseFloat(e.target.value) || undefined })}
                           placeholder="Peso"
                           className={`w-16 h-7 text-xs ${
                             !opcion.peso || opcion.peso === 0 
                               ? 'border-destructive focus-visible:ring-destructive text-destructive' 
                               : ''
                           }`}
-                          min="1"
+                          min="0"
                           max="100"
+                          step="0.1"
                         />
                         <span className="text-xs text-muted-foreground">%</span>
                       </div>
@@ -209,24 +260,42 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                 <Label className="text-sm">Obligatoria</Label>
               </div>
               
-              {/* Only show weight input for checkbox and radio fields */}
+              {/* Only show weight input for checkbox and radio fields and their options */}
               {(campo.tipo === 'checkbox' || campo.tipo === 'radio') && (
                 <div className="flex items-center space-x-2">
-                  <Label className="text-sm text-muted-foreground">Peso:</Label>
+                  <Label className="text-sm text-muted-foreground">Peso campo:</Label>
                   <Input
                     type="number"
                     value={campo.peso || ''}
-                    onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || undefined })}
+                    onChange={(e) => {
+                      const newWeight = parseFloat(e.target.value) || undefined;
+                      onUpdate({ peso: newWeight });
+                      // Auto-redistribute option weights when campo weight changes
+                      if (newWeight && newWeight > 0 && campo.opcionesConPeso && campo.opcionesConPeso.length > 0) {
+                        redistributeOptionWeights(campo.opcionesConPeso, newWeight);
+                      }
+                    }}
                     placeholder="Peso"
                     className={`w-16 h-7 text-xs ${
                       !campo.peso || campo.peso === 0 
                         ? 'border-destructive focus-visible:ring-destructive text-destructive' 
                         : ''
                     }`}
-                    min="1"
+                    min="0"
                     max="100"
+                    step="0.1"
                   />
                   <span className="text-xs text-muted-foreground">%</span>
+                  {campo.opcionesConPeso && campo.peso && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => redistributeOptionWeights(campo.opcionesConPeso!, campo.peso!)}
+                      className="h-6 text-xs px-2"
+                    >
+                      Redistribuir
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
