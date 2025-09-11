@@ -148,9 +148,10 @@ const RutaRegistrationForm = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [paradasAsignadas, setParadasAsignadas] = useState<any[]>([]);
   const [geocercasAsignadas, setGeocercasAsignadas] = useState<any[]>([]);
-  const [puntosRecorrido, setPuntosRecorrido] = useState<{lat: number, lng: number, orden: number}[]>([]);
+  const [puntosRecorrido, setPuntosRecorrido] = useState<any[]>([]);
   const [busquedaParadas, setBusquedaParadas] = useState('');
   const [busquedaGeocercas, setBusquedaGeocercas] = useState('');
+  const [busquedaRecorrido, setBusquedaRecorrido] = useState('');
 
   // Inicializar el formulario
   const form = useForm<FormValues>({
@@ -171,6 +172,13 @@ const RutaRegistrationForm = () => {
     !paradasAsignadas.find(p => p.id === parada.id) &&
     (parada.nombre.toLowerCase().includes(busquedaParadas.toLowerCase()) ||
      parada.codigo.toLowerCase().includes(busquedaParadas.toLowerCase()))
+  );
+
+  // Filtrar recorrido disponibles (usa las mismas paradas disponibles)
+  const recorridoFiltradas = paradasDisponibles.filter(parada => 
+    !puntosRecorrido.find(p => p.id === parada.id) &&
+    (parada.nombre.toLowerCase().includes(busquedaRecorrido.toLowerCase()) ||
+     parada.codigo.toLowerCase().includes(busquedaRecorrido.toLowerCase()))
   );
 
   // Filtrar geocercas disponibles
@@ -245,24 +253,32 @@ const RutaRegistrationForm = () => {
   };
 
   // Funciones para manejar puntos del recorrido
-  const agregarPuntoRecorrido = (lat: number, lng: number) => {
-    const nuevoPunto = {
-      lat,
-      lng,
-      orden: puntosRecorrido.length + 1
-    };
-    setPuntosRecorrido(prev => [...prev, nuevoPunto]);
+  const agregarPuntoRecorrido = (parada: any) => {
+    setPuntosRecorrido(prev => [...prev, parada]);
   };
 
-  const limpiarRecorrido = () => {
-    setPuntosRecorrido([]);
+  const eliminarPuntoRecorrido = (paradaId: string) => {
+    setPuntosRecorrido(prev => prev.filter(p => p.id !== paradaId));
   };
 
-  const deshacerUltimoPunto = () => {
-    setPuntosRecorrido(prev => prev.slice(0, -1).map((punto, index) => ({
-      ...punto,
-      orden: index + 1
-    })));
+  const subirPuntoRecorrido = (index: number) => {
+    if (index > 0) {
+      setPuntosRecorrido(prev => {
+        const newList = [...prev];
+        [newList[index - 1], newList[index]] = [newList[index], newList[index - 1]];
+        return newList;
+      });
+    }
+  };
+
+  const bajarPuntoRecorrido = (index: number) => {
+    if (index < puntosRecorrido.length - 1) {
+      setPuntosRecorrido(prev => {
+        const newList = [...prev];
+        [newList[index], newList[index + 1]] = [newList[index + 1], newList[index]];
+        return newList;
+      });
+    }
   };
 
   // Manejar el envío del formulario
@@ -274,9 +290,14 @@ const RutaRegistrationForm = () => {
       return;
     }
 
-    // Validar al menos 2 paradas y 2 geocercas
+    // Validar al menos 2 paradas, 2 puntos de recorrido y 2 geocercas
     if (paradasAsignadas.length < 2) {
       toast.error('Debe agregar al menos 2 paradas');
+      return;
+    }
+
+    if (puntosRecorrido.length < 2) {
+      toast.error('Debe agregar al menos 2 puntos de recorrido');
       return;
     }
 
@@ -691,78 +712,121 @@ const RutaRegistrationForm = () => {
           <TabsContent value="recorrido">
             <Card>
               <CardHeader>
-                <CardTitle>Diseño del Recorrido</CardTitle>
-                <CardDescription>Marque puntos en el mapa para diseñar el recorrido de la ruta</CardDescription>
+                <CardTitle>Asignación del Recorrido</CardTitle>
+                <CardDescription>Seleccione y ordene los puntos del recorrido de la ruta (mínimo 2)</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Panel de Control */}
+                  {/* Recorrido Lists - Compact Layout */}
                   <div className="space-y-4">
-                    <div className="p-4 border rounded-lg bg-muted/50">
-                      <h3 className="font-medium mb-3">Paradas de Referencia</h3>
-                      <div className="max-h-48 overflow-y-auto space-y-2">
-                        {paradasAsignadas.length > 0 ? (
-                          paradasAsignadas.map((parada, index) => (
-                            <div key={parada.id} className="flex items-center gap-2 p-2 bg-background rounded border text-sm">
-                              <span className="text-primary font-medium">{index + 1}</span>
-                              <span className="font-medium">{parada.nombre}</span>
+                    {/* Puntos Asignados */}
+                    <div className="p-4 border rounded-lg">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium">Puntos Asignados ({puntosRecorrido.length})</h3>
+                      </div>
+                      
+                      <div className="max-h-64 overflow-y-auto space-y-2">
+                        {puntosRecorrido.length > 0 ? (
+                          puntosRecorrido.map((punto, index) => (
+                            <div 
+                              key={punto.id} 
+                              className="flex items-center gap-2 p-3 border rounded-lg bg-muted/50"
+                            >
+                              <div className="flex flex-col items-center gap-1">
+                                <Button
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => subirPuntoRecorrido(index)}
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronUp className="h-3 w-3" />
+                                </Button>
+                                <span className="text-sm font-medium text-primary">{index + 1}</span>
+                                <Button
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => bajarPuntoRecorrido(index)}
+                                  disabled={index === puntosRecorrido.length - 1}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronDown className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              
+                              <div className="flex-1">
+                                <div className="font-medium">{punto.nombre}</div>
+                                <div className="text-sm text-muted-foreground">{punto.codigo}</div>
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => eliminarPuntoRecorrido(punto.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           ))
                         ) : (
-                          <p className="text-sm text-muted-foreground">Primero asigne paradas en la pestaña anterior</p>
+                          <div className="text-center p-6 text-muted-foreground">
+                            <p>No hay puntos asignados</p>
+                            <p className="text-sm">Agregue puntos desde la lista de disponibles</p>
+                          </div>
                         )}
                       </div>
                     </div>
-
+                    
+                    {/* Puntos Disponibles */}
                     <div className="p-4 border rounded-lg">
-                      <h3 className="font-medium mb-3">Controles del Recorrido</h3>
-                      <div className="space-y-3">
-                        <div className="text-sm text-muted-foreground">
-                          <p><strong>{puntosRecorrido.length}</strong> puntos marcados</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={deshacerUltimoPunto}
-                            disabled={puntosRecorrido.length === 0}
-                          >
-                            Deshacer último
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={limpiarRecorrido}
-                            disabled={puntosRecorrido.length === 0}
-                          >
-                            Limpiar recorrido
-                          </Button>
-                        </div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="font-medium">Puntos Disponibles</h3>
                       </div>
-                    </div>
-
-                    <div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
-                      <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Instrucciones</h4>
-                      <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                        <li>• Haga clic en el mapa para marcar puntos del recorrido</li>
-                        <li>• Los puntos se conectarán automáticamente con líneas rojas</li>
-                        <li>• Las paradas se muestran como referencia (no conectadas)</li>
-                        <li>• Use los controles para deshacer o limpiar el recorrido</li>
-                      </ul>
+                      
+                      {/* Buscador */}
+                      <div className="relative mb-3">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Buscar puntos..."
+                          value={busquedaRecorrido}
+                          onChange={(e) => setBusquedaRecorrido(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      
+                      <div className="max-h-64 overflow-y-auto space-y-2">
+                        {recorridoFiltradas.length > 0 ? (
+                          recorridoFiltradas.map((punto) => (
+                            <div 
+                              key={punto.id} 
+                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                            >
+                              <div>
+                                <div className="font-medium">{punto.nombre}</div>
+                                <div className="text-sm text-muted-foreground">{punto.codigo}</div>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => agregarPuntoRecorrido(punto)}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center p-4 text-muted-foreground">
+                            <p>No hay puntos disponibles</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   {/* Mapa */}
                   <div className="space-y-4">
-                    <RutaRecorridoMap
-                      paradas={paradasAsignadas}
-                      puntosRecorrido={puntosRecorrido}
-                      onAgregarPunto={agregarPuntoRecorrido}
-                      onLimpiarRecorrido={limpiarRecorrido}
-                      onDeshacerUltimo={deshacerUltimoPunto}
-                    />
+                    <RutaMap paradas={puntosRecorrido} geocercas={geocercasAsignadas} />
                   </div>
                 </div>
               </CardContent>
