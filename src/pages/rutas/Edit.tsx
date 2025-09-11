@@ -32,10 +32,49 @@ const EditRuta = () => {
             ramal: 'Ramal 101',
             tipoRuta: 'privada',
             estado: true, // Keeping this in the data model even though we removed the UI element
+            // Paradas asignadas existentes
             paradas: [
-              { id: '1', nombre: 'Parada Principal', lat: 9.932, lng: -84.079 },
-              { id: '3', nombre: 'Sector A', lat: 9.935, lng: -84.076 },
-              { id: '5', nombre: 'Terminal Sur', lat: 9.928, lng: -84.080 }
+              { 
+                id: '1', 
+                codigo: 'PARA-001', 
+                nombre: 'Parada Principal', 
+                lat: 9.932, 
+                lng: -84.079 
+              },
+              { 
+                id: '3', 
+                codigo: 'PARA-003', 
+                nombre: 'Sector A', 
+                lat: 9.935, 
+                lng: -84.076 
+              },
+              { 
+                id: '5', 
+                codigo: 'PARA-005', 
+                nombre: 'Terminal Sur', 
+                lat: 9.928, 
+                lng: -84.080 
+              }
+            ],
+            // Puntos del recorrido (de la lista de puntos disponibles)
+            puntosRecorrido: [
+              { 
+                id: 'r1', 
+                nombre: 'Punto de Control 1', 
+                codigo: 'PC1' 
+              },
+              { 
+                id: 'r2', 
+                nombre: 'Punto de Control 2', 
+                codigo: 'PC2' 
+              }
+            ],
+            // Recorrido dibujado existente (puntos marcados en el mapa)
+            recorridoDibujado: [
+              { lat: 9.930, lng: -84.082, orden: 1 },
+              { lat: 9.933, lng: -84.078, orden: 2 },
+              { lat: 9.936, lng: -84.075, orden: 3 },
+              { lat: 9.939, lng: -84.081, orden: 4 }
             ],
             geocercas: [
               {

@@ -190,6 +190,15 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
     if (rutaData.puntosRecorrido && rutaData.puntosRecorrido.length > 0) {
       setPuntosRecorrido(rutaData.puntosRecorrido);
     }
+
+    // Cargar puntos del recorrido dibujados si existen
+    if (rutaData.recorridoDibujado && rutaData.recorridoDibujado.length > 0) {
+      setPuntosRecorridoDibujados(rutaData.recorridoDibujado);
+      // Si ya hay un recorrido dibujado, marcarlo como finalizado
+      if (rutaData.recorridoDibujado.length >= 2) {
+        setRecorridoFinalizado(true);
+      }
+    }
   }, [rutaData]);
 
   // Filtrar paradas disponibles
