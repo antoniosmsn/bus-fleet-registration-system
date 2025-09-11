@@ -184,23 +184,6 @@ const CargaCreditosIndex = () => {
     console.log('Descargando plantilla Excel...');
   };
 
-  const handleExportPDF = () => {
-    registrarExportacion('PDF', 'Carga de créditos', filtros);
-    toast({
-      title: "Exportando a PDF",
-      description: "Se está generando el reporte en formato PDF",
-      variant: "default"
-    });
-  };
-
-  const handleExportExcel = () => {
-    registrarExportacion('Excel', 'Carga de créditos', filtros);
-    toast({
-      title: "Exportando a Excel",
-      description: "Se está generando el reporte en formato Excel",
-      variant: "default"
-    });
-  };
 
   return (
     <Layout>
@@ -231,8 +214,6 @@ const CargaCreditosIndex = () => {
         
         <CargaCreditosFiltros 
           onFilter={handleFilter}
-          onExportPDF={handleExportPDF}
-          onExportExcel={handleExportExcel}
         />
         
         <div className="bg-white rounded-lg shadow overflow-hidden">

@@ -10,14 +10,10 @@ import { FiltrosCargueCredito } from '@/types/carga-creditos';
 
 interface CargaCreditosFiltrosProps {
   onFilter: (filters: FiltrosCargueCredito) => void;
-  onExportPDF: () => void;
-  onExportExcel: () => void;
 }
 
 const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({ 
-  onFilter, 
-  onExportPDF, 
-  onExportExcel 
+  onFilter
 }) => {
   const [filtros, setFiltros] = useState<FiltrosCargueCredito>({});
 
@@ -151,16 +147,6 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
             <X className="h-3 w-3" />
             Limpiar Filtros
           </Button>
-          <div className="ml-auto flex gap-2">
-            <Button variant="outline" onClick={onExportPDF} className="flex items-center gap-2 h-8 px-3 text-sm">
-              <FileText className="h-3 w-3" />
-              PDF
-            </Button>
-            <Button variant="outline" onClick={onExportExcel} className="flex items-center gap-2 h-8 px-3 text-sm">
-              <Download className="h-3 w-3" />
-              Excel
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
