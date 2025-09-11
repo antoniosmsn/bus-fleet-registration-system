@@ -734,123 +734,132 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Recorrido Lists - Compact Layout */}
+                  {/* Puntos Lists - Compact Layout */}
                   <div className="space-y-4">
-                    {/* Puntos Asignados */}
-                    <div className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-medium">Puntos Asignados ({puntosRecorrido.length})</h3>
-                      </div>
-                      
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {puntosRecorrido.length > 0 ? (
-                          puntosRecorrido.map((punto, index) => (
-                            <div 
-                              key={punto.id} 
-                              className="flex items-center gap-2 p-3 border rounded-lg bg-muted/50"
-                            >
-                              <div className="flex flex-col items-center gap-1">
-                                <Button
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => subirPuntoRecorrido(index)}
-                                  disabled={index === 0}
-                                  className="h-6 w-6 p-0"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Puntos Asignados */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Puntos Asignados ({puntosRecorrido.length})</h3>
+                        <div className="border rounded-lg p-3 h-[350px] overflow-y-auto">
+                          {puntosRecorrido.length === 0 ? (
+                            <p className="text-center text-muted-foreground py-6 text-sm">
+                              No hay puntos asignados
+                            </p>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {puntosRecorrido.map((punto, index) => (
+                                <div
+                                  key={punto.id}
+                                  className="flex items-center justify-between p-2 bg-muted rounded-md"
                                 >
-                                  <ChevronUp className="h-3 w-3" />
-                                </Button>
-                                <span className="text-sm font-medium text-primary">{index + 1}</span>
+                                  <div className="flex items-center space-x-2 min-w-0 flex-1">
+                                    <div className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0">
+                                      {index + 1}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-xs truncate">{punto.nombre}</p>
+                                      <p className="text-xs text-muted-foreground">{punto.codigo}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-0.5 flex-shrink-0">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => subirPuntoRecorrido(index)}
+                                      disabled={index === 0}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => bajarPuntoRecorrido(index)}
+                                      disabled={index === puntosRecorrido.length - 1}
+                                      className="h-6 w-6 p-0"
+                                    >
+                                      <ChevronDown className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => eliminarPuntoRecorrido(punto.id)}
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Puntos Disponibles */}
+                      <div className="space-y-3">
+                        <h3 className="text-base font-medium">Puntos Disponibles</h3>
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3.5 w-3.5" />
+                          <Input
+                            placeholder="Buscar puntos..."
+                            value={busquedaRecorrido}
+                            onChange={(e) => setBusquedaRecorrido(e.target.value)}
+                            className="pl-8 h-8 text-sm"
+                          />
+                        </div>
+                        <div className="border rounded-lg p-3 h-[310px] overflow-y-auto">
+                          <div className="space-y-1.5">
+                            {recorridoFiltradas.map((punto) => (
+                              <div
+                                key={punto.id}
+                                className="flex items-center justify-between p-2 border rounded-md hover:bg-muted/50"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-medium text-xs truncate">{punto.nombre}</p>
+                                  <p className="text-xs text-muted-foreground">{punto.codigo}</p>
+                                </div>
                                 <Button
-                                  variant="ghost" 
+                                  type="button"
+                                  variant="outline"
                                   size="sm"
-                                  onClick={() => bajarPuntoRecorrido(index)}
-                                  disabled={index === puntosRecorrido.length - 1}
-                                  className="h-6 w-6 p-0"
+                                  onClick={() => agregarPuntoRecorrido(punto)}
+                                  className="h-6 w-6 p-0 flex-shrink-0"
                                 >
-                                  <ChevronDown className="h-3 w-3" />
+                                  <Plus className="h-3 w-3" />
                                 </Button>
                               </div>
-                              
-                              <div className="flex-1">
-                                <div className="font-medium">{punto.nombre}</div>
-                                <div className="text-sm text-muted-foreground">{punto.codigo}</div>
-                              </div>
-                              
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => eliminarPuntoRecorrido(punto.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center p-6 text-muted-foreground">
-                            <p>No hay puntos asignados</p>
-                            <p className="text-sm">Agregue puntos desde la lista de disponibles</p>
+                            ))}
+                            {recorridoFiltradas.length === 0 && (
+                              <p className="text-center text-muted-foreground py-6 text-sm">
+                                No se encontraron puntos disponibles
+                              </p>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Puntos Disponibles */}
-                    <div className="p-4 border rounded-lg">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-medium">Puntos Disponibles</h3>
-                      </div>
-                      
-                      {/* Buscador */}
-                      <div className="relative mb-3">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Buscar puntos..."
-                          value={busquedaRecorrido}
-                          onChange={(e) => setBusquedaRecorrido(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {recorridoFiltradas.length > 0 ? (
-                          recorridoFiltradas.map((punto) => (
-                            <div 
-                              key={punto.id} 
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                            >
-                              <div>
-                                <div className="font-medium">{punto.nombre}</div>
-                                <div className="text-sm text-muted-foreground">{punto.codigo}</div>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => agregarPuntoRecorrido(punto)}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-center p-4 text-muted-foreground">
-                            <p>No hay puntos disponibles</p>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Mapa */}
-                  <div className="space-y-4">
-                    <RutaMap paradas={puntosRecorrido} geocercas={geocercasAsignadas} />
+                  {/* Map - Compact height */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-medium">Mapa de Ruta</h3>
+                    <div className="border rounded-lg h-[350px]">
+                      <RutaMap 
+                        paradas={puntosRecorrido}
+                        geocercas={geocercasAsignadas}
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
+              <CardFooter className="flex justify-end space-x-2">
                 <Button
-                  variant="outline"
                   type="button"
+                  variant="secondary"
                   onClick={() => setActiveTab('paradas')}
                 >
                   Anterior
