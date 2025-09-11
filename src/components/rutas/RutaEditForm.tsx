@@ -898,6 +898,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                         onDeshacerUltimo={() => {}}
                         dibujarActivo={dibujarActivo}
                         recorridoFinalizado={recorridoFinalizado}
+                        onEliminarPunto={eliminarPuntoDibujado}
                       />
                     </div>
                     
@@ -948,34 +949,6 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                         {puntosRecorridoDibujados.length} puntos marcados
                       </div>
                     </div>
-                    
-                    {/* Lista de puntos marcados */}
-                    {puntosRecorridoDibujados.length > 0 && (
-                      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                        <h4 className="text-sm font-medium mb-2">Puntos del Recorrido:</h4>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
-                          {puntosRecorridoDibujados.map((punto, index) => (
-                            <div key={`punto-${index}`} className="flex items-center justify-between text-xs bg-background p-2 rounded">
-                              <span className="flex items-center gap-2">
-                                <div className="w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs font-medium">
-                                  {punto.orden}
-                                </div>
-                                <span>Lat: {punto.lat.toFixed(4)}, Lng: {punto.lng.toFixed(4)}</span>
-                              </span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => eliminarPuntoDibujado(index)}
-                                className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </CardContent>

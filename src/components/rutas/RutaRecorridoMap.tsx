@@ -32,6 +32,7 @@ interface RutaRecorridoMapProps {
   onDeshacerUltimo: () => void;
   dibujarActivo: boolean;
   recorridoFinalizado: boolean;
+  onEliminarPunto?: (index: number) => void;
 }
 
 // Componente para manejar los clicks en el mapa
@@ -83,7 +84,8 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
   onLimpiarRecorrido,
   onDeshacerUltimo,
   dibujarActivo,
-  recorridoFinalizado
+  recorridoFinalizado,
+  onEliminarPunto
 }) => {
   // Centro del mapa en Costa Rica
   const center: [number, number] = [9.7489, -83.7534];
@@ -137,22 +139,35 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         ))}
         
         {/* Marcadores de puntos del recorrido - Solo mostrar durante edición */}
-        {puntosRecorrido.map((punto) => (
+        {puntosRecorrido.map((punto, index) => (
           !recorridoFinalizado && (
             <Marker
-              key={`punto-${punto.orden}`}
+              key={`punto-${punto.orden}-${index}`}
               position={[punto.lat, punto.lng]}
               icon={createNumberedIcon(punto.orden, recorridoFinalizado)}
             >
               <Popup>
-                <div className="text-sm">
-                  <strong>Punto {punto.orden}</strong>
-                  <br />
-                  <span className="text-gray-600">
-                    Punto del recorrido
-                  </span>
-                  <br />
-                  <small>Lat: {punto.lat.toFixed(6)}, Lng: {punto.lng.toFixed(6)}</small>
+                <div className="text-sm space-y-2">
+                  <div>
+                    <strong>Punto {punto.orden}</strong>
+                    <br />
+                    <span className="text-gray-600">
+                      Punto del recorrido
+                    </span>
+                    <br />
+                    <small>Lat: {punto.lat.toFixed(6)}, Lng: {punto.lng.toFixed(6)}</small>
+                  </div>
+                  {onEliminarPunto && (
+                    <button
+                      onClick={() => onEliminarPunto(index)}
+                      className="flex items-center gap-1 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                      </svg>
+                      Eliminar Punto
+                    </button>
+                  )}
                 </div>
               </Popup>
             </Marker>
