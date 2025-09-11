@@ -67,21 +67,32 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
   const handleUpdateOption = (index: number, updates: { texto?: string; peso?: number }) => {
     const opcionesConPeso = [...(campo.opcionesConPeso || [])];
     opcionesConPeso[index] = { ...opcionesConPeso[index], ...updates };
-    onUpdate({ opcionesConPeso });
     
-    // If updating peso and this is the first/last option, suggest redistribution
-    if (updates.peso !== undefined && (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso) {
-      const totalOptionWeight = opcionesConPeso.reduce((sum, opt) => sum + (opt.peso || 0), 0);
-      if (Math.abs(totalOptionWeight - campo.peso) > 0.1) {
-        // Weights don't match - could show warning or auto-adjust
-        console.log(`Warning: Option weights (${totalOptionWeight}) don't match field weight (${campo.peso})`);
-      }
+    // Calculate total weight from options for checkbox/radio fields
+    if (campo.tipo === 'checkbox' || campo.tipo === 'radio') {
+      const totalWeight = opcionesConPeso.reduce((sum, opt) => sum + (opt.peso || 0), 0);
+      onUpdate({ 
+        opcionesConPeso,
+        peso: totalWeight > 0 ? totalWeight : undefined
+      });
+    } else {
+      onUpdate({ opcionesConPeso });
     }
   };
 
   const handleDeleteOption = (index: number) => {
     const opcionesConPeso = (campo.opcionesConPeso || []).filter((_, i) => i !== index);
-    onUpdate({ opcionesConPeso });
+    
+    // Calculate total weight from remaining options for checkbox/radio fields
+    if (campo.tipo === 'checkbox' || campo.tipo === 'radio') {
+      const totalWeight = opcionesConPeso.reduce((sum, opt) => sum + (opt.peso || 0), 0);
+      onUpdate({ 
+        opcionesConPeso,
+        peso: totalWeight > 0 ? totalWeight : undefined
+      });
+    } else {
+      onUpdate({ opcionesConPeso });
+    }
   };
 
   const handleTypeChange = (newType: string) => {
@@ -270,42 +281,11 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                   <Input
                     type="number"
                     value={campo.peso || ''}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === '') {
-                        onUpdate({ peso: undefined });
-                      } else {
-                        const newWeight = parseFloat(value);
-                        if (newWeight >= 1 && newWeight <= 100) {
-                          onUpdate({ peso: newWeight });
-                          // Auto-redistribute option weights when campo weight changes
-                          if (campo.opcionesConPeso && campo.opcionesConPeso.length > 0) {
-                            redistributeOptionWeights(campo.opcionesConPeso, newWeight);
-                          }
-                        }
-                      }
-                    }}
-                    placeholder="Peso"
-                    className={`w-16 h-7 text-xs ${
-                      !campo.peso || campo.peso < 1 || campo.peso > 100
-                        ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                        : ''
-                    }`}
-                    min="1"
-                    max="100"
-                    step="1"
+                    placeholder="Auto"
+                    className="w-16 h-7 text-xs bg-muted"
+                    readOnly
                   />
-                  <span className="text-xs text-muted-foreground">%</span>
-                  {campo.opcionesConPeso && campo.peso && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => redistributeOptionWeights(campo.opcionesConPeso!, campo.peso!)}
-                      className="h-6 text-xs px-2"
-                    >
-                      Redistribuir
-                    </Button>
-                  )}
+                  <span className="text-xs text-muted-foreground">% (auto)</span>
                 </div>
               )}
             </div>
