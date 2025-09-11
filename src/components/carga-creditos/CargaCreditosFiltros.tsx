@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, X, FileText, Download } from 'lucide-react';
 import { FiltrosCargueCredito } from '@/types/carga-creditos';
-import { zonasfrancas, usuariosCreacion } from '@/data/mockCargaCreditos';
 
 interface CargaCreditosFiltrosProps {
   onFilter: (filters: FiltrosCargueCredito) => void;
@@ -55,7 +54,7 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
           </TabsList>
 
           <TabsContent value="fechas" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="space-y-1">
                 <Label htmlFor="fechaInicio" className="text-xs">Fecha Inicio</Label>
                 <Input
@@ -68,12 +67,34 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
               </div>
 
               <div className="space-y-1">
+                <Label htmlFor="horaInicio" className="text-xs">Hora Inicio</Label>
+                <Input
+                  id="horaInicio"
+                  type="time"
+                  value={filtros.horaInicio || ''}
+                  onChange={(e) => handleInputChange('horaInicio', e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+
+              <div className="space-y-1">
                 <Label htmlFor="fechaFin" className="text-xs">Fecha Fin</Label>
                 <Input
                   id="fechaFin"
                   type="date"
                   value={filtros.fechaFin || ''}
                   onChange={(e) => handleInputChange('fechaFin', e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="horaFin" className="text-xs">Hora Fin</Label>
+                <Input
+                  id="horaFin"
+                  type="time"
+                  value={filtros.horaFin || ''}
+                  onChange={(e) => handleInputChange('horaFin', e.target.value)}
                   className="h-8 text-sm"
                 />
               </div>
@@ -95,19 +116,13 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
 
               <div className="space-y-1">
                 <Label htmlFor="nombreUsuario" className="text-xs">Nombre usuario</Label>
-                <Select onValueChange={(value) => handleSelectChange('nombreUsuario', value)}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Usuario..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    {usuariosCreacion.map((usuario) => (
-                      <SelectItem key={usuario} value={usuario}>
-                        {usuario}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="nombreUsuario"
+                  placeholder="Buscar usuario..."
+                  value={filtros.nombreUsuario || ''}
+                  onChange={(e) => handleInputChange('nombreUsuario', e.target.value)}
+                  className="h-8 text-sm"
+                />
               </div>
 
               <div className="space-y-1">

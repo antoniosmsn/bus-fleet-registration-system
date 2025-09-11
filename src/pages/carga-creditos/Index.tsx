@@ -15,7 +15,7 @@ const CargaCreditosIndex = () => {
   const [filtros, setFiltros] = useState<FiltrosCargueCredito>({});
   const [cargues] = useState<CargueCredito[]>(mockCarguesCreditos);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
 
   // Registrar acceso al módulo
   React.useEffect(() => {
@@ -38,7 +38,7 @@ const CargaCreditosIndex = () => {
       }
 
       // Filtro por nombre de usuario
-      if (filtros.nombreUsuario && cargue.nombreUsuario !== filtros.nombreUsuario) {
+      if (filtros.nombreUsuario && !cargue.nombreUsuario.toLowerCase().includes(filtros.nombreUsuario.toLowerCase())) {
         return false;
       }
 
@@ -70,7 +70,7 @@ const CargaCreditosIndex = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return carguesOrdenados.slice(startIndex, endIndex);
-  }, [carguesOrdenados, currentPage]);
+  }, [carguesOrdenados, currentPage, itemsPerPage]);
 
   const handleFilter = (newFilters: FiltrosCargueCredito) => {
     setFiltros(newFilters);
@@ -80,6 +80,11 @@ const CargaCreditosIndex = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const handleCargarArchivo = () => {
@@ -168,7 +173,9 @@ const CargaCreditosIndex = () => {
             <CargaCreditosPagination 
               currentPage={currentPage}
               totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
               onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
             />
           </div>
         )}

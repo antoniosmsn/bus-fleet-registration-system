@@ -31,6 +31,8 @@ export interface DetalleCargueCredito {
 export interface FiltrosCargueCredito {
   fechaInicio?: string;
   fechaFin?: string;
+  horaInicio?: string;
+  horaFin?: string;
   nombreArchivo?: string;
   nombreUsuario?: string;
   estado?: EstadoCargue | 'todos';

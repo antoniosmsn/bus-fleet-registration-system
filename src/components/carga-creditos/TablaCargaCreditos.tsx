@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CargueCredito, DetalleCargueCredito } from '@/types/carga-creditos';
 import { Eye, ChevronDown, ChevronUp } from 'lucide-react';
 import { getDetallesCargue } from '@/data/mockCargaCreditos';
@@ -23,6 +24,7 @@ interface TablaCargaCreditosProps {
 const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [detallesPagination, setDetallesPagination] = useState<{ [key: string]: number }>({});
+  const [detallesItemsPerPage, setDetallesItemsPerPage] = useState<{ [key: string]: number }>({});
 
   const itemsPerPage = 10;
 
@@ -65,6 +67,10 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
       if (!(cargueId in detallesPagination)) {
         setDetallesPagination(prev => ({ ...prev, [cargueId]: 1 }));
       }
+      // Inicializar items per page si no existe
+      if (!(cargueId in detallesItemsPerPage)) {
+        setDetallesItemsPerPage(prev => ({ ...prev, [cargueId]: 10 }));
+      }
     }
     setExpandedRows(newExpanded);
   };
@@ -72,20 +78,34 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
   const getDetallesPaginados = (cargueId: string): DetalleCargueCredito[] => {
     const detalles = getDetallesCargue(cargueId);
     const currentPage = detallesPagination[cargueId] || 1;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const currentItemsPerPage = detallesItemsPerPage[cargueId] || 10;
+    const startIndex = (currentPage - 1) * currentItemsPerPage;
+    const endIndex = startIndex + currentItemsPerPage;
     return detalles.slice(startIndex, endIndex);
   };
 
   const getTotalPages = (cargueId: string): number => {
     const detalles = getDetallesCargue(cargueId);
-    return Math.ceil(detalles.length / itemsPerPage);
+    const currentItemsPerPage = detallesItemsPerPage[cargueId] || 10;
+    return Math.ceil(detalles.length / currentItemsPerPage);
   };
 
   const changePage = (cargueId: string, newPage: number) => {
     setDetallesPagination(prev => ({
       ...prev,
       [cargueId]: newPage
+    }));
+  };
+
+  const changeItemsPerPage = (cargueId: string, newItemsPerPage: number) => {
+    setDetallesItemsPerPage(prev => ({
+      ...prev,
+      [cargueId]: newItemsPerPage
+    }));
+    // Reset to first page when changing items per page
+    setDetallesPagination(prev => ({
+      ...prev,
+      [cargueId]: 1
     }));
   };
 
@@ -193,26 +213,46 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                                     
                                     {/* Paginación para detalles */}
                                     {getTotalPages(cargue.id) > 1 && (
-                                      <div className="flex justify-center items-center gap-2 mt-4">
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) - 1)}
-                                          disabled={(detallesPagination[cargue.id] || 1) === 1}
-                                        >
-                                          Anterior
-                                        </Button>
-                                        <span className="text-sm text-muted-foreground">
-                                          Página {detallesPagination[cargue.id] || 1} de {getTotalPages(cargue.id)}
-                                        </span>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) + 1)}
-                                          disabled={(detallesPagination[cargue.id] || 1) === getTotalPages(cargue.id)}
-                                        >
-                                          Siguiente
-                                        </Button>
+                                      <div className="flex justify-between items-center mt-4">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm text-muted-foreground">Registros por página:</span>
+                                          <Select 
+                                            value={(detallesItemsPerPage[cargue.id] || 10).toString()} 
+                                            onValueChange={(value) => changeItemsPerPage(cargue.id, Number(value))}
+                                          >
+                                            <SelectTrigger className="h-8 w-16">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              <SelectItem value="5">5</SelectItem>
+                                              <SelectItem value="10">10</SelectItem>
+                                              <SelectItem value="20">20</SelectItem>
+                                              <SelectItem value="50">50</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                        
+                                        <div className="flex justify-center items-center gap-2">
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) - 1)}
+                                            disabled={(detallesPagination[cargue.id] || 1) === 1}
+                                          >
+                                            Anterior
+                                          </Button>
+                                          <span className="text-sm text-muted-foreground">
+                                            Página {detallesPagination[cargue.id] || 1} de {getTotalPages(cargue.id)}
+                                          </span>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) + 1)}
+                                            disabled={(detallesPagination[cargue.id] || 1) === getTotalPages(cargue.id)}
+                                          >
+                                            Siguiente
+                                          </Button>
+                                        </div>
                                       </div>
                                     )}
                                   </CardContent>
