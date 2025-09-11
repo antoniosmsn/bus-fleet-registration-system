@@ -41,32 +41,25 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
     
     const updatedOptions = opciones.map((opcion, index) => {
       if (opciones.length === 1) {
+        // Single option gets full weight
         return { ...opcion, peso: campoWeight };
       } else if (opciones.length === 2) {
-        // For 2 options, assign weights to extremes
-        return { ...opcion, peso: campoWeight / 2 };
+        // For 2 options: first gets full weight, second gets 0
+        return { ...opcion, peso: index === 0 ? campoWeight : 0 };
       } else {
-        // For 3+ options, assign weights to extremes and distribute evenly for middle
-        if (index === 0 || index === opciones.length - 1) {
-          // Assign extremes (first and last)
-          const extremeWeight = Math.floor(campoWeight * 0.3); // 30% each for extremes
-          return { ...opcion, peso: extremeWeight };
+        // For 3+ options: first gets full weight, last gets 0, intermediates distributed evenly
+        if (index === 0) {
+          return { ...opcion, peso: campoWeight };
+        } else if (index === opciones.length - 1) {
+          return { ...opcion, peso: 0 };
         } else {
-          // Distribute remaining weight evenly among middle options
-          const middleCount = opciones.length - 2;
-          const remainingWeight = campoWeight - (Math.floor(campoWeight * 0.3) * 2);
-          const middleWeight = Math.floor(remainingWeight / middleCount);
-          return { ...opcion, peso: middleWeight };
+          // Intermediate options get proportional weight
+          const intermediateCount = opciones.length - 2;
+          const intermediateWeight = Math.round((campoWeight * (intermediateCount - index + 1)) / intermediateCount);
+          return { ...opcion, peso: intermediateWeight };
         }
       }
     });
-    
-    // Adjust for rounding differences
-    const totalAssigned = updatedOptions.reduce((sum, opt) => sum + (opt.peso || 0), 0);
-    const difference = campoWeight - totalAssigned;
-    if (difference !== 0 && updatedOptions.length > 0) {
-      updatedOptions[0].peso = (updatedOptions[0].peso || 0) + difference;
-    }
     
     onUpdate({ opcionesConPeso: updatedOptions });
   };
@@ -200,17 +193,27 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                       <div className="flex items-center gap-1">
                         <Input
                           type="number"
-                          value={opcion.peso || ''}
-                          onChange={(e) => handleUpdateOption(index, { peso: parseFloat(e.target.value) || undefined })}
+                          value={opcion.peso !== undefined ? opcion.peso : ''}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '') {
+                              handleUpdateOption(index, { peso: undefined });
+                            } else {
+                              const newWeight = parseFloat(value);
+                              if (newWeight >= 0 && newWeight <= 100) {
+                                handleUpdateOption(index, { peso: newWeight });
+                              }
+                            }
+                          }}
                           placeholder="Peso"
                           className={`w-16 h-7 text-xs ${
-                            !opcion.peso || opcion.peso === 0 
+                            opcion.peso === undefined || opcion.peso < 0 || opcion.peso > 100
                               ? 'border-destructive focus-visible:ring-destructive text-destructive' 
                               : ''
                           }`}
                           min="0"
                           max="100"
-                          step="0.1"
+                          step="1"
                         />
                         <span className="text-xs text-muted-foreground">%</span>
                       </div>
@@ -268,22 +271,29 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                     type="number"
                     value={campo.peso || ''}
                     onChange={(e) => {
-                      const newWeight = parseFloat(e.target.value) || undefined;
-                      onUpdate({ peso: newWeight });
-                      // Auto-redistribute option weights when campo weight changes
-                      if (newWeight && newWeight > 0 && campo.opcionesConPeso && campo.opcionesConPeso.length > 0) {
-                        redistributeOptionWeights(campo.opcionesConPeso, newWeight);
+                      const value = e.target.value;
+                      if (value === '') {
+                        onUpdate({ peso: undefined });
+                      } else {
+                        const newWeight = parseFloat(value);
+                        if (newWeight >= 1 && newWeight <= 100) {
+                          onUpdate({ peso: newWeight });
+                          // Auto-redistribute option weights when campo weight changes
+                          if (campo.opcionesConPeso && campo.opcionesConPeso.length > 0) {
+                            redistributeOptionWeights(campo.opcionesConPeso, newWeight);
+                          }
+                        }
                       }
                     }}
                     placeholder="Peso"
                     className={`w-16 h-7 text-xs ${
-                      !campo.peso || campo.peso === 0 
+                      !campo.peso || campo.peso < 1 || campo.peso > 100
                         ? 'border-destructive focus-visible:ring-destructive text-destructive' 
                         : ''
                     }`}
-                    min="0"
+                    min="1"
                     max="100"
-                    step="0.1"
+                    step="1"
                   />
                   <span className="text-xs text-muted-foreground">%</span>
                   {campo.opcionesConPeso && campo.peso && (
