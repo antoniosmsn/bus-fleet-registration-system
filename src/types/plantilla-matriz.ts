@@ -6,13 +6,20 @@ export interface ElementoToolbox {
   descripcion: string;
 }
 
+export interface OpcionCampo {
+  id: string;
+  texto: string;
+  peso?: number; // Peso individual para cada opción
+}
+
 export interface CampoPlantilla {
   id: string;
   tipo: 'texto' | 'checkbox' | 'select' | 'radio' | 'fecha' | 'canvas';
   etiqueta: string;
   requerido: boolean;
   peso: number;
-  opciones?: string[]; // Para select y radio
+  opciones?: string[]; // Para select y radio (backward compatibility)
+  opcionesConPeso?: OpcionCampo[]; // Nueva estructura para opciones con peso
   valorDefecto?: string | boolean;
   imagenBase?: string; // Para canvas - imagen base en base64
   orden: number;

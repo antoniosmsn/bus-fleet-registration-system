@@ -40,7 +40,7 @@ export function GoogleFormsSectionV2({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
   const [tempTitle, setTempTitle] = useState(seccion.nombre);
-  const [tempWeight, setTempWeight] = useState(seccion.peso.toString());
+  const [tempWeight, setTempWeight] = useState(seccion.peso?.toString() || '');
 
   const handleSaveTitle = () => {
     onUpdate({ nombre: tempTitle });
@@ -52,7 +52,7 @@ export function GoogleFormsSectionV2({
     if (!isNaN(weight) && weight >= 0 && weight <= 100) {
       onUpdate({ peso: weight });
     } else {
-      setTempWeight(seccion.peso.toString());
+      setTempWeight(seccion.peso?.toString() || '');
     }
     setIsEditingWeight(false);
   };
@@ -80,10 +80,15 @@ export function GoogleFormsSectionV2({
                     onChange={(e) => setTempWeight(e.target.value)}
                     onBlur={handleSaveWeight}
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveWeight()}
-                    className="w-16 h-6 text-xs"
+                    className={`w-16 h-6 text-xs ${
+                      !tempWeight || parseInt(tempWeight) === 0 
+                        ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                        : ''
+                    }`}
                     type="number"
                     min="0"
                     max="100"
+                    placeholder="Peso"
                     autoFocus
                   />
                   <span className="text-xs text-muted-foreground">%</span>
@@ -91,13 +96,17 @@ export function GoogleFormsSectionV2({
               ) : (
                 <Badge 
                   variant="outline" 
-                  className="cursor-pointer"
+                  className={`cursor-pointer ${
+                    !seccion.peso || seccion.peso === 0 
+                      ? 'border-destructive text-destructive' 
+                      : ''
+                  }`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsEditingWeight(true);
                   }}
                 >
-                  {seccion.peso}%
+                  {seccion.peso || 'Sin peso'}%
                 </Badge>
               )}
             </div>

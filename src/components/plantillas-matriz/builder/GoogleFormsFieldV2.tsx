@@ -20,34 +20,42 @@ interface GoogleFormsFieldV2Props {
 
 export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: GoogleFormsFieldV2Props) {
   const handleAddOption = () => {
-    const opciones = campo.opciones || [];
+    const opcionesConPeso = campo.opcionesConPeso || [];
     onUpdate({
-      opciones: [...opciones, `Opción ${opciones.length + 1}`]
+      opcionesConPeso: [...opcionesConPeso, {
+        id: `opcion-${Date.now()}`,
+        texto: `Opción ${opcionesConPeso.length + 1}`,
+        peso: undefined
+      }]
     });
   };
 
-  const handleUpdateOption = (index: number, value: string) => {
-    const opciones = [...(campo.opciones || [])];
-    opciones[index] = value;
-    onUpdate({ opciones });
+  const handleUpdateOption = (index: number, updates: { texto?: string; peso?: number }) => {
+    const opcionesConPeso = [...(campo.opcionesConPeso || [])];
+    opcionesConPeso[index] = { ...opcionesConPeso[index], ...updates };
+    onUpdate({ opcionesConPeso });
   };
 
   const handleDeleteOption = (index: number) => {
-    const opciones = (campo.opciones || []).filter((_, i) => i !== index);
-    onUpdate({ opciones });
+    const opcionesConPeso = (campo.opcionesConPeso || []).filter((_, i) => i !== index);
+    onUpdate({ opcionesConPeso });
   };
 
   const handleTypeChange = (newType: string) => {
     const updates: Partial<CampoBuilder> = { tipo: newType as any };
     
     // Add default options for select/radio/checkbox types
-    if ((newType === 'select' || newType === 'radio' || newType === 'checkbox') && !campo.opciones) {
-      updates.opciones = ['Opción 1'];
+    if ((newType === 'select' || newType === 'radio' || newType === 'checkbox') && !campo.opcionesConPeso) {
+      updates.opcionesConPeso = [{
+        id: `opcion-${Date.now()}`,
+        texto: 'Opción 1',
+        peso: undefined
+      }];
     }
     
     // Remove options for other types
     if (newType !== 'select' && newType !== 'radio' && newType !== 'checkbox') {
-      updates.opciones = undefined;
+      updates.opcionesConPeso = undefined;
     }
     
     onUpdate(updates);
@@ -70,36 +78,18 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
               <SelectValue placeholder="Elegir" />
             </SelectTrigger>
             <SelectContent>
-              {(campo.opciones || ['Opción 1']).map((opcion, index) => (
+              {(campo.opcionesConPeso || [{ id: '1', texto: 'Opción 1' }]).map((opcion, index) => (
                 <SelectItem key={index} value={`opcion-${index}`}>
-                  {opcion}
+                  {opcion.texto}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         );
       case 'radio':
-        return (
-          <div className="space-y-2">
-            {(campo.opciones || ['Opción 1']).map((opcion, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <div className="w-4 h-4 rounded-full border-2 border-muted-foreground/40" />
-                <span className="text-sm">{opcion}</span>
-              </div>
-            ))}
-          </div>
-        );
       case 'checkbox':
-        return (
-          <div className="space-y-2">
-            {(campo.opciones || ['Opción 1']).map((opcion, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-muted-foreground/40 rounded-sm" />
-                <span className="text-sm">{opcion}</span>
-              </div>
-            ))}
-          </div>
-        );
+        // No preview for radio/checkbox - show option editor directly
+        return null;
       case 'fecha':
         return (
           <Input type="date" disabled className="w-48" />
@@ -146,17 +136,33 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
               {/* Options editor for select/radio/checkbox */}
               {(campo.tipo === 'select' || campo.tipo === 'radio' || campo.tipo === 'checkbox') && (
                 <div className="space-y-2 mt-4">
-                  {(campo.opciones || []).map((opcion, index) => (
-                    <div key={index} className="flex items-center gap-2">
+                  {(campo.opcionesConPeso || []).map((opcion, index) => (
+                    <div key={opcion.id} className="flex items-center gap-2">
                       <div className={`w-4 h-4 ${
                         campo.tipo === 'radio' ? 'rounded-full' : 'rounded-sm'
                       } border-2 border-muted-foreground/40`} />
                       <Input
-                        value={opcion}
-                        onChange={(e) => handleUpdateOption(index, e.target.value)}
+                        value={opcion.texto}
+                        onChange={(e) => handleUpdateOption(index, { texto: e.target.value })}
                         placeholder={`Opción ${index + 1}`}
-                        className="border-0 border-b border-muted-foreground/30 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary"
+                        className="flex-1 border-0 border-b border-muted-foreground/30 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary"
                       />
+                      <div className="flex items-center gap-1">
+                        <Input
+                          type="number"
+                          value={opcion.peso || ''}
+                          onChange={(e) => handleUpdateOption(index, { peso: parseInt(e.target.value) || undefined })}
+                          placeholder="Peso"
+                          className={`w-16 h-7 text-xs ${
+                            !opcion.peso || opcion.peso === 0 
+                              ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                              : ''
+                          }`}
+                          min="1"
+                          max="100"
+                        />
+                        <span className="text-xs text-muted-foreground">%</span>
+                      </div>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -181,25 +187,14 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
             
             {/* Actions */}
             <div className="flex items-center gap-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {onDuplicate && (
-                    <DropdownMenuItem onClick={onDuplicate}>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicar
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={onDelete} className="text-destructive">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onDelete}
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
           
@@ -218,8 +213,9 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                 <Label className="text-sm text-muted-foreground">Peso:</Label>
                 <Input
                   type="number"
-                  value={campo.peso}
-                  onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || 0 })}
+                  value={campo.peso || ''}
+                  onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || undefined })}
+                  placeholder="Peso"
                   className={`w-16 h-7 text-xs ${
                     !campo.peso || campo.peso === 0 
                       ? 'border-destructive focus-visible:ring-destructive text-destructive' 
