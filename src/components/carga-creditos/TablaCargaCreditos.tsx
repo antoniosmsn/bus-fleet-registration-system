@@ -150,22 +150,24 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-center">
-                            <Collapsible
-                              open={expandedRows.has(cargue.id)}
-                              onOpenChange={() => toggleRowExpansion(cargue.id)}
-                            >
-                              <CollapsibleTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  Ver
-                                  {expandedRows.has(cargue.id) ? (
-                                    <ChevronUp className="h-4 w-4 ml-1" />
-                                  ) : (
-                                    <ChevronDown className="h-4 w-4 ml-1" />
-                                  )}
-                                </Button>
-                              </CollapsibleTrigger>
-                            </Collapsible>
+                            {cargue.estado !== 'Procesado con error' && (
+                              <Collapsible
+                                open={expandedRows.has(cargue.id)}
+                                onOpenChange={() => toggleRowExpansion(cargue.id)}
+                              >
+                                <CollapsibleTrigger asChild>
+                                  <Button variant="outline" size="sm">
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Ver
+                                    {expandedRows.has(cargue.id) ? (
+                                      <ChevronUp className="h-4 w-4 ml-1" />
+                                    ) : (
+                                      <ChevronDown className="h-4 w-4 ml-1" />
+                                    )}
+                                  </Button>
+                                </CollapsibleTrigger>
+                              </Collapsible>
+                            )}
                           </TableCell>
                         </TableRow>
                         
