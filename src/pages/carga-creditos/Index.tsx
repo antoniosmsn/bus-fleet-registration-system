@@ -3,6 +3,7 @@ import Layout from '@/components/layout/Layout';
 import CargaCreditosFiltros from '@/components/carga-creditos/CargaCreditosFiltros';
 import TablaCargaCreditos from '@/components/carga-creditos/TablaCargaCreditos';
 import CargaCreditosPagination from '@/components/carga-creditos/CargaCreditosPagination';
+import ModalErroresCarga, { ErrorValidacion } from '@/components/carga-creditos/ModalErroresCarga';
 import { CargueCredito, FiltrosCargueCredito } from '@/types/carga-creditos';
 import { Button } from '@/components/ui/button';
 import { Upload, Download } from 'lucide-react';
@@ -16,6 +17,9 @@ const CargaCreditosIndex = () => {
   const [cargues] = useState<CargueCredito[]>(mockCarguesCreditos);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [mostrarModalErrores, setMostrarModalErrores] = useState(false);
+  const [erroresCarga, setErroresCarga] = useState<ErrorValidacion[]>([]);
+  const [nombreArchivoConErrores, setNombreArchivoConErrores] = useState('');
 
   // Registrar acceso al módulo
   React.useEffect(() => {
@@ -88,11 +92,81 @@ const CargaCreditosIndex = () => {
   };
 
   const handleCargarArchivo = () => {
+    // Crear input file dinámicamente
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.xlsx,.xls';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        procesarArchivo(file);
+      }
+    };
+    input.click();
+  };
+
+  const procesarArchivo = (file: File) => {
+    // Simular validación con errores
+    const erroresSimulados: ErrorValidacion[] = [
+      {
+        fila: 3,
+        campo: 'Fecha de transferencia',
+        cedula: '123456789',
+        descripcion: 'Formato de fecha inválido. Use dd/mm/yyyy'
+      },
+      {
+        fila: 5,
+        campo: 'Número de cédula',
+        cedula: '',
+        descripcion: 'Cédula requerida y no puede estar vacía'
+      },
+      {
+        fila: 7,
+        campo: 'Monto',
+        cedula: '987654321',
+        descripcion: 'El monto debe ser un número positivo'
+      },
+      {
+        fila: 8,
+        campo: 'Número de cédula',
+        cedula: '111222333444555666777',
+        descripcion: 'La cédula no puede tener más de 20 caracteres'
+      },
+      {
+        fila: 12,
+        campo: 'Fecha de transferencia',
+        cedula: '456789123',
+        descripcion: 'La fecha no puede ser futura a la fecha actual'
+      },
+      {
+        fila: 15,
+        campo: 'Pasajero',
+        cedula: '789123456',
+        descripcion: 'El pasajero no existe o no es de tipo prepago'
+      }
+    ];
+
+    // Simular procesamiento
+    setTimeout(() => {
+      setErroresCarga(erroresSimulados);
+      setNombreArchivoConErrores(file.name);
+      setMostrarModalErrores(true);
+    }, 1500);
+
     toast({
-      title: "Funcionalidad en desarrollo",
-      description: "La carga masiva de créditos estará disponible en HU_170",
+      title: "Procesando archivo",
+      description: "Validando datos del archivo...",
       variant: "default"
     });
+  };
+
+  const handleDescargarArchivoErrores = () => {
+    toast({
+      title: "Descarga iniciada",
+      description: "Se ha iniciado la descarga del archivo con errores detallados",
+      variant: "default"
+    });
+    console.log('Descargando archivo de errores...');
   };
 
   const handleDescargarPlantilla = () => {
@@ -184,6 +258,15 @@ const CargaCreditosIndex = () => {
         <div className="text-sm text-muted-foreground text-center">
           Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, carguesOrdenados.length)} de {carguesOrdenados.length} cargues
         </div>
+
+        {/* Modal de errores de carga */}
+        <ModalErroresCarga
+          open={mostrarModalErrores}
+          onOpenChange={setMostrarModalErrores}
+          nombreArchivo={nombreArchivoConErrores}
+          errores={erroresCarga}
+          onDescargarErrores={handleDescargarArchivoErrores}
+        />
       </div>
     </Layout>
   );
