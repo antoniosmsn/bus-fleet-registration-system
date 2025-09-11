@@ -24,10 +24,12 @@ export default function AlertasAutobusesIndex() {
   const [tiposAlerta, setTiposAlerta] = useState<TipoAlertaAutobus[]>(mockTiposAlertaAutobus);
   const [filtros, setFiltros] = useState<AlertaAutobusFiltros>({
     nombre: "",
+    alertType: "",
     estado: "todos"
   });
   const [filtrosAplicados, setFiltrosAplicados] = useState<AlertaAutobusFiltros>({
     nombre: "",
+    alertType: "",
     estado: "todos"
   });
   const [paginaActual, setPaginaActual] = useState(1);
@@ -46,11 +48,14 @@ export default function AlertasAutobusesIndex() {
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, ""));
         
+        const cumpleAlertType = tipo.alertType.toLowerCase()
+          .includes(filtrosAplicados.alertType.toLowerCase());
+        
         const cumpleEstado = filtrosAplicados.estado === "todos" || 
           (filtrosAplicados.estado === "activos" && tipo.activo) ||
           (filtrosAplicados.estado === "inactivos" && !tipo.activo);
 
-        return cumpleNombre && cumpleEstado;
+        return cumpleNombre && cumpleAlertType && cumpleEstado;
       })
       .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }, [tiposAlerta, filtrosAplicados]);
@@ -71,7 +76,7 @@ export default function AlertasAutobusesIndex() {
   };
 
   const limpiarFiltros = () => {
-    const filtrosVacios = { nombre: "", estado: "todos" as const };
+    const filtrosVacios = { nombre: "", alertType: "", estado: "todos" as const };
     setFiltros(filtrosVacios);
     setFiltrosAplicados(filtrosVacios);
     setPaginaActual(1);
@@ -145,6 +150,16 @@ export default function AlertasAutobusesIndex() {
                 onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
               />
             </div>
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Buscar por Alert Type..."
+                value={filtros.alertType}
+                onChange={(e) => setFiltros(prev => ({ ...prev, alertType: e.target.value }))}
+                className="pl-10"
+                onKeyPress={(e) => e.key === 'Enter' && aplicarFiltros()}
+              />
+            </div>
             <Select 
               value={filtros.estado} 
               onValueChange={(value: 'todos' | 'activos' | 'inactivos') => 
@@ -182,43 +197,45 @@ export default function AlertasAutobusesIndex() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-semibold">Tipo de Alerta</th>
-                  <th className="text-left p-4 font-semibold">Estado</th>
-                  <th className="text-left p-4 font-semibold">Motivos</th>
-                  <th className="text-right p-4 font-semibold">Acciones</th>
-                </tr>
+                 <tr className="border-b">
+                   <th className="text-left p-4 font-semibold">Tipo de Alerta</th>
+                   <th className="text-left p-4 font-semibold">Alert Type</th>
+                   <th className="text-left p-4 font-semibold">Estado</th>
+                   <th className="text-left p-4 font-semibold">Motivos</th>
+                   <th className="text-right p-4 font-semibold">Acciones</th>
+                 </tr>
               </thead>
               <tbody>
                 {tiposPaginados.map((tipo) => (
-                  <tr key={tipo.id} className="border-b hover:bg-muted/50">
-                    <td className="p-4 font-medium">{tipo.nombre}</td>
-                    <td className="p-4">
-                      <Badge variant={tipo.activo ? "default" : "secondary"}>
-                        {tipo.activo ? "Activo" : "Inactivo"}
-                      </Badge>
-                    </td>
-                    <td className="p-4">
-                      <span className="text-sm text-muted-foreground">
-                        {tipo.motivos.length} motivo{tipo.motivos.length !== 1 ? 's' : ''}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => navigate(`/catalogos/alertas-autobuses/edit/${tipo.id}`)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Switch
-                          checked={tipo.activo}
-                          onCheckedChange={() => manejarCambioEstado(tipo)}
-                        />
-                      </div>
-                    </td>
-                  </tr>
+                   <tr key={tipo.id} className="border-b hover:bg-muted/50">
+                     <td className="p-4 font-medium">{tipo.nombre}</td>
+                     <td className="p-4 text-muted-foreground">{tipo.alertType}</td>
+                     <td className="p-4">
+                       <Badge variant={tipo.activo ? "default" : "secondary"}>
+                         {tipo.activo ? "Activo" : "Inactivo"}
+                       </Badge>
+                     </td>
+                     <td className="p-4">
+                       <span className="text-sm text-muted-foreground">
+                         {tipo.motivos.length} motivo{tipo.motivos.length !== 1 ? 's' : ''}
+                       </span>
+                     </td>
+                     <td className="p-4">
+                       <div className="flex items-center justify-end space-x-2">
+                         <Button
+                           variant="ghost"
+                           size="sm"
+                           onClick={() => navigate(`/catalogos/alertas-autobuses/edit/${tipo.id}`)}
+                         >
+                           <Edit className="h-4 w-4" />
+                         </Button>
+                         <Switch
+                           checked={tipo.activo}
+                           onCheckedChange={() => manejarCambioEstado(tipo)}
+                         />
+                       </div>
+                     </td>
+                   </tr>
                 ))}
               </tbody>
             </table>

@@ -14,7 +14,9 @@ import { registrarTipoAlerta } from "@/services/bitacoraService";
 
 interface ErroresFormulario {
   nombre?: string;
+  alertType?: string;
   motivos?: { [key: number]: string };
+  motivosIngles?: { [key: number]: string };
 }
 
 export default function RegistrarTipoAlertaAutobus() {
@@ -23,7 +25,8 @@ export default function RegistrarTipoAlertaAutobus() {
 
   const [formulario, setFormulario] = useState<TipoAlertaAutobusForm>({
     nombre: "",
-    motivos: [{ nombre: "", activo: true, esNuevo: true }]
+    alertType: "",
+    motivos: [{ nombre: "", nombreIngles: "", activo: true, esNuevo: true }]
   });
 
   const [errores, setErrores] = useState<ErroresFormulario>({});
@@ -31,6 +34,7 @@ export default function RegistrarTipoAlertaAutobus() {
   const validarFormulario = (): boolean => {
     const nuevosErrores: ErroresFormulario = {};
     const erroresMotivos: { [key: number]: string } = {};
+    const erroresMotivosIngles: { [key: number]: string } = {};
 
     // Validar nombre
     if (!formulario.nombre.trim()) {
@@ -58,7 +62,14 @@ export default function RegistrarTipoAlertaAutobus() {
       }
     }
 
-    // Validar motivos
+    // Validar Alert Type
+    if (!formulario.alertType.trim()) {
+      nuevosErrores.alertType = "El Alert Type es requerido";
+    } else if (formulario.alertType.length < 3 || formulario.alertType.length > 100) {
+      nuevosErrores.alertType = "El Alert Type debe tener entre 3 y 100 caracteres";
+    }
+
+    // Validar motivos en español
     formulario.motivos.forEach((motivo, index) => {
       if (!motivo.nombre.trim()) {
         erroresMotivos[index] = "El motivo es obligatorio";
@@ -69,9 +80,18 @@ export default function RegistrarTipoAlertaAutobus() {
       } else if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d10-9\s\-\/,.]+$/.test(motivo.nombre.trim())) {
         erroresMotivos[index] = "El motivo contiene caracteres no permitidos";
       }
+      
+      // Validar motivos en inglés
+      if (!motivo.nombreIngles.trim()) {
+        erroresMotivosIngles[index] = "El motivo en inglés es obligatorio";
+      } else if (motivo.nombreIngles.trim().length < 3) {
+        erroresMotivosIngles[index] = "El motivo en inglés debe tener al menos 3 caracteres";
+      } else if (motivo.nombreIngles.trim().length > 200) {
+        erroresMotivosIngles[index] = "El motivo en inglés no puede exceder los 200 caracteres";
+      }
     });
 
-    // Verificar motivos duplicados
+    // Verificar motivos duplicados en español
     const motivosNormalizados = formulario.motivos.map(motivo => 
       motivo.nombre.trim().toLowerCase()
         .normalize("NFD")
@@ -84,8 +104,23 @@ export default function RegistrarTipoAlertaAutobus() {
       }
     });
 
+    // Verificar motivos duplicados en inglés
+    const motivosInglesNormalizados = formulario.motivos.map(motivo => 
+      motivo.nombreIngles.trim().toLowerCase()
+    );
+
+    motivosInglesNormalizados.forEach((motivoInglesNormalizado, index) => {
+      if (motivoInglesNormalizado && motivosInglesNormalizados.indexOf(motivoInglesNormalizado) !== index) {
+        erroresMotivosIngles[index] = "Este motivo en inglés ya existe en la lista";
+      }
+    });
+
     if (Object.keys(erroresMotivos).length > 0) {
       nuevosErrores.motivos = erroresMotivos;
+    }
+
+    if (Object.keys(erroresMotivosIngles).length > 0) {
+      nuevosErrores.motivosIngles = erroresMotivosIngles;
     }
 
     setErrores(nuevosErrores);
@@ -95,7 +130,7 @@ export default function RegistrarTipoAlertaAutobus() {
   const agregarMotivo = () => {
     setFormulario(prev => ({
       ...prev,
-      motivos: [...prev.motivos, { nombre: "", activo: true, esNuevo: true }]
+      motivos: [...prev.motivos, { nombre: "", nombreIngles: "", activo: true, esNuevo: true }]
     }));
   };
 
@@ -158,7 +193,8 @@ export default function RegistrarTipoAlertaAutobus() {
     // Limpiar formulario
     setFormulario({ 
       nombre: "",
-      motivos: [{ nombre: "", activo: true, esNuevo: true }]
+      alertType: "",
+      motivos: [{ nombre: "", nombreIngles: "", activo: true, esNuevo: true }]
     });
     setErrores({});
   };
@@ -197,6 +233,26 @@ export default function RegistrarTipoAlertaAutobus() {
             )}
             <p className="text-xs text-muted-foreground">
               Entre 3 y 100 caracteres. Solo letras, números, espacios, guiones y barras.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="alertType">
+              Alert Type <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="alertType"
+              value={formulario.alertType}
+              onChange={(e) => setFormulario(prev => ({ ...prev, alertType: e.target.value }))}
+              placeholder="Ej: Driving Behavior"
+              className={errores.alertType ? "border-destructive" : ""}
+              maxLength={100}
+            />
+            {errores.alertType && (
+              <p className="text-sm text-destructive">{errores.alertType}</p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Entre 3 y 100 caracteres para el tipo de alerta en inglés.
             </p>
           </div>
 
@@ -240,22 +296,42 @@ export default function RegistrarTipoAlertaAutobus() {
                     </Button>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor={`motivo-${index}`}>
-                      Motivo {index + 1} <span className="text-destructive">*</span>
-                    </Label>
-                    <Textarea
-                      id={`motivo-${index}`}
-                      value={motivo.nombre}
-                      onChange={(e) => actualizarMotivo(index, 'nombre', e.target.value)}
-                      placeholder="Ingrese el motivo de la alerta"
-                      className={errores.motivos?.[index] ? "border-destructive" : ""}
-                      maxLength={200}
-                      rows={2}
-                    />
-                    {errores.motivos?.[index] && (
-                      <p className="text-sm text-destructive">{errores.motivos[index]}</p>
-                    )}
+                   <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor={`motivo-${index}`}>
+                        Motivo {index + 1} (Español) <span className="text-destructive">*</span>
+                      </Label>
+                      <Textarea
+                        id={`motivo-${index}`}
+                        value={motivo.nombre}
+                        onChange={(e) => actualizarMotivo(index, 'nombre', e.target.value)}
+                        placeholder="Ej: Conduce muy rápido"
+                        className={errores.motivos?.[index] ? "border-destructive" : ""}
+                        maxLength={200}
+                        rows={2}
+                      />
+                      {errores.motivos?.[index] && (
+                        <p className="text-sm text-destructive">{errores.motivos[index]}</p>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor={`motivoIngles-${index}`}>
+                        Motivo {index + 1} (Inglés) <span className="text-destructive">*</span>
+                      </Label>
+                      <Textarea
+                        id={`motivoIngles-${index}`}
+                        value={motivo.nombreIngles}
+                        onChange={(e) => actualizarMotivo(index, 'nombreIngles', e.target.value)}
+                        placeholder="Ex: Drives too fast"
+                        className={errores.motivosIngles?.[index] ? "border-destructive" : ""}
+                        maxLength={200}
+                        rows={2}
+                      />
+                      {errores.motivosIngles?.[index] && (
+                        <p className="text-sm text-destructive">{errores.motivosIngles[index]}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

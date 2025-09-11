@@ -12,17 +12,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
   {
     id: 1,
     nombre: "Falla mecánica",
+    alertType: "Mechanical Failure",
     activo: true,
     motivos: [
       {
         id: 1,
         nombre: "Problema con el motor",
+        nombreIngles: "Engine problem",
         activo: true,
         fechaCreacion: generarFechaDinamica(15, 2)
       },
       {
         id: 2,
         nombre: "Falla en la transmisión",
+        nombreIngles: "Transmission failure",
         activo: true,
         fechaCreacion: generarFechaDinamica(15, 2)
       }
@@ -33,17 +36,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
   {
     id: 2,
     nombre: "Trayecto bloqueado",
+    alertType: "Route Blocked",
     activo: true,
     motivos: [
       {
         id: 3,
         nombre: "Accidente de tránsito",
+        nombreIngles: "Traffic accident",
         activo: true,
         fechaCreacion: generarFechaDinamica(12, 5)
       },
       {
         id: 4,
         nombre: "Obra en construcción",
+        nombreIngles: "Construction work",
         activo: true,
         fechaCreacion: generarFechaDinamica(12, 5)
       }
@@ -54,17 +60,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
   {
     id: 3,
     nombre: "Pinchazo de llanta",
+    alertType: "Flat Tire",
     activo: true,
     motivos: [
       {
         id: 5,
         nombre: "Llanta delantera pinchada",
+        nombreIngles: "Front tire punctured",
         activo: true,
         fechaCreacion: generarFechaDinamica(8, 12)
       },
       {
         id: 6,
         nombre: "Llanta trasera pinchada",
+        nombreIngles: "Rear tire punctured",
         activo: true,
         fechaCreacion: generarFechaDinamica(8, 12)
       }
@@ -74,17 +83,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
   {
     id: 4,
     nombre: "Falla eléctrica",
+    alertType: "Electrical Failure",
     activo: false,
     motivos: [
       {
         id: 7,
         nombre: "Problema con batería",
+        nombreIngles: "Battery problem",
         activo: false,
         fechaCreacion: generarFechaDinamica(20, 7)
       },
       {
         id: 8,
         nombre: "Cortocircuito",
+        nombreIngles: "Short circuit",
         activo: true,
         fechaCreacion: generarFechaDinamica(20, 7)
       }
@@ -95,17 +107,20 @@ export const mockTiposAlertaAutobus: TipoAlertaAutobus[] = [
   {
     id: 5,
     nombre: "Problema de combustible",
+    alertType: "Fuel Issue",
     activo: true,
     motivos: [
       {
         id: 9,
         nombre: "Tanque vacío",
+        nombreIngles: "Empty tank",
         activo: true,
         fechaCreacion: generarFechaDinamica(6, 15)
       },
       {
         id: 10,
         nombre: "Fuga de combustible",
+        nombreIngles: "Fuel leak",
         activo: true,
         fechaCreacion: generarFechaDinamica(6, 15)
       }
