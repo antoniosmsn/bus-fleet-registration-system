@@ -159,18 +159,17 @@ export default function PlantillasMatrizIndex() {
           <div className="flex gap-2">
             <Button 
               onClick={handleRegistrar}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hidden"
             >
               <Plus className="h-4 w-4" />
-              Registrar Plantilla
+              Registrar old
             </Button>
             <Button 
               onClick={() => navigate('/mantenimiento/plantillas-matriz/registrar-v2')}
-              variant="outline"
               className="flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
-              Registrar V2
+              Registrar
             </Button>
           </div>
         </div>
