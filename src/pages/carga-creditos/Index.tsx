@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import CargaCreditosFiltros from '@/components/carga-creditos/CargaCreditosFiltros';
 import TablaCargaCreditos from '@/components/carga-creditos/TablaCargaCreditos';
+import CargaCreditosPagination from '@/components/carga-creditos/CargaCreditosPagination';
 import { CargueCredito, FiltrosCargueCredito } from '@/types/carga-creditos';
 import { Button } from '@/components/ui/button';
 import { Upload, Download } from 'lucide-react';
@@ -13,6 +14,8 @@ import { registrarAcceso, registrarExportacion } from '@/services/bitacoraServic
 const CargaCreditosIndex = () => {
   const [filtros, setFiltros] = useState<FiltrosCargueCredito>({});
   const [cargues] = useState<CargueCredito[]>(mockCarguesCreditos);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Registrar acceso al módulo
   React.useEffect(() => {
@@ -60,9 +63,23 @@ const CargaCreditosIndex = () => {
     );
   }, [carguesFiltrados]);
 
+  // Calcular paginación
+  const totalPages = Math.ceil(carguesOrdenados.length / itemsPerPage);
+  
+  const carguesPaginados = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return carguesOrdenados.slice(startIndex, endIndex);
+  }, [carguesOrdenados, currentPage]);
+
   const handleFilter = (newFilters: FiltrosCargueCredito) => {
     setFiltros(newFilters);
+    setCurrentPage(1); // Reset to first page when filtering
     console.log('Filtros aplicados:', newFilters);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const handleCargarArchivo = () => {
@@ -141,13 +158,24 @@ const CargaCreditosIndex = () => {
         
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
-            <TablaCargaCreditos cargues={carguesOrdenados} />
+            <TablaCargaCreditos cargues={carguesPaginados} />
           </div>
         </div>
 
+        {/* Paginación */}
+        {totalPages > 1 && (
+          <div className="flex justify-center">
+            <CargaCreditosPagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+
         {/* Información de resultados */}
         <div className="text-sm text-muted-foreground text-center">
-          Mostrando {carguesOrdenados.length} de {cargues.length} cargues
+          Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, carguesOrdenados.length)} de {carguesOrdenados.length} cargues
         </div>
       </div>
     </Layout>
