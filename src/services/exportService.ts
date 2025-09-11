@@ -237,7 +237,18 @@ const formatMantenimientoForExport = (mantenimientos: any[]) => {
   }));
 }
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' = 'conductores') => {
+// Exportaciones para Carga de Créditos
+export const exportCargaCreditosToPDF = (cargues: any[]) => {
+  console.log('Exportando cargues de créditos a PDF', cargues);
+  logExportAction('PDF', 'carga-creditos');
+};
+
+export const exportCargaCreditosToExcel = (cargues: any[]) => {
+  console.log('Exportando cargues de créditos a Excel', cargues);
+  logExportAction('Excel', 'carga-creditos');
+};
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' | 'carga-creditos' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación

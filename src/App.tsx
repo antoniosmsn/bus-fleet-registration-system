@@ -74,6 +74,7 @@ import AlarmasConductorListado from '@/pages/alarmas-conductor/Listado';
 import TelemetriaListado from '@/pages/telemetria/Listado';
 import SolicitudesTrasladoIndex from '@/pages/solicitudes-traslado/Index';
 import BitacorasLectorasIndex from '@/pages/bitacoras-lectoras/Index';
+import CargaCreditosIndex from '@/pages/carga-creditos/Index';
 
 import ParametrosLectura from '@/pages/configuracion/ParametrosLectura';
 import ZoneParametersConfig from '@/pages/configuracion/ZoneParametersConfig';
@@ -225,6 +226,9 @@ function App() {
             
             {/* Programación routes */}
             <Route path="/programacion/parametros" element={<ProgramacionParametros />} />
+            
+            {/* Carga de créditos routes */}
+            <Route path="/carga-creditos" element={<CargaCreditosIndex />} />
             
             {/* Placeholder routes */}
             <Route path="/placeholder" element={<PlaceholderPage title="Página en Construcción" />} />

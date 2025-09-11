@@ -464,6 +464,27 @@ const SidebarComponent = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Carga de Créditos */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Carga de créditos</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  asChild 
+                  tooltip="Cargue de créditos de pasajeros"
+                  isActive={location.pathname === "/carga-creditos"}
+                >
+                  <Link to="/carga-creditos">
+                    <CreditCard />
+                    <span>Cargue de créditos de pasajeros</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );
