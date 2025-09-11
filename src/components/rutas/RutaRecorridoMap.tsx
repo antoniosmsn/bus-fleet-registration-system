@@ -136,25 +136,27 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
           </Marker>
         ))}
         
-        {/* Marcadores de puntos del recorrido */}
+        {/* Marcadores de puntos del recorrido - Solo mostrar durante edición */}
         {puntosRecorrido.map((punto) => (
-          <Marker
-            key={`punto-${punto.orden}`}
-            position={[punto.lat, punto.lng]}
-            icon={createNumberedIcon(punto.orden, recorridoFinalizado)}
-          >
-            <Popup>
-              <div className="text-sm">
-                <strong>Punto {punto.orden}</strong>
-                <br />
-                <span className="text-gray-600">
-                  {recorridoFinalizado ? 'Punto finalizado' : 'Punto del recorrido'}
-                </span>
-                <br />
-                <small>Lat: {punto.lat.toFixed(6)}, Lng: {punto.lng.toFixed(6)}</small>
-              </div>
-            </Popup>
-          </Marker>
+          !recorridoFinalizado && (
+            <Marker
+              key={`punto-${punto.orden}`}
+              position={[punto.lat, punto.lng]}
+              icon={createNumberedIcon(punto.orden, recorridoFinalizado)}
+            >
+              <Popup>
+                <div className="text-sm">
+                  <strong>Punto {punto.orden}</strong>
+                  <br />
+                  <span className="text-gray-600">
+                    Punto del recorrido
+                  </span>
+                  <br />
+                  <small>Lat: {punto.lat.toFixed(6)}, Lng: {punto.lng.toFixed(6)}</small>
+                </div>
+              </Popup>
+            </Marker>
+          )
         ))}
         
         {/* Polilínea conectando los puntos del recorrido */}
