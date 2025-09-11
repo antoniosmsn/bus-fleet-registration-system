@@ -48,14 +48,14 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
   return (
     <Card className="mb-6">
       <CardContent className="pt-6">
-        <Tabs defaultValue="datos-cargue" className="w-full">
+        <Tabs defaultValue="fechas" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="datos-cargue">Datos del Cargue</TabsTrigger>
-            <TabsTrigger value="datos-usuario">Datos de Usuario</TabsTrigger>
+            <TabsTrigger value="fechas">Fechas</TabsTrigger>
+            <TabsTrigger value="datos-generales">Datos generales</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="datos-cargue" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <TabsContent value="fechas" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label htmlFor="fechaInicio" className="text-xs">Fecha Inicio</Label>
                 <Input
@@ -77,9 +77,13 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
                   className="h-8 text-sm"
                 />
               </div>
+            </div>
+          </TabsContent>
 
+          <TabsContent value="datos-generales" className="mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <Label htmlFor="nombreArchivo" className="text-xs">Nombre del Archivo</Label>
+                <Label htmlFor="nombreArchivo" className="text-xs">Nombre del archivo</Label>
                 <Input
                   id="nombreArchivo"
                   placeholder="Buscar archivo..."
@@ -90,25 +94,7 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="estado" className="text-xs">Estado del Cargue</Label>
-                <Select onValueChange={(value) => handleSelectChange('estado', value)}>
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Estado..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="Procesado">Procesado</SelectItem>
-                    <SelectItem value="Procesado con error">Procesado con Error</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="datos-usuario" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div className="space-y-1">
-                <Label htmlFor="nombreUsuario" className="text-xs">Nombre del Usuario</Label>
+                <Label htmlFor="nombreUsuario" className="text-xs">Nombre usuario</Label>
                 <Select onValueChange={(value) => handleSelectChange('nombreUsuario', value)}>
                   <SelectTrigger className="h-8 text-sm">
                     <SelectValue placeholder="Usuario..." />
@@ -125,18 +111,15 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="zonaFranca" className="text-xs">Zona Franca</Label>
-                <Select onValueChange={(value) => handleSelectChange('zonaFranca', value)}>
+                <Label htmlFor="estado" className="text-xs">Estado</Label>
+                <Select onValueChange={(value) => handleSelectChange('estado', value)}>
                   <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Zona franca..." />
+                    <SelectValue placeholder="Estado..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todas</SelectItem>
-                    {zonasfrancas.map((zona) => (
-                      <SelectItem key={zona} value={zona}>
-                        {zona}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="Procesado">Procesado</SelectItem>
+                    <SelectItem value="Procesado con error">Procesado con Error</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

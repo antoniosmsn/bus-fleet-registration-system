@@ -101,19 +101,17 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
               <Table className="min-w-[1000px]">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-40">Fecha del Cargue</TableHead>
-                    <TableHead className="w-64">Nombre del Archivo</TableHead>
-                    <TableHead className="w-48">Nombre del Usuario</TableHead>
+                    <TableHead className="w-40">Fecha de carga</TableHead>
+                    <TableHead className="w-64">Nombre del archivo</TableHead>
+                    <TableHead className="w-48">Nombre usuario</TableHead>
                     <TableHead className="w-32">Estado</TableHead>
-                    <TableHead className="w-24 text-center">Registros</TableHead>
-                    <TableHead className="w-32 text-right">Monto Total</TableHead>
                     <TableHead className="w-24 text-center">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {cargues.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
+                      <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
                         No hay cargues que coincidan con los criterios de búsqueda
                       </TableCell>
                     </TableRow>
@@ -130,19 +128,6 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                             <Badge className={getEstadoBadgeColor(cargue.estado)}>
                               {cargue.estado}
                             </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="space-y-1">
-                              <div className="text-sm">{cargue.totalRegistros}</div>
-                              {cargue.registrosConError > 0 && (
-                                <div className="text-xs text-red-600">
-                                  {cargue.registrosConError} errores
-                                </div>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-medium">
-                            {formatCurrency(cargue.montoTotal)}
                           </TableCell>
                           <TableCell className="text-center">
                             <Collapsible
@@ -171,7 +156,7 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                         >
                           <CollapsibleContent asChild>
                             <TableRow>
-                              <TableCell colSpan={7} className="p-0">
+                              <TableCell colSpan={5} className="p-0">
                                 <Card className="m-4 border-l-4 border-l-blue-500">
                                   <CardHeader className="pb-3">
                                     <CardTitle className="text-base">Detalle de cargue</CardTitle>
@@ -181,12 +166,11 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                                       <Table>
                                         <TableHeader>
                                           <TableRow>
-                                            <TableHead>Fecha del Cargue</TableHead>
+                                            <TableHead>Fecha de carga</TableHead>
                                             <TableHead className="text-right">Monto</TableHead>
-                                            <TableHead>Nombre del Pasajero</TableHead>
+                                            <TableHead>Pasajero</TableHead>
                                             <TableHead>Cédula</TableHead>
                                             <TableHead>Empresa</TableHead>
-                                            <TableHead>Estado</TableHead>
                                           </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -201,18 +185,6 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                                               <TableCell>{detalle.nombrePasajero}</TableCell>
                                               <TableCell>{detalle.cedula}</TableCell>
                                               <TableCell className="text-sm">{detalle.empresa}</TableCell>
-                                              <TableCell>
-                                                <div className="space-y-1">
-                                                  <Badge className={getEstadoDetalleBadgeColor(detalle.estado)}>
-                                                    {detalle.estado === 'exitoso' ? 'Exitoso' : 'Error'}
-                                                  </Badge>
-                                                  {detalle.mensajeError && (
-                                                    <div className="text-xs text-red-600 max-w-xs">
-                                                      {detalle.mensajeError}
-                                                    </div>
-                                                  )}
-                                                </div>
-                                              </TableCell>
                                             </TableRow>
                                           ))}
                                         </TableBody>
