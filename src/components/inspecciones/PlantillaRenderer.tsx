@@ -166,14 +166,9 @@ export function PlantillaRenderer({ plantilla, onRespuestasChange }: PlantillaRe
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{seccion.nombre}</CardTitle>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-muted-foreground">
-                      Peso: {seccion.peso}%
-                    </span>
-                    <span className="text-sm font-medium">
-                      Score: {respuestaSeccion?.puntuacionSeccion || 0}/{seccion.peso}
-                    </span>
-                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    Peso: {seccion.peso}%
+                  </span>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs text-muted-foreground">

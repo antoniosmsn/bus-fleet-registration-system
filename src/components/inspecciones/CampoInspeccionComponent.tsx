@@ -116,9 +116,11 @@ export function CampoInspeccionComponent({ campo, valor, onChange }: CampoInspec
               {campo.etiqueta}
               {campo.requerido && <span className="text-red-500 ml-1">*</span>}
             </Label>
-            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-              {campo.peso}%
-            </span>
+            {(campo.tipo === 'checkbox' || campo.tipo === 'radio') && (
+              <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                {campo.peso}%
+              </span>
+            )}
           </div>
           
           {renderCampoContent()}
