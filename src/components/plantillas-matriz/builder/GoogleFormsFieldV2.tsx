@@ -179,25 +179,8 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
               )}
             </div>
             
-            {/* Type selector and actions */}
+            {/* Actions */}
             <div className="flex items-center gap-1">
-              <Select
-                value={campo.tipo}
-                onValueChange={handleTypeChange}
-              >
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="texto">Texto</SelectItem>
-                  <SelectItem value="select">Lista desplegable</SelectItem>
-                  <SelectItem value="radio">Opción múltiple</SelectItem>
-                  <SelectItem value="checkbox">Casillas de verificación</SelectItem>
-                  <SelectItem value="fecha">Fecha</SelectItem>
-                  <SelectItem value="canvas">Dibujo</SelectItem>
-                </SelectContent>
-              </Select>
-              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

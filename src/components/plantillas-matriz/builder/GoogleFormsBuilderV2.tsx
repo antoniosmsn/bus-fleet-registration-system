@@ -205,12 +205,6 @@ export function GoogleFormsBuilderV2({
                   className="text-lg font-medium border-none p-0 h-auto focus-visible:ring-0"
                   placeholder="Formulario sin título"
                 />
-                <Input
-                  value={builderData.descripcion}
-                  onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
-                  className="text-sm text-muted-foreground border-none p-0 h-auto focus-visible:ring-0"
-                  placeholder="Descripción del formulario"
-                />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -240,12 +234,6 @@ export function GoogleFormsBuilderV2({
                     onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
                     className="text-3xl font-normal border-none p-0 h-auto focus-visible:ring-0"
                     placeholder="Formulario sin título"
-                  />
-                  <Input
-                    value={builderData.descripcion}
-                    onChange={(e) => setBuilderData({ ...builderData, descripcion: e.target.value })}
-                    className="text-base text-muted-foreground border-none p-0 h-auto focus-visible:ring-0"
-                    placeholder="Descripción del formulario"
                   />
                 </div>
               </CardHeader>

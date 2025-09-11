@@ -70,17 +70,6 @@ export function GoogleFormsSectionV2({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <GripVertical className="h-4 w-4 text-muted-foreground" />
-            <Badge 
-              variant="secondary" 
-              className="bg-primary text-primary-foreground font-medium px-3 py-1"
-            >
-              Sección {index + 1} de {totalSecciones}
-            </Badge>
-            {isActive && (
-              <Badge variant="outline" className="text-xs">
-                Activa
-              </Badge>
-            )}
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
