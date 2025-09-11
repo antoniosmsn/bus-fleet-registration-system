@@ -288,7 +288,7 @@ const RutaRegistrationForm = () => {
 
   // Funciones para dibujo del recorrido
   const toggleDibujar = () => {
-    setDibujarActivo(prev => !prev);
+    setDibujarActivo(!dibujarActivo);
     if (recorridoFinalizado) {
       setRecorridoFinalizado(false);
     }
@@ -309,10 +309,8 @@ const RutaRegistrationForm = () => {
 
   const agregarPuntoDibujado = (lat: number, lng: number) => {
     if (dibujarActivo && !recorridoFinalizado) {
-      setPuntosRecorridoDibujados(prev => [
-        ...prev,
-        { lat, lng, orden: prev.length + 1 }
-      ]);
+      const nuevoPunto = { lat, lng, orden: puntosRecorridoDibujados.length + 1 };
+      setPuntosRecorridoDibujados([...puntosRecorridoDibujados, nuevoPunto]);
     }
   };
 
