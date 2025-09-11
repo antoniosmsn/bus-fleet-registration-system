@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Trash2, Settings, Plus, X, GripVertical, MoreVertical, Copy } from 'lucide-react';
+import { DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,9 +17,10 @@ interface GoogleFormsFieldV2Props {
   onUpdate: (updates: Partial<CampoBuilder>) => void;
   onDelete: () => void;
   onDuplicate?: () => void;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
 }
 
-export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: GoogleFormsFieldV2Props) {
+export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dragHandleProps }: GoogleFormsFieldV2Props) {
   const handleAddOption = () => {
     const opcionesConPeso = campo.opcionesConPeso || [];
     const newOption = {
@@ -170,7 +172,7 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
         <div className="space-y-4">
           {/* Header with drag handle, question input, and controls */}
           <div className="flex items-start gap-3">
-            <div className="cursor-move p-1 mt-2">
+            <div {...dragHandleProps} className="cursor-move p-1 mt-2">
               <GripVertical className="h-4 w-4 text-muted-foreground" />
             </div>
             

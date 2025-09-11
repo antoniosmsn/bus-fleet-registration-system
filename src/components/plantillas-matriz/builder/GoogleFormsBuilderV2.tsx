@@ -166,6 +166,97 @@ export function GoogleFormsBuilderV2({
     });
   };
 
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, source, type } = result;
+
+    if (!destination) return;
+
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return;
+    }
+
+    if (type === 'SECTION') {
+      // Reorder sections
+      const newSecciones = Array.from(builderData.secciones);
+      const [reorderedSection] = newSecciones.splice(source.index, 1);
+      newSecciones.splice(destination.index, 0, reorderedSection);
+
+      // Update orden for all sections
+      const updatedSecciones = newSecciones.map((seccion, index) => ({
+        ...seccion,
+        orden: index
+      }));
+
+      setBuilderData({
+        ...builderData,
+        secciones: updatedSecciones
+      });
+    } else if (type === 'FIELD') {
+      // Handle field reordering within sections or between sections
+      const sourceSeccionId = source.droppableId;
+      const destSeccionId = destination.droppableId;
+
+      if (sourceSeccionId === destSeccionId) {
+        // Reorder within same section
+        const seccion = builderData.secciones.find(s => s.id === sourceSeccionId);
+        if (!seccion) return;
+
+        const newCampos = Array.from(seccion.campos);
+        const [reorderedField] = newCampos.splice(source.index, 1);
+        newCampos.splice(destination.index, 0, reorderedField);
+
+        // Update orden for all fields in this section
+        const updatedCampos = newCampos.map((campo, index) => ({
+          ...campo,
+          orden: index
+        }));
+
+        setBuilderData({
+          ...builderData,
+          secciones: builderData.secciones.map(s =>
+            s.id === sourceSeccionId
+              ? { ...s, campos: updatedCampos }
+              : s
+          )
+        });
+      } else {
+        // Move field between sections
+        const sourceSeccion = builderData.secciones.find(s => s.id === sourceSeccionId);
+        const destSeccion = builderData.secciones.find(s => s.id === destSeccionId);
+        
+        if (!sourceSeccion || !destSeccion) return;
+
+        const sourceCampos = Array.from(sourceSeccion.campos);
+        const destCampos = Array.from(destSeccion.campos);
+        const [movedField] = sourceCampos.splice(source.index, 1);
+        destCampos.splice(destination.index, 0, movedField);
+
+        // Update orden for both sections
+        const updatedSourceCampos = sourceCampos.map((campo, index) => ({
+          ...campo,
+          orden: index
+        }));
+
+        const updatedDestCampos = destCampos.map((campo, index) => ({
+          ...campo,
+          orden: index
+        }));
+
+        setBuilderData({
+          ...builderData,
+          secciones: builderData.secciones.map(s => {
+            if (s.id === sourceSeccionId) {
+              return { ...s, campos: updatedSourceCampos };
+            } else if (s.id === destSeccionId) {
+              return { ...s, campos: updatedDestCampos };
+            }
+            return s;
+          })
+        });
+      }
+    }
+  };
+
   const handleSave = () => {
     if (!builderData.nombre.trim()) {
       toast({
@@ -307,7 +398,7 @@ export function GoogleFormsBuilderV2({
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-6xl">{/* Increased max width */}
 
-        <DragDropContext onDragEnd={() => {}}>
+        <DragDropContext onDragEnd={handleDragEnd}>
           <div className="space-y-6">
             {/* Form Header */}
             <Card className="border-t-8 border-t-primary">
@@ -326,23 +417,46 @@ export function GoogleFormsBuilderV2({
             </Card>
 
             {/* Sections */}
-            {builderData.secciones.map((seccion, index) => (
-              <GoogleFormsSectionV2
-                key={seccion.id}
-                seccion={seccion}
-                index={index}
-                totalSecciones={builderData.secciones.length}
-                isActive={seccionActiva === seccion.id}
-                showToolbox={showToolbox && seccionActiva === seccion.id}
-                onUpdate={(updates) => handleUpdateSeccion(seccion.id, updates)}
-                onDelete={() => handleDeleteSeccion(seccion.id)}
-                onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
-                onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
-                onClick={() => handleSeccionClick(seccion.id)}
-                onAddField={handleAddField}
-                onCloseToolbox={() => setShowToolbox(false)}
-              />
-            ))}
+            <Droppable droppableId="sections" type="SECTION">
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="space-y-6"
+                >
+                  {builderData.secciones
+                    .sort((a, b) => a.orden - b.orden)
+                    .map((seccion, index) => (
+                    <Draggable key={seccion.id} draggableId={seccion.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={snapshot.isDragging ? 'opacity-75' : ''}
+                        >
+                          <GoogleFormsSectionV2
+                            seccion={seccion}
+                            index={index}
+                            totalSecciones={builderData.secciones.length}
+                            isActive={seccionActiva === seccion.id}
+                            showToolbox={showToolbox && seccionActiva === seccion.id}
+                            onUpdate={(updates) => handleUpdateSeccion(seccion.id, updates)}
+                            onDelete={() => handleDeleteSeccion(seccion.id)}
+                            onUpdateCampo={(campoId, updates) => handleUpdateCampo(seccion.id, campoId, updates)}
+                            onDeleteCampo={(campoId) => handleDeleteCampo(seccion.id, campoId)}
+                            onClick={() => handleSeccionClick(seccion.id)}
+                            onAddField={handleAddField}
+                            onCloseToolbox={() => setShowToolbox(false)}
+                            dragHandleProps={provided.dragHandleProps}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
 
             {/* Add Section Button */}
             <div className="text-center">

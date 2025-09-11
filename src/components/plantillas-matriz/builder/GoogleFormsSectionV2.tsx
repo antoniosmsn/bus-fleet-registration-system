@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Settings, Trash2, GripVertical } from 'lucide-react';
+import { Droppable, Draggable, DraggableProvidedDragHandleProps } from '@hello-pangea/dnd';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ interface GoogleFormsSectionV2Props {
   onClick: () => void;
   onAddField: (tipo: string) => void;
   onCloseToolbox: () => void;
+  dragHandleProps?: DraggableProvidedDragHandleProps | null;
 }
 
 export function GoogleFormsSectionV2({
@@ -35,7 +37,8 @@ export function GoogleFormsSectionV2({
   onDeleteCampo,
   onClick,
   onAddField,
-  onCloseToolbox
+  onCloseToolbox,
+  dragHandleProps
 }: GoogleFormsSectionV2Props) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
@@ -90,7 +93,9 @@ export function GoogleFormsSectionV2({
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <GripVertical className="h-4 w-4 text-muted-foreground" />
+            <div {...dragHandleProps} className="cursor-move">
+              <GripVertical className="h-4 w-4 text-muted-foreground" />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
@@ -186,28 +191,49 @@ export function GoogleFormsSectionV2({
             <p>Haz clic en el botón + del panel derecho para agregar preguntas</p>
           </div>
         ) : (
-          seccion.campos
-            .sort((a, b) => a.orden - b.orden)
-            .map((campo) => (
-                <GoogleFormsFieldV2
-                  key={campo.id}
-                  campo={campo}
-                  onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
-                  onDelete={() => onDeleteCampo(campo.id)}
-                  onDuplicate={() => {
-                    // Create a duplicate of the field
-                    const duplicatedCampo = {
-                      ...campo,
-                      id: `campo-${Date.now()}`,
-                      etiqueta: `${campo.etiqueta} (copia)`,
-                      orden: campo.orden + 1
-                    };
-                    // This would need to be handled at the parent level
-                    // For now, just show a toast
-                    console.log('Duplicate field:', duplicatedCampo);
-                  }}
-                />
-            ))
+          <Droppable droppableId={seccion.id} type="FIELD">
+            {(provided, snapshot) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className={`space-y-4 ${snapshot.isDraggingOver ? 'bg-muted/50 rounded-lg p-2' : ''}`}
+              >
+                {seccion.campos
+                  .sort((a, b) => a.orden - b.orden)
+                  .map((campo, index) => (
+                    <Draggable key={campo.id} draggableId={campo.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={snapshot.isDragging ? 'opacity-75' : ''}
+                        >
+                          <GoogleFormsFieldV2
+                            campo={campo}
+                            onUpdate={(updates) => onUpdateCampo(campo.id, updates)}
+                            onDelete={() => onDeleteCampo(campo.id)}
+                            onDuplicate={() => {
+                              // Create a duplicate of the field
+                              const duplicatedCampo = {
+                                ...campo,
+                                id: `campo-${Date.now()}`,
+                                etiqueta: `${campo.etiqueta} (copia)`,
+                                orden: campo.orden + 1
+                              };
+                              // This would need to be handled at the parent level
+                              // For now, just show a toast
+                              console.log('Duplicate field:', duplicatedCampo);
+                            }}
+                            dragHandleProps={provided.dragHandleProps}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         )}
       </CardContent>
     </Card>
