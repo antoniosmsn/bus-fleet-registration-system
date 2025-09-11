@@ -191,7 +191,6 @@ const CargaCreditosIndex = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Cargue de créditos de pasajeros</h1>
-            <p className="text-gray-600">Consulte el historial de cargas de crédito con sus detalles individuales</p>
           </div>
           <div className="flex items-center gap-4">
             <Button
