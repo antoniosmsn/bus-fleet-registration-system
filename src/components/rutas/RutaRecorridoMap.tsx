@@ -103,7 +103,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
   const bounds = getBounds();
 
   return (
-    <div className="h-[600px] w-full rounded-lg overflow-hidden border">
+    <div className="h-[350px] w-full rounded-lg overflow-hidden border">
       <MapContainer
         center={center}
         zoom={8}
