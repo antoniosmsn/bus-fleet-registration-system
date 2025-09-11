@@ -900,7 +900,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                     <h3 className="text-base font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[350px]">
                       <RutaRecorridoMap 
-                        paradas={puntosRecorrido}
+                        paradas={paradasAsignadas}
                         puntosRecorrido={puntosRecorridoDibujados}
                         onAgregarPunto={agregarPuntoDibujado}
                         onLimpiarRecorrido={limpiarRecorrido}
