@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { PlantillaBuilder } from '@/components/plantillas-matriz/builder/PlantillaBuilder';
+import { GoogleFormsBuilderV2 } from '@/components/plantillas-matriz/builder/GoogleFormsBuilderV2';
 import { PlantillaBuilder as PlantillaBuilderType } from '@/types/plantilla-matriz';
 import { getPlantillaMatrizById } from '@/data/mockPlantillasMatriz';
 import { toast } from '@/hooks/use-toast';
@@ -77,7 +77,7 @@ export default function PlantillasMatrizEdit() {
   }
 
   return (
-    <PlantillaBuilder
+    <GoogleFormsBuilderV2
       plantilla={plantilla}
       onSave={handleSave}
       onCancel={handleCancel}
