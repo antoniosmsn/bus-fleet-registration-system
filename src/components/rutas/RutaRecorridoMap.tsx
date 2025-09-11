@@ -38,10 +38,12 @@ interface RutaRecorridoMapProps {
 const MapClickHandler: React.FC<{ 
   onAgregarPunto: (lat: number, lng: number) => void;
   dibujarActivo: boolean;
-}> = ({ onAgregarPunto, dibujarActivo }) => {
+  recorridoFinalizado: boolean;
+}> = ({ onAgregarPunto, dibujarActivo, recorridoFinalizado }) => {
   useMapEvents({
     click: (e) => {
-      if (dibujarActivo) {
+      // Según la solicitud, cuando el botón Dibujar está en OFF se pueden marcar puntos
+      if (!dibujarActivo && !recorridoFinalizado) {
         const { lat, lng } = e.latlng;
         onAgregarPunto(lat, lng);
       }
@@ -106,7 +108,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         center={center}
         zoom={8}
         bounds={bounds}
-        className={`h-full w-full ${dibujarActivo ? 'cursor-crosshair' : 'cursor-default'}`}
+        className={`h-full w-full ${(!dibujarActivo && !recorridoFinalizado) ? 'cursor-crosshair' : 'cursor-default'}`}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -114,7 +116,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         />
         
         {/* Componente para manejar clicks en el mapa */}
-        <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} />
+        <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} recorridoFinalizado={recorridoFinalizado} />
         
         {/* Marcadores de paradas (sin conectar) */}
         {paradas.map((parada) => (
