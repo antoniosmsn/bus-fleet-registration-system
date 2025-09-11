@@ -41,7 +41,7 @@ export function GoogleFormsBuilderV2({
     const nuevaSeccion: SeccionBuilder = {
       id: `seccion-${Date.now()}`,
       nombre: `Sección ${builderData.secciones.length + 1}`,
-      peso: 20,
+      peso: 0, // User must set the weight
       campos: [],
       orden: builderData.secciones.length,
       expanded: true
@@ -108,10 +108,14 @@ export function GoogleFormsBuilderV2({
       tipo: tipo as any,
       etiqueta: 'Pregunta sin título',
       requerido: false,
-      peso: 5,
+      peso: (tipo === 'checkbox' || tipo === 'radio') ? 0 : undefined, // Only checkbox/radio have weights
       orden: targetSection.campos.length,
-      opciones: (tipo === 'select' || tipo === 'radio' || tipo === 'checkbox') 
-        ? ['Opción 1'] 
+      opcionesConPeso: (tipo === 'select' || tipo === 'radio' || tipo === 'checkbox') 
+        ? [{
+          id: `opcion-${Date.now()}`,
+          texto: 'Opción 1',
+          peso: undefined
+        }] 
         : undefined
     };
 

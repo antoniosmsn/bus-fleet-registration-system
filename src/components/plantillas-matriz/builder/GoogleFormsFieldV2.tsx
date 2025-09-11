@@ -198,7 +198,7 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
             </div>
           </div>
           
-          {/* Footer with required toggle and weight */}
+          {/* Footer with required toggle and weight (only for checkbox/radio) */}
           <div className="flex items-center justify-between pt-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -209,23 +209,26 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate }: G
                 <Label className="text-sm">Obligatoria</Label>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Label className="text-sm text-muted-foreground">Peso:</Label>
-                <Input
-                  type="number"
-                  value={campo.peso || ''}
-                  onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || undefined })}
-                  placeholder="Peso"
-                  className={`w-16 h-7 text-xs ${
-                    !campo.peso || campo.peso === 0 
-                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                      : ''
-                  }`}
-                  min="1"
-                  max="100"
-                />
-                <span className="text-xs text-muted-foreground">%</span>
-              </div>
+              {/* Only show weight input for checkbox and radio fields */}
+              {(campo.tipo === 'checkbox' || campo.tipo === 'radio') && (
+                <div className="flex items-center space-x-2">
+                  <Label className="text-sm text-muted-foreground">Peso:</Label>
+                  <Input
+                    type="number"
+                    value={campo.peso || ''}
+                    onChange={(e) => onUpdate({ peso: parseInt(e.target.value) || undefined })}
+                    placeholder="Peso"
+                    className={`w-16 h-7 text-xs ${
+                      !campo.peso || campo.peso === 0 
+                        ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                        : ''
+                    }`}
+                    min="1"
+                    max="100"
+                  />
+                  <span className="text-xs text-muted-foreground">%</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

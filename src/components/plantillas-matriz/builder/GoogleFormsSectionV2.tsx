@@ -49,12 +49,30 @@ export function GoogleFormsSectionV2({
 
   const handleSaveWeight = () => {
     const weight = parseInt(tempWeight);
-    if (!isNaN(weight) && weight >= 0 && weight <= 100) {
+    if (!isNaN(weight) && weight > 0 && weight <= 100) {
       onUpdate({ peso: weight });
+      // Recalculate proportional weights for checkbox/radio fields
+      redistributeFieldWeights(weight);
     } else {
       setTempWeight(seccion.peso?.toString() || '');
     }
     setIsEditingWeight(false);
+  };
+
+  const redistributeFieldWeights = (sectionWeight: number) => {
+    const checkboxRadioFields = seccion.campos.filter(campo => 
+      campo.tipo === 'checkbox' || campo.tipo === 'radio'
+    );
+    
+    if (checkboxRadioFields.length > 0) {
+      const weightPerField = Math.floor(sectionWeight / checkboxRadioFields.length);
+      const remainder = sectionWeight % checkboxRadioFields.length;
+      
+      checkboxRadioFields.forEach((campo, index) => {
+        const fieldWeight = weightPerField + (index < remainder ? 1 : 0);
+        onUpdateCampo(campo.id, { peso: fieldWeight });
+      });
+    }
   };
 
   return (
