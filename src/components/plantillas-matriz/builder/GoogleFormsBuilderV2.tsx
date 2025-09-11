@@ -26,7 +26,7 @@ export function GoogleFormsBuilderV2({
 }: GoogleFormsBuilderV2Props) {
   const [builderData, setBuilderData] = useState<PlantillaBuilderType>({
     id: plantilla?.id || '',
-    nombre: plantilla?.nombre || 'Formulario sin título',
+    nombre: plantilla?.nombre || '', // Empty by default, user must fill
     descripcion: plantilla?.descripcion || '',
     secciones: plantilla?.secciones || []
   });
@@ -40,7 +40,7 @@ export function GoogleFormsBuilderV2({
   const handleAddSeccion = () => {
     const nuevaSeccion: SeccionBuilder = {
       id: `seccion-${Date.now()}`,
-      nombre: `Sección ${builderData.secciones.length + 1}`,
+      nombre: '', // Empty by default, user must fill
       peso: 0, // User must set the weight
       campos: [],
       orden: builderData.secciones.length,
@@ -180,6 +180,17 @@ export function GoogleFormsBuilderV2({
       return;
     }
 
+    // Check if any section has empty name
+    const seccionSinNombre = builderData.secciones.find(s => !s.nombre.trim());
+    if (seccionSinNombre) {
+      toast({
+        title: "Error de validación",
+        description: "Todas las secciones deben tener un nombre",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (pesoTotal !== 100) {
       toast({
         title: "Error de validación",
@@ -203,12 +214,14 @@ export function GoogleFormsBuilderV2({
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div className="space-y-1">
-                <Input
-                  value={builderData.nombre}
-                  onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
-                  className="text-lg font-medium border-none p-0 h-auto focus-visible:ring-0"
-                  placeholder="Formulario sin título"
-                />
+                  <Input
+                    value={builderData.nombre}
+                    onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
+                    className={`text-lg font-medium border-none p-0 h-auto focus-visible:ring-0 ${
+                      !builderData.nombre.trim() ? 'text-destructive' : ''
+                    }`}
+                    placeholder="Nombre del formulario (requerido)"
+                  />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -236,8 +249,10 @@ export function GoogleFormsBuilderV2({
                   <Input
                     value={builderData.nombre}
                     onChange={(e) => setBuilderData({ ...builderData, nombre: e.target.value })}
-                    className="text-3xl font-normal border-none p-0 h-auto focus-visible:ring-0"
-                    placeholder="Formulario sin título"
+                    className={`text-3xl font-normal border-none p-0 h-auto focus-visible:ring-0 ${
+                      !builderData.nombre.trim() ? 'text-destructive' : ''
+                    }`}
+                    placeholder="Nombre del formulario (requerido)"
                   />
                 </div>
               </CardHeader>

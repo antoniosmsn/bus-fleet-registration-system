@@ -53,10 +53,14 @@ export function GoogleFormsSectionV2({
       onUpdate({ peso: weight });
       // Recalculate proportional weights for checkbox/radio fields
       redistributeFieldWeights(weight);
+      setIsEditingWeight(false);
     } else {
-      setTempWeight(seccion.peso?.toString() || '');
+      // Keep the current input if invalid, don't reset
+      if (tempWeight === '') {
+        onUpdate({ peso: 0 });
+        setIsEditingWeight(false);
+      }
     }
-    setIsEditingWeight(false);
   };
 
   const redistributeFieldWeights = (sectionWeight: number) => {
@@ -97,14 +101,18 @@ export function GoogleFormsSectionV2({
                     value={tempWeight}
                     onChange={(e) => setTempWeight(e.target.value)}
                     onBlur={handleSaveWeight}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSaveWeight()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSaveWeight();
+                      }
+                    }}
                     className={`w-16 h-6 text-xs ${
-                      !tempWeight || parseInt(tempWeight) === 0 
+                      !tempWeight || parseInt(tempWeight) <= 0 
                         ? 'border-destructive focus-visible:ring-destructive text-destructive' 
                         : ''
                     }`}
                     type="number"
-                    min="0"
+                    min="1"
                     max="100"
                     placeholder="Peso"
                     autoFocus
@@ -121,10 +129,11 @@ export function GoogleFormsSectionV2({
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
+                    setTempWeight(seccion.peso?.toString() || '');
                     setIsEditingWeight(true);
                   }}
                 >
-                  {seccion.peso || 'Sin peso'}%
+                  {seccion.peso && seccion.peso > 0 ? `${seccion.peso}%` : 'Sin peso'}
                 </Badge>
               )}
             </div>
@@ -154,13 +163,15 @@ export function GoogleFormsSectionV2({
             />
           ) : (
             <h3 
-              className="text-xl font-medium cursor-text hover:bg-muted/50 p-1 rounded"
+              className={`text-xl font-medium cursor-text hover:bg-muted/50 p-1 rounded ${
+                !seccion.nombre.trim() ? 'text-destructive' : ''
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditingTitle(true);
               }}
             >
-              {seccion.nombre}
+              {seccion.nombre || 'Título de sección requerido'}
             </h3>
           )}
         </div>
