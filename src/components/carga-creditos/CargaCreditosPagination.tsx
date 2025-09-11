@@ -18,6 +18,7 @@ const CargaCreditosPagination: React.FC<CargaCreditosPaginationProps> = ({
   onPageChange,
   onItemsPerPageChange
 }) => {
+  const itemsPerPageValue = Number(itemsPerPage ?? 10);
   const getVisiblePages = () => {
     const delta = 2;
     const range = [];
@@ -52,7 +53,7 @@ const CargaCreditosPagination: React.FC<CargaCreditosPaginationProps> = ({
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Registros por página:</span>
-        <Select value={itemsPerPage.toString()} onValueChange={(value) => onItemsPerPageChange(Number(value))}>
+        <Select value={itemsPerPageValue.toString()} onValueChange={(value) => onItemsPerPageChange(Number(value))}>
           <SelectTrigger className="h-8 w-16">
             <SelectValue />
           </SelectTrigger>
