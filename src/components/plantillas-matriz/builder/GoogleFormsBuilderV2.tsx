@@ -113,7 +113,7 @@ export function GoogleFormsBuilderV2({
       tipo: tipo as any,
       etiqueta: 'Pregunta sin título',
       requerido: false,
-      peso: undefined, // User must set the weight for all field types
+      peso: (tipo === 'checkbox' || tipo === 'radio') ? 0 : undefined, // Only checkbox/radio have weights
       orden: targetSection.campos.length,
       opcionesConPeso: (tipo === 'select' || tipo === 'radio' || tipo === 'checkbox') 
         ? [{
@@ -327,13 +327,16 @@ export function GoogleFormsBuilderV2({
     // Check each section's field weights sum to section weight
     for (const seccion of builderData.secciones) {
       if (seccion.peso > 0) {
-        const camposConPeso = seccion.campos.filter(campo => campo.peso && campo.peso > 0);
+        const camposConPeso = seccion.campos.filter(campo => 
+          (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso > 0
+        );
+        
         const pesoTotalCampos = camposConPeso.reduce((total, campo) => total + (campo.peso || 0), 0);
         
         if (Math.abs(pesoTotalCampos - seccion.peso) > 0.1) { // Allow small floating point differences
           toast({
             title: "Error de validación",
-            description: `En la sección "${seccion.nombre}", la suma de pesos de campos (${pesoTotalCampos.toFixed(1)}%) debe ser exactamente igual al peso de la sección (${seccion.peso}%). Distribuya mejor los pesos.`,
+            description: `En la sección "${seccion.nombre}", la suma de pesos de campos (${pesoTotalCampos}%) debe ser igual al peso de la sección (${seccion.peso}%)`,
             variant: "destructive"
           });
           return;
@@ -341,10 +344,10 @@ export function GoogleFormsBuilderV2({
       }
     }
 
-    if (Math.abs(pesoTotal - 100) > 0.1) {
+    if (pesoTotal !== 100) {
       toast({
         title: "Error de validación",
-        description: `El peso total de las secciones debe ser exactamente 100%. Actualmente es ${pesoTotal.toFixed(1)}%. Distribuya mejor los pesos entre las secciones.`,
+        description: `El peso total debe ser 100%. Actualmente es ${pesoTotal}%`,
         variant: "destructive"
       });
       return;

@@ -265,7 +265,7 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dra
             </div>
           </div>
           
-          {/* Footer with required toggle and weight */}
+          {/* Footer with required toggle and weight (only for checkbox/radio) */}
           <div className="flex items-center justify-between pt-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -276,50 +276,20 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dra
                 <Label className="text-sm">Obligatoria</Label>
               </div>
               
-              {/* Weight input for all field types */}
-              <div className="flex items-center space-x-2">
-                <Label className="text-sm text-muted-foreground">Peso:</Label>
-                {(campo.tipo === 'checkbox' || campo.tipo === 'radio') ? (
-                  <>
-                    <Input
-                      type="number"
-                      value={campo.peso || ''}
-                      placeholder="Auto"
-                      className="w-16 h-7 text-xs bg-muted"
-                      readOnly
-                    />
-                    <span className="text-xs text-muted-foreground">% (auto)</span>
-                  </>
-                ) : (
-                  <>
-                    <Input
-                      type="number"
-                      value={campo.peso !== undefined ? campo.peso : ''}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (value === '') {
-                          onUpdate({ peso: undefined });
-                        } else {
-                          const newWeight = parseFloat(value);
-                          if (!isNaN(newWeight) && newWeight >= 0 && newWeight <= 100) {
-                            onUpdate({ peso: newWeight });
-                          }
-                        }
-                      }}
-                      placeholder="0"
-                      className={`w-16 h-7 text-xs ${
-                        campo.peso === undefined 
-                          ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                          : ''
-                      }`}
-                      min="0"
-                      max="100"
-                      step="0.1"
-                    />
-                    <span className="text-xs text-muted-foreground">%</span>
-                  </>
-                )}
-              </div>
+              {/* Only show weight input for checkbox and radio fields and their options */}
+              {(campo.tipo === 'checkbox' || campo.tipo === 'radio') && (
+                <div className="flex items-center space-x-2">
+                  <Label className="text-sm text-muted-foreground">Peso campo:</Label>
+                  <Input
+                    type="number"
+                    value={campo.peso || ''}
+                    placeholder="Auto"
+                    className="w-16 h-7 text-xs bg-muted"
+                    readOnly
+                  />
+                  <span className="text-xs text-muted-foreground">% (auto)</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

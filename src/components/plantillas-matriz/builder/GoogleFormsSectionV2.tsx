@@ -45,10 +45,6 @@ export function GoogleFormsSectionV2({
   const [tempTitle, setTempTitle] = useState(seccion.nombre);
   const [tempWeight, setTempWeight] = useState(seccion.peso?.toString() || '');
 
-  // Calculate field weights sum
-  const pesoTotalCampos = seccion.campos.reduce((total, campo) => total + (campo.peso || 0), 0);
-  const fieldWeightsValid = Math.abs(pesoTotalCampos - (seccion.peso || 0)) <= 0.1;
-
   const handleSaveTitle = () => {
     onUpdate({ nombre: tempTitle });
     setIsEditingTitle(false);
@@ -128,30 +124,23 @@ export function GoogleFormsSectionV2({
                   <span className="text-xs text-muted-foreground">%</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Badge 
-                    variant="outline" 
-                    className={`cursor-pointer ${
-                      !seccion.peso && seccion.peso !== 0 
-                        ? 'border-destructive text-destructive' 
-                        : seccion.peso === 0 
-                          ? 'border-amber-500 text-amber-600' 
-                          : ''
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setTempWeight(seccion.peso?.toString() || '');
-                      setIsEditingWeight(true);
-                    }}
-                  >
-                    {seccion.peso !== undefined ? `${seccion.peso}%` : 'Sin peso'}
-                  </Badge>
-                  {seccion.peso > 0 && !fieldWeightsValid && (
-                    <Badge variant="destructive" className="text-xs">
-                      Campos: {pesoTotalCampos.toFixed(1)}%
-                    </Badge>
-                  )}
-                </div>
+                <Badge 
+                  variant="outline" 
+                  className={`cursor-pointer ${
+                    !seccion.peso && seccion.peso !== 0 
+                      ? 'border-destructive text-destructive' 
+                      : seccion.peso === 0 
+                        ? 'border-amber-500 text-amber-600' 
+                        : ''
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTempWeight(seccion.peso?.toString() || '');
+                    setIsEditingWeight(true);
+                  }}
+                >
+                  {seccion.peso !== undefined ? `${seccion.peso}%` : 'Sin peso'}
+                </Badge>
               )}
             </div>
             <Button 
