@@ -124,27 +124,49 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         {/* Componente para manejar clicks en el mapa */}
         <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} recorridoFinalizado={recorridoFinalizado} />
         
-        {/* Marcadores de paradas (sin conectar) */}
+        {/* Línea conectando paradas asignadas */}
+        {paradas.length >= 2 && (
+          <Polyline
+            positions={paradas
+              .filter((parada) => typeof parada.lat === 'number' && typeof parada.lng === 'number')
+              .map(parada => [parada.lat, parada.lng] as [number, number])}
+            color="#3b82f6"
+            weight={3}
+            opacity={0.7}
+            dashArray="5, 5"
+          />
+        )}
+
+        {/* Marcadores de paradas */}
         {paradas
           .filter((parada) => typeof parada.lat === 'number' && typeof parada.lng === 'number')
-          .map((parada) => (
-            <Marker
-              key={parada.id}
-              position={[parada.lat, parada.lng]}
-            >
-              <Popup>
-                <div className="text-sm">
-                  <strong>{parada.nombre}</strong>
-                  <br />
-                  <span className="text-gray-600">Parada de ruta</span>
-                  <br />
-                  <small>
-                    Lat: {typeof parada.lat === 'number' ? parada.lat.toFixed(6) : '—'}, Lng: {typeof parada.lng === 'number' ? parada.lng.toFixed(6) : '—'}
-                  </small>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          .map((parada, index) => {
+            const isStart = index === 0;
+            const isEnd = index === paradas.length - 1;
+            
+            return (
+              <Marker
+                key={parada.id}
+                position={[parada.lat, parada.lng]}
+              >
+                <Popup>
+                  <div className="text-sm">
+                    <strong>{parada.nombre}</strong>
+                    <br />
+                    <span className="text-gray-600">
+                      {isStart && '🚩 Parada Inicial'}
+                      {isEnd && '🏁 Parada Final'}
+                      {!isStart && !isEnd && `Parada #${index + 1}`}
+                    </span>
+                    <br />
+                    <small>
+                      Lat: {typeof parada.lat === 'number' ? parada.lat.toFixed(6) : '—'}, Lng: {typeof parada.lng === 'number' ? parada.lng.toFixed(6) : '—'}
+                    </small>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
         
         {/* Marcadores de puntos del recorrido - Solo mostrar durante edición */}
         {puntosRecorrido
