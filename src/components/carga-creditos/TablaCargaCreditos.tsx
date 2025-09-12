@@ -13,20 +13,22 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CargueCredito, DetalleCargueCredito } from '@/types/carga-creditos';
-import { Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { Eye, X } from 'lucide-react';
 import { getDetallesCargue } from '@/data/mockCargaCreditos';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface TablaCargaCreditosProps {
   cargues: CargueCredito[];
 }
 
-const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  const [detallesPagination, setDetallesPagination] = useState<{ [key: string]: number }>({});
-  const [detallesItemsPerPage, setDetallesItemsPerPage] = useState<{ [key: string]: number }>({});
+interface DetalleSeleccionado {
+  cargue: CargueCredito;
+  detalles: DetalleCargueCredito[];
+}
 
-  const itemsPerPage = 10;
+const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState<DetalleSeleccionado | null>(null);
+  const [detallesPagination, setDetallesPagination] = useState(1);
+  const [detallesItemsPerPage, setDetallesItemsPerPage] = useState(10);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CR', {
@@ -57,56 +59,35 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
       : 'bg-red-100 text-red-800 border-red-200';
   };
 
-  const toggleRowExpansion = (cargueId: string) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(cargueId)) {
-      newExpanded.delete(cargueId);
-    } else {
-      newExpanded.add(cargueId);
-      // Inicializar paginación si no existe
-      if (!(cargueId in detallesPagination)) {
-        setDetallesPagination(prev => ({ ...prev, [cargueId]: 1 }));
-      }
-      // Inicializar items per page si no existe
-      if (!(cargueId in detallesItemsPerPage)) {
-        setDetallesItemsPerPage(prev => ({ ...prev, [cargueId]: 10 }));
-      }
-    }
-    setExpandedRows(newExpanded);
+  const verDetalle = (cargue: CargueCredito) => {
+    const detalles = getDetallesCargue(cargue.id);
+    setDetalleSeleccionado({ cargue, detalles });
+    setDetallesPagination(1);
   };
 
-  const getDetallesPaginados = (cargueId: string): DetalleCargueCredito[] => {
-    const detalles = getDetallesCargue(cargueId);
-    const currentPage = detallesPagination[cargueId] || 1;
-    const currentItemsPerPage = detallesItemsPerPage[cargueId] || 10;
-    const startIndex = (currentPage - 1) * currentItemsPerPage;
-    const endIndex = startIndex + currentItemsPerPage;
-    return detalles.slice(startIndex, endIndex);
+  const cerrarDetalle = () => {
+    setDetalleSeleccionado(null);
   };
 
-  const getTotalPages = (cargueId: string): number => {
-    const detalles = getDetallesCargue(cargueId);
-    const currentItemsPerPage = detallesItemsPerPage[cargueId] || 10;
-    return Math.ceil(detalles.length / currentItemsPerPage);
+  const getDetallesPaginados = (): DetalleCargueCredito[] => {
+    if (!detalleSeleccionado) return [];
+    const startIndex = (detallesPagination - 1) * detallesItemsPerPage;
+    const endIndex = startIndex + detallesItemsPerPage;
+    return detalleSeleccionado.detalles.slice(startIndex, endIndex);
   };
 
-  const changePage = (cargueId: string, newPage: number) => {
-    setDetallesPagination(prev => ({
-      ...prev,
-      [cargueId]: newPage
-    }));
+  const getTotalPages = (): number => {
+    if (!detalleSeleccionado) return 0;
+    return Math.ceil(detalleSeleccionado.detalles.length / detallesItemsPerPage);
   };
 
-  const changeItemsPerPage = (cargueId: string, newItemsPerPage: number) => {
-    setDetallesItemsPerPage(prev => ({
-      ...prev,
-      [cargueId]: newItemsPerPage
-    }));
-    // Reset to first page when changing items per page
-    setDetallesPagination(prev => ({
-      ...prev,
-      [cargueId]: 1
-    }));
+  const changePage = (newPage: number) => {
+    setDetallesPagination(newPage);
+  };
+
+  const changeItemsPerPage = (newItemsPerPage: number) => {
+    setDetallesItemsPerPage(newItemsPerPage);
+    setDetallesPagination(1);
   };
 
   return (
@@ -137,133 +118,30 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                     </TableRow>
                   ) : (
                     cargues.map((cargue) => (
-                      <React.Fragment key={cargue.id}>
-                        <TableRow>
-                          <TableCell className="font-medium">
-                            {formatDateTime(cargue.fechaCargue)}
-                          </TableCell>
-                          <TableCell>{cargue.nombreArchivo}</TableCell>
-                          <TableCell>{cargue.nombreUsuario}</TableCell>
-                          <TableCell>
-                            <Badge className={getEstadoBadgeColor(cargue.estado)}>
-                              {cargue.estado}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            {cargue.estado !== 'Procesado con error' && (
-                              <Collapsible
-                                open={expandedRows.has(cargue.id)}
-                                onOpenChange={() => toggleRowExpansion(cargue.id)}
-                              >
-                                <CollapsibleTrigger asChild>
-                                  <Button variant="outline" size="sm">
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    Ver
-                                    {expandedRows.has(cargue.id) ? (
-                                      <ChevronUp className="h-4 w-4 ml-1" />
-                                    ) : (
-                                      <ChevronDown className="h-4 w-4 ml-1" />
-                                    )}
-                                  </Button>
-                                </CollapsibleTrigger>
-                              </Collapsible>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                        
-                        {/* Fila expandible con detalles */}
-                        <Collapsible
-                          open={expandedRows.has(cargue.id)}
-                          onOpenChange={() => toggleRowExpansion(cargue.id)}
-                        >
-                          <CollapsibleContent asChild>
-                            <TableRow>
-                              <TableCell colSpan={5} className="p-0">
-                                <Card className="m-4 border-l-4 border-l-blue-500">
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-base">Detalle de cargue</CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                     <div className="w-full">
-                                       <Table className="w-full">
-                                         <TableHeader>
-                                           <TableRow>
-                                             <TableHead className="w-[180px]">Fecha de carga</TableHead>
-                                             <TableHead className="w-[120px] text-right">Monto</TableHead>
-                                             <TableHead className="w-[200px]">Pasajero</TableHead>
-                                             <TableHead className="w-[150px]">Cédula</TableHead>
-                                             <TableHead className="w-[200px]">Empresa</TableHead>
-                                           </TableRow>
-                                         </TableHeader>
-                                        <TableBody>
-                                          {getDetallesPaginados(cargue.id).map((detalle) => (
-                                            <TableRow key={detalle.id}>
-                                              <TableCell className="text-sm">
-                                                {formatDateTime(detalle.fechaCargue)}
-                                              </TableCell>
-                                              <TableCell className="text-right font-medium">
-                                                {formatCurrency(detalle.monto)}
-                                              </TableCell>
-                                              <TableCell>{detalle.nombrePasajero}</TableCell>
-                                              <TableCell>{detalle.cedula}</TableCell>
-                                              <TableCell className="text-sm">{detalle.empresa}</TableCell>
-                                            </TableRow>
-                                          ))}
-                                        </TableBody>
-                                      </Table>
-                                    </div>
-                                    
-                                    {/* Paginación para detalles */}
-                                    {getTotalPages(cargue.id) > 1 && (
-                                      <div className="flex justify-between items-center mt-4">
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-sm text-muted-foreground">Registros por página:</span>
-                                          <Select 
-                                            value={(detallesItemsPerPage[cargue.id] || 10).toString()} 
-                                            onValueChange={(value) => changeItemsPerPage(cargue.id, Number(value))}
-                                          >
-                                            <SelectTrigger className="h-8 w-16">
-                                              <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              <SelectItem value="5">5</SelectItem>
-                                              <SelectItem value="10">10</SelectItem>
-                                              <SelectItem value="20">20</SelectItem>
-                                              <SelectItem value="50">50</SelectItem>
-                                            </SelectContent>
-                                          </Select>
-                                        </div>
-                                        
-                                        <div className="flex justify-center items-center gap-2">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) - 1)}
-                                            disabled={(detallesPagination[cargue.id] || 1) === 1}
-                                          >
-                                            Anterior
-                                          </Button>
-                                          <span className="text-sm text-muted-foreground">
-                                            Página {detallesPagination[cargue.id] || 1} de {getTotalPages(cargue.id)}
-                                          </span>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => changePage(cargue.id, (detallesPagination[cargue.id] || 1) + 1)}
-                                            disabled={(detallesPagination[cargue.id] || 1) === getTotalPages(cargue.id)}
-                                          >
-                                            Siguiente
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </CardContent>
-                                </Card>
-                              </TableCell>
-                            </TableRow>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </React.Fragment>
+                      <TableRow key={cargue.id}>
+                        <TableCell className="font-medium">
+                          {formatDateTime(cargue.fechaCargue)}
+                        </TableCell>
+                        <TableCell>{cargue.nombreArchivo}</TableCell>
+                        <TableCell>{cargue.nombreUsuario}</TableCell>
+                        <TableCell>
+                          <Badge className={getEstadoBadgeColor(cargue.estado)}>
+                            {cargue.estado}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {cargue.estado !== 'Procesado con error' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => verDetalle(cargue)}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              Ver
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
                     ))
                   )}
                 </TableBody>
@@ -272,6 +150,102 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Sección de detalle separada */}
+      {detalleSeleccionado && (
+        <Card className="border-l-4 border-l-blue-500">
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-base">
+                Detalle de cargue - {detalleSeleccionado.cargue.nombreArchivo}
+              </CardTitle>
+              <Button variant="ghost" size="sm" onClick={cerrarDetalle}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Fecha: {formatDateTime(detalleSeleccionado.cargue.fechaCargue)} | 
+              Usuario: {detalleSeleccionado.cargue.nombreUsuario} | 
+              Total registros: {detalleSeleccionado.detalles.length}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="w-full">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[180px]">Fecha de carga</TableHead>
+                    <TableHead className="w-[120px] text-right">Monto</TableHead>
+                    <TableHead className="w-[200px]">Pasajero</TableHead>
+                    <TableHead className="w-[150px]">Cédula</TableHead>
+                    <TableHead className="w-[200px]">Empresa</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {getDetallesPaginados().map((detalle) => (
+                    <TableRow key={detalle.id}>
+                      <TableCell className="text-sm">
+                        {formatDateTime(detalle.fechaCargue)}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatCurrency(detalle.monto)}
+                      </TableCell>
+                      <TableCell>{detalle.nombrePasajero}</TableCell>
+                      <TableCell>{detalle.cedula}</TableCell>
+                      <TableCell className="text-sm">{detalle.empresa}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            
+            {/* Paginación para detalles */}
+            {getTotalPages() > 1 && (
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Registros por página:</span>
+                  <Select 
+                    value={detallesItemsPerPage.toString()} 
+                    onValueChange={(value) => changeItemsPerPage(Number(value))}
+                  >
+                    <SelectTrigger className="h-8 w-16">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex justify-center items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => changePage(detallesPagination - 1)}
+                    disabled={detallesPagination === 1}
+                  >
+                    Anterior
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Página {detallesPagination} de {getTotalPages()}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => changePage(detallesPagination + 1)}
+                    disabled={detallesPagination === getTotalPages()}
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

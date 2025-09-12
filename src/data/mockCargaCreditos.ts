@@ -46,7 +46,7 @@ export const mockCarguesCreditos: CargueCredito[] = [
   {
     id: '1',
     fechaCargue: generateDynamicDate(0), // Hoy
-    nombreArchivo: 'cargue_creditos_2025_01_15.xlsx',
+    nombreArchivo: 'cargue_creditos_matutino_2025_01_15.xlsx',
     nombreUsuario: 'admin@empresa.com',
     estado: 'Procesado',
     totalRegistros: 150,
@@ -56,6 +56,48 @@ export const mockCarguesCreditos: CargueCredito[] = [
     zonaFranca: 'Zona Franca Coyol',
     fechaCreacion: generateDynamicDate(0),
     usuarioCreacion: 'admin@empresa.com'
+  },
+  {
+    id: '2',
+    fechaCargue: generateDynamicDate(0), // Hoy
+    nombreArchivo: 'cargue_creditos_vespertino_2025_01_15.xlsx',
+    nombreUsuario: 'supervisor@empresa.com',
+    estado: 'Procesado con error',
+    totalRegistros: 85,
+    registrosExitosos: 80,
+    registrosConError: 5,
+    montoTotal: 1200000,
+    zonaFranca: 'Zona Franca Metropolitana',
+    fechaCreacion: generateDynamicDate(0),
+    usuarioCreacion: 'supervisor@empresa.com'
+  },
+  {
+    id: '3',
+    fechaCargue: generateDynamicDate(0), // Hoy
+    nombreArchivo: 'cargue_creditos_nocturno_2025_01_15.xlsx',
+    nombreUsuario: 'it@empresa.com',
+    estado: 'Procesado',
+    totalRegistros: 120,
+    registrosExitosos: 120,
+    registrosConError: 0,
+    montoTotal: 1800000,
+    zonaFranca: 'Zona Franca El Coyol',
+    fechaCreacion: generateDynamicDate(0),
+    usuarioCreacion: 'it@empresa.com'
+  },
+  {
+    id: '4',
+    fechaCargue: generateDynamicDate(0), // Hoy
+    nombreArchivo: 'cargue_creditos_especial_2025_01_15.xlsx',
+    nombreUsuario: 'hr@empresa.com',
+    estado: 'Procesado',
+    totalRegistros: 95,
+    registrosExitosos: 95,
+    registrosConError: 0,
+    montoTotal: 1425000,
+    zonaFranca: 'Zona Franca América',
+    fechaCreacion: generateDynamicDate(0),
+    usuarioCreacion: 'hr@empresa.com'
   },
   {
     id: '2',
