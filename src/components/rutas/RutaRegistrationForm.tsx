@@ -872,7 +872,7 @@ const RutaRegistrationForm = () => {
                     <h3 className="text-base font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[350px]">
                       <RutaRecorridoMap 
-                        paradas={paradasAsignadas}
+                        paradas={puntosRecorrido}
                         puntosRecorrido={puntosRecorridoDibujados}
                         onAgregarPunto={agregarPuntoDibujado}
                         onLimpiarRecorrido={limpiarRecorrido}
