@@ -231,8 +231,8 @@ const CargaCreditosIndex = () => {
             <TablaCargaCreditos cargues={carguesPaginados} />
           </div>
         </div>
-
-        {/* Paginación */}
+        
+        {/* Paginación principal */}
         {totalPages > 1 && (
           <div className="flex justify-center">
             <CargaCreditosPagination 
