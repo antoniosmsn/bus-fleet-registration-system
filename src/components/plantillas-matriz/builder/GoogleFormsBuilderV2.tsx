@@ -300,43 +300,41 @@ export function GoogleFormsBuilderV2({
       return;
     }
 
-    // Validate that sections with weight > 0 have at least one field with weight
+    // Validate that sections with checkbox/radio fields have correct field weights
     for (const seccion of builderData.secciones) {
-      if (seccion.peso > 0) {
-        const camposConPeso = seccion.campos.filter(campo => 
-          (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso > 0
+      const camposConPeso = seccion.campos.filter(campo => 
+        (campo.tipo === 'checkbox' || campo.tipo === 'radio')
+      );
+      
+      if (camposConPeso.length > 0) {
+        const camposSinPeso = camposConPeso.filter(campo => 
+          campo.peso === undefined || campo.peso === null || campo.peso === 0
         );
         
-        if (camposConPeso.length === 0) {
-          const tieneCheckboxRadio = seccion.campos.some(campo => 
-            campo.tipo === 'checkbox' || campo.tipo === 'radio'
-          );
-          
-          if (tieneCheckboxRadio) {
-            toast({
-              title: "Error de validación",
-              description: `La sección "${seccion.nombre}" tiene peso pero sus campos checkbox/radio no tienen peso asignado`,
-              variant: "destructive"
-            });
-            return;
-          }
+        if (camposSinPeso.length > 0) {
+          toast({
+            title: "Error de validación",
+            description: `La sección "${seccion.nombre}" tiene campos checkbox/radio sin peso asignado`,
+            variant: "destructive"
+          });
+          return;
         }
       }
     }
 
-    // Check each section's field weights sum to section weight
+    // Check each section's field weights sum to 100%
     for (const seccion of builderData.secciones) {
-      if (seccion.peso > 0) {
-        const camposConPeso = seccion.campos.filter(campo => 
-          (campo.tipo === 'checkbox' || campo.tipo === 'radio') && campo.peso > 0
-        );
-        
+      const camposConPeso = seccion.campos.filter(campo => 
+        (campo.tipo === 'checkbox' || campo.tipo === 'radio')
+      );
+      
+      if (camposConPeso.length > 0) {
         const pesoTotalCampos = camposConPeso.reduce((total, campo) => total + (campo.peso || 0), 0);
         
-        if (Math.abs(pesoTotalCampos - seccion.peso) > 0.1) { // Allow small floating point differences
+        if (Math.abs(pesoTotalCampos - 100) > 0.1) { // Allow small floating point differences
           toast({
             title: "Error de validación",
-            description: `En la sección "${seccion.nombre}", la suma de pesos de campos (${pesoTotalCampos}%) debe ser igual al peso de la sección (${seccion.peso}%)`,
+            description: `En la sección "${seccion.nombre}", la suma de pesos de campos (${pesoTotalCampos}%) debe ser exactamente 100%`,
             variant: "destructive"
           });
           return;

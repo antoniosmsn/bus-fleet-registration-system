@@ -180,6 +180,30 @@ export function GoogleFormsSectionV2({
             </h3>
           )}
         </div>
+
+        {/* Field weights validation indicator */}
+        {(() => {
+          const camposConPeso = seccion.campos.filter(campo => 
+            campo.tipo === 'checkbox' || campo.tipo === 'radio'
+          );
+          
+          if (camposConPeso.length > 0) {
+            const pesoTotalCampos = camposConPeso.reduce((total, campo) => total + (campo.peso || 0), 0);
+            const isValidFieldWeights = Math.abs(pesoTotalCampos - 100) < 0.1;
+            
+            return (
+              <div className="mt-2">
+                <Badge 
+                  variant={isValidFieldWeights ? "default" : "destructive"}
+                  className="text-xs"
+                >
+                  Campos: {pesoTotalCampos}% {isValidFieldWeights ? '✓' : '(debe ser 100%)'}
+                </Badge>
+              </div>
+            );
+          }
+          return null;
+        })()}
       </CardHeader>
 
       {/* Section Content */}
