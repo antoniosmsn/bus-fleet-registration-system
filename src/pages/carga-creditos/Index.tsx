@@ -27,7 +27,7 @@ const CargaCreditosIndex = () => {
   });
   const [cargues] = useState<CargueCredito[]>(mockCarguesCreditos);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
   const [mostrarModalErrores, setMostrarModalErrores] = useState(false);
   const [erroresCarga, setErroresCarga] = useState<ErrorValidacion[]>([]);
   const [nombreArchivoConErrores, setNombreArchivoConErrores] = useState('');
