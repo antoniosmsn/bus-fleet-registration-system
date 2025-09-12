@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import Layout from '@/components/layout/Layout';
 import CargaCreditosFiltros from '@/components/carga-creditos/CargaCreditosFiltros';
 import TablaCargaCreditos from '@/components/carga-creditos/TablaCargaCreditos';
+import DetallesCargaCreditos from '@/components/carga-creditos/DetallesCargaCreditos';
 import CargaCreditosPagination from '@/components/carga-creditos/CargaCreditosPagination';
 import ModalErroresCarga, { ErrorValidacion } from '@/components/carga-creditos/ModalErroresCarga';
 import { CargueCredito, FiltrosCargueCredito } from '@/types/carga-creditos';
@@ -13,6 +14,9 @@ import { isDateInRange } from '@/lib/dateUtils';
 import { registrarAcceso, registrarExportacion } from '@/services/bitacoraService';
 
 const CargaCreditosIndex = () => {
+  // ... keep existing code (initialization functions)
+  
+  const [detalleSeleccionado, setDetalleSeleccionado] = useState<CargueCredito | null>(null);
   // Obtener fecha actual en formato YYYY-MM-DD
   const getCurrentDate = () => {
     const now = new Date();
@@ -100,6 +104,14 @@ const CargaCreditosIndex = () => {
   const handleItemsPerPageChange = (newItemsPerPage: number) => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const handleVerDetalle = (cargue: CargueCredito) => {
+    setDetalleSeleccionado(cargue);
+  };
+
+  const handleCerrarDetalle = () => {
+    setDetalleSeleccionado(null);
   };
 
   const handleCargarArchivo = () => {
@@ -228,7 +240,10 @@ const CargaCreditosIndex = () => {
         
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="p-6">
-            <TablaCargaCreditos cargues={carguesPaginados} />
+            <TablaCargaCreditos 
+              cargues={carguesPaginados} 
+              onVerDetalle={handleVerDetalle}
+            />
           </div>
         </div>
         
@@ -249,6 +264,14 @@ const CargaCreditosIndex = () => {
         <div className="text-sm text-muted-foreground text-center">
           Mostrando {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, carguesOrdenados.length)} de {carguesOrdenados.length} cargues
         </div>
+
+        {/* Detalle de cargue */}
+        {detalleSeleccionado && (
+          <DetallesCargaCreditos 
+            cargue={detalleSeleccionado}
+            onCerrar={handleCerrarDetalle}
+          />
+        )}
 
         {/* Modal de errores de carga */}
         <ModalErroresCarga
