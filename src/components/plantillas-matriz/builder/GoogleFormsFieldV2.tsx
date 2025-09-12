@@ -283,11 +283,27 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dra
                   <Input
                     type="number"
                     value={campo.peso || ''}
-                    placeholder="Auto"
-                    className="w-16 h-7 text-xs bg-muted"
-                    readOnly
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '') {
+                        onUpdate({ peso: undefined });
+                      } else {
+                        const newWeight = parseFloat(value);
+                        if (newWeight >= 1 && newWeight <= 100) {
+                          onUpdate({ peso: newWeight });
+                        }
+                      }
+                    }}
+                    placeholder="1-100"
+                    className={`w-16 h-7 text-xs ${
+                      campo.peso === undefined || campo.peso < 1 || campo.peso > 100
+                        ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                        : ''
+                    }`}
+                    min="1"
+                    max="100"
                   />
-                  <span className="text-xs text-muted-foreground">% (auto)</span>
+                  <span className="text-xs text-muted-foreground">%</span>
                 </div>
               )}
             </div>

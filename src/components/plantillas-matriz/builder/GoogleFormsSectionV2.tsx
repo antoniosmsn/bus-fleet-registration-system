@@ -54,13 +54,9 @@ export function GoogleFormsSectionV2({
     const weight = parseFloat(tempWeight);
     if (!isNaN(weight) && weight >= 0 && weight <= 100) {
       onUpdate({ peso: weight });
-      // Redistribute field weights proportionally if section weight > 0
-      if (weight > 0) {
-        redistributeFieldWeights(weight);
-      }
       setIsEditingWeight(false);
-    } else if (tempWeight === '' || weight === 0) {
-      onUpdate({ peso: 0 });
+    } else if (tempWeight === '') {
+      onUpdate({ peso: undefined });
       setIsEditingWeight(false);
     }
   };
@@ -127,11 +123,9 @@ export function GoogleFormsSectionV2({
                 <Badge 
                   variant="outline" 
                   className={`cursor-pointer ${
-                    !seccion.peso && seccion.peso !== 0 
+                    seccion.peso === undefined 
                       ? 'border-destructive text-destructive' 
-                      : seccion.peso === 0 
-                        ? 'border-amber-500 text-amber-600' 
-                        : ''
+                      : ''
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -139,7 +133,7 @@ export function GoogleFormsSectionV2({
                     setIsEditingWeight(true);
                   }}
                 >
-                  {seccion.peso !== undefined ? `${seccion.peso}%` : 'Sin peso'}
+                  {seccion.peso !== undefined ? `${seccion.peso}%` : 'Peso requerido'}
                 </Badge>
               )}
             </div>
