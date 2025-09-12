@@ -99,7 +99,12 @@ export function GoogleFormsSectionV2({
                 <div className="flex items-center gap-1">
                   <Input
                     value={tempWeight}
-                    onChange={(e) => setTempWeight(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
+                        setTempWeight(value);
+                      }
+                    }}
                     onBlur={handleSaveWeight}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -114,7 +119,7 @@ export function GoogleFormsSectionV2({
                     type="number"
                     min="0"
                     max="100"
-                    placeholder="Peso"
+                    placeholder="0-100"
                     autoFocus
                   />
                   <span className="text-xs text-muted-foreground">%</span>
