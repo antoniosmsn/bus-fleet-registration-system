@@ -15,7 +15,18 @@ interface CargaCreditosFiltrosProps {
 const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({ 
   onFilter
 }) => {
-  const [filtros, setFiltros] = useState<FiltrosCargueCredito>({});
+  // Obtener fecha actual en formato YYYY-MM-DD
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+
+  const [filtros, setFiltros] = useState<FiltrosCargueCredito>({
+    fechaInicio: getCurrentDate(),
+    fechaFin: getCurrentDate(),
+    horaInicio: "00:00",
+    horaFin: "23:59"
+  });
 
   const handleInputChange = (field: keyof FiltrosCargueCredito, value: string) => {
     setFiltros(prev => ({
@@ -36,8 +47,14 @@ const CargaCreditosFiltros: React.FC<CargaCreditosFiltrosProps> = ({
   };
 
   const limpiarFiltros = () => {
-    setFiltros({});
-    onFilter({});
+    const defaultFilters = {
+      fechaInicio: getCurrentDate(),
+      fechaFin: getCurrentDate(),
+      horaInicio: "00:00",
+      horaFin: "23:59"
+    };
+    setFiltros(defaultFilters);
+    onFilter(defaultFilters);
   };
 
   return (

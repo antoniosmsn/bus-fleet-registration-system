@@ -184,17 +184,17 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues }) => {
                                     <CardTitle className="text-base">Detalle de cargue</CardTitle>
                                   </CardHeader>
                                   <CardContent>
-                                    <div className="overflow-x-auto">
-                                      <Table>
-                                        <TableHeader>
-                                          <TableRow>
-                                            <TableHead>Fecha de carga</TableHead>
-                                            <TableHead className="text-right">Monto</TableHead>
-                                            <TableHead>Pasajero</TableHead>
-                                            <TableHead>Cédula</TableHead>
-                                            <TableHead>Empresa</TableHead>
-                                          </TableRow>
-                                        </TableHeader>
+                                     <div className="w-full">
+                                       <Table className="w-full">
+                                         <TableHeader>
+                                           <TableRow>
+                                             <TableHead className="w-[180px]">Fecha de carga</TableHead>
+                                             <TableHead className="w-[120px] text-right">Monto</TableHead>
+                                             <TableHead className="w-[200px]">Pasajero</TableHead>
+                                             <TableHead className="w-[150px]">Cédula</TableHead>
+                                             <TableHead className="w-[200px]">Empresa</TableHead>
+                                           </TableRow>
+                                         </TableHeader>
                                         <TableBody>
                                           {getDetallesPaginados(cargue.id).map((detalle) => (
                                             <TableRow key={detalle.id}>

@@ -13,7 +13,18 @@ import { isDateInRange } from '@/lib/dateUtils';
 import { registrarAcceso, registrarExportacion } from '@/services/bitacoraService';
 
 const CargaCreditosIndex = () => {
-  const [filtros, setFiltros] = useState<FiltrosCargueCredito>({});
+  // Obtener fecha actual en formato YYYY-MM-DD
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+
+  const [filtros, setFiltros] = useState<FiltrosCargueCredito>({
+    fechaInicio: getCurrentDate(),
+    fechaFin: getCurrentDate(),
+    horaInicio: "00:00",
+    horaFin: "23:59"
+  });
   const [cargues] = useState<CargueCredito[]>(mockCarguesCreditos);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
