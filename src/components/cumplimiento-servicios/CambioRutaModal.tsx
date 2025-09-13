@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
@@ -18,9 +18,42 @@ interface CambioRutaModalProps {
   onClose: () => void;
 }
 
+interface ConfirmacionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading: boolean;
+}
+
+const ConfirmacionModal: React.FC<ConfirmacionModalProps> = ({ isOpen, onClose, onConfirm, isLoading }) => (
+  <Dialog open={isOpen} onOpenChange={onClose}>
+    <DialogContent className="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>Confirmar Cambio de Ruta</DialogTitle>
+      </DialogHeader>
+      <div className="py-4">
+        <p className="text-sm text-muted-foreground">
+          ¿Está seguro de que desea realizar el cambio de ruta?
+        </p>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={onClose} disabled={isLoading}>
+          Cancelar
+        </Button>
+        <Button onClick={onConfirm} disabled={isLoading}>
+          {isLoading ? 'Procesando...' : 'Confirmar'}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+);
+
 const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
-  const [open, setOpen] = useState(false);
+  const [sentidoSeleccionado, setSentidoSeleccionado] = useState<SentidoRuta>('ingreso');
+  const [openRuta, setOpenRuta] = useState(false);
+  const [openSentido, setOpenSentido] = useState(false);
+  const [showConfirmacion, setShowConfirmacion] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -37,16 +70,29 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
     return rutasParaMostrar;
   }, [servicio, isOpen]);
 
-  // Get unique route names for the selector (showing all available routes)
+  // Get unique route names for the selector (showing routes with service number)
   const rutasUnicas = React.useMemo(() => {
     console.log('Rutas disponibles:', rutasDisponibles);
-    const rutas = rutasDisponibles.map((ruta, index) => ({
-      ...ruta,
-      displayName: `${ruta.nombre} - ${ruta.sentido === 'ingreso' ? 'Ingreso' : 'Salida'}`
-    }));
+    const rutasUnicasMap = new Map();
+    
+    rutasDisponibles.forEach((ruta) => {
+      if (!rutasUnicasMap.has(ruta.nombre)) {
+        rutasUnicasMap.set(ruta.nombre, {
+          ...ruta,
+          displayName: `${ruta.nombre} (${servicio?.numeroServicio || 'S-001'})`
+        });
+      }
+    });
+    
+    const rutas = Array.from(rutasUnicasMap.values());
     console.log('Rutas únicas procesadas:', rutas);
     return rutas;
-  }, [rutasDisponibles]);
+  }, [rutasDisponibles, servicio?.numeroServicio]);
+
+  const opcionesSentido = [
+    { value: 'ingreso' as SentidoRuta, label: 'Ingreso' },
+    { value: 'salida' as SentidoRuta, label: 'Salida' }
+  ];
 
   // Set default route when modal opens
   React.useEffect(() => {
@@ -57,7 +103,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   if (!servicio) return null;
 
-  const handleSubmit = async () => {
+  const handleSolicitarCambio = () => {
     // Validate required fields
     if (!nuevaRutaId) {
       toast({
@@ -68,8 +114,7 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       return;
     }
 
-
-    const rutaSeleccionada = mockRamales.find(r => r.id === nuevaRutaId);
+    const rutaSeleccionada = rutasUnicas.find(r => r.id === nuevaRutaId);
     if (!rutaSeleccionada) {
       toast({
         title: "Error",
@@ -79,20 +124,11 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       return;
     }
 
-    // Validate that it's not the same route as current
-    const rutaActual = mockRamales.find(r => 
-      r.nombre === servicio.ramal && r.empresaTransporte === servicio.empresaTransporte
-    );
+    // Show confirmation modal
+    setShowConfirmacion(true);
+  };
 
-    if (rutaActual && rutaSeleccionada.nombre === rutaActual.nombre) {
-      toast({
-        title: "Error",
-        description: "Debe seleccionar una ruta diferente a la actual",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleConfirmarCambio = async () => {
     setIsSubmitting(true);
 
     try {
@@ -103,14 +139,17 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
       const success = Math.random() > 0.2; // 80% success rate
 
       if (success) {
+        const rutaSeleccionada = rutasUnicas.find(r => r.id === nuevaRutaId);
+        
         // Log the change request to bitácora
         registrarAcceso('CAMBIO_RUTA', {
-          servicioId: servicio.id,
-          numeroServicio: servicio.numeroServicio,
-          rutaOriginal: servicio.ramal,
-          rutaNueva: rutaSeleccionada.nombre,
-          empresaTransporte: servicio.empresaTransporte,
-          autobus: servicio.autobus,
+          servicioId: servicio!.id,
+          numeroServicio: servicio!.numeroServicio,
+          rutaOriginal: servicio!.ramal,
+          rutaNueva: rutaSeleccionada?.nombre,
+          sentidoNuevo: sentidoSeleccionado,
+          empresaTransporte: servicio!.empresaTransporte,
+          autobus: servicio!.autobus,
           usuario: 'Usuario actual' // In real implementation, get from auth context
         });
 
@@ -120,8 +159,10 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           variant: "default",
         });
 
-        // Reset form and close modal
+        // Reset form and close modals
         setNuevaRutaId('');
+        setSentidoSeleccionado('ingreso');
+        setShowConfirmacion(false);
         onClose();
       } else {
         throw new Error('Error simulado del servidor');
@@ -139,103 +180,155 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
 
   const handleCancel = () => {
     setNuevaRutaId('');
-    setOpen(false);
+    setSentidoSeleccionado('ingreso');
+    setOpenRuta(false);
+    setOpenSentido(false);
+    setShowConfirmacion(false);
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Cambio de Ruta</DialogTitle>
-          <DialogDescription>
-            Solicitar cambio de ruta para el servicio {servicio.numeroServicio}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Cambio de Ruta</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Current service info */}
-          <div className="bg-muted p-3 rounded-lg space-y-2">
-            <h4 className="text-sm font-medium">Información Actual</h4>
-            <div className="text-sm text-muted-foreground">
-              <p><strong>Ruta:</strong> {servicio.ramal}</p>
-              <p><strong>Autobús:</strong> {servicio.autobus}</p>
-              <p><strong>Empresa:</strong> {servicio.empresaTransporte}</p>
+          <div className="space-y-4">
+            {/* Current service info */}
+            <div className="bg-muted p-3 rounded-lg space-y-2">
+              <h4 className="text-sm font-medium">Información Actual</h4>
+              <div className="text-sm text-muted-foreground">
+                <p><strong>Ruta:</strong> {servicio.ramal}</p>
+                <p><strong>Autobús:</strong> {servicio.autobus}</p>
+                <p><strong>Empresa Transporte:</strong> {servicio.empresaTransporte}</p>
+              </div>
             </div>
-          </div>
 
-          {/* Nueva ruta selector */}
-          <div className="space-y-2">
-            <Label htmlFor="nueva-ruta">Nueva Ruta <span className="text-destructive">*</span></Label>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className={cn(
-                    "w-full justify-between",
-                    !nuevaRutaId && "border-destructive text-muted-foreground"
-                  )}
-                >
-                  {nuevaRutaId
-                    ? rutasUnicas.find((ruta) => ruta.id === nuevaRutaId)?.displayName
-                    : "Seleccionar nueva ruta..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
-                <Command>
-                  <CommandInput placeholder="Buscar ruta..." />
-                  <CommandList>
-                    <CommandEmpty>No se encontraron rutas.</CommandEmpty>
-                    <CommandGroup>
-                      {rutasUnicas.length > 0 ? (
-                        rutasUnicas.map((ruta) => (
+            {/* Nueva ruta selector */}
+            <div className="space-y-2">
+              <Label htmlFor="nueva-ruta">Ruta <span className="text-destructive">*</span></Label>
+              <Popover open={openRuta} onOpenChange={setOpenRuta}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openRuta}
+                    className={cn(
+                      "w-full justify-between",
+                      !nuevaRutaId && "border-destructive text-muted-foreground"
+                    )}
+                  >
+                    {nuevaRutaId
+                      ? rutasUnicas.find((ruta) => ruta.id === nuevaRutaId)?.displayName
+                      : "Seleccionar ruta..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
+                  <Command>
+                    <CommandInput placeholder="Buscar ruta..." />
+                    <CommandList>
+                      <CommandEmpty>No se encontraron rutas.</CommandEmpty>
+                      <CommandGroup>
+                        {rutasUnicas.length > 0 ? (
+                          rutasUnicas.map((ruta) => (
+                            <CommandItem
+                              key={ruta.id}
+                              value={ruta.displayName}
+                              onSelect={() => {
+                                setNuevaRutaId(ruta.id === nuevaRutaId ? "" : ruta.id);
+                                setOpenRuta(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  nuevaRutaId === ruta.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {ruta.displayName}
+                            </CommandItem>
+                          ))
+                        ) : (
+                          <CommandItem disabled>
+                            No hay rutas disponibles
+                          </CommandItem>
+                        )}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Sentido selector */}
+            <div className="space-y-2">
+              <Label htmlFor="sentido">Sentido <span className="text-destructive">*</span></Label>
+              <Popover open={openSentido} onOpenChange={setOpenSentido}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openSentido}
+                    className="w-full justify-between"
+                  >
+                    {opcionesSentido.find((opcion) => opcion.value === sentidoSeleccionado)?.label}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" style={{zIndex: 999999}}>
+                  <Command>
+                    <CommandList>
+                      <CommandGroup>
+                        {opcionesSentido.map((opcion) => (
                           <CommandItem
-                            key={ruta.id}
-                            value={ruta.displayName}
+                            key={opcion.value}
+                            value={opcion.label}
                             onSelect={() => {
-                              setNuevaRutaId(ruta.id === nuevaRutaId ? "" : ruta.id);
-                              setOpen(false);
+                              setSentidoSeleccionado(opcion.value);
+                              setOpenSentido(false);
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                nuevaRutaId === ruta.id ? "opacity-100" : "opacity-0"
+                                sentidoSeleccionado === opcion.value ? "opacity-100" : "opacity-0"
                               )}
                             />
-                            {ruta.displayName}
-                            {ruta.empresaCliente ? ` (${ruta.empresaCliente})` : ''}
+                            {opcion.label}
                           </CommandItem>
-                        ))
-                      ) : (
-                        <CommandItem disabled>
-                          No hay rutas disponibles
-                        </CommandItem>
-                      )}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCancel} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isSubmitting || !nuevaRutaId}
-          >
-            {isSubmitting ? 'Enviando...' : 'Solicitar Cambio'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleSolicitarCambio} 
+              disabled={!nuevaRutaId}
+            >
+              Solicitar Cambio
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmacionModal
+        isOpen={showConfirmacion}
+        onClose={() => setShowConfirmacion(false)}
+        onConfirm={handleConfirmarCambio}
+        isLoading={isSubmitting}
+      />
+    </>
   );
 };
 
