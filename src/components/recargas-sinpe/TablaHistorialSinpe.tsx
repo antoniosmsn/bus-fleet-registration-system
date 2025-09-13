@@ -31,6 +31,7 @@ export default function TablaHistorialSinpe({
   const [modalConciliarAbierto, setModalConciliarAbierto] = useState(false);
   const [detalleAConciliar, setDetalleAConciliar] = useState<DetalleConciliacionSinpe | null>(null);
   const [mostrarDialogoSap, setMostrarDialogoSap] = useState(false);
+  const [sapDialogMostradoId, setSapDialogMostradoId] = useState<string | null>(null);
   const handleAbrirModalConciliar = (detalle: DetalleConciliacionSinpe) => {
     setDetalleAConciliar(detalle);
     setModalConciliarAbierto(true);
@@ -50,15 +51,16 @@ export default function TablaHistorialSinpe({
     setDetalleAConciliar(null);
   };
 
-  // Verificar si todas las filas están conciliadas
+  // Verificar si todas las filas están conciliadas y abrir solo una vez por archivo
   useEffect(() => {
     if (archivoSeleccionado && detalles.length > 0) {
       const todasConciliadas = detalles.every(detalle => detalle.conciliado);
-      if (todasConciliadas && !mostrarDialogoSap) {
+      if (todasConciliadas && !mostrarDialogoSap && sapDialogMostradoId !== archivoSeleccionado.id) {
         setMostrarDialogoSap(true);
+        setSapDialogMostradoId(archivoSeleccionado.id);
       }
     }
-  }, [detalles, archivoSeleccionado, mostrarDialogoSap]);
+  }, [detalles, archivoSeleccionado, mostrarDialogoSap, sapDialogMostradoId]);
 
   const handleConfirmarDescargaSap = () => {
     setMostrarDialogoSap(false);
