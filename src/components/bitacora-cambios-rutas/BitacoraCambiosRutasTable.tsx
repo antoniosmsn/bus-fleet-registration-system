@@ -226,10 +226,10 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                 <TableHead>Ruta Final</TableHead>
                 <TableHead>Servicio Original</TableHead>
                 <TableHead>Servicio Final</TableHead>
-                <HeaderSortable campo="usuario">Usuario</HeaderSortable>
+                <HeaderSortable campo="usuario">Usuario que solicita cambio</HeaderSortable>
                 <HeaderSortable campo="fechaCambio">Fecha Cambio</HeaderSortable>
                 <HeaderSortable campo="fechaServicio">Fecha Servicio</HeaderSortable>
-                <HeaderSortable campo="cantidadPasajeros">Pasajeros</HeaderSortable>
+                <HeaderSortable campo="cantidadPasajeros">Pasajeros afectados</HeaderSortable>
                 <TableHead>Monto Original</TableHead>
                 <TableHead>Monto Final</TableHead>
                 <HeaderSortable campo="estado">Estado</HeaderSortable>
