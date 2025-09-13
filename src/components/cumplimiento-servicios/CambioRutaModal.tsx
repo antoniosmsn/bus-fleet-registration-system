@@ -203,6 +203,8 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
                 <p><strong>Ruta:</strong> {servicio.ramal}</p>
                 <p><strong>Autobús:</strong> {servicio.autobus}</p>
                 <p><strong>Empresa Transporte:</strong> {servicio.empresaTransporte}</p>
+                <p><strong>Sentido:</strong> Ingreso</p>
+                <p><strong>Servicio:</strong> {servicio.numeroServicio}</p>
               </div>
             </div>
 
