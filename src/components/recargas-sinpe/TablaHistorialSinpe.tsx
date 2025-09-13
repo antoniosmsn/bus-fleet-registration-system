@@ -206,6 +206,18 @@ export default function TablaHistorialSinpe({
                   <Download className="h-4 w-4" />
                   Archivo Facturación
                 </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    toast.success('Generando aplicación de pago', {
+                      description: 'El archivo de aplicación de pago se está preparando...'
+                    });
+                  }}
+                  className="gap-2"
+                >
+                  <CreditCard className="h-4 w-4" />
+                  Aplicación de pago
+                </Button>
               </div>
             </div>
           </CardHeader>
