@@ -63,5 +63,6 @@ export interface BitacoraCambioRutaFilter {
   numeroServicio: string;
   empresaTransporte: string;
   autobus: string;
+  placaAutobus: string;
   estado: string;
 }

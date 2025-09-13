@@ -23,6 +23,7 @@ const BitacoraCambiosRutasPage = () => {
     numeroServicio: '',
     empresaTransporte: 'todos',
     autobus: '',
+    placaAutobus: '',
     estado: 'todos'
   });
 

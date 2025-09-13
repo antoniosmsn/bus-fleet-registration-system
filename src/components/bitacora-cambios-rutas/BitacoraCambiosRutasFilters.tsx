@@ -77,6 +77,7 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
       numeroServicio: '',
       empresaTransporte: 'todos',
       autobus: '',
+      placaAutobus: '',
       estado: 'todos',
     };
     setFiltrosLocales(filtrosVacios);
@@ -131,7 +132,10 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
     activeFilters.push(`Empresa: ${empresaLabel}`);
   }
   if (filtrosLocales.autobus && filtrosLocales.autobus.trim()) {
-    activeFilters.push(`Autobús: ${filtrosLocales.autobus}`);
+    activeFilters.push(`Id Autobús: ${filtrosLocales.autobus}`);
+  }
+  if (filtrosLocales.placaAutobus && filtrosLocales.placaAutobus.trim()) {
+    activeFilters.push(`Placa Autobús: ${filtrosLocales.placaAutobus}`);
   }
   if (filtrosLocales.estado && filtrosLocales.estado !== 'todos') {
     const estadoLabel = estadosOptions.find(e => e.value === filtrosLocales.estado)?.label;
@@ -322,7 +326,7 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
           </TabsContent>
 
           <TabsContent value="servicios" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="numeroServicio">Número de Servicio</Label>
                 <Input
@@ -345,12 +349,22 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="autobus">Autobús</Label>
+                <Label htmlFor="autobus">Id Autobús</Label>
                 <Input
                   id="autobus"
-                  placeholder="Buscar autobús..."
+                  placeholder="Buscar por Id..."
                   value={filtrosLocales.autobus}
                   onChange={(e) => updateFiltro('autobus', e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="placaAutobus">Placa Autobús</Label>
+                <Input
+                  id="placaAutobus"
+                  placeholder="Buscar por placa..."
+                  value={filtrosLocales.placaAutobus}
+                  onChange={(e) => updateFiltro('placaAutobus', e.target.value)}
                 />
               </div>
               
