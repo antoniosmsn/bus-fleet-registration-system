@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { HistorialArchivoSinpe, DetalleConciliacionSinpe } from '@/types/recarga-sinpe';
 import { toast } from 'sonner';
 import ModalConciliarRegistro from './ModalConciliarRegistro';
+import ModalAplicacionPago from './ModalAplicacionPago';
 
 interface Props {
   archivos: HistorialArchivoSinpe[];
@@ -32,6 +33,7 @@ export default function TablaHistorialSinpe({
   const [detalleAConciliar, setDetalleAConciliar] = useState<DetalleConciliacionSinpe | null>(null);
   const [mostrarDialogoSap, setMostrarDialogoSap] = useState(false);
   const [sapDialogMostradoId, setSapDialogMostradoId] = useState<string | null>(null);
+  const [modalAplicacionPagoAbierto, setModalAplicacionPagoAbierto] = useState(false);
   const handleAbrirModalConciliar = (detalle: DetalleConciliacionSinpe) => {
     setDetalleAConciliar(detalle);
     setModalConciliarAbierto(true);
@@ -208,11 +210,7 @@ export default function TablaHistorialSinpe({
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => {
-                    toast.success('Generando aplicación de pago', {
-                      description: 'El archivo de aplicación de pago se está preparando...'
-                    });
-                  }}
+                  onClick={() => setModalAplicacionPagoAbierto(true)}
                   className="gap-2"
                 >
                   <CreditCard className="h-4 w-4" />
@@ -307,6 +305,13 @@ export default function TablaHistorialSinpe({
         onClose={() => setModalConciliarAbierto(false)}
         detalle={detalleAConciliar}
         onConfirmarConciliacion={handleConfirmarConciliacion}
+      />
+
+      {/* Modal de aplicación de pago */}
+      <ModalAplicacionPago
+        isOpen={modalAplicacionPagoAbierto}
+        onClose={() => setModalAplicacionPagoAbierto(false)}
+        nombreArchivo={archivoSeleccionado?.nombreArchivo}
       />
 
       {/* Dialog para confirmar descarga de archivo SAP */}
