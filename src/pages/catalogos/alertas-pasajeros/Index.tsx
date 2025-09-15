@@ -171,7 +171,7 @@ export default function ListadoTiposAlertaPasajero() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
-                    <th className="text-left p-4 font-medium">Tipo de alerta</th>
+                    <th className="text-left p-4 font-medium">Tipo alerta español</th>
                     <th className="text-left p-4 font-medium">Alert Type</th>
                     <th className="text-left p-4 font-medium">Estado</th>
                     <th className="text-left p-4 font-medium">Motivos</th>
