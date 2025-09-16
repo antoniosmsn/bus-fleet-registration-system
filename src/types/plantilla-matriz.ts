@@ -10,6 +10,7 @@ export interface OpcionCampo {
   id: string;
   texto: string;
   peso?: number; // Peso individual para cada opción
+  seleccionada?: boolean; // Para checkboxes: indica si la opción está seleccionada en el cálculo automático
 }
 
 export interface CampoPlantilla {
