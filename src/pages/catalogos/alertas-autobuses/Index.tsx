@@ -10,11 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { mockTiposAlertaAutobus } from "@/data/mockTiposAlertaAutobus";
 import { TipoAlertaAutobus, AlertaAutobusFiltros } from "@/types/alerta-autobus";
-import { Plus, Search, Edit, ChevronLeft, ChevronRight, ArrowLeft, RotateCcw } from "lucide-react";
+import { Plus, Search, Edit, ArrowLeft, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { registrarTipoAlerta, registrarEdicionTipoAlerta, registrarActivacionTipoAlerta } from "@/services/bitacoraService";
+import { registrarActivacionTipoAlerta } from "@/services/bitacoraService";
 
-const ITEMS_POR_PAGINA = 10;
+
 
 export default function AlertasAutobusesIndex() {
   const navigate = useNavigate();
