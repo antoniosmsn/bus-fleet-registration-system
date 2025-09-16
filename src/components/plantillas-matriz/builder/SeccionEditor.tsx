@@ -87,7 +87,7 @@ export function SeccionEditor({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-foreground">Peso (%)</Label>
+                  <Label className="text-xs text-foreground">Peso sección</Label>
                   <Input
                     type="number"
                     value={tempPeso}
