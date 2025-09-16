@@ -4,6 +4,7 @@ import { Droppable, Draggable, DraggableProvidedDragHandleProps } from '@hello-p
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { GoogleFormsFieldV2 } from './GoogleFormsFieldV2';
 import { GoogleFormsToolboxV2 } from './GoogleFormsToolboxV2';
@@ -95,8 +96,9 @@ export function GoogleFormsSectionV2({
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
-              {isEditingWeight ? (
-                <div className="flex items-center gap-1">
+              {isEditingWeight || seccion.peso === undefined ? (
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-foreground">Peso sección</Label>
                   <Input
                     value={tempWeight}
                     onChange={(e) => {
