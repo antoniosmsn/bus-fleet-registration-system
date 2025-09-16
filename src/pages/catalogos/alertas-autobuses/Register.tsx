@@ -218,7 +218,7 @@ export default function RegistrarTipoAlertaAutobus() {
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="nombre">
-              Tipo de Alerta <span className="text-destructive">*</span>
+              Tipo de Alerta en español <span className="text-destructive">*</span>
             </Label>
             <Input
               id="nombre"
