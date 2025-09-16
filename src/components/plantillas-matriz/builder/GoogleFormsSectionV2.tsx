@@ -96,53 +96,32 @@ export function GoogleFormsSectionV2({
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
-              {isEditingWeight || seccion.peso === undefined ? (
-                <div className="flex items-center gap-2">
-                  <Label className="text-xs text-foreground">Peso sección</Label>
-                  <Input
-                    value={tempWeight}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
-                        setTempWeight(value);
-                      }
-                    }}
-                    onBlur={handleSaveWeight}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSaveWeight();
-                      }
-                    }}
-                  className={`w-16 h-6 text-xs ${
-                    tempWeight === '' || (!tempWeight && parseFloat(tempWeight) !== 0)
-                      ? 'border-destructive focus-visible:ring-destructive text-destructive' 
-                      : ''
-                  }`}
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="0-100"
-                    autoFocus
-                  />
-                  <span className="text-xs text-muted-foreground">%</span>
-                </div>
-              ) : (
-                <Badge 
-                  variant="outline" 
-                  className={`cursor-pointer ${
-                    seccion.peso === undefined 
-                      ? 'border-destructive text-destructive' 
-                      : ''
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTempWeight(seccion.peso?.toString() || '');
-                    setIsEditingWeight(true);
-                  }}
-                >
-                  {seccion.peso !== undefined ? `${seccion.peso}%` : 'Peso requerido'}
-                </Badge>
-              )}
+              <Label className="text-xs text-foreground">Peso sección</Label>
+              <Input
+                value={tempWeight}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '' || (parseFloat(value) >= 0 && parseFloat(value) <= 100)) {
+                    setTempWeight(value);
+                    const weight = parseFloat(value);
+                    if (!isNaN(weight) && weight >= 0 && weight <= 100) {
+                      onUpdate({ peso: weight });
+                    } else if (value === '') {
+                      onUpdate({ peso: undefined });
+                    }
+                  }
+                }}
+                className={`w-16 h-6 text-xs ${
+                  tempWeight === '' || (!tempWeight && parseFloat(tempWeight) !== 0)
+                    ? 'border-destructive focus-visible:ring-destructive text-destructive' 
+                    : ''
+                }`}
+                type="number"
+                min="0"
+                max="100"
+                placeholder="0-100"
+              />
+              <span className="text-xs text-muted-foreground">%</span>
             </div>
             <Button 
               variant="ghost" 
