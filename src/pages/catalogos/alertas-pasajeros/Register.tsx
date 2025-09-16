@@ -153,7 +153,7 @@ export default function RegistrarTipoAlertaPasajero() {
 
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre del tipo de alerta *</Label>
+            <Label htmlFor="nombre">Tipo alerta español *</Label>
             <Input
               id="nombre"
               value={formulario.nombre}
