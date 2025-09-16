@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AutobusCapacidadCumplida } from "@/types/autobus-capacidad-cumplida";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es } from "date-fns/locale/es";
 import { Bus, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { verificarPermisoAtencion, obtenerUsuarioActual } from '@/services/permisosService';
 import { registrarAtencionAlerta } from '@/services/bitacoraService';

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { MantenimientoRecord, MantenimientoFilter } from '@/types/mantenimiento';
 import { exportMantenimientoToPDF, exportMantenimientoToExcel } from '@/services/exportService';
 import { toast } from '@/hooks/use-toast';

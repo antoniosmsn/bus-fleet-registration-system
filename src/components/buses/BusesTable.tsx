@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Bus } from '@/types/bus';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { Check, CheckCircle, XCircle, Edit, Eye, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import BusStatusDialog from './BusStatusDialog';

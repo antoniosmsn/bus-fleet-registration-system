@@ -8,7 +8,7 @@ import { Calendar as CalendarIcon, Download } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { MultiSelect } from '@/components/ui/multi-select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

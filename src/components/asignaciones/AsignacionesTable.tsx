@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { AsignacionRuta } from '@/types/asignacion-ruta';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';

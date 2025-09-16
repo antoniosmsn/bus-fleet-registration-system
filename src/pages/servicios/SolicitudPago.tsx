@@ -13,7 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Download, FileCheck, UserCheck, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { useToast } from '@/hooks/use-toast';
 import { SolicitudDevolucionSaldo } from '@/types/solicitud-devolucion-saldo';
 import { mockSolicitudesDevolucionSaldo } from '@/data/mockSolicitudesDevolucionSaldo';

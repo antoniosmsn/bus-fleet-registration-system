@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es } from "date-fns/locale/es";
 import { SolicitudTraslado } from '../../types/solicitud-traslado';
 import { mockSolicitudesTraslado } from '../../data/mockSolicitudesTraslado';
 

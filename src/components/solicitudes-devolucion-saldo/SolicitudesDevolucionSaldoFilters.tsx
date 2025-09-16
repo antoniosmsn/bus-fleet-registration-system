@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { FiltrosSolicitudDevolucion } from '@/types/solicitud-devolucion-saldo';
 
 interface SolicitudesDevolucionSaldoFiltersProps {

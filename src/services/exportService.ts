@@ -1,6 +1,6 @@
 import { Conductor } from "@/types/conductor";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { es } from "date-fns/locale/es";
 import { Bus } from "@/types/bus";
 import { Pasajero } from "@/types/pasajero";
 import { TelemetriaRecord } from "@/types/telemetria";

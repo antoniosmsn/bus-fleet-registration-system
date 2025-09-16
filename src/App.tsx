@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { Toaster } from '@/components/ui/toaster';
 
 // Import pages
@@ -102,12 +102,10 @@ import AlertasAutobusesIndex from '@/pages/catalogos/alertas-autobuses/Index';
 import AlertasAutobusesRegister from '@/pages/catalogos/alertas-autobuses/Register';
 import AlertasAutobusesEdit from '@/pages/catalogos/alertas-autobuses/Edit';
 
-// Create a client
-const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    
       <Router>
         <div className="min-h-screen bg-background">
           <Routes>
@@ -239,7 +237,7 @@ function App() {
         </div>
         <Toaster />
       </Router>
-    </QueryClientProvider>
+    
   );
 }
 

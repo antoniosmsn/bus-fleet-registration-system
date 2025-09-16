@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { PlantillaMatriz, PlantillaMatrizFilter } from '@/types/plantilla-matriz';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 
 interface PlantillasMatrizCardsProps {
   plantillas: PlantillaMatriz[];

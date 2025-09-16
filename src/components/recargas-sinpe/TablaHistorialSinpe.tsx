@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 import { Eye, CheckCircle, AlertTriangle, XCircle, CreditCard, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
