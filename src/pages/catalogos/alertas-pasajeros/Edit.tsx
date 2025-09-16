@@ -210,7 +210,7 @@ export default function EditarTipoAlertaPasajero() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="alertType">Alert Type *</Label>
+            <Label htmlFor="alertType">Tipo alerta inglés *</Label>
             <Input
               id="alertType"
               value={formulario.alertType}
