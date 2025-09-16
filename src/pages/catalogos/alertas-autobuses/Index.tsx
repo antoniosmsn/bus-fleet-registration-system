@@ -14,8 +14,6 @@ import { Plus, Search, Edit, ArrowLeft, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { registrarActivacionTipoAlerta } from "@/services/bitacoraService";
 
-
-
 export default function AlertasAutobusesIndex() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -42,11 +40,7 @@ export default function AlertasAutobusesIndex() {
     return tiposAlerta
       .filter(tipo => {
         const cumpleNombre = tipo.nombre.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .includes(filtrosAplicados.nombre.toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, ""));
+          .includes(filtrosAplicados.nombre.toLowerCase());
         
         const cumpleAlertType = tipo.alertType.toLowerCase()
           .includes(filtrosAplicados.alertType.toLowerCase());
