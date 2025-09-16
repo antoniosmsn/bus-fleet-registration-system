@@ -55,24 +55,28 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dra
     onUpdate({ opcionesConPeso: updatedOptions });
   };
 
-  // Distribución automática para checkboxes (100% repartido entre opciones seleccionadas)
+  // Distribución automática para checkboxes (100% repartido entre todas las opciones)
   const calculateCheckboxWeights = () => {
     const opciones = campo.opcionesConPeso || [];
-    const selectedOptions = opciones.filter(opt => opt.seleccionada);
     
-    if (selectedOptions.length === 0) {
-      // Si no hay opciones seleccionadas, no hacer nada
-      return;
-    }
+    if (opciones.length === 0) return;
     
-    const pesoIndividual = Math.round((100 / selectedOptions.length) * 10) / 10; // Redondear a 1 decimal
+    const pesoIndividual = Math.round((100 / opciones.length) * 10) / 10; // Redondear a 1 decimal
     
     const updatedOptions = opciones.map(opcion => ({
       ...opcion,
-      peso: opcion.seleccionada ? pesoIndividual : 0
+      peso: pesoIndividual
     }));
     
     onUpdate({ opcionesConPeso: updatedOptions });
+  };
+
+  // Calcular la suma total de pesos para checkboxes
+  const getTotalCheckboxWeight = () => {
+    if (campo.tipo !== 'checkbox') return 0;
+    return (campo.opcionesConPeso || []).reduce((sum, opcion) => {
+      return sum + (opcion.peso || 0);
+    }, 0);
   };
 
   const handleUpdateOption = (index: number, updates: { texto?: string; peso?: number; seleccionada?: boolean }) => {
@@ -195,29 +199,23 @@ export function GoogleFormsFieldV2({ campo, onUpdate, onDelete, onDuplicate, dra
                         onClick={campo.tipo === 'radio' ? calculateRadioWeights : calculateCheckboxWeights}
                         className="text-xs"
                       >
-                        📊 Calcular pesos {campo.tipo === 'radio' ? '(100% → 0%)' : '(seleccionadas)'}
+                        📊 Calcular pesos {campo.tipo === 'radio' ? '(100% → 0%)' : '(equitativo)'}
                       </Button>
                       {campo.tipo === 'checkbox' && (
-                        <span className="text-xs text-muted-foreground">
-                          Marca las opciones para distribuir el 100%
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <Badge 
+                            variant={getTotalCheckboxWeight() > 100 ? "destructive" : "secondary"}
+                            className="text-xs"
+                          >
+                            Total: {getTotalCheckboxWeight().toFixed(1)}%
+                          </Badge>
+                        </div>
                       )}
                     </div>
                   )}
                   
                   {(campo.opcionesConPeso || []).map((opcion, index) => (
                     <div key={opcion.id} className="flex items-center gap-2">
-                      {/* Checkbox para seleccionar opciones en modo checkbox */}
-                      {campo.tipo === 'checkbox' && (
-                        <input
-                          type="checkbox"
-                          checked={opcion.seleccionada || false}
-                          onChange={(e) => handleUpdateOption(index, { seleccionada: e.target.checked })}
-                          className="w-3 h-3"
-                          title="Incluir en cálculo automático"
-                        />
-                      )}
-                      
                       <div className={`w-4 h-4 ${
                         campo.tipo === 'radio' ? 'rounded-full' : 'rounded-sm'
                       } border-2 border-muted-foreground/40`} />
