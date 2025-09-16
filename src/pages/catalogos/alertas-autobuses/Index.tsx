@@ -198,7 +198,7 @@ export default function AlertasAutobusesIndex() {
             <table className="w-full">
               <thead>
                  <tr className="border-b">
-                   <th className="text-left p-4 font-semibold">Tipo de Alerta</th>
+                   <th className="text-left p-4 font-semibold">Tipo alerta español</th>
                    <th className="text-left p-4 font-semibold">Tipo alerta inglés</th>
                    <th className="text-left p-4 font-semibold">Estado</th>
                    <th className="text-left p-4 font-semibold">Motivos</th>
