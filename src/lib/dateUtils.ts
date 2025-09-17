@@ -28,6 +28,24 @@ export function formatShortDate(date: Date | string | null): string {
 }
 
 /**
+ * Format a date to include both date and time
+ * @param date The date to format
+ * @returns The formatted date string with time
+ */
+export function formatDateWithTime(date: Date | string | null): string {
+  if (!date) return 'N/A';
+  try {
+    const dateObj = new Date(date);
+    return `${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    })}`;
+  } catch (error) {
+    return 'Invalid Date';
+  }
+}
+
+/**
  * Checks if a date falls within a specified date range
  * @param date The date to check
  * @param start Start of the date range

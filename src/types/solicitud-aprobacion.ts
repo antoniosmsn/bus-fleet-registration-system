@@ -34,6 +34,8 @@ export interface FiltrosSolicitudAprobacion {
   empresaTransporte: string;
   fechaInicio: string;
   fechaFin: string;
+  horaInicio: string;
+  horaFin: string;
   placaAutobus: string;
   idAutobus: string;
   estado: string;

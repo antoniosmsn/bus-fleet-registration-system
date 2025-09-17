@@ -114,51 +114,32 @@ export function ModalAprobacionSolicitud({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Detalles del Servicio */}
+          {/* Cambio de Ruta */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Detalles del Servicio</CardTitle>
+              <CardTitle className="text-lg">Cambio de Ruta Solicitado</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CardContent>
+              <div className="space-y-4">
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">N° Servicio</Label>
-                  <p className="font-medium">{solicitud.numeroServicio}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Fecha Servicio</Label>
-                  <p>{formatShortDate(solicitud.fechaServicio)}</p>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Placa Autobús</Label>
-                  <Badge variant="secondary">{solicitud.placaAutobus}</Badge>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">ID Autobús</Label>
-                  <Badge variant="outline">{solicitud.idAutobus}</Badge>
-                </div>
-              </div>
-              <div>
-                <Label className="text-sm font-medium text-muted-foreground">Empresa de Transporte</Label>
-                <p>{solicitud.empresaTransporte}</p>
-              </div>
-              
-              <Separator className="my-4" />
-              
-              {/* Cambio de Ruta en Detalles del Servicio */}
-              <div>
-                <Label className="text-sm font-medium text-muted-foreground">Cambio de Ruta Solicitado</Label>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="flex-1 p-2 bg-red-50 border border-red-200 rounded text-sm">
-                    <span className="font-medium">{solicitud.rutaOriginal.nombre}</span>
-                    <Badge variant="outline" className="ml-2 text-xs">
+                  <Label className="text-sm font-medium text-muted-foreground">Ruta Original</Label>
+                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded">
+                    <span className="font-medium text-lg">{solicitud.rutaOriginal.nombre}</span>
+                    <Badge variant="outline" className="ml-2">
                       {solicitud.rutaOriginal.sentido}
                     </Badge>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <div className="flex-1 p-2 bg-green-50 border border-green-200 rounded text-sm">
-                    <span className="font-medium">{solicitud.rutaNueva.nombre}</span>
-                    <Badge variant="outline" className="ml-2 text-xs">
+                </div>
+                
+                <div className="flex justify-center">
+                  <ArrowRight className="h-6 w-6 text-muted-foreground" />
+                </div>
+                
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">Ruta Solicitada</Label>
+                  <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded">
+                    <span className="font-medium text-lg">{solicitud.rutaNueva.nombre}</span>
+                    <Badge variant="outline" className="ml-2">
                       {solicitud.rutaNueva.sentido}
                     </Badge>
                   </div>

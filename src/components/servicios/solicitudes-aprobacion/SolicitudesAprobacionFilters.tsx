@@ -119,6 +119,24 @@ export function SolicitudesAprobacionFilters({
                   onChange={(e) => handleFiltroChange('fechaFin', e.target.value)}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="horaInicio">Hora Inicio</Label>
+                <Input
+                  id="horaInicio"
+                  type="time"
+                  value={filtros.horaInicio}
+                  onChange={(e) => handleFiltroChange('horaInicio', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="horaFin">Hora Fin</Label>
+                <Input
+                  id="horaFin"
+                  type="time"
+                  value={filtros.horaFin}
+                  onChange={(e) => handleFiltroChange('horaFin', e.target.value)}
+                />
+              </div>
             </div>
           </TabsContent>
 

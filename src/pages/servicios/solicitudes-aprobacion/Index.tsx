@@ -15,11 +15,18 @@ import { registrarAcceso } from '@/services/bitacoraService';
 
 export default function SolicitudesAprobacionIndex() {
   const [solicitudes] = useState<SolicitudAprobacion[]>(getAllSolicitudes());
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toISOString().split('T')[0];
+  };
+
   const [filtros, setFiltros] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
     empresaTransporte: 'all',
-    fechaInicio: '',
-    fechaFin: '',
+    fechaInicio: getCurrentDate(),
+    fechaFin: getCurrentDate(),
+    horaInicio: '00:00',
+    horaFin: '23:59',
     placaAutobus: '',
     idAutobus: '',
     estado: 'todos'
@@ -27,8 +34,10 @@ export default function SolicitudesAprobacionIndex() {
   const [filtrosAplicados, setFiltrosAplicados] = useState<FiltrosSolicitudAprobacion>({
     numeroServicio: '',
     empresaTransporte: 'all',
-    fechaInicio: '',
-    fechaFin: '',
+    fechaInicio: getCurrentDate(),
+    fechaFin: getCurrentDate(),
+    horaInicio: '00:00',
+    horaFin: '23:59',
     placaAutobus: '',
     idAutobus: '',
     estado: 'todos'
@@ -91,8 +100,10 @@ export default function SolicitudesAprobacionIndex() {
     const filtrosVacios: FiltrosSolicitudAprobacion = {
       numeroServicio: '',
       empresaTransporte: 'all',
-      fechaInicio: '',
-      fechaFin: '',
+      fechaInicio: getCurrentDate(),
+      fechaFin: getCurrentDate(),
+      horaInicio: '00:00',
+      horaFin: '23:59',
       placaAutobus: '',
       idAutobus: '',
       estado: 'todos'

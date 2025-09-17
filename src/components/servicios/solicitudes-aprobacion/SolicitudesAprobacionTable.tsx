@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { FileCheck } from 'lucide-react';
 import { SolicitudAprobacion } from '@/types/solicitud-aprobacion';
-import { formatShortDate } from '@/lib/dateUtils';
+import { formatDateWithTime } from '@/lib/dateUtils';
 
 interface SolicitudesAprobacionTableProps {
   solicitudes: SolicitudAprobacion[];
@@ -48,7 +48,7 @@ export function SolicitudesAprobacionTable({
                     {solicitud.numeroServicio}
                   </TableCell>
                   <TableCell>
-                    {formatShortDate(solicitud.fechaServicio)}
+                    {formatDateWithTime(solicitud.fechaServicio)}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary">
