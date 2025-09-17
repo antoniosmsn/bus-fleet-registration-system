@@ -143,59 +143,6 @@ export default function SolicitudCambioRutaModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto space-y-6">
-          {/* Información del Servicio Actual */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Building className="h-4 w-4" />
-                Información del Servicio Actual
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Transportista:</span>
-                  <p className="font-medium">{servicio.transportista}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Tipo de Ruta:</span>
-                  <p className="font-medium">{servicio.tipoRuta}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Ramal Actual:</span>
-                  <p className="font-medium">{servicio.ramal}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Fecha del Servicio:</span>
-                  <p className="font-medium">{servicio.fechaServicio}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Hora del Servicio:</span>
-                  <p className="font-medium flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {servicio.horaServicio}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Sentido Actual:</span>
-                  <Badge variant={servicio.sentido === 'Ingreso' ? 'default' : 'secondary'}>
-                    {servicio.sentido}
-                  </Badge>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Placa:</span>
-                  <p className="font-mono font-medium">{servicio.placaAutobus}</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Cliente:</span>
-                  <p className="font-medium">{servicio.cliente}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Separator />
-
           {/* Nueva Configuración */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Nueva Configuración de Ruta</h3>
