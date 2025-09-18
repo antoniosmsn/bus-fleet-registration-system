@@ -83,147 +83,160 @@ export default function InformeCumplimientoFilters({
     <Card>
       <CardContent className="p-6">
         <Tabs defaultValue="basicos" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basicos">Filtros Básicos</TabsTrigger>
             <TabsTrigger value="fechas">Fechas y Horarios</TabsTrigger>
+            <TabsTrigger value="empresas">Empresas</TabsTrigger>
             <TabsTrigger value="servicios">Servicios</TabsTrigger>
             <TabsTrigger value="estado">Estado y Programación</TabsTrigger>
           </TabsList>
 
           {/* Filtros Básicos */}
           <TabsContent value="basicos" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="noInforme">No. Informe</Label>
+                <Label htmlFor="noInforme" className="text-xs">No. Informe</Label>
                 <Input
                   id="noInforme"
                   value={filtros.noInforme}
                   onChange={(e) => updateFiltro('noInforme', e.target.value)}
-                  placeholder="Número de informe"
+                  placeholder="No. Informe"
+                  className="text-sm h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="noSemana">No. Semana</Label>
+                <Label htmlFor="noSemana" className="text-xs">No. Semana</Label>
                 <Input
                   id="noSemana"
                   value={filtros.noSemana}
                   onChange={(e) => updateFiltro('noSemana', e.target.value)}
-                  placeholder="Número de semana"
+                  placeholder="Semana"
+                  className="text-sm h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="idServicio">ID Servicio</Label>
+                <Label htmlFor="idServicio" className="text-xs">ID Servicio</Label>
                 <Input
                   id="idServicio"
                   value={filtros.idServicio}
                   onChange={(e) => updateFiltro('idServicio', e.target.value)}
-                  placeholder="ID del servicio"
+                  placeholder="ID Servicio"
+                  className="text-sm h-9"
                 />
               </div>
             </div>
+          </TabsContent>
 
-            {/* Transportista */}
-            <div className="space-y-2">
-              <Label>Transportista</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('transportista', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar transportista" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueTransportistas().map(transportista => (
-                      <SelectItem key={transportista} value={transportista}>
-                        {transportista}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {filtros.transportista.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.transportista.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('transportista', item)}
-                      />
-                    </Badge>
-                  ))}
+          {/* Empresas */}
+          <TabsContent value="empresas" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Transportista */}
+              <div className="space-y-2">
+                <Label>Transportista</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('transportista', value)}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Seleccionar transportista" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTransportistas().map(transportista => (
+                        <SelectItem key={transportista} value={transportista}>
+                          {transportista}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
-            </div>
+                {filtros.transportista.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {filtros.transportista.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('transportista', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            {/* Empresa Cliente */}
-            <div className="space-y-2">
-              <Label>Empresa Cliente</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('empresaCliente', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar empresa cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueEmpresasCliente().map(empresa => (
-                      <SelectItem key={empresa} value={empresa}>
-                        {empresa}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {filtros.empresaCliente.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.empresaCliente.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('empresaCliente', item)}
-                      />
-                    </Badge>
-                  ))}
+              {/* Empresa Cliente */}
+              <div className="space-y-2">
+                <Label>Empresa Cliente</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('empresaCliente', value)}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Seleccionar empresa cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueEmpresasCliente().map(empresa => (
+                        <SelectItem key={empresa} value={empresa}>
+                          {empresa}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
+                {filtros.empresaCliente.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {filtros.empresaCliente.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('empresaCliente', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
           {/* Fechas y Horarios */}
           <TabsContent value="fechas" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fechaInicio">Fecha Inicio</Label>
+                <Label htmlFor="fechaInicio" className="text-xs">Fecha Inicio</Label>
                 <Input
                   id="fechaInicio"
                   type="date"
                   value={filtros.fechaInicio}
                   onChange={(e) => updateFiltro('fechaInicio', e.target.value)}
+                  className="text-sm h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="fechaFin">Fecha Fin</Label>
+                <Label htmlFor="fechaFin" className="text-xs">Fecha Fin</Label>
                 <Input
                   id="fechaFin"
                   type="date"
                   value={filtros.fechaFin}
                   onChange={(e) => updateFiltro('fechaFin', e.target.value)}
+                  className="text-sm h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="horaInicio">Hora Inicio</Label>
+                <Label htmlFor="horaInicio" className="text-xs">Hora Inicio</Label>
                 <Input
                   id="horaInicio"
                   type="time"
                   value={filtros.horaInicio}
                   onChange={(e) => updateFiltro('horaInicio', e.target.value)}
+                  className="text-sm h-9"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="horaFin">Hora Fin</Label>
+                <Label htmlFor="horaFin" className="text-xs">Hora Fin</Label>
                 <Input
                   id="horaFin"
                   type="time"
                   value={filtros.horaFin}
                   onChange={(e) => updateFiltro('horaFin', e.target.value)}
+                  className="text-sm h-9"
                 />
               </div>
             </div>

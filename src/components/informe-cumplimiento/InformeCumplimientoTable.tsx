@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronUp, ChevronDown, Eye, CheckCircle, AlertCircle } from 'lucide-react';
 import { InformeCumplimiento } from '@/types/informe-cumplimiento';
+import ModalConfirmacionRevision from './ModalConfirmacionRevision';
 
 interface InformeCumplimientoTableProps {
   informes: InformeCumplimiento[];
@@ -24,6 +25,9 @@ export default function InformeCumplimientoTable({
   sortField,
   sortDirection
 }: InformeCumplimientoTableProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [informeSeleccionado, setInformeSeleccionado] = useState<InformeCumplimiento | null>(null);
+  const [tipoRevision, setTipoRevision] = useState<'transportista' | 'administracion' | 'cliente'>('transportista');
 
   const getSortIcon = (campo: keyof InformeCumplimiento) => {
     if (sortField === campo) {
@@ -57,6 +61,30 @@ export default function InformeCumplimientoTable({
       currency: 'CRC',
       minimumFractionDigits: 0
     }).format(amount);
+  };
+
+  const handleRevisionClick = (informe: InformeCumplimiento, tipo: 'transportista' | 'administracion' | 'cliente') => {
+    setInformeSeleccionado(informe);
+    setTipoRevision(tipo);
+    setModalOpen(true);
+  };
+
+  const handleConfirmarRevision = () => {
+    if (!informeSeleccionado) return;
+    
+    switch (tipoRevision) {
+      case 'transportista':
+        onRevisionTransportista(informeSeleccionado);
+        break;
+      case 'administracion':
+        onRevisionAdministracion(informeSeleccionado);
+        break;
+      case 'cliente':
+        onRevisionCliente(informeSeleccionado);
+        break;
+    }
+    
+    setInformeSeleccionado(null);
   };
 
   return (
@@ -306,7 +334,7 @@ export default function InformeCumplimientoTable({
                         size="sm"
                         variant="outline"
                         disabled={!canReviewTransportista(informe.estadoRevision)}
-                        onClick={() => onRevisionTransportista(informe)}
+                        onClick={() => handleRevisionClick(informe, 'transportista')}
                         className="text-xs whitespace-nowrap"
                       >
                         Rev. Transportista
@@ -315,7 +343,7 @@ export default function InformeCumplimientoTable({
                         size="sm"
                         variant="outline"
                         disabled={!canReviewAdministracion(informe.estadoRevision)}
-                        onClick={() => onRevisionAdministracion(informe)}
+                        onClick={() => handleRevisionClick(informe, 'administracion')}
                         className="text-xs whitespace-nowrap"
                       >
                         Rev. Administración
@@ -324,7 +352,7 @@ export default function InformeCumplimientoTable({
                         size="sm"
                         variant="outline"
                         disabled={!canReviewCliente(informe.estadoRevision)}
-                        onClick={() => onRevisionCliente(informe)}
+                        onClick={() => handleRevisionClick(informe, 'cliente')}
                         className="text-xs whitespace-nowrap"
                       >
                         Rev. Cliente
@@ -337,6 +365,14 @@ export default function InformeCumplimientoTable({
           </TableBody>
         </Table>
       </div>
+      
+      <ModalConfirmacionRevision
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        informe={informeSeleccionado}
+        tipoRevision={tipoRevision}
+        onConfirmar={handleConfirmarRevision}
+      />
     </div>
   );
 }
