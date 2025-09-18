@@ -142,6 +142,11 @@ const SidebarComponent = () => {
       icon: FileText 
     },
     { 
+      title: "Informe de Cumplimiento", 
+      url: "/servicios/informe-cumplimiento", 
+      icon: FileCheck 
+    },
+    { 
       title: "Bitácoras Cambios de Rutas", 
       url: "/servicios/bitacora-cambios-rutas", 
       icon: ArrowRightLeft 
