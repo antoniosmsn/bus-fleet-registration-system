@@ -23,8 +23,6 @@ interface InformeCumplimientoFiltersProps {
   onFiltrosChange: (filtros: FiltrosInformeCumplimiento) => void;
   onAplicarFiltros: () => void;
   onLimpiarFiltros: () => void;
-  onExportarPDF: () => void;
-  onExportarExcel: () => void;
   totalRegistros: number;
 }
 
@@ -33,8 +31,6 @@ export default function InformeCumplimientoFilters({
   onFiltrosChange,
   onAplicarFiltros,
   onLimpiarFiltros,
-  onExportarPDF,
-  onExportarExcel,
   totalRegistros
 }: InformeCumplimientoFiltersProps) {
 
@@ -244,193 +240,195 @@ export default function InformeCumplimientoFilters({
 
           {/* Servicios */}
           <TabsContent value="servicios" className="space-y-4">
-            {/* Tipo Ruta */}
-            <div className="space-y-2">
-              <Label>Tipo de Ruta</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('tipoRuta', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar tipo de ruta" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueTiposRuta().map(tipo => (
-                      <SelectItem key={tipo} value={tipo}>
-                        {tipo}
-                      </SelectItem>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Tipo Ruta */}
+              <div className="space-y-2">
+                <Label className="text-xs">Tipo de Ruta</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('tipoRuta', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Tipo de ruta" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTiposRuta().map(tipo => (
+                        <SelectItem key={tipo} value={tipo}>
+                          {tipo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.tipoRuta.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.tipoRuta.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('tipoRuta', item)}
+                        />
+                      </Badge>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
               </div>
-              {filtros.tipoRuta.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.tipoRuta.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('tipoRuta', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Turno */}
-            <div className="space-y-2">
-              <Label>Turno</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('turno', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar turno" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueTurnos().map(turno => (
-                      <SelectItem key={turno} value={turno}>
-                        {turno}
-                      </SelectItem>
+              {/* Turno */}
+              <div className="space-y-2">
+                <Label className="text-xs">Turno</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('turno', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Turno" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTurnos().map(turno => (
+                        <SelectItem key={turno} value={turno}>
+                          {turno}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.turno.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.turno.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('turno', item)}
+                        />
+                      </Badge>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
               </div>
-              {filtros.turno.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.turno.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('turno', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Ramal */}
-            <div className="space-y-2">
-              <Label>Ramal</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('ramal', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar ramal" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueRamales().map(ramal => (
-                      <SelectItem key={ramal} value={ramal}>
-                        {ramal}
-                      </SelectItem>
+              {/* Ramal */}
+              <div className="space-y-2">
+                <Label className="text-xs">Ramal</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('ramal', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Ramal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueRamales().map(ramal => (
+                        <SelectItem key={ramal} value={ramal}>
+                          {ramal}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.ramal.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.ramal.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('ramal', item)}
+                        />
+                      </Badge>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
               </div>
-              {filtros.ramal.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.ramal.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('ramal', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Tipo Unidad */}
-            <div className="space-y-2">
-              <Label>Tipo de Unidad</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('tipoUnidad', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar tipo de unidad" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniqueTiposUnidad().map(tipo => (
-                      <SelectItem key={tipo} value={tipo}>
-                        {tipo}
-                      </SelectItem>
+              {/* Tipo Unidad */}
+              <div className="space-y-2">
+                <Label className="text-xs">Tipo de Unidad</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('tipoUnidad', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Tipo unidad" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTiposUnidad().map(tipo => (
+                        <SelectItem key={tipo} value={tipo}>
+                          {tipo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.tipoUnidad.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.tipoUnidad.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('tipoUnidad', item)}
+                        />
+                      </Badge>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
               </div>
-              {filtros.tipoUnidad.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.tipoUnidad.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('tipoUnidad', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Placa */}
-            <div className="space-y-2">
-              <Label>Placa</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('placa', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar placa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getUniquePlacas().map(placa => (
-                      <SelectItem key={placa} value={placa}>
-                        {placa}
-                      </SelectItem>
+              {/* Placa */}
+              <div className="space-y-2">
+                <Label className="text-xs">Placa</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('placa', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Placa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniquePlacas().map(placa => (
+                        <SelectItem key={placa} value={placa}>
+                          {placa}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.placa.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.placa.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('placa', item)}
+                        />
+                      </Badge>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
               </div>
-              {filtros.placa.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.placa.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('placa', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* Sentido */}
-            <div className="space-y-2">
-              <Label>Sentido</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('sentido', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar sentido" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Ingreso">Ingreso</SelectItem>
-                    <SelectItem value="Salida">Salida</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {filtros.sentido.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.sentido.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('sentido', item)}
-                      />
-                    </Badge>
-                  ))}
+              {/* Sentido */}
+              <div className="space-y-2">
+                <Label className="text-xs">Sentido</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('sentido', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Sentido" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Ingreso">Ingreso</SelectItem>
+                      <SelectItem value="Salida">Salida</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
+                {filtros.sentido.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.sentido.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('sentido', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
@@ -506,17 +504,6 @@ export default function InformeCumplimientoFilters({
 
         {/* Botones de acción */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6 pt-6 border-t">
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={onExportarPDF} variant="outline" size="sm">
-              <FileDown className="w-4 h-4 mr-2" />
-              Exportar PDF
-            </Button>
-            <Button onClick={onExportarExcel} variant="outline" size="sm">
-              <FileDown className="w-4 h-4 mr-2" />
-              Exportar Excel
-            </Button>
-          </div>
-          
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <span className="text-sm text-muted-foreground">
               {totalRegistros} registro{totalRegistros !== 1 ? 's' : ''} encontrado{totalRegistros !== 1 ? 's' : ''}

@@ -266,19 +266,6 @@ export default function InformeCumplimientoPage() {
     });
   };
 
-  const exportarPDF = () => {
-    toast({
-      title: "Exportación PDF",
-      description: `Se ha exportado el informe de ${informesOrdenados.length} registros a PDF.`,
-    });
-  };
-
-  const exportarExcel = () => {
-    toast({
-      title: "Exportación Excel",
-      description: `Se ha exportado el informe de ${informesOrdenados.length} registros a Excel.`,
-    });
-  };
 
   return (
     <Layout>
@@ -286,9 +273,6 @@ export default function InformeCumplimientoPage() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">Informe de Cumplimiento</h1>
-          <p className="text-muted-foreground mt-1">
-            Gestión de informes de cumplimiento de servicios con proceso de revisión por transportista, administración y cliente
-          </p>
         </div>
 
         {/* Filtros */}
@@ -297,8 +281,6 @@ export default function InformeCumplimientoPage() {
           onFiltrosChange={setFiltros}
           onAplicarFiltros={handleAplicarFiltros}
           onLimpiarFiltros={handleLimpiarFiltros}
-          onExportarPDF={exportarPDF}
-          onExportarExcel={exportarExcel}
           totalRegistros={informesOrdenados.length}
         />
 
