@@ -505,9 +505,6 @@ export default function InformeCumplimientoFilters({
         {/* Botones de acción */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6 pt-6 border-t">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {totalRegistros} registro{totalRegistros !== 1 ? 's' : ''} encontrado{totalRegistros !== 1 ? 's' : ''}
-            </span>
             <div className="flex gap-2">
               <Button 
                 onClick={onLimpiarFiltros}
@@ -520,7 +517,7 @@ export default function InformeCumplimientoFilters({
               </Button>
               <Button onClick={onAplicarFiltros} size="sm">
                 <Filter className="w-4 h-4 mr-2" />
-                Aplicar Filtros
+                Buscar
               </Button>
             </div>
           </div>
