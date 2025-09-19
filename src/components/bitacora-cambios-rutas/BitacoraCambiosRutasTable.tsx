@@ -10,7 +10,7 @@ import { BitacoraCambioRutaFilter, BitacoraCambioRuta } from '@/types/bitacora-c
 import { SolicitudAprobacion } from '@/types/solicitud-aprobacion';
 import { mockBitacoraCambiosRutas, mockPasajerosAfectados } from '@/data/mockBitacoraCambiosRutas';
 import { formatShortDate } from '@/lib/dateUtils';
-import { ModalAprobacionSolicitud } from '@/components/servicios/solicitudes-aprobacion/ModalAprobacionSolicitud';
+import { ModalAprobacionSolicitudBitacora } from '@/components/bitacora-cambios-rutas/ModalAprobacionSolicitudBitacora';
 
 interface BitacoraCambiosRutasTableProps {
   filtros: BitacoraCambioRutaFilter;
@@ -514,7 +514,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
 
         {/* Modal de Aprobación */}
         {solicitudSeleccionada && (
-          <ModalAprobacionSolicitud
+          <ModalAprobacionSolicitudBitacora
             solicitud={solicitudSeleccionada}
             isOpen={modalAbierto}
             onClose={handleCerrarModal}
