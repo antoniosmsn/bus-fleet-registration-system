@@ -113,6 +113,14 @@ export default function InformeCumplimientoCards({
   const canReviewAdministracion = (estado: string) => estado === 'Revisado por Transportista';
   const canReviewCliente = (estado: string) => estado === 'Revisado por Administración';
 
+  const canShowCambioRuta = (informe: InformeCumplimiento) => {
+    // Show button if there are complete start and end times (either programmed or executed)
+    const hasProgrammedTimes = informe.horaInicio && informe.horaFinalizacion;
+    const hasExecutedTimes = informe.inicioRealizado && informe.cierreRealizado;
+    
+    return hasProgrammedTimes || hasExecutedTimes;
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CR', {
       style: 'currency',
@@ -406,15 +414,17 @@ export default function InformeCumplimientoCards({
                   >
                     Rev. Cliente
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleSolicitarCambioRuta(informe)}
-                    className="text-xs px-2 py-1 h-7"
-                  >
-                    <Route className="h-3 w-3 mr-1" />
-                    Cambio Ruta
-                  </Button>
+                  {canShowCambioRuta(informe) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleSolicitarCambioRuta(informe)}
+                      className="text-xs px-2 py-1 h-7"
+                    >
+                      <Route className="h-3 w-3 mr-1" />
+                      Cambio Ruta
+                    </Button>
+                  )}
                 </div>
               </div>
 
