@@ -298,12 +298,6 @@ export default function InformeCumplimientoCards({
                     {informe.programado ? 'Sí' : 'No'}
                   </Badge>
                 </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Cambio de Ruta</span>
-                  <Badge variant={informe.cambioRuta ? 'destructive' : 'default'} className="text-xs">
-                    {informe.cambioRuta ? 'Sí' : 'No'}
-                  </Badge>
-                </div>
 
                 {/* Fila 3 */}
                 <div>
@@ -337,6 +331,12 @@ export default function InformeCumplimientoCards({
                 <div>
                   <span className="text-muted-foreground text-sm block">Faltante</span>
                   <span className="font-medium">{informe.faltante}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Cambio de Ruta</span>
+                  <Badge variant={informe.cambioRuta ? 'destructive' : 'default'} className="text-xs">
+                    {informe.cambioRuta ? 'Sí' : 'No'}
+                  </Badge>
                 </div>
               </div>
 

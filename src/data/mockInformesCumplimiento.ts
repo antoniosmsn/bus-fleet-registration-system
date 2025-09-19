@@ -60,17 +60,43 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
   const tarifaServicio = tarifaPasajero * ocupacion;
   const tarifaServicioTransportista = Math.round(tarifaServicio * 0.85);
   
-  // Generate realistic data for new fields
-  const pasajeros = Math.floor(Math.random() * 40) + 10;
-  const transmitidos = Math.floor(pasajeros * (Math.random() * 0.3 + 0.7)); // 70-100% of passengers transmitted
-  const faltante = pasajeros - transmitidos;
+  // Generate realistic data for new fields with controlled examples for inconsistency
+  let pasajeros, transmitidos, faltante, inicioRealizado, cierreRealizado, ultimaDescarga, cumplimiento, cambioRuta;
   
-  const inicioRealizado = Math.random() > 0.1 ? generateTime() : null;
-  const cierreRealizado = Math.random() > 0.2 ? generateTime() : null;
-  const ultimaDescarga = Math.random() > 0.15 ? `${generateCurrentMonthDate(Math.floor(Math.random() * 5))} ${generateTime()}` : null;
+  // Create specific examples for inconsistency states
+  if (index < 5) {
+    // POSITIVO: Perfect compliance examples (first 5 items)
+    pasajeros = Math.floor(Math.random() * 40) + 10;
+    transmitidos = pasajeros; // No missing passengers
+    faltante = 0;
+    inicioRealizado = generateTime();
+    cierreRealizado = generateTime();
+    ultimaDescarga = `${generateCurrentMonthDate(Math.floor(Math.random() * 2))} ${generateTime()}`;
+    cumplimiento = 'Cumplido';
+    cambioRuta = false; // No route change
+  } else if (index >= 5 && index < 15) {
+    // NEUTRO: Intermediate/pending states (items 6-15)
+    pasajeros = Math.floor(Math.random() * 40) + 10;
+    transmitidos = Math.floor(pasajeros * (Math.random() * 0.2 + 0.8)); // 80-100%
+    faltante = pasajeros - transmitidos;
+    inicioRealizado = Math.random() > 0.5 ? generateTime() : null; // 50% chance
+    cierreRealizado = Math.random() > 0.6 ? generateTime() : null; // 40% chance
+    ultimaDescarga = Math.random() > 0.4 ? `${generateCurrentMonthDate(Math.floor(Math.random() * 3))} ${generateTime()}` : null;
+    cumplimiento = Math.random() > 0.5 ? 'Cumplido' : 'No cumplido';
+    cambioRuta = false; // No route change for neutral
+  } else {
+    // NEGATIVO: Problems detected (rest of items)
+    pasajeros = Math.floor(Math.random() * 40) + 10;
+    transmitidos = Math.floor(pasajeros * (Math.random() * 0.3 + 0.4)); // 40-70% (more missing)
+    faltante = pasajeros - transmitidos;
+    inicioRealizado = Math.random() > 0.3 ? generateTime() : null;
+    cierreRealizado = Math.random() > 0.4 ? generateTime() : null;
+    ultimaDescarga = Math.random() > 0.3 ? `${generateCurrentMonthDate(Math.floor(Math.random() * 7))} ${generateTime()}` : null;
+    cumplimiento = Math.random() > 0.7 ? 'Cumplido' : 'No cumplido'; // More likely to be non-compliant
+    cambioRuta = Math.random() > 0.6; // 40% chance of route change
+  }
   
   const estado = estadosServicio[Math.floor(Math.random() * estadosServicio.length)];
-  const cumplimiento = cumplimientoOptions[Math.floor(Math.random() * cumplimientoOptions.length)];
   
   return {
     id: `inf-${index + 1}`,
@@ -102,7 +128,7 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     tarifaServicio,
     tarifaServicioTransportista,
     programado: Math.random() > 0.2,
-    cambioRuta: Math.random() > 0.7, // 30% de probabilidad de cambio de ruta
+    cambioRuta,
     estadoRevision: estadosRevision[Math.floor(Math.random() * estadosRevision.length)],
   };
 });
