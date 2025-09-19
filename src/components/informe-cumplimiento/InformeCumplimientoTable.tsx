@@ -299,7 +299,7 @@ export default function InformeCumplimientoTable({
                 <TableRow key={informe.id} className="hover:bg-muted/30 transition-colors">
                   <TableCell className="font-mono text-sm">{informe.noInforme}</TableCell>
                   <TableCell className="text-center">{informe.noSemana}</TableCell>
-                  <TableCell>{informe.fechaServicio}</TableCell>
+                  <TableCell>{informe.fechaServicio} {informe.horaInicio}</TableCell>
                   <TableCell className="font-mono">{informe.idServicio}</TableCell>
                   <TableCell>{informe.transportista}</TableCell>
                   <TableCell>{informe.empresaCliente}</TableCell>

@@ -238,7 +238,7 @@ export default function InformeCumplimientoCards({
                 {/* Fila 1 */}
                 <div>
                   <span className="text-muted-foreground text-sm block">Fecha servicio</span>
-                  <p className="font-medium">{informe.fechaServicio}</p>
+                  <p className="font-medium">{informe.fechaServicio} {informe.horaInicio}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground text-sm block">Número Servicio</span>
@@ -271,7 +271,7 @@ export default function InformeCumplimientoCards({
 
                 {/* Fila 2 */}
                 <div>
-                  <span className="text-muted-foreground text-sm block">Placa</span>
+                  <span className="text-muted-foreground text-sm block">Autobús</span>
                   <span className="font-mono font-medium">{informe.placa}</span>
                 </div>
                 <div>
