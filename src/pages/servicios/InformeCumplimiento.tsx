@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import InformeCumplimientoFilters from '@/components/informe-cumplimiento/InformeCumplimientoFilters';
-import InformeCumplimientoTable from '@/components/informe-cumplimiento/InformeCumplimientoTable';
+import InformeCumplimientoCards from '@/components/informe-cumplimiento/InformeCumplimientoCards';
 import InformeCumplimientoPagination from '@/components/informe-cumplimiento/InformeCumplimientoPagination';
 import { FiltrosInformeCumplimiento, InformeCumplimiento } from '@/types/informe-cumplimiento';
 import { mockInformesCumplimiento } from '@/data/mockInformesCumplimiento';
@@ -284,8 +284,8 @@ export default function InformeCumplimientoPage() {
           totalRegistros={informesOrdenados.length}
         />
 
-        {/* Tabla */}
-        <InformeCumplimientoTable
+        {/* Cards */}
+        <InformeCumplimientoCards
           informes={informesPaginados}
           onRevisionTransportista={handleRevisionTransportista}
           onRevisionAdministracion={handleRevisionAdministracion}
