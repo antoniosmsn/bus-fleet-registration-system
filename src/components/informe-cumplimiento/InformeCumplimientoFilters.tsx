@@ -97,7 +97,7 @@ export default function InformeCumplimientoFilters({
                 </Label>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Servicio - Inicio</Label>
                   <Input
@@ -105,17 +105,6 @@ export default function InformeCumplimientoFilters({
                     type="date"
                     value={filtros.fechaInicio}
                     onChange={(e) => updateFiltro('fechaInicio', e.target.value)}
-                    className="text-sm h-9"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Servicio - Fin</Label>
-                  <Input
-                    id="fechaFin"
-                    type="date"
-                    value={filtros.fechaFin}
-                    onChange={(e) => updateFiltro('fechaFin', e.target.value)}
                     className="text-sm h-9"
                   />
                 </div>
@@ -127,6 +116,17 @@ export default function InformeCumplimientoFilters({
                     type="time"
                     value={filtros.horaInicio}
                     onChange={(e) => updateFiltro('horaInicio', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Servicio - Fin</Label>
+                  <Input
+                    id="fechaFin"
+                    type="date"
+                    value={filtros.fechaFin}
+                    onChange={(e) => updateFiltro('fechaFin', e.target.value)}
                     className="text-sm h-9"
                   />
                 </div>
@@ -229,13 +229,13 @@ export default function InformeCumplimientoFilters({
 
           {/* Estados */}
           <TabsContent value="estados" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Estado Servicio y Cumplimiento en una línea */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Todos los estados en una sola línea */}
               <div className="space-y-2">
-                <Label>Estado del Servicio</Label>
+                <Label className="text-xs">Estado del Servicio</Label>
                 <Select onValueChange={(value) => addToArrayFilter('estadoServicio', value)}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Seleccionar estado" />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Estado" />
                   </SelectTrigger>
                   <SelectContent>
                     {estadosServicio.map(estado => (
@@ -246,12 +246,12 @@ export default function InformeCumplimientoFilters({
                   </SelectContent>
                 </Select>
                 {filtros.estadoServicio.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {filtros.estadoServicio.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs h-5">
                         {item}
                         <X 
-                          className="h-3 w-3 cursor-pointer" 
+                          className="h-2 w-2 cursor-pointer" 
                           onClick={() => removeFromArrayFilter('estadoServicio', item)}
                         />
                       </Badge>
@@ -261,10 +261,10 @@ export default function InformeCumplimientoFilters({
               </div>
 
               <div className="space-y-2">
-                <Label>Cumplimiento del Servicio</Label>
+                <Label className="text-xs">Cumplimiento del Servicio</Label>
                 <Select onValueChange={(value) => addToArrayFilter('cumplimientoServicio', value)}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Seleccionar cumplimiento" />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Cumplimiento" />
                   </SelectTrigger>
                   <SelectContent>
                     {cumplimientosServicio.map(cumplimiento => (
@@ -275,12 +275,12 @@ export default function InformeCumplimientoFilters({
                   </SelectContent>
                 </Select>
                 {filtros.cumplimientoServicio.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {filtros.cumplimientoServicio.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs h-5">
                         {item}
                         <X 
-                          className="h-3 w-3 cursor-pointer" 
+                          className="h-2 w-2 cursor-pointer" 
                           onClick={() => removeFromArrayFilter('cumplimientoServicio', item)}
                         />
                       </Badge>
@@ -288,15 +288,12 @@ export default function InformeCumplimientoFilters({
                   </div>
                 )}
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Estado Revisión y Programado en una línea */}
               <div className="space-y-2">
-                <Label>Estado de Revisión</Label>
+                <Label className="text-xs">Estado de Revisión</Label>
                 <Select onValueChange={(value) => addToArrayFilter('estadoRevision', value)}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Seleccionar estado" />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Revisión" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Pendiente">Pendiente</SelectItem>
@@ -306,12 +303,12 @@ export default function InformeCumplimientoFilters({
                   </SelectContent>
                 </Select>
                 {filtros.estadoRevision.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {filtros.estadoRevision.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs h-5">
                         {item}
                         <X 
-                          className="h-3 w-3 cursor-pointer" 
+                          className="h-2 w-2 cursor-pointer" 
                           onClick={() => removeFromArrayFilter('estadoRevision', item)}
                         />
                       </Badge>
@@ -321,13 +318,13 @@ export default function InformeCumplimientoFilters({
               </div>
 
               <div className="space-y-2">
-                <Label>Programado</Label>
+                <Label className="text-xs">Programado</Label>
                 <Select onValueChange={(value) => {
                   const boolValue = value === 'true';
                   updateFiltro('programado', [...filtros.programado, boolValue]);
                 }}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Seleccionar si está programado" />
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Programado" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="true">Sí</SelectItem>
@@ -335,12 +332,12 @@ export default function InformeCumplimientoFilters({
                   </SelectContent>
                 </Select>
                 {filtros.programado.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-1">
                     {filtros.programado.map((item, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center gap-1 text-xs">
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1 text-xs h-5">
                         {item ? 'Sí' : 'No'}
                         <X 
-                          className="h-3 w-3 cursor-pointer" 
+                          className="h-2 w-2 cursor-pointer" 
                           onClick={() => {
                             const newArray = [...filtros.programado];
                             newArray.splice(index, 1);
