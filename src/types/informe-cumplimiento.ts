@@ -35,19 +35,22 @@ export interface InformeCumplimiento {
 }
 
 export interface FiltrosInformeCumplimiento {
-  // Filtros básicos (de CumplimientoServicios)
+  // Filtros de fechas y horarios
   fechaInicio: string;
   fechaFin: string;
+  horaInicio: string;
+  horaFin: string;
+  // Filtros básicos (de CumplimientoServicios)
   numeroServicio: string;
   autobus: string[];
   ramal: string[];
   // Filtros de estados (de CumplimientoServicios)
   estadoServicio: string[];
   cumplimientoServicio: string[];
-  // Filtros de empresas (de CumplimientoServicios)
-  empresaCliente: string[];
-  // Estados de revisión (conservados del original)
+  // Estados de revisión (movidos a pestaña Estados)
   estadoRevision: EstadoRevision[];
   programado: (boolean | null)[];
+  // Filtros de empresas (de CumplimientoServicios)
+  empresaCliente: string[];
   verSoloPendientes: boolean;
 }

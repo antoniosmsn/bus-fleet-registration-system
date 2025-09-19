@@ -59,6 +59,8 @@ export default function InformeCumplimientoFilters({
     let count = 0;
     if (filtros.fechaInicio) count++;
     if (filtros.fechaFin) count++;
+    if (filtros.horaInicio && filtros.horaInicio !== '00:00') count++;
+    if (filtros.horaFin && filtros.horaFin !== '23:59') count++;
     if (filtros.numeroServicio) count++;
     if (filtros.autobus.length > 0) count++;
     if (filtros.ramal.length > 0) count++;
@@ -73,16 +75,16 @@ export default function InformeCumplimientoFilters({
   return (
     <Card>
       <CardContent className="p-6">
-        <Tabs defaultValue="basicos" className="w-full">
+        <Tabs defaultValue="fechas" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="fechas">Fechas</TabsTrigger>
             <TabsTrigger value="basicos">Básicos</TabsTrigger>
             <TabsTrigger value="estados">Estados</TabsTrigger>
             <TabsTrigger value="empresas">Empresas</TabsTrigger>
-            <TabsTrigger value="revision">Estado Revisión</TabsTrigger>
           </TabsList>
 
-          {/* Filtros Básicos */}
-          <TabsContent value="basicos" className="space-y-4">
+          {/* Fechas */}
+          <TabsContent value="fechas" className="space-y-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -95,9 +97,9 @@ export default function InformeCumplimientoFilters({
                 </Label>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fechaInicio" className="text-xs">Fecha Inicio</Label>
+                  <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Inicio</Label>
                   <Input
                     id="fechaInicio"
                     type="date"
@@ -108,7 +110,7 @@ export default function InformeCumplimientoFilters({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="fechaFin" className="text-xs">Fecha Fin</Label>
+                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Fin</Label>
                   <Input
                     id="fechaFin"
                     type="date"
@@ -117,7 +119,38 @@ export default function InformeCumplimientoFilters({
                     className="text-sm h-9"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="horaInicio" className="text-sm font-medium">Hora de Inicio</Label>
+                  <Input
+                    id="horaInicio"
+                    type="time"
+                    value={filtros.horaInicio}
+                    onChange={(e) => updateFiltro('horaInicio', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="horaFin" className="text-sm font-medium">Hora de Fin</Label>
+                  <Input
+                    id="horaFin"
+                    type="time"
+                    value={filtros.horaFin}
+                    onChange={(e) => updateFiltro('horaFin', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Filtros Básicos */}
+          <TabsContent value="basicos" className="space-y-4">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="numeroServicio" className="text-xs">Número Servicio</Label>
                   <Input
@@ -262,6 +295,72 @@ export default function InformeCumplimientoFilters({
                   </div>
                 )}
               </div>
+
+              {/* Estado Revisión */}
+              <div className="space-y-2">
+                <Label>Estado de Revisión</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('estadoRevision', value)}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Seleccionar estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pendiente">Pendiente</SelectItem>
+                      <SelectItem value="Revisado por Transportista">Revisado por Transportista</SelectItem>
+                      <SelectItem value="Revisado por Administración">Revisado por Administración</SelectItem>
+                      <SelectItem value="Completado">Completado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.estadoRevision.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {filtros.estadoRevision.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('estadoRevision', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Programado */}
+              <div className="space-y-2">
+                <Label>Programado</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => {
+                    const boolValue = value === 'true';
+                    updateFiltro('programado', [...filtros.programado, boolValue]);
+                  }}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Seleccionar si está programado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Sí</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.programado.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {filtros.programado.map((item, index) => (
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                        {item ? 'Sí' : 'No'}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => {
+                            const newProgramado = filtros.programado.filter((_, i) => i !== index);
+                            updateFiltro('programado', newProgramado);
+                          }}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
 
@@ -302,74 +401,6 @@ export default function InformeCumplimientoFilters({
             </div>
           </TabsContent>
 
-          {/* Estado Revisión */}
-          <TabsContent value="revision" className="space-y-4">
-            {/* Estado Revisión */}
-            <div className="space-y-2">
-              <Label>Estado de Revisión</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => addToArrayFilter('estadoRevision', value)}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pendiente">Pendiente</SelectItem>
-                    <SelectItem value="Revisado por Transportista">Revisado por Transportista</SelectItem>
-                    <SelectItem value="Revisado por Administración">Revisado por Administración</SelectItem>
-                    <SelectItem value="Completado">Completado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {filtros.estadoRevision.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.estadoRevision.map(item => (
-                    <Badge key={item} variant="secondary" className="flex items-center gap-1">
-                      {item}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => removeFromArrayFilter('estadoRevision', item)}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Programado */}
-            <div className="space-y-2">
-              <Label>Programado</Label>
-              <div className="flex gap-2">
-                <Select onValueChange={(value) => {
-                  const boolValue = value === 'true';
-                  updateFiltro('programado', [...filtros.programado, boolValue]);
-                }}>
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Seleccionar si está programado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Sí</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {filtros.programado.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {filtros.programado.map((item, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                      {item ? 'Sí' : 'No'}
-                      <X 
-                        className="h-3 w-3 cursor-pointer" 
-                        onClick={() => {
-                          const newProgramado = filtros.programado.filter((_, i) => i !== index);
-                          updateFiltro('programado', newProgramado);
-                        }}
-                      />
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
         </Tabs>
 
         {/* Botones de acción */}

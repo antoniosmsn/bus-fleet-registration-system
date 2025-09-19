@@ -9,8 +9,10 @@ import { useToast } from '@/hooks/use-toast';
 
 // Initial filter values
 const filtrosIniciales: FiltrosInformeCumplimiento = {
-  fechaInicio: '',
-  fechaFin: '',
+  fechaInicio: new Date().toISOString().split('T')[0],
+  fechaFin: new Date().toISOString().split('T')[0],
+  horaInicio: '00:00',
+  horaFin: '23:59',
   numeroServicio: '',
   autobus: [],
   ramal: [],
