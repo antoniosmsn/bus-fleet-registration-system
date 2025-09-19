@@ -155,8 +155,8 @@ export default function InformeCumplimientoCards({
         </div>
       </div>
 
-      {/* Grid de cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      {/* Lista de filas */}
+      <div className="space-y-3">
         {informes.map((informe) => (
           <Card key={informe.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
