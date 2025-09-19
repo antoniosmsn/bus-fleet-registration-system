@@ -22,6 +22,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
   const [filasExpandidas, setFilasExpandidas] = useState<Set<string>>(new Set());
   const [modalAbierto, setModalAbierto] = useState(false);
   const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<SolicitudAprobacion | null>(null);
+  const [bitacoras, setBitacoras] = useState(mockBitacoraCambiosRutas);
   const [ordenamiento, setOrdenamiento] = useState<{
     campo: string;
     direccion: 'asc' | 'desc';
@@ -29,7 +30,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
 
   // Filter and sort data
   const datosFiltrados = useMemo(() => {
-    let datos = mockBitacoraCambiosRutas.filter(bitacora => {
+    let datos = bitacoras.filter(bitacora => {
       // Filter by ruta original
       if (filtros.rutaOriginal !== 'todos' && bitacora.rutaOriginal.id !== filtros.rutaOriginal) {
         return false;
@@ -153,7 +154,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
     });
 
     return datos;
-  }, [filtros, ordenamiento]);
+  }, [filtros, ordenamiento, bitacoras]);
 
   // Pagination
   const totalPaginas = Math.ceil(datosFiltrados.length / registrosPorPagina);
@@ -252,9 +253,17 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
     setSolicitudSeleccionada(null);
   };
 
-  const handleAprobacionCompleta = () => {
+  const handleAprobacionCompleta = (esAprobada: boolean) => {
+    if (solicitudSeleccionada) {
+      setBitacoras(prevBitacoras => 
+        prevBitacoras.map(bitacora => 
+          bitacora.id === solicitudSeleccionada.id 
+            ? { ...bitacora, estado: esAprobada ? 'Aceptada' : 'Rechazada' }
+            : bitacora
+        )
+      );
+    }
     handleCerrarModal();
-    // Aquí podrías actualizar la lista si fuera necesario
   };
 
   const HeaderSortable = ({ campo, children }: { campo: string; children: React.ReactNode }) => (
@@ -527,12 +536,12 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
 
         {/* Modal de Aprobación */}
         {solicitudSeleccionada && (
-          <ModalAprobacionSolicitudBitacora
-            solicitud={solicitudSeleccionada}
-            isOpen={modalAbierto}
-            onClose={handleCerrarModal}
-            onAprobacionComplete={handleAprobacionCompleta}
-          />
+        <ModalAprobacionSolicitudBitacora
+          solicitud={solicitudSeleccionada}
+          isOpen={modalAbierto}
+          onClose={handleCerrarModal}
+          onAprobacionComplete={handleAprobacionCompleta}
+        />
         )}
       </CardContent>
     </Card>

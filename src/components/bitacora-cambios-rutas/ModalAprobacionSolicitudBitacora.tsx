@@ -14,7 +14,7 @@ interface ModalAprobacionSolicitudBitacoraProps {
   solicitud: SolicitudAprobacion | null;
   isOpen: boolean;
   onClose: () => void;
-  onAprobacionComplete: () => void;
+  onAprobacionComplete: (esAprobada: boolean) => void;
 }
 
 export function ModalAprobacionSolicitudBitacora({
@@ -53,7 +53,7 @@ export function ModalAprobacionSolicitudBitacora({
         title: "Solicitud Aprobada",
         description: "La solicitud de cambio de ruta ha sido aprobada exitosamente.",
       });
-      onAprobacionComplete();
+      onAprobacionComplete(true);
       handleClose();
     } catch (error) {
       toast({
@@ -88,7 +88,7 @@ export function ModalAprobacionSolicitudBitacora({
         title: "Solicitud Rechazada",
         description: "La solicitud de cambio de ruta ha sido rechazada.",
       });
-      onAprobacionComplete();
+      onAprobacionComplete(false);
       handleClose();
     } catch (error) {
       toast({
