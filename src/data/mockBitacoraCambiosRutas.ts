@@ -45,6 +45,15 @@ const mockUsuarios = [
   { id: '5', nombreCompleto: 'Carmen Soto Jiménez', username: 'csoto' },
 ];
 
+// Mock data for usuarios aprobadores
+const mockUsuariosAprobadores = [
+  { id: '6', nombreCompleto: 'Luis Alberto Vargas', username: 'lvargas' },
+  { id: '7', nombreCompleto: 'Patricia Morales Silva', username: 'pmorales' },
+  { id: '8', nombreCompleto: 'Roberto Chaves Núñez', username: 'rchaves' },
+  { id: '9', nombreCompleto: 'Sandra Jiménez Mora', username: 'sjimenez' },
+  { id: '10', nombreCompleto: 'Fernando Castro Ruiz', username: 'fcastro' },
+];
+
 // Mock data for empresas
 const mockEmpresas = [
   { id: '1', nombre: 'Transportes El Coyol S.A.' },
@@ -80,6 +89,7 @@ export const mockBitacoraCambiosRutas: BitacoraCambioRuta[] = Array.from({ lengt
   }
   
   const usuario = mockUsuarios[Math.floor(Math.random() * mockUsuarios.length)];
+  const usuarioAprobador = mockUsuariosAprobadores[Math.floor(Math.random() * mockUsuariosAprobadores.length)];
   const empresa = mockEmpresas[Math.floor(Math.random() * mockEmpresas.length)];
   const autobus = mockAutobuses[Math.floor(Math.random() * mockAutobuses.length)];
   const estado: 'Aceptada' | 'Rechazada' = Math.random() > 0.3 ? 'Aceptada' : 'Rechazada';
@@ -105,6 +115,7 @@ export const mockBitacoraCambiosRutas: BitacoraCambioRuta[] = Array.from({ lengt
     numeroServicioOriginal: `SRV-${Math.floor(Math.random() * 9000) + 1000}`,
     numeroServicioFinal: `SRV-${Math.floor(Math.random() * 9000) + 1000}`,
     usuario,
+    usuarioAprobador,
     fechaCambio,
     fechaServicio,
     cantidadPasajerosAfectados: cantidadPasajeros,

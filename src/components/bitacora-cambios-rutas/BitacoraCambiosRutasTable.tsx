@@ -280,6 +280,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                 <TableHead>Servicio Original</TableHead>
                 <TableHead>Servicio Final</TableHead>
                 <HeaderSortable campo="usuario">Usuario que solicita cambio</HeaderSortable>
+                <TableHead>Usuario que Acepta/Rechaza</TableHead>
                 <HeaderSortable campo="fechaCambio">Fecha Cambio</HeaderSortable>
                 <HeaderSortable campo="fechaServicio">Fecha Servicio</HeaderSortable>
                 <HeaderSortable campo="cantidadPasajeros">Pasajeros afectados</HeaderSortable>
@@ -293,7 +294,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
             <TableBody>
               {datosVisiblesToCurrentPage.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={13} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={14} className="text-center py-8 text-muted-foreground">
                     No existen resultados.
                   </TableCell>
                 </TableRow>
@@ -310,6 +311,16 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                         <span className="font-medium">{bitacora.usuario.nombreCompleto}</span>
                         <span className="text-sm text-muted-foreground">@{bitacora.usuario.username}</span>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      {bitacora.usuarioAprobador ? (
+                        <div className="flex flex-col">
+                          <span className="font-medium">{bitacora.usuarioAprobador.nombreCompleto}</span>
+                          <span className="text-sm text-muted-foreground">@{bitacora.usuarioAprobador.username}</span>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
                     </TableCell>
                     <TableCell>{formatShortDate(bitacora.fechaCambio)}</TableCell>
                     <TableCell>{formatShortDate(bitacora.fechaServicio)}</TableCell>
@@ -367,7 +378,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                   {/* Expanded row for passenger details */}
                   {filasExpandidas.has(bitacora.id) && bitacora.cantidadPasajerosAfectados > 0 && (
                     <TableRow>
-                      <TableCell colSpan={13} className="bg-muted/30 p-0">
+                      <TableCell colSpan={14} className="bg-muted/30 p-0">
                         <div className="p-4">
                           <h4 className="font-semibold mb-3 text-sm">
                             Detalle de Pasajeros Afectados ({bitacora.cantidadPasajerosAfectados})

@@ -15,6 +15,11 @@ export interface BitacoraCambioRuta {
     nombreCompleto: string;
     username: string;
   };
+  usuarioAprobador?: {
+    id: string;
+    nombreCompleto: string;
+    username: string;
+  };
   fechaCambio: string;
   fechaServicio: string;
   cantidadPasajerosAfectados: number;
