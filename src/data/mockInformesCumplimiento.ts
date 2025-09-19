@@ -31,6 +31,8 @@ const ramales = ['Ramal Norte', 'Ramal Sur', 'Ramal Este', 'Ramal Oeste', 'Ramal
 const tiposUnidad = ['Bus Articulado', 'Bus Convencional', 'Microbús', 'Buseta'];
 const sentidos: ('Ingreso' | 'Salida')[] = ['Ingreso', 'Salida'];
 const estadosRevision: EstadoRevision[] = ['Pendiente', 'Revisado por Transportista', 'Revisado por Administración', 'Completado'];
+const estadosServicio = ['Sin iniciar', 'Iniciado', 'Iniciado-descarga incompleta', 'Cierre manual-descarga completa', 'Cierre manual-descarga incompleta', 'Cierre automático-descarga incompleta', 'Cierre automático-descarga completa'];
+const cumplimientoOptions: ('Cumplido' | 'No cumplido')[] = ['Cumplido', 'No cumplido'];
 
 // Generate week number
 const getWeekNumber = (date: Date): number => {
@@ -58,6 +60,18 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
   const tarifaServicio = tarifaPasajero * ocupacion;
   const tarifaServicioTransportista = Math.round(tarifaServicio * 0.85);
   
+  // Generate realistic data for new fields
+  const pasajeros = Math.floor(Math.random() * 40) + 10;
+  const transmitidos = Math.floor(pasajeros * (Math.random() * 0.3 + 0.7)); // 70-100% of passengers transmitted
+  const faltante = pasajeros - transmitidos;
+  
+  const inicioRealizado = Math.random() > 0.1 ? generateTime() : null;
+  const cierreRealizado = Math.random() > 0.2 ? generateTime() : null;
+  const ultimaDescarga = Math.random() > 0.15 ? `${generateCurrentMonthDate(Math.floor(Math.random() * 5))} ${generateTime()}` : null;
+  
+  const estado = estadosServicio[Math.floor(Math.random() * estadosServicio.length)];
+  const cumplimiento = cumplimientoOptions[Math.floor(Math.random() * cumplimientoOptions.length)];
+  
   return {
     id: `inf-${index + 1}`,
     noInforme: `INF-2024-${String(index + 1).padStart(4, '0')}`,
@@ -76,6 +90,14 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     porcentajeOcupacion,
     horaInicio,
     horaFinalizacion,
+    inicioRealizado,
+    cierreRealizado,
+    ultimaDescarga,
+    pasajeros,
+    transmitidos,
+    faltante,
+    estado,
+    cumplimiento,
     tarifaPasajero,
     tarifaServicio,
     tarifaServicioTransportista,

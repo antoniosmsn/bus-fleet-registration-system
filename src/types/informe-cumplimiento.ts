@@ -18,6 +18,14 @@ export interface InformeCumplimiento {
   porcentajeOcupacion: number;
   horaInicio: string; // HH:mm
   horaFinalizacion: string; // HH:mm
+  inicioRealizado: string | null; // HH:mm or null
+  cierreRealizado: string | null; // HH:mm or null
+  ultimaDescarga: string | null; // DD/MM/YYYY HH:mm or null
+  pasajeros: number;
+  transmitidos: number;
+  faltante: number;
+  estado: string;
+  cumplimiento: 'Cumplido' | 'No cumplido';
   tarifaPasajero: number;
   tarifaServicio: number;
   tarifaServicioTransportista: number;

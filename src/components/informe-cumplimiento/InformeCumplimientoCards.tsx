@@ -100,8 +100,16 @@ export default function InformeCumplimientoCards({
     { value: 'sentido', label: 'Sentido' },
     { value: 'ocupacion', label: 'Ocupación' },
     { value: 'porcentajeOcupacion', label: '% Ocupación' },
-    { value: 'horaInicio', label: 'Hora Inicio' },
-    { value: 'horaFinalizacion', label: 'Hora Finalización' },
+    { value: 'horaInicio', label: 'Inicio Programado' },
+    { value: 'horaFinalizacion', label: 'Cierre Programado' },
+    { value: 'inicioRealizado', label: 'Inicio Realizado' },
+    { value: 'cierreRealizado', label: 'Cierre Realizado' },
+    { value: 'ultimaDescarga', label: 'Última Descarga' },
+    { value: 'pasajeros', label: 'Pasajeros' },
+    { value: 'transmitidos', label: 'Transmitidos' },
+    { value: 'faltante', label: 'Faltante' },
+    { value: 'estado', label: 'Estado' },
+    { value: 'cumplimiento', label: 'Cumplimiento' },
     { value: 'tarifaPasajero', label: 'Tarifa Pasajero' },
     { value: 'tarifaServicio', label: 'Tarifa Servicio' },
     { value: 'tarifaServicioTransportista', label: 'Tarifa Servicio Transportista' },
@@ -160,96 +168,133 @@ export default function InformeCumplimientoCards({
         {informes.map((informe) => (
           <Card key={informe.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
-              {/* Fila 1: Información básica */}
-              <div className="flex flex-wrap items-center gap-8 mb-3">
+              {/* Grid layout para mejor organización */}
+              <div className="grid grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 mb-4">
+                {/* Fila 1 */}
                 <div>
-                  <span className="text-muted-foreground text-sm">Fecha servicio:</span>
+                  <span className="text-muted-foreground text-sm block">Fecha servicio</span>
                   <p className="font-medium">{informe.fechaServicio}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">ID Servicio:</span>
+                  <span className="text-muted-foreground text-sm block">ID Servicio</span>
                   <p className="font-mono font-medium">{informe.idServicio}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">Transportista:</span>
+                  <span className="text-muted-foreground text-sm block">Transportista</span>
                   <p className="font-medium">{informe.transportista}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">Empresa cliente:</span>
+                  <span className="text-muted-foreground text-sm block">Empresa cliente</span>
                   <p className="font-medium">{informe.empresaCliente}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">Estado:</span>
-                  {getEstadoBadge(informe.estadoRevision)}
+                  <span className="text-muted-foreground text-sm block">Tipo ruta</span>
+                  <span className="font-medium">{informe.tipoRuta}</span>
                 </div>
-              </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Turno</span>
+                  <span className="font-medium">{informe.turno}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Ramal</span>
+                  <span className="font-medium">{informe.ramal}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Tipo unidad</span>
+                  <span className="font-medium">{informe.tipoUnidad}</span>
+                </div>
 
-              {/* Fila 2: Detalles de ruta y unidad */}
-              <div className="flex flex-wrap items-center gap-8 mb-3 pb-3 border-b">
+                {/* Fila 2 */}
                 <div>
-                  <span className="text-muted-foreground text-sm">Tipo ruta:</span>
-                  <span className="font-medium ml-1">{informe.tipoRuta}</span>
+                  <span className="text-muted-foreground text-sm block">Placa</span>
+                  <span className="font-mono font-medium">{informe.placa}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">Turno:</span>
-                  <span className="font-medium ml-1">{informe.turno}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm">Ramal:</span>
-                  <span className="font-medium ml-1">{informe.ramal}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm">Tipo unidad:</span>
-                  <span className="font-medium ml-1">{informe.tipoUnidad}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm">Placa:</span>
-                  <span className="font-mono font-medium ml-1">{informe.placa}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm">Sentido:</span>
-                  <Badge variant={informe.sentido === 'Ingreso' ? 'default' : 'secondary'} className="text-xs ml-1">
+                  <span className="text-muted-foreground text-sm block">Sentido</span>
+                  <Badge variant={informe.sentido === 'Ingreso' ? 'default' : 'secondary'} className="text-xs">
                     {informe.sentido}
                   </Badge>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm">Programado:</span>
-                  <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs ml-1">
+                  <span className="text-muted-foreground text-sm block">Ocupación</span>
+                  <span className="font-medium">{informe.ocupacion}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">% ocupación</span>
+                  <span className="font-medium">{informe.porcentajeOcupacion}%</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Tarifa pasajero</span>
+                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaPasajero)}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Tarifa servicio</span>
+                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicio)}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Tarifa servicio transportista</span>
+                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicioTransportista)}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Programado</span>
+                  <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs">
                     {informe.programado ? 'Sí' : 'No'}
                   </Badge>
                 </div>
+
+                {/* Fila 3 */}
+                <div>
+                  <span className="text-muted-foreground text-sm block">Inicio Programado</span>
+                  <span className="font-mono font-medium">{informe.horaInicio}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Cierre Programado</span>
+                  <span className="font-mono font-medium">{informe.horaFinalizacion}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Inicio Realizado</span>
+                  <span className="font-mono font-medium">{informe.inicioRealizado || '-'}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Cierre Realizado</span>
+                  <span className="font-mono font-medium">{informe.cierreRealizado || '-'}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Última Descarga</span>
+                  <span className="font-mono font-medium">{informe.ultimaDescarga || '-'}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Pasajeros</span>
+                  <span className="font-medium">{informe.pasajeros}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Transmitidos</span>
+                  <span className="font-medium">{informe.transmitidos}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Faltante</span>
+                  <span className="font-medium">{informe.faltante}</span>
+                </div>
               </div>
 
-              {/* Fila 3: Ocupación, horarios, tarifas y acciones */}
-              <div className="flex flex-wrap items-center justify-between gap-6">
-                <div className="flex flex-wrap items-center gap-6 text-sm">
+              {/* Fila de estado y acciones */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t">
+                <div className="flex flex-wrap items-center gap-4">
                   <div>
-                    <span className="text-muted-foreground">Ocupación:</span>
-                    <span className="font-medium ml-1">{informe.ocupacion}</span>
+                    <span className="text-muted-foreground text-sm">Estado:</span>
+                    <Badge variant={informe.estado === 'Cierre automático-descarga completa' ? 'default' : 'secondary'} className="text-xs ml-1">
+                      {informe.estado}
+                    </Badge>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">% ocupación:</span>
-                    <span className="font-medium ml-1">{informe.porcentajeOcupacion}%</span>
+                    <span className="text-muted-foreground text-sm">Cumplimiento:</span>
+                    <Badge variant={informe.cumplimiento === 'Cumplido' ? 'default' : 'destructive'} className="text-xs ml-1">
+                      {informe.cumplimiento}
+                    </Badge>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Inicio Programado:</span>
-                    <span className="font-mono font-medium ml-1">{informe.horaInicio}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Cierre Programado:</span>
-                    <span className="font-mono font-medium ml-1">{informe.horaFinalizacion}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Tarifa pasajero:</span>
-                    <span className="font-mono font-medium ml-1">{formatCurrency(informe.tarifaPasajero)}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Tarifa servicio:</span>
-                    <span className="font-mono font-medium ml-1">{formatCurrency(informe.tarifaServicio)}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Tarifa servicio transportista:</span>
-                    <span className="font-mono font-medium ml-1">{formatCurrency(informe.tarifaServicioTransportista)}</span>
+                    <span className="text-muted-foreground text-sm">Estado Revisión:</span>
+                    {getEstadoBadge(informe.estadoRevision)}
                   </div>
                 </div>
                 
