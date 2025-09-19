@@ -130,39 +130,6 @@ export default function InformeCumplimientoCards({
 
   return (
     <div className="space-y-4">
-      {/* Controles de ordenamiento */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 border rounded-lg bg-muted/20">
-        <div className="flex items-center gap-2">
-          <Settings className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium">Ordenar por:</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select
-            value={sortField}
-            onValueChange={(value) => onSort(value as keyof InformeCumplimiento)}
-          >
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onSort(sortField)}
-            className="px-2"
-          >
-            {getSortIcon()}
-          </Button>
-        </div>
-      </div>
-
       {/* Lista de filas */}
       <div className="space-y-3">
         {informes.map((informe) => (
