@@ -44,6 +44,7 @@ const estadosOptions = [
   { value: 'todos', label: 'Todos' },
   { value: 'Aceptada', label: 'Aceptada' },
   { value: 'Rechazada', label: 'Rechazada' },
+  { value: 'Pendiente', label: 'Pendiente' },
 ];
 
 interface BitacoraCambiosRutasFiltersProps {
