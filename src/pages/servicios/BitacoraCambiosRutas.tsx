@@ -24,7 +24,8 @@ const BitacoraCambiosRutasPage = () => {
     empresaTransporte: 'todos',
     autobus: '',
     placaAutobus: '',
-    estado: 'todos'
+    estado: 'todos',
+    verSoloPendientes: true
   });
 
   const aplicarFiltros = (nuevosFiltros: BitacoraCambioRutaFilter) => {

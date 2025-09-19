@@ -31,6 +31,11 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
   // Filter and sort data
   const datosFiltrados = useMemo(() => {
     let datos = bitacoras.filter(bitacora => {
+      // Filter by pendientes only if checked
+      if (filtros.verSoloPendientes && bitacora.estado !== 'Pendiente') {
+        return false;
+      }
+      
       // Filter by ruta original
       if (filtros.rutaOriginal !== 'todos' && bitacora.rutaOriginal.id !== filtros.rutaOriginal) {
         return false;

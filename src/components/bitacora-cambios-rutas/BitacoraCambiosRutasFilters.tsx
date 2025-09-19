@@ -80,6 +80,7 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
       autobus: '',
       placaAutobus: '',
       estado: 'todos',
+      verSoloPendientes: true,
     };
     setFiltrosLocales(filtrosVacios);
     onFiltrosChange(filtrosVacios);
@@ -175,37 +176,50 @@ const BitacoraCambiosRutasFilters = ({ filtros, onFiltrosChange }: BitacoraCambi
           </div>
 
           <TabsContent value="general" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="rutaOriginal">Ruta Original</Label>
-                <Combobox
-                  options={rutasOptions}
-                  value={filtrosLocales.rutaOriginal}
-                  onValueChange={(value) => updateFiltro('rutaOriginal', value)}
-                  placeholder="Seleccionar ruta original"
-                  searchPlaceholder="Buscar ruta..."
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="verSoloPendientes"
+                  checked={filtrosLocales.verSoloPendientes}
+                  onCheckedChange={(checked) => updateFiltro('verSoloPendientes', checked)}
                 />
+                <Label htmlFor="verSoloPendientes" className="font-medium text-sm">
+                  Ver solo pendientes de aprobación
+                </Label>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="rutaFinal">Ruta Final</Label>
-                <Combobox
-                  options={rutasOptions}
-                  value={filtrosLocales.rutaFinal}
-                  onValueChange={(value) => updateFiltro('rutaFinal', value)}
-                  placeholder="Seleccionar ruta final"
-                  searchPlaceholder="Buscar ruta..."
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="usuario">Usuario</Label>
-                <Input
-                  id="usuario"
-                  placeholder="Buscar por nombre o username..."
-                  value={filtrosLocales.usuario}
-                  onChange={(e) => updateFiltro('usuario', e.target.value)}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="rutaOriginal">Ruta Original</Label>
+                  <Combobox
+                    options={rutasOptions}
+                    value={filtrosLocales.rutaOriginal}
+                    onValueChange={(value) => updateFiltro('rutaOriginal', value)}
+                    placeholder="Seleccionar ruta original"
+                    searchPlaceholder="Buscar ruta..."
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="rutaFinal">Ruta Final</Label>
+                  <Combobox
+                    options={rutasOptions}
+                    value={filtrosLocales.rutaFinal}
+                    onValueChange={(value) => updateFiltro('rutaFinal', value)}
+                    placeholder="Seleccionar ruta final"
+                    searchPlaceholder="Buscar ruta..."
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="usuario">Usuario</Label>
+                  <Input
+                    id="usuario"
+                    placeholder="Buscar por nombre o username..."
+                    value={filtrosLocales.usuario}
+                    onChange={(e) => updateFiltro('usuario', e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </TabsContent>

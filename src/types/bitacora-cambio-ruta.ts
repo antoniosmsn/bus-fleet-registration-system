@@ -70,4 +70,5 @@ export interface BitacoraCambioRutaFilter {
   autobus: string;
   placaAutobus: string;
   estado: string;
+  verSoloPendientes: boolean;
 }
