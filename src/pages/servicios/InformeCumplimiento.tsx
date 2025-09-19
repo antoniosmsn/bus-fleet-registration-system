@@ -277,15 +277,6 @@ export default function InformeCumplimientoPage() {
           totalRegistros={informesOrdenados.length}
         />
 
-        {/* Filtros */}
-        <InformeCumplimientoFilters
-          filtros={filtros}
-          onFiltrosChange={setFiltros}
-          onAplicarFiltros={handleAplicarFiltros}
-          onLimpiarFiltros={handleLimpiarFiltros}
-          totalRegistros={informesOrdenados.length}
-        />
-
         {/* Cards */}
         <InformeCumplimientoCards
           informes={informesPaginados}
