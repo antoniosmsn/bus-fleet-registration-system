@@ -160,78 +160,85 @@ export default function InformeCumplimientoCards({
         {informes.map((informe) => (
           <Card key={informe.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
-              {/* Fila 1: Información principal */}
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
-                <div className="flex items-center gap-6">
-                  <div>
-                    <span className="text-muted-foreground text-sm">Fecha servicio:</span>
-                    <p className="font-medium">{informe.fechaServicio}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-sm">ID Servicio:</span>
-                    <p className="font-mono font-medium">{informe.idServicio}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-sm">Transportista:</span>
-                    <p className="font-medium">{informe.transportista}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-sm">Empresa cliente:</span>
-                    <p className="font-medium">{informe.empresaCliente}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-sm">Tipo ruta:</span>
-                    <p className="font-medium">{informe.tipoRuta}</p>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground text-sm">Turno:</span>
-                    <p className="font-medium">{informe.turno}</p>
-                  </div>
+              {/* Fila 1: Información básica */}
+              <div className="flex flex-wrap items-center gap-8 mb-3">
+                <div>
+                  <span className="text-muted-foreground text-sm">Fecha servicio:</span>
+                  <p className="font-medium">{informe.fechaServicio}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div>
+                  <span className="text-muted-foreground text-sm">ID Servicio:</span>
+                  <p className="font-mono font-medium">{informe.idServicio}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm">Transportista:</span>
+                  <p className="font-medium">{informe.transportista}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm">Empresa cliente:</span>
+                  <p className="font-medium">{informe.empresaCliente}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm">Estado:</span>
                   {getEstadoBadge(informe.estadoRevision)}
                 </div>
               </div>
 
-              {/* Fila 2: Detalles del servicio */}
-              <div className="flex flex-wrap items-center gap-6 text-sm mb-3 pb-3 border-b">
+              {/* Fila 2: Detalles de ruta y unidad */}
+              <div className="flex flex-wrap items-center gap-8 mb-3 pb-3 border-b">
                 <div>
-                  <span className="text-muted-foreground">Ramal:</span>
+                  <span className="text-muted-foreground text-sm">Tipo ruta:</span>
+                  <span className="font-medium ml-1">{informe.tipoRuta}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm">Turno:</span>
+                  <span className="font-medium ml-1">{informe.turno}</span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm">Ramal:</span>
                   <span className="font-medium ml-1">{informe.ramal}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Tipo unidad:</span>
+                  <span className="text-muted-foreground text-sm">Tipo unidad:</span>
                   <span className="font-medium ml-1">{informe.tipoUnidad}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Placa:</span>
+                  <span className="text-muted-foreground text-sm">Placa:</span>
                   <span className="font-mono font-medium ml-1">{informe.placa}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Sentido:</span>
+                  <span className="text-muted-foreground text-sm">Sentido:</span>
                   <Badge variant={informe.sentido === 'Ingreso' ? 'default' : 'secondary'} className="text-xs ml-1">
                     {informe.sentido}
                   </Badge>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Ocupación:</span>
-                  <span className="font-medium ml-1">{informe.ocupacion}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">% ocupación:</span>
-                  <span className="font-medium ml-1">{informe.porcentajeOcupacion}%</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Programado:</span>
+                  <span className="text-muted-foreground text-sm">Programado:</span>
                   <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs ml-1">
                     {informe.programado ? 'Sí' : 'No'}
                   </Badge>
                 </div>
               </div>
 
-              {/* Fila 3: Tarifas y acciones */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-6 text-sm">
+              {/* Fila 3: Ocupación, horarios, tarifas y acciones */}
+              <div className="flex flex-wrap items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-6 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Ocupación:</span>
+                    <span className="font-medium ml-1">{informe.ocupacion}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">% ocupación:</span>
+                    <span className="font-medium ml-1">{informe.porcentajeOcupacion}%</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Inicio Programado:</span>
+                    <span className="font-mono font-medium ml-1">{informe.horaInicio}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Cierre Programado:</span>
+                    <span className="font-mono font-medium ml-1">{informe.horaFinalizacion}</span>
+                  </div>
                   <div>
                     <span className="text-muted-foreground">Tarifa pasajero:</span>
                     <span className="font-mono font-medium ml-1">{formatCurrency(informe.tarifaPasajero)}</span>
@@ -246,7 +253,7 @@ export default function InformeCumplimientoCards({
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Button
                     size="sm"
                     variant="outline"
