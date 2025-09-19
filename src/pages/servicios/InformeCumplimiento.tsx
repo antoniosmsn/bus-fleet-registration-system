@@ -9,24 +9,17 @@ import { useToast } from '@/hooks/use-toast';
 
 // Initial filter values
 const filtrosIniciales: FiltrosInformeCumplimiento = {
-  noInforme: '',
-  noSemana: '',
   fechaInicio: '',
   fechaFin: '',
-  horaInicio: '',
-  horaFin: '',
-  idServicio: '',
-  transportista: [],
-  empresaCliente: [],
-  tipoRuta: [],
-  turno: [],
+  numeroServicio: '',
+  autobus: [],
   ramal: [],
-  tipoUnidad: [],
-  placa: [],
-  sentido: [],
+  estadoServicio: [],
+  cumplimientoServicio: [],
+  empresaCliente: [],
   estadoRevision: [],
   programado: [],
-  verSoloPendientes: true,
+  verSoloPendientes: true
 };
 
 export default function InformeCumplimientoPage() {
@@ -48,8 +41,6 @@ export default function InformeCumplimientoPage() {
         ...filtrosIniciales,
         fechaInicio: firstDayOfMonth.toISOString().split('T')[0],
         fechaFin: today.toISOString().split('T')[0],
-        horaInicio: '00:00',
-        horaFin: '23:59',
         verSoloPendientes: true,
       };
     setFiltros(filtrosMes);
@@ -76,18 +67,8 @@ export default function InformeCumplimientoPage() {
           return false;
         }
         
-        // No. Informe filter
-        if (filtrosAplicados.noInforme && !informe.noInforme.toLowerCase().includes(filtrosAplicados.noInforme.toLowerCase())) {
-          return false;
-        }
-
-        // No. Semana filter
-        if (filtrosAplicados.noSemana && !informe.noSemana.toString().includes(filtrosAplicados.noSemana)) {
-          return false;
-        }
-
-        // ID Servicio filter
-        if (filtrosAplicados.idServicio && !informe.idServicio.toLowerCase().includes(filtrosAplicados.idServicio.toLowerCase())) {
+        // Número Servicio filter
+        if (filtrosAplicados.numeroServicio && !informe.idServicio.toLowerCase().includes(filtrosAplicados.numeroServicio.toLowerCase())) {
           return false;
         }
 
@@ -108,21 +89,12 @@ export default function InformeCumplimientoPage() {
           }
         }
 
-        // Time range filter
-        if (filtrosAplicados.horaInicio || filtrosAplicados.horaFin) {
-          if (filtrosAplicados.horaInicio && informe.horaInicio < filtrosAplicados.horaInicio) return false;
-          if (filtrosAplicados.horaFin && informe.horaFinalizacion > filtrosAplicados.horaFin) return false;
-        }
-
         // Array filters
-        if (filtrosAplicados.transportista.length > 0 && !filtrosAplicados.transportista.includes(informe.transportista)) return false;
-        if (filtrosAplicados.empresaCliente.length > 0 && !filtrosAplicados.empresaCliente.includes(informe.empresaCliente)) return false;
-        if (filtrosAplicados.tipoRuta.length > 0 && !filtrosAplicados.tipoRuta.includes(informe.tipoRuta)) return false;
-        if (filtrosAplicados.turno.length > 0 && !filtrosAplicados.turno.includes(informe.turno)) return false;
+        if (filtrosAplicados.autobus.length > 0 && !filtrosAplicados.autobus.includes(informe.placa)) return false;
         if (filtrosAplicados.ramal.length > 0 && !filtrosAplicados.ramal.includes(informe.ramal)) return false;
-        if (filtrosAplicados.tipoUnidad.length > 0 && !filtrosAplicados.tipoUnidad.includes(informe.tipoUnidad)) return false;
-        if (filtrosAplicados.placa.length > 0 && !filtrosAplicados.placa.includes(informe.placa)) return false;
-        if (filtrosAplicados.sentido.length > 0 && !filtrosAplicados.sentido.includes(informe.sentido)) return false;
+        if (filtrosAplicados.estadoServicio.length > 0 && !filtrosAplicados.estadoServicio.includes(informe.estado)) return false;
+        if (filtrosAplicados.cumplimientoServicio.length > 0 && !filtrosAplicados.cumplimientoServicio.includes(informe.cumplimiento)) return false;
+        if (filtrosAplicados.empresaCliente.length > 0 && !filtrosAplicados.empresaCliente.includes(informe.empresaCliente)) return false;
         if (filtrosAplicados.estadoRevision.length > 0 && !filtrosAplicados.estadoRevision.includes(informe.estadoRevision)) return false;
         if (filtrosAplicados.programado.length > 0 && !filtrosAplicados.programado.includes(informe.programado)) return false;
 
@@ -209,8 +181,6 @@ export default function InformeCumplimientoPage() {
         ...filtrosIniciales,
         fechaInicio: firstDayOfMonth.toISOString().split('T')[0],
         fechaFin: today.toISOString().split('T')[0],
-        horaInicio: '00:00',
-        horaFin: '23:59',
         verSoloPendientes: true,
       };
       setFiltrosAplicados(filtrosMes);
