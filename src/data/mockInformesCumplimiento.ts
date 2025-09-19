@@ -98,6 +98,20 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
   
   const estado = estadosServicio[Math.floor(Math.random() * estadosServicio.length)];
   
+  // Special case for item 10: incomplete times to hide "Cambio Ruta" button
+  let finalHoraInicio = horaInicio;
+  let finalHoraFinalizacion = horaFinalizacion;
+  let finalInicioRealizado = inicioRealizado;
+  let finalCierreRealizado = cierreRealizado;
+  
+  if (index === 9) { // Item 10 (0-based index)
+    // Make times incomplete to hide the "Cambio Ruta" button
+    finalHoraInicio = generateTime();
+    finalHoraFinalizacion = ''; // Missing programmed end time
+    finalInicioRealizado = generateTime(); 
+    finalCierreRealizado = null; // Missing executed end time
+  }
+
   return {
     id: `inf-${index + 1}`,
     noInforme: `INF-2024-${String(index + 1).padStart(4, '0')}`,
@@ -114,10 +128,10 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     sentido: sentidos[Math.floor(Math.random() * sentidos.length)],
     ocupacion,
     porcentajeOcupacion,
-    horaInicio,
-    horaFinalizacion,
-    inicioRealizado,
-    cierreRealizado,
+    horaInicio: finalHoraInicio,
+    horaFinalizacion: finalHoraFinalizacion,
+    inicioRealizado: finalInicioRealizado,
+    cierreRealizado: finalCierreRealizado,
     ultimaDescarga,
     pasajeros,
     transmitidos,
