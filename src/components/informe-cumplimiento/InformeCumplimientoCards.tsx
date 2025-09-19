@@ -365,7 +365,7 @@ export default function InformeCumplimientoCards({
                   </div>
                 </div>
                 
-                <div className="flex gap-2 flex-shrink-0">
+                <div className="flex gap-2 flex-shrink-0 ml-auto">
                   <Button
                     size="sm"
                     variant="outline"
