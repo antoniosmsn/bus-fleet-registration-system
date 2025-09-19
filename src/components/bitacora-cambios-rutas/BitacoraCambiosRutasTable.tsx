@@ -376,7 +376,7 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      {(bitacora.estado === 'Pendiente' || bitacora.estado === 'Rechazada') && (
+                      {bitacora.estado === 'Pendiente' && (
                         <Button
                           size="sm"
                           variant="outline"
