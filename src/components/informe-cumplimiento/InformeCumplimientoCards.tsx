@@ -3,8 +3,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChevronUp, ChevronDown, Eye, CheckCircle, AlertCircle, FileText, Building, Route, Clock, DollarSign, Settings } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye, EyeOff, CheckCircle, AlertCircle, FileText, Building, Route, Clock, DollarSign, Settings } from 'lucide-react';
 import { InformeCumplimiento } from '@/types/informe-cumplimiento';
+import { getDetallePasajerosForService } from '@/data/mockDetallePasajerosMovimientos';
+import { verificarPermisoAcceso } from '@/services/permisosService';
 import ModalConfirmacionRevision from './ModalConfirmacionRevision';
 
 interface InformeCumplimientoCardsProps {
@@ -29,6 +31,18 @@ export default function InformeCumplimientoCards({
   const [modalOpen, setModalOpen] = useState(false);
   const [informeSeleccionado, setInformeSeleccionado] = useState<InformeCumplimiento | null>(null);
   const [tipoRevision, setTipoRevision] = useState<'transportista' | 'administracion' | 'cliente'>('transportista');
+  const [cardsExpandidas, setCardsExpandidas] = useState<Set<string>>(new Set());
+  const puedeVerDatosPersonales = verificarPermisoAcceso();
+
+  const toggleCard = (id: string) => {
+    const nuevasCardsExpandidas = new Set(cardsExpandidas);
+    if (nuevasCardsExpandidas.has(id)) {
+      nuevasCardsExpandidas.delete(id);
+    } else {
+      nuevasCardsExpandidas.add(id);
+    }
+    setCardsExpandidas(nuevasCardsExpandidas);
+  };
 
   const getSortIcon = () => {
     return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
@@ -269,6 +283,19 @@ export default function InformeCumplimientoCards({
                   <Button
                     size="sm"
                     variant="outline"
+                    onClick={() => toggleCard(informe.id)}
+                    className="text-xs px-2 py-1 h-7"
+                  >
+                    {cardsExpandidas.has(informe.id) ? (
+                      <EyeOff className="h-3 w-3 mr-1" />
+                    ) : (
+                      <Eye className="h-3 w-3 mr-1" />
+                    )}
+                    Detalle
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     disabled={!canReviewTransportista(informe.estadoRevision)}
                     onClick={() => handleRevisionClick(informe, 'transportista')}
                     className="text-xs px-2 py-1 h-7"
@@ -295,6 +322,122 @@ export default function InformeCumplimientoCards({
                   </Button>
                 </div>
               </div>
+
+              {/* Expanded section for passenger details */}
+              {cardsExpandidas.has(informe.id) && (
+                <div className="mt-4 pt-4 border-t bg-muted/30 -mx-4 -mb-4 rounded-b-lg">
+                  <div className="px-4 pb-4">
+                    <h4 className="font-semibold mb-3 text-sm">
+                      Detalle de Movimientos de Pasajeros
+                    </h4>
+                    <div className="grid gap-3 max-h-96 overflow-y-auto">
+                      {getDetallePasajerosForService(informe.idServicio, {
+                        transportista: informe.transportista,
+                        placaAutobus: informe.placa,
+                        sector: '', // Not available in compliance report
+                        ramal: informe.ramal,
+                        cliente: informe.empresaCliente,
+                        sentido: informe.sentido
+                      }).map((movimiento) => (
+                        <div key={movimiento.id} className="p-4 bg-background rounded-md border">
+                          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
+                            {/* Column 1: Personal Info */}
+                            {puedeVerDatosPersonales && (
+                              <div className="space-y-1">
+                                <div className="font-medium text-foreground">{movimiento.nombrePasajero}</div>
+                                <div className="text-muted-foreground">
+                                  <span className="font-medium">Cédula:</span> {movimiento.cedula}
+                                </div>
+                                <div className="text-muted-foreground">
+                                  <span className="font-medium">Tipo de Pago:</span> {movimiento.tipoPago}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Column 2: Transaction Info */}
+                            <div className="space-y-1">
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Fecha Transacción:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.fechaTransaccion}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Hora:</span> {movimiento.horaTransaccion}
+                              </div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Monto:</span> {formatCurrency(movimiento.monto)}
+                              </div>
+                            </div>
+                            
+                            {/* Column 3: Transport Info */}
+                            <div className="space-y-1">
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Empresa Transporte:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.empresaTransporte}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Placa Autobús:</span>
+                              </div>
+                              <div className="text-foreground font-mono">{movimiento.placaAutobus}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Sentido:</span>
+                              </div>
+                              <div>
+                                <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
+                                  {movimiento.sentido}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            {/* Column 4: Route Info */}
+                            <div className="space-y-1">
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Ramal:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.ramal}</div>
+                            </div>
+                            
+                            {/* Column 5: Location & Client */}
+                            <div className="space-y-1">
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Empresa Cliente:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.empresaCliente}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Parada:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.parada}</div>
+                              <div className="text-muted-foreground text-xs">
+                                Lat/Lng: {movimiento.latitud.toFixed(4)}, {movimiento.longitud.toFixed(4)}
+                              </div>
+                            </div>
+                            
+                            {/* Column 6: Employee & Additional Info */}
+                            <div className="space-y-1">
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">N° Empleado:</span>
+                              </div>
+                              <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Tipo Planilla:</span>
+                              </div>
+                              <div className="text-foreground">{movimiento.tipoPlanilla}</div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
+                              </div>
+                              <div className="text-muted-foreground">
+                                <span className="font-medium">Viaje Adicional:</span>
+                              </div>
+                              <div className="text-foreground">
+                                {movimiento.viajeAdicional ? "Sí" : "No"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
