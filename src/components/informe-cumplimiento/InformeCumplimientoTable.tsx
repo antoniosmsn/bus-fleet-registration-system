@@ -125,7 +125,7 @@ export default function InformeCumplimientoTable({
                 onClick={() => onSort('idServicio')}
               >
                 <div className="flex items-center gap-2">
-                  ID Servicio
+                  Número Servicio
                   {getSortIcon('idServicio')}
                 </div>
               </TableHead>

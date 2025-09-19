@@ -187,7 +187,7 @@ export default function InformeCumplimientoCards({
     { value: 'noInforme', label: 'No Informe' },
     { value: 'noSemana', label: 'No Semana' },
     { value: 'fechaServicio', label: 'Fecha Servicio' },
-    { value: 'idServicio', label: 'ID Servicio' },
+    { value: 'idServicio', label: 'Número Servicio' },
     { value: 'transportista', label: 'Transportista' },
     { value: 'empresaCliente', label: 'Empresa Cliente' },
     { value: 'tipoRuta', label: 'Tipo Ruta' },
@@ -241,7 +241,7 @@ export default function InformeCumplimientoCards({
                   <p className="font-medium">{informe.fechaServicio}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground text-sm block">ID Servicio</span>
+                  <span className="text-muted-foreground text-sm block">Número Servicio</span>
                   <p className="font-mono font-medium">{informe.idServicio}</p>
                 </div>
                 <div>

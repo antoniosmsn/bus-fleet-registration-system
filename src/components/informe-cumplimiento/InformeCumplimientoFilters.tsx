@@ -99,7 +99,7 @@ export default function InformeCumplimientoFilters({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Inicio</Label>
+                  <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Servicios - Inicio</Label>
                   <Input
                     id="fechaInicio"
                     type="date"
@@ -110,7 +110,7 @@ export default function InformeCumplimientoFilters({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Fin</Label>
+                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Servicios - Fin</Label>
                   <Input
                     id="fechaFin"
                     type="date"
