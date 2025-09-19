@@ -26,6 +26,7 @@ const filtrosIniciales: FiltrosInformeCumplimiento = {
   sentido: [],
   estadoRevision: [],
   programado: [],
+  verSoloPendientes: true,
 };
 
 export default function InformeCumplimientoPage() {
@@ -43,13 +44,14 @@ export default function InformeCumplimientoPage() {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     
-    const filtrosMes = {
-      ...filtrosIniciales,
-      fechaInicio: firstDayOfMonth.toISOString().split('T')[0],
-      fechaFin: today.toISOString().split('T')[0],
-      horaInicio: '00:00',
-      horaFin: '23:59',
-    };
+      const filtrosMes = {
+        ...filtrosIniciales,
+        fechaInicio: firstDayOfMonth.toISOString().split('T')[0],
+        fechaFin: today.toISOString().split('T')[0],
+        horaInicio: '00:00',
+        horaFin: '23:59',
+        verSoloPendientes: true,
+      };
     setFiltros(filtrosMes);
     setFiltrosAplicados(filtrosMes);
   }, []);
@@ -69,6 +71,11 @@ export default function InformeCumplimientoPage() {
       }
 
       const filtered = mockInformesCumplimiento.filter(informe => {
+        // Filter by pendientes only if checked
+        if (filtrosAplicados.verSoloPendientes && informe.estadoRevision !== 'Pendiente') {
+          return false;
+        }
+        
         // No. Informe filter
         if (filtrosAplicados.noInforme && !informe.noInforme.toLowerCase().includes(filtrosAplicados.noInforme.toLowerCase())) {
           return false;
@@ -204,6 +211,7 @@ export default function InformeCumplimientoPage() {
         fechaFin: today.toISOString().split('T')[0],
         horaInicio: '00:00',
         horaFin: '23:59',
+        verSoloPendientes: true,
       };
       setFiltrosAplicados(filtrosMes);
     }, 100);

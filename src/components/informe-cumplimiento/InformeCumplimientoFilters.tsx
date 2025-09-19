@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { X, FileDown, Filter, RotateCcw } from 'lucide-react';
 import { FiltrosInformeCumplimiento } from '@/types/informe-cumplimiento';
 import { 
@@ -88,17 +89,29 @@ export default function InformeCumplimientoFilters({
 
           {/* Filtros Básicos */}
           <TabsContent value="basicos" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="idServicio" className="text-xs">ID Servicio</Label>
-                <Input
-                  id="idServicio"
-                  value={filtros.idServicio}
-                  onChange={(e) => updateFiltro('idServicio', e.target.value)}
-                  placeholder="ID Servicio"
-                  className="text-sm h-9"
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="verSoloPendientes"
+                  checked={filtros.verSoloPendientes}
+                  onCheckedChange={(checked) => updateFiltro('verSoloPendientes', checked)}
                 />
+                <Label htmlFor="verSoloPendientes" className="font-medium text-sm">
+                  Ver solo pendientes de aprobación
+                </Label>
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="idServicio" className="text-xs">ID Servicio</Label>
+                  <Input
+                    id="idServicio"
+                    value={filtros.idServicio}
+                    onChange={(e) => updateFiltro('idServicio', e.target.value)}
+                    placeholder="ID Servicio"
+                    className="text-sm h-9"
+                  />
+                </div>
               
               {/* Ramal */}
               <div className="space-y-2">
@@ -226,9 +239,10 @@ export default function InformeCumplimientoFilters({
                     ))}
                   </div>
                 )}
-              </div>
-            </div>
-          </TabsContent>
+               </div>
+             </div>
+           </div>
+           </TabsContent>
 
           {/* Empresas */}
           <TabsContent value="empresas" className="space-y-4">

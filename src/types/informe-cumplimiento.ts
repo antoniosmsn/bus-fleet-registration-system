@@ -52,4 +52,5 @@ export interface FiltrosInformeCumplimiento {
   sentido: ('Ingreso' | 'Salida')[];
   estadoRevision: EstadoRevision[];
   programado: (boolean | null)[];
+  verSoloPendientes: boolean;
 }
