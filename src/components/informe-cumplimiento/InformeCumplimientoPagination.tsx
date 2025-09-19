@@ -53,7 +53,8 @@ export default function InformeCumplimientoPagination({
     return rangeWithDots;
   };
 
-  if (totalPages <= 1) return null;
+  // Always show pagination if there are items, even if only one page
+  if (totalItems === 0) return null;
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">

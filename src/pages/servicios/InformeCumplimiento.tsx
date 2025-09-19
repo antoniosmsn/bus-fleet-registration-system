@@ -2,7 +2,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import InformeCumplimientoFilters from '@/components/informe-cumplimiento/InformeCumplimientoFilters';
 import InformeCumplimientoCards from '@/components/informe-cumplimiento/InformeCumplimientoCards';
+import InformeCumplimientoTable from '@/components/informe-cumplimiento/InformeCumplimientoTable';
 import InformeCumplimientoPagination from '@/components/informe-cumplimiento/InformeCumplimientoPagination';
+import { Button } from '@/components/ui/button';
+import { Grid, List } from 'lucide-react';
 import { FiltrosInformeCumplimiento, InformeCumplimiento } from '@/types/informe-cumplimiento';
 import { mockInformesCumplimiento } from '@/data/mockInformesCumplimiento';
 import { useToast } from '@/hooks/use-toast';
@@ -31,6 +34,7 @@ export default function InformeCumplimientoPage() {
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [sortField, setSortField] = useState<keyof InformeCumplimiento>('fechaServicio');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   
   const { toast } = useToast();
 
@@ -277,27 +281,66 @@ export default function InformeCumplimientoPage() {
           totalRegistros={informesOrdenados.length}
         />
 
-        {/* Cards */}
-        <InformeCumplimientoCards
-          informes={informesPaginados}
-          onRevisionTransportista={handleRevisionTransportista}
-          onRevisionAdministracion={handleRevisionAdministracion}
-          onRevisionCliente={handleRevisionCliente}
-          onCambioRuta={handleCambioRuta}
-          onSort={handleSort}
-          sortField={sortField}
-          sortDirection={sortDirection}
-        />
+        {/* View Mode Toggle */}
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-muted-foreground">
+            Mostrando {Math.min(informesOrdenados.length, itemsPerPage)} de {informesOrdenados.length} registros
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={viewMode === 'cards' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+            >
+              <Grid className="w-4 h-4 mr-2" />
+              Tarjetas
+            </Button>
+            <Button
+              variant={viewMode === 'table' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('table')}
+            >
+              <List className="w-4 h-4 mr-2" />
+              Tabla
+            </Button>
+          </div>
+        </div>
 
-        {/* Paginación */}
-        <InformeCumplimientoPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          totalItems={informesOrdenados.length}
-          onPageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
+        {/* Content based on view mode */}
+        {viewMode === 'cards' ? (
+          <InformeCumplimientoCards
+            informes={informesPaginados}
+            onRevisionTransportista={handleRevisionTransportista}
+            onRevisionAdministracion={handleRevisionAdministracion}
+            onRevisionCliente={handleRevisionCliente}
+            onCambioRuta={handleCambioRuta}
+            onSort={handleSort}
+            sortField={sortField}
+            sortDirection={sortDirection}
+          />
+        ) : (
+          <InformeCumplimientoTable
+            informes={informesPaginados}
+            onRevisionTransportista={handleRevisionTransportista}
+            onRevisionAdministracion={handleRevisionAdministracion}
+            onRevisionCliente={handleRevisionCliente}
+            onSort={handleSort}
+            sortField={sortField}
+            sortDirection={sortDirection}
+          />
+        )}
+
+        {/* Paginación - Always show if there are items */}
+        {informesOrdenados.length > 0 && (
+          <InformeCumplimientoPagination
+            currentPage={currentPage}
+            totalPages={Math.max(1, totalPages)}
+            itemsPerPage={itemsPerPage}
+            totalItems={informesOrdenados.length}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
       </div>
     </Layout>
   );
