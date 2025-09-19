@@ -246,6 +246,19 @@ export default function InformeCumplimientoPage() {
     });
   };
 
+  const handleCambioRuta = (informeId: string) => {
+    // In real implementation, this would call an API
+    const informeIndex = mockInformesCumplimiento.findIndex(i => i.id === informeId);
+    if (informeIndex !== -1) {
+      mockInformesCumplimiento[informeIndex].cambioRuta = true;
+    }
+    
+    toast({
+      title: "Cambio de Ruta",
+      description: "Cambio de ruta aplicado exitosamente.",
+    });
+  };
+
 
   return (
     <Layout>
@@ -270,6 +283,7 @@ export default function InformeCumplimientoPage() {
           onRevisionTransportista={handleRevisionTransportista}
           onRevisionAdministracion={handleRevisionAdministracion}
           onRevisionCliente={handleRevisionCliente}
+          onCambioRuta={handleCambioRuta}
           onSort={handleSort}
           sortField={sortField}
           sortDirection={sortDirection}

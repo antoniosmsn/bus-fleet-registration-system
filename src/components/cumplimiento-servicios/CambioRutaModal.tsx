@@ -16,6 +16,7 @@ interface CambioRutaModalProps {
   servicio: CumplimientoServicioData | null;
   isOpen: boolean;
   onClose: () => void;
+  onConfirmarCambio?: () => void;
 }
 
 interface ConfirmacionModalProps {
@@ -48,7 +49,7 @@ const ConfirmacionModal: React.FC<ConfirmacionModalProps> = ({ isOpen, onClose, 
   </Dialog>
 );
 
-const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose }) => {
+const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onClose, onConfirmarCambio }) => {
   const [nuevaRutaId, setNuevaRutaId] = useState<string>('');
   const [sentidoSeleccionado, setSentidoSeleccionado] = useState<SentidoRuta>('ingreso');
   const [openRuta, setOpenRuta] = useState(false);
@@ -158,6 +159,9 @@ const CambioRutaModal: React.FC<CambioRutaModalProps> = ({ servicio, isOpen, onC
           description: "Cambio de ruta solicitado exitosamente",
           variant: "default",
         });
+
+        // Call the onConfirmarCambio callback to update the informe
+        onConfirmarCambio?.();
 
         // Reset form and close modals
         setNuevaRutaId('');

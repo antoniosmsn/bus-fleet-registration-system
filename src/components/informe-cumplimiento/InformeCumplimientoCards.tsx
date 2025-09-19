@@ -16,6 +16,7 @@ interface InformeCumplimientoCardsProps {
   onRevisionTransportista: (informe: InformeCumplimiento) => void;
   onRevisionAdministracion: (informe: InformeCumplimiento) => void;
   onRevisionCliente: (informe: InformeCumplimiento) => void;
+  onCambioRuta: (informeId: string) => void;
   onSort: (campo: keyof InformeCumplimiento) => void;
   sortField: keyof InformeCumplimiento;
   sortDirection: 'asc' | 'desc';
@@ -26,6 +27,7 @@ export default function InformeCumplimientoCards({
   onRevisionTransportista,
   onRevisionAdministracion,
   onRevisionCliente,
+  onCambioRuta,
   onSort,
   sortField,
   sortDirection
@@ -114,6 +116,11 @@ export default function InformeCumplimientoCards({
   const canReviewCliente = (estado: string) => estado === 'Revisado por Administración';
 
   const canShowCambioRuta = (informe: InformeCumplimiento) => {
+    // Don't show button if change has already been made
+    if (informe.cambioRuta) {
+      return false;
+    }
+    
     // Show button if there are complete start and end times (either programmed or executed)
     const hasProgrammedTimes = informe.horaInicio && informe.horaFinalizacion;
     const hasExecutedTimes = informe.inicioRealizado && informe.cierreRealizado;
@@ -181,6 +188,13 @@ export default function InformeCumplimientoCards({
   const handleCloseCambioRutaModal = () => {
     setModalCambioRutaAbierto(false);
     setServicioParaCambioRuta(null);
+  };
+
+  const handleConfirmarCambioRuta = () => {
+    if (servicioParaCambioRuta) {
+      onCambioRuta(servicioParaCambioRuta.id);
+      handleCloseCambioRutaModal();
+    }
   };
 
   const sortOptions = [
@@ -560,6 +574,7 @@ export default function InformeCumplimientoCards({
         servicio={servicioParaCambioRuta}
         isOpen={modalCambioRutaAbierto}
         onClose={handleCloseCambioRutaModal}
+        onConfirmarCambio={handleConfirmarCambioRuta}
       />
     </div>
   );
