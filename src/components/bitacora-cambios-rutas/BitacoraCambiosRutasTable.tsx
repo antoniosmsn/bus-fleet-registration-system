@@ -6,9 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Eye, EyeOff, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { BitacoraCambioRutaFilter } from '@/types/bitacora-cambio-ruta';
+import { BitacoraCambioRutaFilter, BitacoraCambioRuta } from '@/types/bitacora-cambio-ruta';
+import { SolicitudAprobacion } from '@/types/solicitud-aprobacion';
 import { mockBitacoraCambiosRutas, mockPasajerosAfectados } from '@/data/mockBitacoraCambiosRutas';
 import { formatShortDate } from '@/lib/dateUtils';
+import { ModalAprobacionSolicitud } from '@/components/servicios/solicitudes-aprobacion/ModalAprobacionSolicitud';
 
 interface BitacoraCambiosRutasTableProps {
   filtros: BitacoraCambioRutaFilter;
@@ -18,6 +20,8 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
   const [paginaActual, setPaginaActual] = useState(1);
   const [registrosPorPagina, setRegistrosPorPagina] = useState(10);
   const [filasExpandidas, setFilasExpandidas] = useState<Set<string>>(new Set());
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [solicitudSeleccionada, setSolicitudSeleccionada] = useState<SolicitudAprobacion | null>(null);
   const [ordenamiento, setOrdenamiento] = useState<{
     campo: string;
     direccion: 'asc' | 'desc';
@@ -193,6 +197,55 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
     );
   };
 
+  const convertirBitacoraASolicitud = (bitacora: BitacoraCambioRuta): SolicitudAprobacion => {
+    return {
+      id: bitacora.id,
+      servicioId: bitacora.id,
+      numeroServicio: bitacora.numeroServicioOriginal,
+      fechaServicio: bitacora.fechaServicio,
+      placaAutobus: bitacora.autobus.placa,
+      idAutobus: bitacora.autobus.id,
+      empresaTransporte: bitacora.empresaTransporte.nombre,
+      rutaOriginal: {
+        id: bitacora.rutaOriginal.id,
+        nombre: bitacora.rutaOriginal.nombre,
+        sentido: 'ingreso' as const
+      },
+      rutaNueva: {
+        id: bitacora.rutaFinal.id,
+        nombre: bitacora.rutaFinal.nombre,
+        sentido: 'salida' as const
+      },
+      motivo: bitacora.motivoRechazo || '',
+      estado: bitacora.estado === 'Aceptada' ? 'aprobada' : 'rechazada',
+      fechaSolicitud: bitacora.fechaCambio,
+      usuario: {
+        id: bitacora.usuario.id,
+        nombre: bitacora.usuario.nombreCompleto,
+        username: bitacora.usuario.username
+      },
+      pasajerosAfectados: bitacora.cantidadPasajerosAfectados,
+      montoOriginal: bitacora.montoOriginal,
+      montoFinal: bitacora.montoFinal
+    };
+  };
+
+  const handleAbrirModal = (bitacora: BitacoraCambioRuta) => {
+    const solicitud = convertirBitacoraASolicitud(bitacora);
+    setSolicitudSeleccionada(solicitud);
+    setModalAbierto(true);
+  };
+
+  const handleCerrarModal = () => {
+    setModalAbierto(false);
+    setSolicitudSeleccionada(null);
+  };
+
+  const handleAprobacionCompleta = () => {
+    handleCerrarModal();
+    // Aquí podrías actualizar la lista si fuera necesario
+  };
+
   const HeaderSortable = ({ campo, children }: { campo: string; children: React.ReactNode }) => (
     <TableHead
       className="cursor-pointer hover:bg-muted/50 select-none"
@@ -234,12 +287,13 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                 <TableHead>Monto Final</TableHead>
                 <HeaderSortable campo="estado">Estado</HeaderSortable>
                 <TableHead>Motivo Rechazo</TableHead>
+                <TableHead className="text-center">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {datosVisiblesToCurrentPage.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={13} className="text-center py-8 text-muted-foreground">
                     No existen resultados.
                   </TableCell>
                 </TableRow>
@@ -299,12 +353,21 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                         </span>
                       )}
                     </TableCell>
+                    <TableCell className="text-center">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAbrirModal(bitacora)}
+                      >
+                        Aprobar/Rechazar
+                      </Button>
+                    </TableCell>
                   </TableRow>
                   
                   {/* Expanded row for passenger details */}
                   {filasExpandidas.has(bitacora.id) && bitacora.cantidadPasajerosAfectados > 0 && (
                     <TableRow>
-                      <TableCell colSpan={12} className="bg-muted/30 p-0">
+                      <TableCell colSpan={13} className="bg-muted/30 p-0">
                         <div className="p-4">
                           <h4 className="font-semibold mb-3 text-sm">
                             Detalle de Pasajeros Afectados ({bitacora.cantidadPasajerosAfectados})
@@ -436,6 +499,16 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
               </div>
             )}
           </div>
+        )}
+
+        {/* Modal de Aprobación */}
+        {solicitudSeleccionada && (
+          <ModalAprobacionSolicitud
+            solicitud={solicitudSeleccionada}
+            isOpen={modalAbierto}
+            onClose={handleCerrarModal}
+            onAprobacionComplete={handleAprobacionCompleta}
+          />
         )}
       </CardContent>
     </Card>
