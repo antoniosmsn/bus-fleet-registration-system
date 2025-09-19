@@ -92,7 +92,9 @@ export const mockBitacoraCambiosRutas: BitacoraCambioRuta[] = Array.from({ lengt
   const usuarioAprobador = mockUsuariosAprobadores[Math.floor(Math.random() * mockUsuariosAprobadores.length)];
   const empresa = mockEmpresas[Math.floor(Math.random() * mockEmpresas.length)];
   const autobus = mockAutobuses[Math.floor(Math.random() * mockAutobuses.length)];
-  const estado: 'Aceptada' | 'Rechazada' = Math.random() > 0.3 ? 'Aceptada' : 'Rechazada';
+  const estado: 'Aceptada' | 'Rechazada' | 'Pendiente' = 
+    Math.random() > 0.6 ? 'Aceptada' : 
+    Math.random() > 0.5 ? 'Rechazada' : 'Pendiente';
   const cantidadPasajeros = Math.floor(Math.random() * 25);
   const montoOriginal = Math.floor(Math.random() * 50000) + 10000;
   const montoFinal = Math.floor(Math.random() * 50000) + 10000;

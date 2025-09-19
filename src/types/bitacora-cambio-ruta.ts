@@ -25,7 +25,7 @@ export interface BitacoraCambioRuta {
   cantidadPasajerosAfectados: number;
   montoOriginal: number;
   montoFinal: number;
-  estado: 'Aceptada' | 'Rechazada';
+  estado: 'Aceptada' | 'Rechazada' | 'Pendiente';
   motivoRechazo?: string;
   empresaTransporte: {
     id: string;

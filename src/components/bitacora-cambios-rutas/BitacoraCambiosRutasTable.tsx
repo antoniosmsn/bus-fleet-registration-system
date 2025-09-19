@@ -186,15 +186,26 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
   };
 
   const getEstadoBadge = (estado: string) => {
-    return estado === 'Aceptada' ? (
-      <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
-        Aceptada
-      </Badge>
-    ) : (
-      <Badge variant="destructive">
-        Rechazada
-      </Badge>
-    );
+    if (estado === 'Aceptada') {
+      return (
+        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">
+          Aceptada
+        </Badge>
+      );
+    } else if (estado === 'Rechazada') {
+      return (
+        <Badge variant="destructive">
+          Rechazada
+        </Badge>
+      );
+    } else if (estado === 'Pendiente') {
+      return (
+        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+          Pendiente
+        </Badge>
+      );
+    }
+    return null;
   };
 
   const convertirBitacoraASolicitud = (bitacora: BitacoraCambioRuta): SolicitudAprobacion => {
@@ -365,13 +376,15 @@ const BitacoraCambiosRutasTable = ({ filtros }: BitacoraCambiosRutasTableProps) 
                       )}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleAbrirModal(bitacora)}
-                      >
-                        Aprobar/Rechazar
-                      </Button>
+                      {(bitacora.estado === 'Pendiente' || bitacora.estado === 'Rechazada') && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleAbrirModal(bitacora)}
+                        >
+                          Aprobar/Rechazar
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                   
