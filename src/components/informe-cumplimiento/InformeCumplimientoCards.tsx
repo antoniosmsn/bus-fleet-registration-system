@@ -8,6 +8,8 @@ import { InformeCumplimiento } from '@/types/informe-cumplimiento';
 import { getDetallePasajerosForService } from '@/data/mockDetallePasajerosMovimientos';
 import { verificarPermisoAcceso } from '@/services/permisosService';
 import ModalConfirmacionRevision from './ModalConfirmacionRevision';
+import CambioRutaModal from '@/components/cumplimiento-servicios/CambioRutaModal';
+import { CumplimientoServicioData } from '@/types/cumplimiento-servicio';
 
 interface InformeCumplimientoCardsProps {
   informes: InformeCumplimiento[];
@@ -32,6 +34,8 @@ export default function InformeCumplimientoCards({
   const [informeSeleccionado, setInformeSeleccionado] = useState<InformeCumplimiento | null>(null);
   const [tipoRevision, setTipoRevision] = useState<'transportista' | 'administracion' | 'cliente'>('transportista');
   const [cardsExpandidas, setCardsExpandidas] = useState<Set<string>>(new Set());
+  const [modalCambioRutaAbierto, setModalCambioRutaAbierto] = useState(false);
+  const [servicioParaCambioRuta, setServicioParaCambioRuta] = useState<CumplimientoServicioData | null>(null);
   const puedeVerDatosPersonales = verificarPermisoAcceso();
 
   const toggleCard = (id: string) => {
@@ -97,6 +101,36 @@ export default function InformeCumplimientoCards({
     }
     
     setInformeSeleccionado(null);
+  };
+
+  const handleSolicitarCambioRuta = (informe: InformeCumplimiento) => {
+    // Convert InformeCumplimiento to CumplimientoServicioData format for modal
+    const servicioData: CumplimientoServicioData = {
+      id: informe.id,
+      numeroServicio: informe.idServicio,
+      autobus: informe.placa,
+      ramal: informe.ramal,
+      empresaTransporte: informe.transportista,
+      empresaCliente: informe.empresaCliente,
+      inicioProgramado: new Date().toISOString(),
+      cierreProgramado: new Date().toISOString(),
+      inicioRealizado: informe.inicioRealizado || null,
+      cierreRealizado: informe.cierreRealizado || null,
+      ultimaFechaDescarga: informe.ultimaDescarga || null,
+      cantidadPasajeros: informe.pasajeros,
+      pasajerosTransmitidos: informe.transmitidos,
+      cantidadFaltanteDescarga: informe.faltante,
+      estadoServicio: 'Cierre manual-descarga completa',
+      cumplimientoServicio: informe.cumplimiento === 'Cumplido' ? 'Cumplido' : 'No cumplido',
+      puedesolicitarCambioRuta: true
+    };
+    setServicioParaCambioRuta(servicioData);
+    setModalCambioRutaAbierto(true);
+  };
+
+  const handleCloseCambioRutaModal = () => {
+    setModalCambioRutaAbierto(false);
+    setServicioParaCambioRuta(null);
   };
 
   const sortOptions = [
@@ -320,6 +354,15 @@ export default function InformeCumplimientoCards({
                   >
                     Rev. Cliente
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleSolicitarCambioRuta(informe)}
+                    className="text-xs px-2 py-1 h-7"
+                  >
+                    <Route className="h-3 w-3 mr-1" />
+                    Cambio Ruta
+                  </Button>
                 </div>
               </div>
 
@@ -449,6 +492,12 @@ export default function InformeCumplimientoCards({
         informe={informeSeleccionado}
         tipoRevision={tipoRevision}
         onConfirmar={handleConfirmarRevision}
+      />
+
+      <CambioRutaModal 
+        servicio={servicioParaCambioRuta}
+        isOpen={modalCambioRutaAbierto}
+        onClose={handleCloseCambioRutaModal}
       />
     </div>
   );
