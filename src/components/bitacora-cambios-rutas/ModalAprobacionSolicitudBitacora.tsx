@@ -119,33 +119,6 @@ export function ModalAprobacionSolicitudBitacora({
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Información del Servicio */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Información del Servicio</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <Label className="text-muted-foreground">N° Servicio</Label>
-                  <div className="font-medium">{solicitud.numeroServicio}</div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Fecha Servicio</Label>
-                  <div className="font-medium">{solicitud.fechaServicio}</div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Empresa Transporte</Label>
-                  <div className="font-medium">{solicitud.empresaTransporte}</div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Autobús</Label>
-                  <div className="font-medium">{solicitud.placaAutobus} ({solicitud.idAutobus})</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Cambio de Ruta */}
           <Card>
             <CardHeader>
@@ -175,29 +148,6 @@ export function ModalAprobacionSolicitudBitacora({
                       {solicitud.rutaNueva.sentido}
                     </Badge>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Impacto Económico */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Impacto Económico</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
-                <div>
-                  <Label className="text-muted-foreground">Pasajeros Afectados</Label>
-                  <div className="text-2xl font-bold text-amber-600">{solicitud.pasajerosAfectados}</div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Monto Original</Label>
-                  <div className="text-lg font-semibold">{formatCurrency(solicitud.montoOriginal)}</div>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Monto Final</Label>
-                  <div className="text-lg font-semibold">{formatCurrency(solicitud.montoFinal)}</div>
                 </div>
               </div>
             </CardContent>
