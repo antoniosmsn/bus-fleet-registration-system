@@ -159,129 +159,101 @@ export default function InformeCumplimientoCards({
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {informes.map((informe) => (
           <Card key={informe.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              {/* Header del informe */}
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="font-semibold text-lg">{informe.noInforme}</h3>
-                  <p className="text-sm text-muted-foreground">Semana {informe.noSemana} - {informe.fechaServicio}</p>
+            <CardContent className="p-4">
+              {/* Fila 1: Información principal */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-4">
+                  <div>
+                    <h3 className="font-semibold text-base">{informe.noInforme}</h3>
+                    <p className="text-xs text-muted-foreground">Sem. {informe.noSemana} - {informe.fechaServicio}</p>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">ID:</span> <span className="font-mono">{informe.idServicio}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Placa:</span> <span className="font-mono">{informe.placa}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Ocupación:</span> <span className="font-medium">{informe.ocupacion} ({informe.porcentajeOcupacion}%)</span>
+                  </div>
                 </div>
-                <div className="text-right">
+                <div className="flex items-center gap-2">
+                  <Badge variant={informe.sentido === 'Ingreso' ? 'default' : 'secondary'} className="text-xs">
+                    {informe.sentido}
+                  </Badge>
+                  <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs">
+                    {informe.programado ? 'Prog.' : 'No Prog.'}
+                  </Badge>
                   {getEstadoBadge(informe.estadoRevision)}
                 </div>
               </div>
 
-              {/* Información organizada en grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm mb-6">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">ID Servicio:</span>
-                  <span className="font-mono font-medium">{informe.idServicio}</span>
+              {/* Fila 2: Detalles del servicio */}
+              <div className="flex flex-wrap items-center gap-6 text-sm mb-3 pb-3 border-b">
+                <div>
+                  <span className="text-muted-foreground">Transportista:</span> <span className="font-medium">{informe.transportista}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Transportista:</span>
-                  <span className="font-medium truncate ml-2">{informe.transportista}</span>
+                <div>
+                  <span className="text-muted-foreground">Cliente:</span> <span className="font-medium">{informe.empresaCliente}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Empresa Cliente:</span>
-                  <span className="font-medium truncate ml-2">{informe.empresaCliente}</span>
+                <div>
+                  <span className="text-muted-foreground">Ruta:</span> <span className="font-medium">{informe.tipoRuta}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tipo Ruta:</span>
-                  <span className="font-medium">{informe.tipoRuta}</span>
+                <div>
+                  <span className="text-muted-foreground">Turno:</span> <span className="font-medium">{informe.turno}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Turno:</span>
-                  <span className="font-medium">{informe.turno}</span>
+                <div>
+                  <span className="text-muted-foreground">Ramal:</span> <span className="font-medium">{informe.ramal}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ramal:</span>
-                  <span className="font-medium">{informe.ramal}</span>
+                <div>
+                  <span className="text-muted-foreground">Unidad:</span> <span className="font-medium">{informe.tipoUnidad}</span>
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tipo Unidad:</span>
-                  <span className="font-medium">{informe.tipoUnidad}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Placa:</span>
-                  <span className="font-mono font-medium">{informe.placa}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sentido:</span>
-                  <Badge variant={informe.sentido === 'Ingreso' ? 'default' : 'secondary'} className="text-xs">
-                    {informe.sentido}
-                  </Badge>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Programado:</span>
-                  <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs">
-                    {informe.programado ? 'Sí' : 'No'}
-                  </Badge>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Ocupación:</span>
-                  <span className="font-medium">{informe.ocupacion} ({informe.porcentajeOcupacion}%)</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Horarios:</span>
-                  <span className="font-mono font-medium">{informe.horaInicio} - {informe.horaFinalizacion}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tarifa Pasajero:</span>
-                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaPasajero)}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tarifa Servicio:</span>
-                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicio)}</span>
-                </div>
-                
-                <div className="flex justify-between md:col-span-2">
-                  <span className="text-muted-foreground">Tarifa Transportista:</span>
-                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicioTransportista)}</span>
+                <div>
+                  <span className="text-muted-foreground">Horario:</span> <span className="font-mono">{informe.horaInicio} - {informe.horaFinalizacion}</span>
                 </div>
               </div>
 
-              {/* Botones de acción */}
-              <div className="border-t pt-4">
-                <div className="flex flex-col sm:flex-row gap-2">
+              {/* Fila 3: Tarifas y acciones */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-6 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">T. Pasajero:</span> <span className="font-mono font-medium">{formatCurrency(informe.tarifaPasajero)}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">T. Servicio:</span> <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicio)}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">T. Transportista:</span> <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicioTransportista)}</span>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={!canReviewTransportista(informe.estadoRevision)}
                     onClick={() => handleRevisionClick(informe, 'transportista')}
-                    className="flex-1 text-xs"
+                    className="text-xs px-2 py-1 h-7"
                   >
-                    Revisión Transportista
+                    Rev. Transp.
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={!canReviewAdministracion(informe.estadoRevision)}
                     onClick={() => handleRevisionClick(informe, 'administracion')}
-                    className="flex-1 text-xs"
+                    className="text-xs px-2 py-1 h-7"
                   >
-                    Revisión Administración
+                    Rev. Admin.
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={!canReviewCliente(informe.estadoRevision)}
                     onClick={() => handleRevisionClick(informe, 'cliente')}
-                    className="flex-1 text-xs"
+                    className="text-xs px-2 py-1 h-7"
                   >
-                    Revisión Cliente
+                    Rev. Cliente
                   </Button>
                 </div>
               </div>
