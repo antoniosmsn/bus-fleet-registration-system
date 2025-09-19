@@ -107,7 +107,7 @@ const Index = () => {
                   }`}
                   onClick={() => {
                     if (activeTab === 'transportistas' && index === 4) {
-                      navigate('/servicios/solicitudes-aprobacion');
+                      navigate('/servicios/bitacora-cambios-rutas');
                     }
                   }}
                 >
