@@ -38,7 +38,26 @@ export default function InformeCumplimientoCards({
   const [cardsExpandidas, setCardsExpandidas] = useState<Set<string>>(new Set());
   const [modalCambioRutaAbierto, setModalCambioRutaAbierto] = useState(false);
   const [servicioParaCambioRuta, setServicioParaCambioRuta] = useState<CumplimientoServicioData | null>(null);
+  const [detailsPagination, setDetailsPagination] = useState<Record<string, { currentPage: number; itemsPerPage: number }>>({});
   const puedeVerDatosPersonales = verificarPermisoAcceso();
+
+  const getDetailsPageInfo = (informeId: string) => {
+    return detailsPagination[informeId] || { currentPage: 1, itemsPerPage: 5 };
+  };
+
+  const setDetailsPage = (informeId: string, page: number) => {
+    setDetailsPagination(prev => ({
+      ...prev,
+      [informeId]: { ...getDetailsPageInfo(informeId), currentPage: page }
+    }));
+  };
+
+  const setDetailsItemsPerPage = (informeId: string, itemsPerPage: number) => {
+    setDetailsPagination(prev => ({
+      ...prev,
+      [informeId]: { currentPage: 1, itemsPerPage }
+    }));
+  };
 
   const toggleCard = (id: string) => {
     const nuevasCardsExpandidas = new Set(cardsExpandidas);
@@ -449,111 +468,189 @@ export default function InformeCumplimientoCards({
                     <h4 className="font-semibold mb-3 text-sm">
                       Detalle de Movimientos de Pasajeros
                     </h4>
-                    <div className="grid gap-3 max-h-96 overflow-y-auto">
-                      {getDetallePasajerosForService(informe.idServicio, {
+                    {(() => {
+                      const allMovimientos = getDetallePasajerosForService(informe.idServicio, {
                         transportista: informe.transportista,
                         placaAutobus: informe.placa,
                         sector: '', // Not available in compliance report
                         ramal: informe.ramal,
                         cliente: informe.empresaCliente,
                         sentido: informe.sentido
-                      }).map((movimiento) => (
-                        <div key={movimiento.id} className="p-4 bg-background rounded-md border">
-                          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
-                            {/* Column 1: Personal Info */}
-                            {puedeVerDatosPersonales && (
-                              <div className="space-y-1">
-                                <div className="font-medium text-foreground">{movimiento.nombrePasajero}</div>
-                                <div className="text-muted-foreground">
-                                  <span className="font-medium">Cédula:</span> {movimiento.cedula}
+                      });
+                      
+                      const pageInfo = getDetailsPageInfo(informe.id);
+                      const totalPages = Math.ceil(allMovimientos.length / pageInfo.itemsPerPage);
+                      const startIndex = (pageInfo.currentPage - 1) * pageInfo.itemsPerPage;
+                      const paginatedMovimientos = allMovimientos.slice(startIndex, startIndex + pageInfo.itemsPerPage);
+                      
+                      return (
+                        <>
+                          <div className="grid gap-3">
+                            {paginatedMovimientos.map((movimiento) => (
+                              <div key={movimiento.id} className="p-4 bg-background rounded-md border">
+                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
+                                  {/* Column 1: Personal Info */}
+                                  {puedeVerDatosPersonales && (
+                                    <div className="space-y-1">
+                                      <div className="font-medium text-foreground">{movimiento.nombrePasajero}</div>
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">Cédula:</span> {movimiento.cedula}
+                                      </div>
+                                      <div className="text-muted-foreground">
+                                        <span className="font-medium">Tipo de Pago:</span> {movimiento.tipoPago}
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Column 2: Transaction Info */}
+                                  <div className="space-y-1">
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Fecha Transacción:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.fechaTransaccion}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Hora:</span> {movimiento.horaTransaccion}
+                                    </div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Monto:</span> {formatCurrency(movimiento.monto)}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Column 3: Transport Info */}
+                                  <div className="space-y-1">
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Empresa Transporte:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.empresaTransporte}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Autobús:</span>
+                                    </div>
+                                    <div className="text-foreground font-mono">{movimiento.placaAutobus}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Sentido:</span>
+                                    </div>
+                                    <div>
+                                      <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
+                                        {movimiento.sentido}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Column 4: Route Info */}
+                                  <div className="space-y-1">
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Ramal:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.ramal}</div>
+                                  </div>
+                                  
+                                  {/* Column 5: Location & Client */}
+                                  <div className="space-y-1">
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Empresa Cliente:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.empresaCliente}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Parada:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.parada}</div>
+                                    <div className="text-muted-foreground text-xs">
+                                      Lat/Lng: {movimiento.latitud.toFixed(4)}, {movimiento.longitud.toFixed(4)}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Column 6: Employee & Additional Info */}
+                                  <div className="space-y-1">
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">N° Empleado:</span>
+                                    </div>
+                                    <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Tipo Planilla:</span>
+                                    </div>
+                                    <div className="text-foreground">{movimiento.tipoPlanilla}</div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
+                                    </div>
+                                    <div className="text-muted-foreground">
+                                      <span className="font-medium">Viaje Adicional:</span>
+                                    </div>
+                                    <div className="text-foreground">
+                                      {movimiento.viajeAdicional ? "Sí" : "No"}
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="text-muted-foreground">
-                                  <span className="font-medium">Tipo de Pago:</span> {movimiento.tipoPago}
-                                </div>
                               </div>
-                            )}
-                            
-                            {/* Column 2: Transaction Info */}
-                            <div className="space-y-1">
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Fecha Transacción:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.fechaTransaccion}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Hora:</span> {movimiento.horaTransaccion}
-                              </div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Monto:</span> {formatCurrency(movimiento.monto)}
-                              </div>
-                            </div>
-                            
-                            {/* Column 3: Transport Info */}
-                            <div className="space-y-1">
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Empresa Transporte:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.empresaTransporte}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Placa Autobús:</span>
-                              </div>
-                              <div className="text-foreground font-mono">{movimiento.placaAutobus}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Sentido:</span>
-                              </div>
-                              <div>
-                                <Badge variant={movimiento.sentido === 'Ingreso' ? 'default' : 'secondary'}>
-                                  {movimiento.sentido}
-                                </Badge>
-                              </div>
-                            </div>
-                            
-                            {/* Column 4: Route Info */}
-                            <div className="space-y-1">
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Ramal:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.ramal}</div>
-                            </div>
-                            
-                            {/* Column 5: Location & Client */}
-                            <div className="space-y-1">
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Empresa Cliente:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.empresaCliente}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Parada:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.parada}</div>
-                              <div className="text-muted-foreground text-xs">
-                                Lat/Lng: {movimiento.latitud.toFixed(4)}, {movimiento.longitud.toFixed(4)}
-                              </div>
-                            </div>
-                            
-                            {/* Column 6: Employee & Additional Info */}
-                            <div className="space-y-1">
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">N° Empleado:</span>
-                              </div>
-                              <div className="text-foreground font-mono text-xs">{movimiento.numeroEmpleado}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Tipo Planilla:</span>
-                              </div>
-                              <div className="text-foreground">{movimiento.tipoPlanilla}</div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Subsidio:</span> {formatCurrency(movimiento.subsidio)}
-                              </div>
-                              <div className="text-muted-foreground">
-                                <span className="font-medium">Viaje Adicional:</span>
-                              </div>
-                              <div className="text-foreground">
-                                {movimiento.viajeAdicional ? "Sí" : "No"}
-                              </div>
-                            </div>
+                            ))}
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                          
+                          {/* Details Pagination */}
+                          {allMovimientos.length > pageInfo.itemsPerPage && (
+                            <div className="mt-4 pt-4 border-t">
+                              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+                                <div className="flex items-center gap-4 text-muted-foreground">
+                                  <div>
+                                    Mostrando {startIndex + 1} - {Math.min(startIndex + pageInfo.itemsPerPage, allMovimientos.length)} de {allMovimientos.length} movimientos
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span>Por página:</span>
+                                    <select
+                                      className="border border-input bg-background px-2 py-1 rounded text-sm"
+                                      value={pageInfo.itemsPerPage}
+                                      onChange={(e) => setDetailsItemsPerPage(informe.id, parseInt(e.target.value))}
+                                    >
+                                      <option value={5}>5</option>
+                                      <option value={10}>10</option>
+                                      <option value={25}>25</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDetailsPage(informe.id, 1)}
+                                    disabled={pageInfo.currentPage === 1}
+                                  >
+                                    Primera
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDetailsPage(informe.id, pageInfo.currentPage - 1)}
+                                    disabled={pageInfo.currentPage === 1}
+                                  >
+                                    Anterior
+                                  </Button>
+                                  
+                                  <span className="px-2 py-1 text-sm">
+                                    {pageInfo.currentPage} de {totalPages}
+                                  </span>
+                                  
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDetailsPage(informe.id, pageInfo.currentPage + 1)}
+                                    disabled={pageInfo.currentPage === totalPages}
+                                  >
+                                    Siguiente
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setDetailsPage(informe.id, totalPages)}
+                                    disabled={pageInfo.currentPage === totalPages}
+                                  >
+                                    Última
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               )}

@@ -97,7 +97,7 @@ export default function InformeCumplimientoFilters({
                 </Label>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Servicio - Inicio</Label>
                   <Input
@@ -119,9 +119,7 @@ export default function InformeCumplimientoFilters({
                     className="text-sm h-9"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="horaInicio" className="text-sm font-medium">Hora de Inicio</Label>
                   <Input
@@ -232,27 +230,25 @@ export default function InformeCumplimientoFilters({
           {/* Estados */}
           <TabsContent value="estados" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Estado Servicio */}
+              {/* Estado Servicio y Cumplimiento en una línea */}
               <div className="space-y-2">
                 <Label>Estado del Servicio</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('estadoServicio', value)}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Seleccionar estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {estadosServicio.map(estado => (
-                        <SelectItem key={estado} value={estado}>
-                          {estado}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select onValueChange={(value) => addToArrayFilter('estadoServicio', value)}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {estadosServicio.map(estado => (
+                      <SelectItem key={estado} value={estado}>
+                        {estado}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {filtros.estadoServicio.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {filtros.estadoServicio.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
                         {item}
                         <X 
                           className="h-3 w-3 cursor-pointer" 
@@ -264,27 +260,24 @@ export default function InformeCumplimientoFilters({
                 )}
               </div>
 
-              {/* Cumplimiento Servicio */}
               <div className="space-y-2">
                 <Label>Cumplimiento del Servicio</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('cumplimientoServicio', value)}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Seleccionar cumplimiento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cumplimientosServicio.map(cumplimiento => (
-                        <SelectItem key={cumplimiento} value={cumplimiento}>
-                          {cumplimiento}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select onValueChange={(value) => addToArrayFilter('cumplimientoServicio', value)}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Seleccionar cumplimiento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cumplimientosServicio.map(cumplimiento => (
+                      <SelectItem key={cumplimiento} value={cumplimiento}>
+                        {cumplimiento}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {filtros.cumplimientoServicio.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {filtros.cumplimientoServicio.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
                         {item}
                         <X 
                           className="h-3 w-3 cursor-pointer" 
@@ -295,27 +288,27 @@ export default function InformeCumplimientoFilters({
                   </div>
                 )}
               </div>
+            </div>
 
-              {/* Estado Revisión */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Estado Revisión y Programado en una línea */}
               <div className="space-y-2">
                 <Label>Estado de Revisión</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('estadoRevision', value)}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Seleccionar estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Pendiente">Pendiente</SelectItem>
-                      <SelectItem value="Revisado por Transportista">Revisado por Transportista</SelectItem>
-                      <SelectItem value="Revisado por Administración">Revisado por Administración</SelectItem>
-                      <SelectItem value="Completado">Completado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select onValueChange={(value) => addToArrayFilter('estadoRevision', value)}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pendiente">Pendiente</SelectItem>
+                    <SelectItem value="Revisado por Transportista">Revisado por Transportista</SelectItem>
+                    <SelectItem value="Revisado por Administración">Revisado por Administración</SelectItem>
+                    <SelectItem value="Completado">Completado</SelectItem>
+                  </SelectContent>
+                </Select>
                 {filtros.estadoRevision.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {filtros.estadoRevision.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1">
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
                         {item}
                         <X 
                           className="h-3 w-3 cursor-pointer" 
@@ -327,33 +320,31 @@ export default function InformeCumplimientoFilters({
                 )}
               </div>
 
-              {/* Programado */}
               <div className="space-y-2">
                 <Label>Programado</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => {
-                    const boolValue = value === 'true';
-                    updateFiltro('programado', [...filtros.programado, boolValue]);
-                  }}>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Seleccionar si está programado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Sí</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select onValueChange={(value) => {
+                  const boolValue = value === 'true';
+                  updateFiltro('programado', [...filtros.programado, boolValue]);
+                }}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Seleccionar si está programado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Sí</SelectItem>
+                    <SelectItem value="false">No</SelectItem>
+                  </SelectContent>
+                </Select>
                 {filtros.programado.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-1 mt-2">
                     {filtros.programado.map((item, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      <Badge key={index} variant="secondary" className="flex items-center gap-1 text-xs">
                         {item ? 'Sí' : 'No'}
                         <X 
                           className="h-3 w-3 cursor-pointer" 
                           onClick={() => {
-                            const newProgramado = filtros.programado.filter((_, i) => i !== index);
-                            updateFiltro('programado', newProgramado);
+                            const newArray = [...filtros.programado];
+                            newArray.splice(index, 1);
+                            updateFiltro('programado', newArray);
                           }}
                         />
                       </Badge>
