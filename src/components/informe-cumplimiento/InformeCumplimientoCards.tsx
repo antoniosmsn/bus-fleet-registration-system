@@ -67,6 +67,40 @@ export default function InformeCumplimientoCards({
     }
   };
 
+  const getInconsistenciaBadge = (informe: InformeCumplimiento) => {
+    // Determinar el estado de inconsistencia basado en los datos
+    let inconsistencia: 'neutral' | 'negativo' | 'positivo' = 'neutral';
+    
+    // Lógica para determinar inconsistencias
+    const hasFaltantes = informe.faltante > 0;
+    const cumpleHorarios = informe.inicioRealizado && informe.cierreRealizado;
+    const cumplimientoCompleto = informe.cumplimiento === 'Cumplido';
+    
+    if (hasFaltantes || !cumpleHorarios || !cumplimientoCompleto) {
+      inconsistencia = 'negativo';
+    } else if (cumplimientoCompleto && !hasFaltantes && cumpleHorarios) {
+      inconsistencia = 'positivo';
+    }
+    
+    switch (inconsistencia) {
+      case 'positivo':
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
+          <CheckCircle className="w-3 h-3 mr-1" />
+          Positivo
+        </Badge>;
+      case 'negativo':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100 border-red-200">
+          <AlertCircle className="w-3 h-3 mr-1" />
+          Negativo
+        </Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-600 hover:bg-gray-100 border-gray-200">
+          <Settings className="w-3 h-3 mr-1" />
+          Neutro
+        </Badge>;
+    }
+  };
+
   const canReviewTransportista = (estado: string) => estado === 'Pendiente';
   const canReviewAdministracion = (estado: string) => estado === 'Revisado por Transportista';
   const canReviewCliente = (estado: string) => estado === 'Revisado por Administración';
@@ -310,6 +344,10 @@ export default function InformeCumplimientoCards({
                   <div>
                     <span className="text-muted-foreground text-sm">Estado Revisión:</span>
                     {getEstadoBadge(informe.estadoRevision)}
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-sm">Inconsistencia:</span>
+                    {getInconsistenciaBadge(informe)}
                   </div>
                 </div>
                 
