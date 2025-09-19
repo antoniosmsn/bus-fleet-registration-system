@@ -79,37 +79,16 @@ export default function InformeCumplimientoFilters({
     <Card>
       <CardContent className="p-6">
         <Tabs defaultValue="basicos" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="basicos">Filtros Básicos</TabsTrigger>
             <TabsTrigger value="fechas">Fechas y Horarios</TabsTrigger>
             <TabsTrigger value="empresas">Empresas</TabsTrigger>
-            <TabsTrigger value="servicios">Servicios</TabsTrigger>
             <TabsTrigger value="estado">Estado y Programación</TabsTrigger>
           </TabsList>
 
           {/* Filtros Básicos */}
           <TabsContent value="basicos" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="noInforme" className="text-xs">No. Informe</Label>
-                <Input
-                  id="noInforme"
-                  value={filtros.noInforme}
-                  onChange={(e) => updateFiltro('noInforme', e.target.value)}
-                  placeholder="No. Informe"
-                  className="text-sm h-9"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="noSemana" className="text-xs">No. Semana</Label>
-                <Input
-                  id="noSemana"
-                  value={filtros.noSemana}
-                  onChange={(e) => updateFiltro('noSemana', e.target.value)}
-                  placeholder="Semana"
-                  className="text-sm h-9"
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="idServicio" className="text-xs">ID Servicio</Label>
                 <Input
@@ -119,6 +98,134 @@ export default function InformeCumplimientoFilters({
                   placeholder="ID Servicio"
                   className="text-sm h-9"
                 />
+              </div>
+              
+              {/* Ramal */}
+              <div className="space-y-2">
+                <Label className="text-xs">Ramal</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('ramal', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Ramal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueRamales().map(ramal => (
+                        <SelectItem key={ramal} value={ramal}>
+                          {ramal}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.ramal.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.ramal.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('ramal', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Tipo Ruta */}
+              <div className="space-y-2">
+                <Label className="text-xs">Tipo de Ruta</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('tipoRuta', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Tipo de ruta" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTiposRuta().map(tipo => (
+                        <SelectItem key={tipo} value={tipo}>
+                          {tipo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.tipoRuta.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.tipoRuta.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('tipoRuta', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Tipo Unidad */}
+              <div className="space-y-2">
+                <Label className="text-xs">Tipo de Unidad</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('tipoUnidad', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Tipo unidad" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniqueTiposUnidad().map(tipo => (
+                        <SelectItem key={tipo} value={tipo}>
+                          {tipo}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.tipoUnidad.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.tipoUnidad.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('tipoUnidad', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Placa */}
+              <div className="space-y-2">
+                <Label className="text-xs">Placa</Label>
+                <div className="flex gap-2">
+                  <Select onValueChange={(value) => addToArrayFilter('placa', value)}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Placa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getUniquePlacas().map(placa => (
+                        <SelectItem key={placa} value={placa}>
+                          {placa}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {filtros.placa.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {filtros.placa.map(item => (
+                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
+                        {item}
+                        <X 
+                          className="h-3 w-3 cursor-pointer" 
+                          onClick={() => removeFromArrayFilter('placa', item)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </TabsContent>
@@ -238,199 +345,6 @@ export default function InformeCumplimientoFilters({
             </div>
           </TabsContent>
 
-          {/* Servicios */}
-          <TabsContent value="servicios" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Tipo Ruta */}
-              <div className="space-y-2">
-                <Label className="text-xs">Tipo de Ruta</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('tipoRuta', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Tipo de ruta" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getUniqueTiposRuta().map(tipo => (
-                        <SelectItem key={tipo} value={tipo}>
-                          {tipo}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.tipoRuta.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.tipoRuta.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('tipoRuta', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Turno */}
-              <div className="space-y-2">
-                <Label className="text-xs">Turno</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('turno', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Turno" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getUniqueTurnos().map(turno => (
-                        <SelectItem key={turno} value={turno}>
-                          {turno}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.turno.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.turno.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('turno', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Ramal */}
-              <div className="space-y-2">
-                <Label className="text-xs">Ramal</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('ramal', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Ramal" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getUniqueRamales().map(ramal => (
-                        <SelectItem key={ramal} value={ramal}>
-                          {ramal}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.ramal.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.ramal.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('ramal', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Tipo Unidad */}
-              <div className="space-y-2">
-                <Label className="text-xs">Tipo de Unidad</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('tipoUnidad', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Tipo unidad" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getUniqueTiposUnidad().map(tipo => (
-                        <SelectItem key={tipo} value={tipo}>
-                          {tipo}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.tipoUnidad.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.tipoUnidad.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('tipoUnidad', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Placa */}
-              <div className="space-y-2">
-                <Label className="text-xs">Placa</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('placa', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Placa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getUniquePlacas().map(placa => (
-                        <SelectItem key={placa} value={placa}>
-                          {placa}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.placa.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.placa.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('placa', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Sentido */}
-              <div className="space-y-2">
-                <Label className="text-xs">Sentido</Label>
-                <div className="flex gap-2">
-                  <Select onValueChange={(value) => addToArrayFilter('sentido', value)}>
-                    <SelectTrigger className="h-9 text-sm">
-                      <SelectValue placeholder="Sentido" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Ingreso">Ingreso</SelectItem>
-                      <SelectItem value="Salida">Salida</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {filtros.sentido.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {filtros.sentido.map(item => (
-                      <Badge key={item} variant="secondary" className="flex items-center gap-1 text-xs">
-                        {item}
-                        <X 
-                          className="h-3 w-3 cursor-pointer" 
-                          onClick={() => removeFromArrayFilter('sentido', item)}
-                        />
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
 
           {/* Estado y Programación */}
           <TabsContent value="estado" className="space-y-4">
@@ -503,23 +417,21 @@ export default function InformeCumplimientoFilters({
         </Tabs>
 
         {/* Botones de acción */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6 pt-6 border-t">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex gap-2">
-              <Button 
-                onClick={onLimpiarFiltros}
-                variant="outline"
-                size="sm"
-                disabled={contarFiltrosActivos() === 0}
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Limpiar
-              </Button>
-              <Button onClick={onAplicarFiltros} size="sm">
-                <Filter className="w-4 h-4 mr-2" />
-                Buscar
-              </Button>
-            </div>
+        <div className="flex justify-end items-center gap-4 mt-6 pt-6 border-t">
+          <div className="flex gap-2">
+            <Button 
+              onClick={onLimpiarFiltros}
+              variant="outline"
+              size="sm"
+              disabled={contarFiltrosActivos() === 0}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Limpiar
+            </Button>
+            <Button onClick={onAplicarFiltros} size="sm">
+              <Filter className="w-4 h-4 mr-2" />
+              Buscar
+            </Button>
           </div>
         </div>
       </CardContent>
