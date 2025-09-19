@@ -68,19 +68,27 @@ export default function InformeCumplimientoCards({
   };
 
   const getInconsistenciaBadge = (informe: InformeCumplimiento) => {
-    // Determinar el estado de inconsistencia basado en los datos
+    // Ejemplos de inconsistencias:
+    // POSITIVO: Servicio cumplido, sin faltantes, horarios correctos, no hubo cambio de ruta
+    // NEGATIVO: Faltantes > 0 ó horarios no cumplidos ó servicio no cumplido ó hubo cambio de ruta
+    // NEUTRO: Estados intermedios o servicios en proceso
+    
     let inconsistencia: 'neutral' | 'negativo' | 'positivo' = 'neutral';
     
-    // Lógica para determinar inconsistencias
     const hasFaltantes = informe.faltante > 0;
     const cumpleHorarios = informe.inicioRealizado && informe.cierreRealizado;
     const cumplimientoCompleto = informe.cumplimiento === 'Cumplido';
+    const huboCambioRuta = informe.cambioRuta;
     
-    if (hasFaltantes || !cumpleHorarios || !cumplimientoCompleto) {
+    // NEGATIVO: Cualquier problema detectado
+    if (hasFaltantes || !cumpleHorarios || !cumplimientoCompleto || huboCambioRuta) {
       inconsistencia = 'negativo';
-    } else if (cumplimientoCompleto && !hasFaltantes && cumpleHorarios) {
+    } 
+    // POSITIVO: Todo perfecto
+    else if (cumplimientoCompleto && !hasFaltantes && cumpleHorarios && !huboCambioRuta) {
       inconsistencia = 'positivo';
     }
+    // NEUTRO: Estados intermedios (ej: servicios pendientes)
     
     switch (inconsistencia) {
       case 'positivo':
@@ -288,6 +296,12 @@ export default function InformeCumplimientoCards({
                   <span className="text-muted-foreground text-sm block">Programado</span>
                   <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs">
                     {informe.programado ? 'Sí' : 'No'}
+                  </Badge>
+                </div>
+                <div>
+                  <span className="text-muted-foreground text-sm block">Cambio de Ruta</span>
+                  <Badge variant={informe.cambioRuta ? 'destructive' : 'default'} className="text-xs">
+                    {informe.cambioRuta ? 'Sí' : 'No'}
                   </Badge>
                 </div>
 

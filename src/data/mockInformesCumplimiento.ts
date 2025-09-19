@@ -102,6 +102,7 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     tarifaServicio,
     tarifaServicioTransportista,
     programado: Math.random() > 0.2,
+    cambioRuta: Math.random() > 0.7, // 30% de probabilidad de cambio de ruta
     estadoRevision: estadosRevision[Math.floor(Math.random() * estadosRevision.length)],
   };
 });

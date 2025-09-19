@@ -30,6 +30,7 @@ export interface InformeCumplimiento {
   tarifaServicio: number;
   tarifaServicioTransportista: number;
   programado: boolean;
+  cambioRuta: boolean;
   estadoRevision: EstadoRevision;
 }
 
