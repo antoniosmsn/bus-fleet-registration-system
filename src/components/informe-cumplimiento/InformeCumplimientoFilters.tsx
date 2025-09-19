@@ -513,7 +513,7 @@ export default function InformeCumplimientoFilters({
                 disabled={contarFiltrosActivos() === 0}
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Limpiar ({contarFiltrosActivos()})
+                Limpiar
               </Button>
               <Button onClick={onAplicarFiltros} size="sm">
                 <Filter className="w-4 h-4 mr-2" />
