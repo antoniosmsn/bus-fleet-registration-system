@@ -76,16 +76,16 @@ export default function InformeCumplimientoFilters({
   return (
     <Card>
       <CardContent className="p-6">
-        <Tabs defaultValue="fechas" className="w-full">
+        <Tabs defaultValue="basicos" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="fechas">Fechas</TabsTrigger>
             <TabsTrigger value="basicos">Básicos</TabsTrigger>
+            <TabsTrigger value="fechas">Fechas</TabsTrigger>
             <TabsTrigger value="estados">Estados</TabsTrigger>
             <TabsTrigger value="empresas">Empresas</TabsTrigger>
           </TabsList>
 
-          {/* Fechas */}
-          <TabsContent value="fechas" className="space-y-4">
+          {/* Filtros Básicos */}
+          <TabsContent value="basicos" className="space-y-4">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -235,8 +235,12 @@ export default function InformeCumplimientoFilters({
                     <Label className="text-xs font-medium">Campo:</Label>
                     <RadioGroup
                       value={filtros.campoOrdenamiento}
-                      onValueChange={(value: CampoOrdenamiento) => updateFiltro('campoOrdenamiento', value)}
-                      className="space-y-2"
+                      onValueChange={(value: CampoOrdenamiento) => {
+                        updateFiltro('campoOrdenamiento', value);
+                        // Aplicar filtros automáticamente
+                        setTimeout(() => onAplicarFiltros(), 0);
+                      }}
+                      className="flex flex-wrap gap-4"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="fecha" id="fecha" />
@@ -248,11 +252,11 @@ export default function InformeCumplimientoFilters({
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="programado" id="programado" />
-                        <Label htmlFor="programado" className="text-sm">Programado (sí o no)</Label>
+                        <Label htmlFor="programado" className="text-sm">Programado</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="indicadorInconsistencia" id="indicadorInconsistencia" />
-                        <Label htmlFor="indicadorInconsistencia" className="text-sm">Indicador de inconsistencia (Neutro, positivo, Negativo)</Label>
+                        <Label htmlFor="indicadorInconsistencia" className="text-sm">Indicador de inconsistencia</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -262,8 +266,12 @@ export default function InformeCumplimientoFilters({
                     <Label className="text-xs font-medium">Dirección:</Label>
                     <RadioGroup
                       value={filtros.direccionOrdenamiento}
-                      onValueChange={(value: DireccionOrdenamiento) => updateFiltro('direccionOrdenamiento', value)}
-                      className="space-y-2"
+                      onValueChange={(value: DireccionOrdenamiento) => {
+                        updateFiltro('direccionOrdenamiento', value);
+                        // Aplicar filtros automáticamente
+                        setTimeout(() => onAplicarFiltros(), 0);
+                      }}
+                      className="flex gap-4"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="asc" id="asc" />
@@ -280,7 +288,67 @@ export default function InformeCumplimientoFilters({
             </div>
           </TabsContent>
 
-          {/* Estados */}
+          {/* Fechas */}
+          <TabsContent value="fechas" className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="verSoloPendientes"
+                  checked={filtros.verSoloPendientes}
+                  onCheckedChange={(checked) => updateFiltro('verSoloPendientes', checked)}
+                />
+                <Label htmlFor="verSoloPendientes" className="font-medium text-sm">
+                  Ver solo pendientes de aprobación
+                </Label>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Servicio - Inicio</Label>
+                  <Input
+                    id="fechaInicio"
+                    type="date"
+                    value={filtros.fechaInicio}
+                    onChange={(e) => updateFiltro('fechaInicio', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="horaInicio" className="text-sm font-medium">Hora de Inicio</Label>
+                  <Input
+                    id="horaInicio"
+                    type="time"
+                    value={filtros.horaInicio}
+                    onChange={(e) => updateFiltro('horaInicio', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fechaFin" className="text-sm font-medium">Fecha de Servicio - Fin</Label>
+                  <Input
+                    id="fechaFin"
+                    type="date"
+                    value={filtros.fechaFin}
+                    onChange={(e) => updateFiltro('fechaFin', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="horaFin" className="text-sm font-medium">Hora de Fin</Label>
+                  <Input
+                    id="horaFin"
+                    type="time"
+                    value={filtros.horaFin}
+                    onChange={(e) => updateFiltro('horaFin', e.target.value)}
+                    className="text-sm h-9"
+                  />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
           <TabsContent value="estados" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Todos los estados en una sola línea */}
