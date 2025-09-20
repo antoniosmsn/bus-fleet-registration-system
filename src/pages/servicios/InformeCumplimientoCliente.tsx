@@ -39,6 +39,23 @@ export default function InformeCumplimientoClientePage() {
   
   const { toast } = useToast();
 
+  // Map filter sort fields to actual object fields
+  const mapSortField = (campo: string): keyof InformeCumplimiento => {
+    switch (campo) {
+      case 'fecha': return 'fechaServicio';
+      case 'estadoServicio': return 'estado';
+      case 'programado': return 'programado';
+      case 'indicadorInconsistencia': return 'cumplimiento'; // Using cumplimiento as proxy for inconsistency
+      default: return 'fechaServicio';
+    }
+  };
+
+  // Update sort when filters change
+  useEffect(() => {
+    setSortField(mapSortField(filtrosAplicados.campoOrdenamiento));
+    setSortDirection(filtrosAplicados.direccionOrdenamiento);
+  }, [filtrosAplicados.campoOrdenamiento, filtrosAplicados.direccionOrdenamiento]);
+
   // Apply current month filter on initial load
   useEffect(() => {
     const today = new Date();
