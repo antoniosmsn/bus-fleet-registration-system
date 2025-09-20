@@ -30,17 +30,33 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
       
       if (dataMap.has(key)) {
         const existing = dataMap.get(key)!;
-        // Generate random values for the services
-        existing.serviciosParque += Math.floor(Math.random() * 500000) + 100000;
-        existing.serviciosPrivados += Math.floor(Math.random() * 300000) + 50000;
-        existing.serviciosEspeciales += Math.floor(Math.random() * 200000) + 25000;
+        // Add values based on actual route type
+        if (informe.tipoRuta === 'parque') {
+          existing.serviciosParque += Math.floor(Math.random() * 500000) + 100000;
+        } else if (informe.tipoRuta === 'privada') {
+          existing.serviciosPrivados += Math.floor(Math.random() * 300000) + 50000;
+        } else if (informe.tipoRuta === 'especial') {
+          existing.serviciosEspeciales += Math.floor(Math.random() * 200000) + 25000;
+        }
       } else {
-        dataMap.set(key, {
+        // Initialize with 0 for all service types
+        const newData: SummaryData = {
           empresaTransporte: informe.transportista,
-          serviciosParque: Math.floor(Math.random() * 500000) + 100000,
-          serviciosPrivados: Math.floor(Math.random() * 300000) + 50000,
-          serviciosEspeciales: Math.floor(Math.random() * 200000) + 25000
-        });
+          serviciosParque: 0,
+          serviciosPrivados: 0,
+          serviciosEspeciales: 0
+        };
+        
+        // Add value only for the actual route type of this service
+        if (informe.tipoRuta === 'parque') {
+          newData.serviciosParque = Math.floor(Math.random() * 500000) + 100000;
+        } else if (informe.tipoRuta === 'privada') {
+          newData.serviciosPrivados = Math.floor(Math.random() * 300000) + 50000;
+        } else if (informe.tipoRuta === 'especial') {
+          newData.serviciosEspeciales = Math.floor(Math.random() * 200000) + 25000;
+        }
+        
+        dataMap.set(key, newData);
       }
     });
 
