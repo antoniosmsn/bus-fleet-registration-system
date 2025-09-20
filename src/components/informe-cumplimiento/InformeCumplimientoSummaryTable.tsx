@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { InformeCumplimiento } from '@/types/informe-cumplimiento';
+import ModalConfirmacionRevisionCliente from './ModalConfirmacionRevisionCliente';
 
 interface InformeCumplimientoSummaryTableProps {
   informes: InformeCumplimiento[];
@@ -22,6 +23,8 @@ interface SummaryData {
 }
 
 export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente, onTipoRutaFilter, selectedTipoRuta }: InformeCumplimientoSummaryTableProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEmpresaForRevision, setSelectedEmpresaForRevision] = useState<string>('');
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -92,6 +95,15 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
     return `₡${amount.toLocaleString('es-CR')}`;
   };
 
+  const handleRevisionClick = (empresa: string) => {
+    setSelectedEmpresaForRevision(empresa);
+    setModalOpen(true);
+  };
+
+  const handleConfirmRevision = () => {
+    onRevisionCliente(selectedEmpresaForRevision);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -147,7 +159,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                     variant="outline"
                     size="sm"
                     className="text-xs px-2 py-1 h-7"
-                    onClick={() => onRevisionCliente(row.empresaTransporte)}
+                    onClick={() => handleRevisionClick(row.empresaTransporte)}
                   >
                     Rev. Cliente
                   </Button>
@@ -182,6 +194,13 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
           </TableFooter>
         </Table>
       </CardContent>
+      
+      <ModalConfirmacionRevisionCliente
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirmRevision}
+        empresaName={selectedEmpresaForRevision}
+      />
     </Card>
   );
 }
