@@ -3,6 +3,7 @@ import Layout from '@/components/layout/Layout';
 import InformeCumplimientoFilters from '@/components/informe-cumplimiento/InformeCumplimientoFilters';
 import InformeCumplimientoCards from '@/components/informe-cumplimiento/InformeCumplimientoCards';
 import InformeCumplimientoPagination from '@/components/informe-cumplimiento/InformeCumplimientoPagination';
+import InformeCumplimientoSummaryTable from '@/components/informe-cumplimiento/InformeCumplimientoSummaryTable';
 import { FiltrosInformeCumplimiento, InformeCumplimiento } from '@/types/informe-cumplimiento';
 import { mockInformesCumplimiento } from '@/data/mockInformesCumplimiento';
 import { useToast } from '@/hooks/use-toast';
@@ -276,6 +277,9 @@ export default function InformeCumplimientoClientePage() {
           onLimpiarFiltros={handleLimpiarFiltros}
           totalRegistros={informesOrdenados.length}
         />
+
+        {/* Summary Table */}
+        <InformeCumplimientoSummaryTable informes={informesOrdenados} />
 
         {/* Cards */}
         <InformeCumplimientoCards
