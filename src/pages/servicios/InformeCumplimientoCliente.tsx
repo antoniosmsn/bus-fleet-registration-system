@@ -33,6 +33,7 @@ export default function InformeCumplimientoClientePage() {
   const [sortField, setSortField] = useState<keyof InformeCumplimiento>('fechaServicio');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
+  const [selectedTipoRuta, setSelectedTipoRuta] = useState<string | null>(null);
   
   const { toast } = useToast();
 
@@ -159,11 +160,17 @@ export default function InformeCumplimientoClientePage() {
     });
   }, [informesFiltrados, sortField, sortDirection]);
 
-  // Filter by selected empresa if any
+  // Filter by selected empresa and tipo de ruta if any
   const informesFiltradosPorEmpresa = useMemo(() => {
     if (!selectedEmpresa) return [];
-    return informesOrdenados.filter(informe => informe.transportista === selectedEmpresa);
-  }, [informesOrdenados, selectedEmpresa]);
+    let filtered = informesOrdenados.filter(informe => informe.transportista === selectedEmpresa);
+    
+    if (selectedTipoRuta) {
+      filtered = filtered.filter(informe => informe.tipoRuta === selectedTipoRuta);
+    }
+    
+    return filtered;
+  }, [informesOrdenados, selectedEmpresa, selectedTipoRuta]);
 
   // Paginate informes
   const totalPages = Math.ceil(informesFiltradosPorEmpresa.length / itemsPerPage);
@@ -269,6 +276,13 @@ export default function InformeCumplimientoClientePage() {
 
   const handleEmpresaClick = (empresa: string) => {
     setSelectedEmpresa(empresa === selectedEmpresa ? null : empresa);
+    setSelectedTipoRuta(null); // Clear tipo ruta filter when selecting new empresa
+    setCurrentPage(1);
+  };
+
+  const handleTipoRutaFilter = (empresa: string, tipoRuta: string) => {
+    setSelectedEmpresa(empresa);
+    setSelectedTipoRuta(tipoRuta === selectedTipoRuta ? null : tipoRuta);
     setCurrentPage(1);
   };
 
@@ -295,6 +309,8 @@ export default function InformeCumplimientoClientePage() {
           informes={informesOrdenados} 
           onEmpresaClick={handleEmpresaClick}
           selectedEmpresa={selectedEmpresa || undefined}
+          onTipoRutaFilter={handleTipoRutaFilter}
+          selectedTipoRuta={selectedTipoRuta || undefined}
           onRevisionCliente={(empresa) => {
             // Mark all reports from this company as reviewed by client
             const informesEmpresa = mockInformesCumplimiento.filter(i => i.transportista === empresa);
@@ -318,6 +334,11 @@ export default function InformeCumplimientoClientePage() {
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-foreground">
                 Servicios de {selectedEmpresa} (Empresa de Transporte)
+                {selectedTipoRuta && (
+                  <span className="text-primary ml-2">
+                    - Tipo: {selectedTipoRuta.charAt(0).toUpperCase() + selectedTipoRuta.slice(1)}
+                  </span>
+                )}
               </h2>
             </div>
             

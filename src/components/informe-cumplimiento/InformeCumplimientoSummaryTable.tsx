@@ -9,6 +9,8 @@ interface InformeCumplimientoSummaryTableProps {
   onEmpresaClick: (empresa: string) => void;
   selectedEmpresa?: string;
   onRevisionCliente: (empresa: string) => void;
+  onTipoRutaFilter: (empresa: string, tipoRuta: string) => void;
+  selectedTipoRuta?: string;
 }
 
 interface SummaryData {
@@ -18,7 +20,7 @@ interface SummaryData {
   serviciosEspeciales: number;
 }
 
-export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente }: InformeCumplimientoSummaryTableProps) {
+export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente, onTipoRutaFilter, selectedTipoRuta }: InformeCumplimientoSummaryTableProps) {
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -80,9 +82,24 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 >
                   {row.empresaTransporte}
                 </TableCell>
-                <TableCell className="text-right">{formatCurrency(row.serviciosParque)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(row.serviciosPrivados)}</TableCell>
-                <TableCell className="text-right">{formatCurrency(row.serviciosEspeciales)}</TableCell>
+                <TableCell 
+                  className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
+                  onClick={() => onTipoRutaFilter(row.empresaTransporte, 'parque')}
+                >
+                  {formatCurrency(row.serviciosParque)}
+                </TableCell>
+                <TableCell 
+                  className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
+                  onClick={() => onTipoRutaFilter(row.empresaTransporte, 'privada')}
+                >
+                  {formatCurrency(row.serviciosPrivados)}
+                </TableCell>
+                <TableCell 
+                  className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
+                  onClick={() => onTipoRutaFilter(row.empresaTransporte, 'especial')}
+                >
+                  {formatCurrency(row.serviciosEspeciales)}
+                </TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="outline"
