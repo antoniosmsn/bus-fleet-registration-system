@@ -295,6 +295,21 @@ export default function InformeCumplimientoClientePage() {
           informes={informesOrdenados} 
           onEmpresaClick={handleEmpresaClick}
           selectedEmpresa={selectedEmpresa || undefined}
+          onRevisionCliente={(empresa) => {
+            // Mark all reports from this company as reviewed by client
+            const informesEmpresa = mockInformesCumplimiento.filter(i => i.empresaCliente === empresa);
+            informesEmpresa.forEach(informe => {
+              const informeIndex = mockInformesCumplimiento.findIndex(i => i.id === informe.id);
+              if (informeIndex !== -1) {
+                mockInformesCumplimiento[informeIndex].estadoRevision = 'Completado';
+              }
+            });
+            
+            toast({
+              title: "Revisión Cliente",
+              description: `Todos los informes de ${empresa} han sido completados.`,
+            });
+          }}
         />
 
         {/* Cards - Only show when an empresa is selected */}

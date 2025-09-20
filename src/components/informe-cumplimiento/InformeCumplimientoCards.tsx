@@ -438,15 +438,6 @@ export default function InformeCumplimientoCards({
                   >
                     Rev. Admin.
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={!canReviewCliente(informe.estadoRevision)}
-                    onClick={() => handleRevisionClick(informe, 'cliente')}
-                    className="text-xs px-2 py-1 h-7"
-                  >
-                    Rev. Cliente
-                  </Button>
                   {canShowCambioRuta(informe) && (
                     <Button
                       size="sm"
