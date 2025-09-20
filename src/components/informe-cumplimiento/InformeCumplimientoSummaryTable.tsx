@@ -161,7 +161,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                     className="text-xs px-2 py-1 h-7"
                     onClick={() => handleRevisionClick(row.empresaTransporte)}
                   >
-                    Rev. Cliente
+                    Aprobar
                   </Button>
                 </TableCell>
               </TableRow>
