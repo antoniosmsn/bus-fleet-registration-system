@@ -15,6 +15,7 @@ interface ModalConfirmacionRevisionClienteProps {
   onConfirm: () => void;
   empresaName: string;
   tipoRuta?: string;
+  isApproveAll?: boolean;
 }
 
 export default function ModalConfirmacionRevisionCliente({
@@ -23,6 +24,7 @@ export default function ModalConfirmacionRevisionCliente({
   onConfirm,
   empresaName,
   tipoRuta,
+  isApproveAll = false,
 }: ModalConfirmacionRevisionClienteProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -35,7 +37,13 @@ export default function ModalConfirmacionRevisionCliente({
         <DialogHeader>
           <DialogTitle>Confirmar Aprobación</DialogTitle>
           <DialogDescription>
-            {tipoRuta ? (
+            {isApproveAll ? (
+              <>
+                ¿Está seguro que desea aprobar <strong>todos los informes de todas las empresas</strong>?
+                <br />
+                Esta acción aprobará todos los servicios y ocultará la tabla completa.
+              </>
+            ) : tipoRuta ? (
               <>
                 ¿Está seguro que desea aprobar todos los servicios de tipo{' '}
                 <strong>{tipoRuta}</strong> de{' '}

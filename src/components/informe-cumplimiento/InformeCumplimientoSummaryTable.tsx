@@ -29,6 +29,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
   const [selectedTipoForRevision, setSelectedTipoForRevision] = useState<string>('');
   const [approvedServices, setApprovedServices] = useState<Map<string, Set<string>>>(new Map());
   const [hiddenCompanies, setHiddenCompanies] = useState<Set<string>>(new Set());
+  const [showApproveAllModal, setShowApproveAllModal] = useState(false);
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -139,10 +140,38 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
     return companyApprovals ? companyApprovals.has(tipoRuta) : false;
   };
 
+  const handleApproveAll = () => {
+    // Hide all companies
+    const allCompanies = new Set(summaryData.map(row => row.empresaTransporte));
+    setHiddenCompanies(allCompanies);
+    
+    // Mark all services as approved for all companies
+    const newApprovedServices = new Map();
+    summaryData.forEach(row => {
+      const companyApprovals = new Set(['parque', 'privada', 'especial']);
+      newApprovedServices.set(row.empresaTransporte, companyApprovals);
+    });
+    setApprovedServices(newApprovedServices);
+
+    // Call approval for all companies
+    summaryData.forEach(row => {
+      onRevisionCliente(row.empresaTransporte);
+    });
+  };
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Resumen por Empresa de Transporte</CardTitle>
+        {visibleSummaryData.length > 0 && (
+          <Button
+            variant="outline"
+            onClick={() => setShowApproveAllModal(true)}
+            className="ml-4"
+          >
+            Aprobar Todo
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <Table>
@@ -288,6 +317,18 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
         onConfirm={handleConfirmRevision}
         empresaName={selectedEmpresaForRevision}
         tipoRuta={selectedTipoForRevision}
+      />
+
+      {/* Approve All Modal */}
+      <ModalConfirmacionRevisionCliente
+        isOpen={showApproveAllModal}
+        onClose={() => setShowApproveAllModal(false)}
+        onConfirm={() => {
+          handleApproveAll();
+          setShowApproveAllModal(false);
+        }}
+        empresaName="todas las empresas"
+        isApproveAll={true}
       />
     </Card>
   );
