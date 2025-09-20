@@ -72,8 +72,8 @@ export default function InformeCumplimientoFilters({
     if (filtros.empresaCliente.length > 0) count++;
     if (filtros.estadoRevision.length > 0) count++;
     if (filtros.programado.length > 0) count++;
-    if (filtros.campoOrdenamiento !== 'fecha') count++;
-    if (filtros.direccionOrdenamiento !== 'desc') count++;
+    if (!hideOrdering && filtros.campoOrdenamiento !== 'fecha') count++;
+    if (!hideOrdering && filtros.direccionOrdenamiento !== 'desc') count++;
     return count;
   };
 
