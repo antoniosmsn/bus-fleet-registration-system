@@ -275,14 +275,22 @@ export default function InformeCumplimientoClientePage() {
   };
 
   const handleEmpresaClick = (empresa: string) => {
-    setSelectedEmpresa(empresa === selectedEmpresa ? null : empresa);
-    setSelectedTipoRuta(null); // Clear tipo ruta filter when selecting new empresa
+    if (empresa === selectedEmpresa) {
+      // If clicking on the same company, hide all cards
+      setSelectedEmpresa(null);
+      setSelectedTipoRuta(null);
+    } else {
+      // If clicking on a different company, show all services for that company
+      setSelectedEmpresa(empresa);
+      setSelectedTipoRuta(null); // Always clear tipo ruta filter to show ALL services
+    }
     setCurrentPage(1);
   };
 
   const handleTipoRutaFilter = (empresa: string, tipoRuta: string) => {
+    // Set the empresa and apply the route type filter
     setSelectedEmpresa(empresa);
-    setSelectedTipoRuta(tipoRuta === selectedTipoRuta ? null : tipoRuta);
+    setSelectedTipoRuta(tipoRuta === selectedTipoRuta && empresa === selectedEmpresa ? null : tipoRuta);
     setCurrentPage(1);
   };
 
