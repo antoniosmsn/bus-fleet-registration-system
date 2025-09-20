@@ -27,6 +27,7 @@ interface InformeCumplimientoFiltersProps {
   onAplicarFiltros: () => void;
   onLimpiarFiltros: () => void;
   totalRegistros: number;
+  hideOrdering?: boolean;
 }
 
 export default function InformeCumplimientoFilters({
@@ -34,7 +35,8 @@ export default function InformeCumplimientoFilters({
   onFiltrosChange,
   onAplicarFiltros,
   onLimpiarFiltros,
-  totalRegistros
+  totalRegistros,
+  hideOrdering = false
 }: InformeCumplimientoFiltersProps) {
 
   const updateFiltro = (key: keyof FiltrosInformeCumplimiento, value: any) => {
@@ -178,64 +180,66 @@ export default function InformeCumplimientoFilters({
               </div>
 
               {/* Sección de Ordenamiento */}
-              <div className="mt-6 pt-4 border-t border-border">
-                <h4 className="text-sm font-medium mb-4">Ordenar por</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Campo de ordenamiento */}
-                  <div className="space-y-3">
-                    <Label className="text-xs font-medium">Campo:</Label>
-                    <RadioGroup
-                      value={filtros.campoOrdenamiento}
-                      onValueChange={(value: CampoOrdenamiento) => {
-                        updateFiltro('campoOrdenamiento', value);
-                        // Aplicar filtros automáticamente
-                        setTimeout(() => onAplicarFiltros(), 0);
-                      }}
-                      className="flex flex-wrap gap-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="fecha" id="fecha" />
-                        <Label htmlFor="fecha" className="text-sm">Fecha</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="estadoServicio" id="estadoServicio" />
-                        <Label htmlFor="estadoServicio" className="text-sm">Estado del servicio</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="programado" id="programado" />
-                        <Label htmlFor="programado" className="text-sm">Programado</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="indicadorInconsistencia" id="indicadorInconsistencia" />
-                        <Label htmlFor="indicadorInconsistencia" className="text-sm">Indicador de inconsistencia</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+              {!hideOrdering && (
+                <div className="mt-6 pt-4 border-t border-border">
+                  <h4 className="text-sm font-medium mb-4">Ordenar por</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Campo de ordenamiento */}
+                    <div className="space-y-3">
+                      <Label className="text-xs font-medium">Campo:</Label>
+                      <RadioGroup
+                        value={filtros.campoOrdenamiento}
+                        onValueChange={(value: CampoOrdenamiento) => {
+                          updateFiltro('campoOrdenamiento', value);
+                          // Aplicar filtros automáticamente
+                          setTimeout(() => onAplicarFiltros(), 0);
+                        }}
+                        className="flex flex-wrap gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="fecha" id="fecha" />
+                          <Label htmlFor="fecha" className="text-sm">Fecha</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="estadoServicio" id="estadoServicio" />
+                          <Label htmlFor="estadoServicio" className="text-sm">Estado del servicio</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="programado" id="programado" />
+                          <Label htmlFor="programado" className="text-sm">Programado</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="indicadorInconsistencia" id="indicadorInconsistencia" />
+                          <Label htmlFor="indicadorInconsistencia" className="text-sm">Indicador de inconsistencia</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
 
-                  {/* Dirección de ordenamiento */}
-                  <div className="space-y-3">
-                    <Label className="text-xs font-medium">Dirección:</Label>
-                    <RadioGroup
-                      value={filtros.direccionOrdenamiento}
-                      onValueChange={(value: DireccionOrdenamiento) => {
-                        updateFiltro('direccionOrdenamiento', value);
-                        // Aplicar filtros automáticamente
-                        setTimeout(() => onAplicarFiltros(), 0);
-                      }}
-                      className="flex gap-4"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="asc" id="asc" />
-                        <Label htmlFor="asc" className="text-sm">Ascendente</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="desc" id="desc" />
-                        <Label htmlFor="desc" className="text-sm">Descendente</Label>
-                      </div>
-                    </RadioGroup>
+                    {/* Dirección de ordenamiento */}
+                    <div className="space-y-3">
+                      <Label className="text-xs font-medium">Dirección:</Label>
+                      <RadioGroup
+                        value={filtros.direccionOrdenamiento}
+                        onValueChange={(value: DireccionOrdenamiento) => {
+                          updateFiltro('direccionOrdenamiento', value);
+                          // Aplicar filtros automáticamente
+                          setTimeout(() => onAplicarFiltros(), 0);
+                        }}
+                        className="flex gap-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="asc" id="asc" />
+                          <Label htmlFor="asc" className="text-sm">Ascendente</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="desc" id="desc" />
+                          <Label htmlFor="desc" className="text-sm">Descendente</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </TabsContent>
 

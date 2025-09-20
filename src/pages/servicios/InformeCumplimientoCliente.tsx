@@ -329,6 +329,7 @@ export default function InformeCumplimientoClientePage() {
           onAplicarFiltros={handleAplicarFiltros}
           onLimpiarFiltros={handleLimpiarFiltros}
           totalRegistros={informesOrdenados.length}
+          hideOrdering={true}
         />
 
         {/* Summary Table */}
