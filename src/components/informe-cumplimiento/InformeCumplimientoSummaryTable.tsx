@@ -28,6 +28,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
   const [selectedEmpresaForRevision, setSelectedEmpresaForRevision] = useState<string>('');
   const [selectedTipoForRevision, setSelectedTipoForRevision] = useState<string>('');
   const [approvedServices, setApprovedServices] = useState<Map<string, Set<string>>>(new Map());
+  const [hiddenCompanies, setHiddenCompanies] = useState<Set<string>>(new Set());
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -78,9 +79,12 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
     );
   }, [informes]);
 
-  // Calculate column totals
+  // Filter out hidden companies from display
+  const visibleSummaryData = summaryData.filter(row => !hiddenCompanies.has(row.empresaTransporte));
+
+  // Calculate column totals from visible data only
   const columnTotals = React.useMemo(() => {
-    return summaryData.reduce((totals, row) => ({
+    return visibleSummaryData.reduce((totals, row) => ({
       serviciosParque: totals.serviciosParque + row.serviciosParque,
       serviciosPrivados: totals.serviciosPrivados + row.serviciosPrivados,
       serviciosEspeciales: totals.serviciosEspeciales + row.serviciosEspeciales,
@@ -91,7 +95,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
       serviciosEspeciales: 0,
       total: 0
     });
-  }, [summaryData]);
+  }, [visibleSummaryData]);
 
   // Format currency in colones
   const formatCurrency = (amount: number) => {
@@ -115,6 +119,11 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
       
       onRevisionPorTipo(selectedEmpresaForRevision, selectedTipoForRevision);
     } else {
+      // Hide the entire row when general approval is confirmed
+      const newHiddenCompanies = new Set(hiddenCompanies);
+      newHiddenCompanies.add(selectedEmpresaForRevision);
+      setHiddenCompanies(newHiddenCompanies);
+      
       // Mark all service types as approved for this company
       const newApprovedServices = new Map(approvedServices);
       const companyApprovals = new Set(['parque', 'privada', 'especial']);
@@ -148,7 +157,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
             </TableRow>
           </TableHeader>
           <TableBody>
-            {summaryData.map((row, index) => (
+            {visibleSummaryData.map((row, index) => (
               <TableRow 
                 key={index}
                 className={`hover:bg-muted/50 ${selectedEmpresa === row.empresaTransporte ? 'bg-muted' : ''}`}
@@ -244,7 +253,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 </TableCell>
               </TableRow>
             ))}
-            {summaryData.length === 0 && (
+            {visibleSummaryData.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground">
                   No hay datos para mostrar
