@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { InformeCumplimiento } from '@/types/informe-cumplimiento';
 
@@ -18,6 +18,7 @@ interface SummaryData {
   serviciosParque: number;
   serviciosPrivados: number;
   serviciosEspeciales: number;
+  total: number;
 }
 
 export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente, onTipoRutaFilter, selectedTipoRuta }: InformeCumplimientoSummaryTableProps) {
@@ -38,13 +39,16 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
         } else if (informe.tipoRuta === 'especial') {
           existing.serviciosEspeciales += Math.floor(Math.random() * 200000) + 25000;
         }
+        // Recalculate total
+        existing.total = existing.serviciosParque + existing.serviciosPrivados + existing.serviciosEspeciales;
       } else {
         // Initialize with 0 for all service types
         const newData: SummaryData = {
           empresaTransporte: informe.transportista,
           serviciosParque: 0,
           serviciosPrivados: 0,
-          serviciosEspeciales: 0
+          serviciosEspeciales: 0,
+          total: 0
         };
         
         // Add value only for the actual route type of this service
@@ -56,6 +60,9 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
           newData.serviciosEspeciales = Math.floor(Math.random() * 200000) + 25000;
         }
         
+        // Calculate total
+        newData.total = newData.serviciosParque + newData.serviciosPrivados + newData.serviciosEspeciales;
+        
         dataMap.set(key, newData);
       }
     });
@@ -64,6 +71,21 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
       a.empresaTransporte.localeCompare(b.empresaTransporte)
     );
   }, [informes]);
+
+  // Calculate column totals
+  const columnTotals = React.useMemo(() => {
+    return summaryData.reduce((totals, row) => ({
+      serviciosParque: totals.serviciosParque + row.serviciosParque,
+      serviciosPrivados: totals.serviciosPrivados + row.serviciosPrivados,
+      serviciosEspeciales: totals.serviciosEspeciales + row.serviciosEspeciales,
+      total: totals.total + row.total
+    }), {
+      serviciosParque: 0,
+      serviciosPrivados: 0,
+      serviciosEspeciales: 0,
+      total: 0
+    });
+  }, [summaryData]);
 
   // Format currency in colones
   const formatCurrency = (amount: number) => {
@@ -83,6 +105,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
               <TableHead className="text-right">Servicios Parque</TableHead>
               <TableHead className="text-right">Servicios Privados</TableHead>
               <TableHead className="text-right">Servicios Especiales</TableHead>
+              <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -116,6 +139,9 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 >
                   {formatCurrency(row.serviciosEspeciales)}
                 </TableCell>
+                <TableCell className="text-right font-medium">
+                  {formatCurrency(row.total)}
+                </TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="outline"
@@ -130,12 +156,30 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
             ))}
             {summaryData.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   No hay datos para mostrar
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell className="font-medium">TOTALES</TableCell>
+              <TableCell className="text-right font-medium">
+                {formatCurrency(columnTotals.serviciosParque)}
+              </TableCell>
+              <TableCell className="text-right font-medium">
+                {formatCurrency(columnTotals.serviciosPrivados)}
+              </TableCell>
+              <TableCell className="text-right font-medium">
+                {formatCurrency(columnTotals.serviciosEspeciales)}
+              </TableCell>
+              <TableCell className="text-right font-bold">
+                {formatCurrency(columnTotals.total)}
+              </TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </CardContent>
     </Card>
