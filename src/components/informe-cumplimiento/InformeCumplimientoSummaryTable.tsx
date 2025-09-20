@@ -5,6 +5,8 @@ import { InformeCumplimiento } from '@/types/informe-cumplimiento';
 
 interface InformeCumplimientoSummaryTableProps {
   informes: InformeCumplimiento[];
+  onEmpresaClick: (empresa: string) => void;
+  selectedEmpresa?: string;
 }
 
 interface SummaryData {
@@ -13,7 +15,7 @@ interface SummaryData {
   cantidadServicios: number;
 }
 
-export default function InformeCumplimientoSummaryTable({ informes }: InformeCumplimientoSummaryTableProps) {
+export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa }: InformeCumplimientoSummaryTableProps) {
   // Aggregate data by empresa cliente
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -55,8 +57,14 @@ export default function InformeCumplimientoSummaryTable({ informes }: InformeCum
           </TableHeader>
           <TableBody>
             {summaryData.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{row.empresaCliente}</TableCell>
+              <TableRow 
+                key={index}
+                className={`cursor-pointer hover:bg-muted/50 ${selectedEmpresa === row.empresaCliente ? 'bg-muted' : ''}`}
+                onClick={() => onEmpresaClick(row.empresaCliente)}
+              >
+                <TableCell className="font-medium text-primary hover:text-primary/80">
+                  {row.empresaCliente}
+                </TableCell>
                 <TableCell className="text-right">{row.numeroPasajeros.toLocaleString()}</TableCell>
                 <TableCell className="text-right">{row.cantidadServicios}</TableCell>
               </TableRow>

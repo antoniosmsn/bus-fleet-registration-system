@@ -32,6 +32,7 @@ export default function InformeCumplimientoClientePage() {
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [sortField, setSortField] = useState<keyof InformeCumplimiento>('fechaServicio');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [selectedEmpresa, setSelectedEmpresa] = useState<string | null>(null);
   
   const { toast } = useToast();
 
@@ -158,10 +159,16 @@ export default function InformeCumplimientoClientePage() {
     });
   }, [informesFiltrados, sortField, sortDirection]);
 
+  // Filter by selected empresa if any
+  const informesFiltradosPorEmpresa = useMemo(() => {
+    if (!selectedEmpresa) return [];
+    return informesOrdenados.filter(informe => informe.empresaCliente === selectedEmpresa);
+  }, [informesOrdenados, selectedEmpresa]);
+
   // Paginate informes
-  const totalPages = Math.ceil(informesOrdenados.length / itemsPerPage);
+  const totalPages = Math.ceil(informesFiltradosPorEmpresa.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const informesPaginados = informesOrdenados.slice(startIndex, startIndex + itemsPerPage);
+  const informesPaginados = informesFiltradosPorEmpresa.slice(startIndex, startIndex + itemsPerPage);
 
   // Event handlers
   const handleAplicarFiltros = () => {
@@ -260,6 +267,11 @@ export default function InformeCumplimientoClientePage() {
     });
   };
 
+  const handleEmpresaClick = (empresa: string) => {
+    setSelectedEmpresa(empresa === selectedEmpresa ? null : empresa);
+    setCurrentPage(1);
+  };
+
 
   return (
     <Layout>
@@ -279,30 +291,44 @@ export default function InformeCumplimientoClientePage() {
         />
 
         {/* Summary Table */}
-        <InformeCumplimientoSummaryTable informes={informesOrdenados} />
-
-        {/* Cards */}
-        <InformeCumplimientoCards
-          informes={informesPaginados}
-          onRevisionTransportista={handleRevisionTransportista}
-          onRevisionAdministracion={handleRevisionAdministracion}
-          onRevisionCliente={handleRevisionCliente}
-          onCambioRuta={handleCambioRuta}
-          onSort={handleSort}
-          sortField={sortField}
-          sortDirection={sortDirection}
+        <InformeCumplimientoSummaryTable 
+          informes={informesOrdenados} 
+          onEmpresaClick={handleEmpresaClick}
+          selectedEmpresa={selectedEmpresa || undefined}
         />
 
-        {/* Paginación - Always show if there are items */}
-        {informesOrdenados.length > 0 && (
-          <InformeCumplimientoPagination
-            currentPage={currentPage}
-            totalPages={Math.max(1, totalPages)}
-            itemsPerPage={itemsPerPage}
-            totalItems={informesOrdenados.length}
-            onPageChange={handlePageChange}
-            onItemsPerPageChange={handleItemsPerPageChange}
-          />
+        {/* Cards - Only show when an empresa is selected */}
+        {selectedEmpresa && (
+          <>
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-foreground">
+                Servicios de {selectedEmpresa}
+              </h2>
+            </div>
+            
+            <InformeCumplimientoCards
+              informes={informesPaginados}
+              onRevisionTransportista={handleRevisionTransportista}
+              onRevisionAdministracion={handleRevisionAdministracion}
+              onRevisionCliente={handleRevisionCliente}
+              onCambioRuta={handleCambioRuta}
+              onSort={handleSort}
+              sortField={sortField}
+              sortDirection={sortDirection}
+            />
+
+            {/* Paginación - Only show if there are items for selected empresa */}
+            {informesFiltradosPorEmpresa.length > 0 && (
+              <InformeCumplimientoPagination
+                currentPage={currentPage}
+                totalPages={Math.max(1, totalPages)}
+                itemsPerPage={itemsPerPage}
+                totalItems={informesFiltradosPorEmpresa.length}
+                onPageChange={handlePageChange}
+                onItemsPerPageChange={handleItemsPerPageChange}
+              />
+            )}
+          </>
         )}
       </div>
     </Layout>
