@@ -147,6 +147,11 @@ const SidebarComponent = () => {
       icon: FileCheck 
     },
     { 
+      title: "Inf. Cumplimiento Cliente", 
+      url: "/servicios/informe-cumplimiento-cliente", 
+      icon: FileCheck 
+    },
+    { 
       title: "Bitácoras Cambios de Rutas", 
       url: "/servicios/bitacora-cambios-rutas", 
       icon: ArrowRightLeft 

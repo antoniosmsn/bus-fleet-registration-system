@@ -49,6 +49,7 @@ import CumplimientoServicios from '@/pages/servicios/CumplimientoServicios';
 import BitacoraCambiosRutas from '@/pages/servicios/BitacoraCambiosRutas';
 import ListadoServiciosEmpresa from '@/pages/servicios/ListadoServiciosEmpresa';
 import InformeCumplimiento from '@/pages/servicios/InformeCumplimiento';
+import InformeCumplimientoCliente from '@/pages/servicios/InformeCumplimientoCliente';
 
 import AsignacionesIndex from '@/pages/asignaciones/Index';
 import AsignacionesRegister from '@/pages/asignaciones/Register';
@@ -161,6 +162,7 @@ function App() {
         <Route path="/servicios/saldo/solicitud-pago/:numeroDevolucion" element={<SolicitudPago />} />
             <Route path="/servicios/listado-empresa-transporte" element={<ListadoServiciosEmpresa />} />
             <Route path="/servicios/informe-cumplimiento" element={<InformeCumplimiento />} />
+            <Route path="/servicios/informe-cumplimiento-cliente" element={<InformeCumplimientoCliente />} />
             
             {/* Recargas SINPE routes */}
             <Route path="/recargas-sinpe" element={<RecargasSinpeIndex />} />
