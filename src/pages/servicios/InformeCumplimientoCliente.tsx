@@ -319,6 +319,23 @@ export default function InformeCumplimientoClientePage() {
           selectedEmpresa={selectedEmpresa || undefined}
           onTipoRutaFilter={handleTipoRutaFilter}
           selectedTipoRuta={selectedTipoRuta || undefined}
+          onRevisionPorTipo={(empresa, tipoRuta) => {
+            // Mark all reports of specific type from this company as reviewed by client
+            const informesEmpresa = mockInformesCumplimiento.filter(i => 
+              i.transportista === empresa && i.tipoRuta === tipoRuta
+            );
+            informesEmpresa.forEach(informe => {
+              const informeIndex = mockInformesCumplimiento.findIndex(i => i.id === informe.id);
+              if (informeIndex !== -1) {
+                mockInformesCumplimiento[informeIndex].estadoRevision = 'Completado';
+              }
+            });
+            
+            toast({
+              title: "Aprobación por Tipo",
+              description: `Todos los servicios de tipo ${tipoRuta} de ${empresa} han sido aprobados.`,
+            });
+          }}
           onRevisionCliente={(empresa) => {
             // Mark all reports from this company as reviewed by client
             const informesEmpresa = mockInformesCumplimiento.filter(i => i.transportista === empresa);
@@ -330,8 +347,8 @@ export default function InformeCumplimientoClientePage() {
             });
             
             toast({
-              title: "Revisión Cliente",
-              description: `Todos los informes de ${empresa} han sido completados.`,
+              title: "Aprobación General",
+              description: `Todos los informes de ${empresa} han sido aprobados.`,
             });
           }}
         />

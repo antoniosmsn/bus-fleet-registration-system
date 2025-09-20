@@ -12,6 +12,7 @@ interface InformeCumplimientoSummaryTableProps {
   onRevisionCliente: (empresa: string) => void;
   onTipoRutaFilter: (empresa: string, tipoRuta: string) => void;
   selectedTipoRuta?: string;
+  onRevisionPorTipo: (empresa: string, tipoRuta: string) => void;
 }
 
 interface SummaryData {
@@ -22,9 +23,10 @@ interface SummaryData {
   total: number;
 }
 
-export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente, onTipoRutaFilter, selectedTipoRuta }: InformeCumplimientoSummaryTableProps) {
+export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente, onTipoRutaFilter, selectedTipoRuta, onRevisionPorTipo }: InformeCumplimientoSummaryTableProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmpresaForRevision, setSelectedEmpresaForRevision] = useState<string>('');
+  const [selectedTipoForRevision, setSelectedTipoForRevision] = useState<string>('');
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -95,13 +97,18 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
     return `₡${amount.toLocaleString('es-CR')}`;
   };
 
-  const handleRevisionClick = (empresa: string) => {
+  const handleRevisionClick = (empresa: string, tipoRuta?: string) => {
     setSelectedEmpresaForRevision(empresa);
+    setSelectedTipoForRevision(tipoRuta || '');
     setModalOpen(true);
   };
 
   const handleConfirmRevision = () => {
-    onRevisionCliente(selectedEmpresaForRevision);
+    if (selectedTipoForRevision) {
+      onRevisionPorTipo(selectedEmpresaForRevision, selectedTipoForRevision);
+    } else {
+      onRevisionCliente(selectedEmpresaForRevision);
+    }
   };
 
   return (
@@ -137,19 +144,64 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                   className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
                   onClick={() => onTipoRutaFilter(row.empresaTransporte, 'parque')}
                 >
-                  {formatCurrency(row.serviciosParque)}
+                  <div className="flex items-center justify-end gap-2">
+                    <span>{formatCurrency(row.serviciosParque)}</span>
+                    {row.serviciosParque > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-1 py-0 h-5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRevisionClick(row.empresaTransporte, 'parque');
+                        }}
+                      >
+                        Aprobar
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell 
                   className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
                   onClick={() => onTipoRutaFilter(row.empresaTransporte, 'privada')}
                 >
-                  {formatCurrency(row.serviciosPrivados)}
+                  <div className="flex items-center justify-end gap-2">
+                    <span>{formatCurrency(row.serviciosPrivados)}</span>
+                    {row.serviciosPrivados > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-1 py-0 h-5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRevisionClick(row.empresaTransporte, 'privada');
+                        }}
+                      >
+                        Aprobar
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell 
                   className="text-right text-primary hover:text-primary/80 cursor-pointer underline-offset-4 hover:underline"
                   onClick={() => onTipoRutaFilter(row.empresaTransporte, 'especial')}
                 >
-                  {formatCurrency(row.serviciosEspeciales)}
+                  <div className="flex items-center justify-end gap-2">
+                    <span>{formatCurrency(row.serviciosEspeciales)}</span>
+                    {row.serviciosEspeciales > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs px-1 py-0 h-5"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRevisionClick(row.empresaTransporte, 'especial');
+                        }}
+                      >
+                        Aprobar
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell className="text-right font-medium">
                   {formatCurrency(row.total)}
@@ -200,6 +252,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmRevision}
         empresaName={selectedEmpresaForRevision}
+        tipoRuta={selectedTipoForRevision}
       />
     </Card>
   );

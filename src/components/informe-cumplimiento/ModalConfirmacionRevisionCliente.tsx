@@ -14,6 +14,7 @@ interface ModalConfirmacionRevisionClienteProps {
   onClose: () => void;
   onConfirm: () => void;
   empresaName: string;
+  tipoRuta?: string;
 }
 
 export default function ModalConfirmacionRevisionCliente({
@@ -21,6 +22,7 @@ export default function ModalConfirmacionRevisionCliente({
   onClose,
   onConfirm,
   empresaName,
+  tipoRuta,
 }: ModalConfirmacionRevisionClienteProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -31,10 +33,20 @@ export default function ModalConfirmacionRevisionCliente({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Confirmar Revisión Cliente</DialogTitle>
+          <DialogTitle>Confirmar Aprobación</DialogTitle>
           <DialogDescription>
-            ¿Está seguro que desea marcar todos los informes de{' '}
-            <strong>{empresaName}</strong> como revisados por el cliente?
+            {tipoRuta ? (
+              <>
+                ¿Está seguro que desea aprobar todos los servicios de tipo{' '}
+                <strong>{tipoRuta}</strong> de{' '}
+                <strong>{empresaName}</strong>?
+              </>
+            ) : (
+              <>
+                ¿Está seguro que desea aprobar todos los informes de{' '}
+                <strong>{empresaName}</strong>?
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-0">
