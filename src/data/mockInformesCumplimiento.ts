@@ -25,7 +25,7 @@ const generatePlate = (): string => {
 // Mock data arrays
 const transportistas = ['Transporte Norte', 'Buses del Sur', 'Rápidos del Este', 'Transportes Unidos', 'Líneas Metropolitanas'];
 const empresasCliente = ['Zona Franca A', 'Zona Franca B', 'Corporación Central', 'Empresa Tecnológica', 'Manufactura Industrial'];
-const tiposRuta = ['Expreso', 'Regular', 'Directo', 'Local'];
+const tiposRuta = ['especial', 'privada', 'parque'];
 const turnos = ['Mañana', 'Tarde', 'Noche', 'Madrugada'];
 const ramales = ['Ramal Norte', 'Ramal Sur', 'Ramal Este', 'Ramal Oeste', 'Ramal Central'];
 const tiposUnidad = ['Bus Articulado', 'Bus Convencional', 'Microbús', 'Buseta'];
