@@ -162,7 +162,7 @@ export default function InformeCumplimientoClientePage() {
   // Filter by selected empresa if any
   const informesFiltradosPorEmpresa = useMemo(() => {
     if (!selectedEmpresa) return [];
-    return informesOrdenados.filter(informe => informe.empresaCliente === selectedEmpresa);
+    return informesOrdenados.filter(informe => informe.transportista === selectedEmpresa);
   }, [informesOrdenados, selectedEmpresa]);
 
   // Paginate informes
@@ -297,7 +297,7 @@ export default function InformeCumplimientoClientePage() {
           selectedEmpresa={selectedEmpresa || undefined}
           onRevisionCliente={(empresa) => {
             // Mark all reports from this company as reviewed by client
-            const informesEmpresa = mockInformesCumplimiento.filter(i => i.empresaCliente === empresa);
+            const informesEmpresa = mockInformesCumplimiento.filter(i => i.transportista === empresa);
             informesEmpresa.forEach(informe => {
               const informeIndex = mockInformesCumplimiento.findIndex(i => i.id === informe.id);
               if (informeIndex !== -1) {
@@ -317,7 +317,7 @@ export default function InformeCumplimientoClientePage() {
           <>
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-foreground">
-                Servicios de {selectedEmpresa}
+                Servicios de {selectedEmpresa} (Empresa de Transporte)
               </h2>
             </div>
             

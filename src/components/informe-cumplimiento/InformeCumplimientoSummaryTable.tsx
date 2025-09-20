@@ -12,49 +12,59 @@ interface InformeCumplimientoSummaryTableProps {
 }
 
 interface SummaryData {
-  empresaCliente: string;
-  numeroPasajeros: number;
-  cantidadServicios: number;
+  empresaTransporte: string;
+  serviciosParque: number;
+  serviciosPrivados: number;
+  serviciosEspeciales: number;
 }
 
 export default function InformeCumplimientoSummaryTable({ informes, onEmpresaClick, selectedEmpresa, onRevisionCliente }: InformeCumplimientoSummaryTableProps) {
-  // Aggregate data by empresa cliente
+  // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
 
     informes.forEach(informe => {
-      const key = informe.empresaCliente;
+      const key = informe.transportista;
       
       if (dataMap.has(key)) {
         const existing = dataMap.get(key)!;
-        existing.numeroPasajeros += informe.pasajeros;
-        existing.cantidadServicios += 1;
+        // Generate random values for the services
+        existing.serviciosParque += Math.floor(Math.random() * 500000) + 100000;
+        existing.serviciosPrivados += Math.floor(Math.random() * 300000) + 50000;
+        existing.serviciosEspeciales += Math.floor(Math.random() * 200000) + 25000;
       } else {
         dataMap.set(key, {
-          empresaCliente: informe.empresaCliente,
-          numeroPasajeros: informe.pasajeros,
-          cantidadServicios: 1
+          empresaTransporte: informe.transportista,
+          serviciosParque: Math.floor(Math.random() * 500000) + 100000,
+          serviciosPrivados: Math.floor(Math.random() * 300000) + 50000,
+          serviciosEspeciales: Math.floor(Math.random() * 200000) + 25000
         });
       }
     });
 
     return Array.from(dataMap.values()).sort((a, b) => 
-      a.empresaCliente.localeCompare(b.empresaCliente)
+      a.empresaTransporte.localeCompare(b.empresaTransporte)
     );
   }, [informes]);
+
+  // Format currency in colones
+  const formatCurrency = (amount: number) => {
+    return `₡${amount.toLocaleString('es-CR')}`;
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Resumen por Empresa Cliente</CardTitle>
+        <CardTitle>Resumen por Empresa de Transporte</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Empresa Cliente</TableHead>
-              <TableHead className="text-right">Número de Pasajeros</TableHead>
-              <TableHead className="text-right">Cantidad de Servicios</TableHead>
+              <TableHead>Empresa de Transporte</TableHead>
+              <TableHead className="text-right">Servicios Parque</TableHead>
+              <TableHead className="text-right">Servicios Privados</TableHead>
+              <TableHead className="text-right">Servicios Especiales</TableHead>
               <TableHead className="text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -62,22 +72,23 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
             {summaryData.map((row, index) => (
               <TableRow 
                 key={index}
-                className={`hover:bg-muted/50 ${selectedEmpresa === row.empresaCliente ? 'bg-muted' : ''}`}
+                className={`hover:bg-muted/50 ${selectedEmpresa === row.empresaTransporte ? 'bg-muted' : ''}`}
               >
                 <TableCell 
                   className="font-medium text-primary hover:text-primary/80 cursor-pointer"
-                  onClick={() => onEmpresaClick(row.empresaCliente)}
+                  onClick={() => onEmpresaClick(row.empresaTransporte)}
                 >
-                  {row.empresaCliente}
+                  {row.empresaTransporte}
                 </TableCell>
-                <TableCell className="text-right">{row.numeroPasajeros.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{row.cantidadServicios}</TableCell>
+                <TableCell className="text-right">{formatCurrency(row.serviciosParque)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(row.serviciosPrivados)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(row.serviciosEspeciales)}</TableCell>
                 <TableCell className="text-center">
                   <Button
                     variant="outline"
                     size="sm"
                     className="text-xs px-2 py-1 h-7"
-                    onClick={() => onRevisionCliente(row.empresaCliente)}
+                    onClick={() => onRevisionCliente(row.empresaTransporte)}
                   >
                     Rev. Cliente
                   </Button>
@@ -86,7 +97,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
             ))}
             {summaryData.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell colSpan={5} className="text-center text-muted-foreground">
                   No hay datos para mostrar
                 </TableCell>
               </TableRow>
