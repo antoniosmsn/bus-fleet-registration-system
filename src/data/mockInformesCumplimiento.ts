@@ -41,8 +41,8 @@ const getWeekNumber = (date: Date): number => {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 };
 
-// Generate mock data
-export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ length: 50 }, (_, index) => {
+// Generate mock data - Ensure multiple services per client company
+export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ length: 100 }, (_, index) => {
   const fechaServicioDate = new Date();
   fechaServicioDate.setDate(fechaServicioDate.getDate() - Math.floor(Math.random() * 30));
   
@@ -60,12 +60,16 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
   const tarifaServicio = tarifaPasajero * ocupacion;
   const tarifaServicioTransportista = Math.round(tarifaServicio * 0.85);
   
+  // Ensure each company gets multiple services (distribute evenly with some randomness)
+  const empresaClienteIndex = Math.floor(index / 20); // Each company gets ~20 services
+  const empresaCliente = empresasCliente[empresaClienteIndex % empresasCliente.length];
+  
   // Generate realistic data for new fields with controlled examples for inconsistency
   let pasajeros, transmitidos, faltante, inicioRealizado, cierreRealizado, ultimaDescarga, cumplimiento, cambioRuta;
   
   // Create specific examples for inconsistency states
-  if (index < 5) {
-    // POSITIVO: Perfect compliance examples (first 5 items)
+  if (index < 10) {
+    // POSITIVO: Perfect compliance examples (first 10 items)
     pasajeros = Math.floor(Math.random() * 40) + 10;
     transmitidos = pasajeros; // No missing passengers
     faltante = 0;
@@ -74,8 +78,8 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     ultimaDescarga = `${generateCurrentMonthDate(Math.floor(Math.random() * 2))} ${generateTime()}`;
     cumplimiento = 'Cumplido';
     cambioRuta = false; // No route change
-  } else if (index >= 5 && index < 15) {
-    // NEUTRO: Intermediate/pending states (items 6-15)
+  } else if (index >= 10 && index < 30) {
+    // NEUTRO: Intermediate/pending states (items 11-30)
     pasajeros = Math.floor(Math.random() * 40) + 10;
     transmitidos = Math.floor(pasajeros * (Math.random() * 0.2 + 0.8)); // 80-100%
     faltante = pasajeros - transmitidos;
@@ -119,7 +123,7 @@ export const mockInformesCumplimiento: InformeCumplimiento[] = Array.from({ leng
     fechaServicio: generateCurrentMonthDate(Math.floor(Math.random() * 30)),
     idServicio: `SRV-${String(Math.floor(Math.random() * 9999) + 1000)}`,
     transportista: transportistas[Math.floor(Math.random() * transportistas.length)],
-    empresaCliente: empresasCliente[Math.floor(Math.random() * empresasCliente.length)],
+    empresaCliente: empresaCliente,
     tipoRuta: tiposRuta[Math.floor(Math.random() * tiposRuta.length)],
     turno: turnos[Math.floor(Math.random() * turnos.length)],
     ramal: ramales[Math.floor(Math.random() * ramales.length)],
