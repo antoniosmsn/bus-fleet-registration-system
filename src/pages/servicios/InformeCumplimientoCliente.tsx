@@ -396,6 +396,7 @@ export default function InformeCumplimientoClientePage() {
               onSort={handleSort}
               sortField={sortField}
               sortDirection={sortDirection}
+              hideClientFields={true}
             />
 
             {/* Paginación - Only show if there are items for selected empresa */}

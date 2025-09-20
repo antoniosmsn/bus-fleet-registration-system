@@ -20,6 +20,7 @@ interface InformeCumplimientoCardsProps {
   onSort: (campo: keyof InformeCumplimiento) => void;
   sortField: keyof InformeCumplimiento;
   sortDirection: 'asc' | 'desc';
+  hideClientFields?: boolean; // New prop to hide client-specific fields
 }
 
 export default function InformeCumplimientoCards({
@@ -30,7 +31,8 @@ export default function InformeCumplimientoCards({
   onCambioRuta,
   onSort,
   sortField,
-  sortDirection
+  sortDirection,
+  hideClientFields = false
 }: InformeCumplimientoCardsProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [informeSeleccionado, setInformeSeleccionado] = useState<InformeCumplimiento | null>(null);
@@ -329,10 +331,12 @@ export default function InformeCumplimientoCards({
                   <span className="text-muted-foreground text-sm block">Tarifa servicio</span>
                   <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicio)}</span>
                 </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Tarifa servicio transportista</span>
-                  <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicioTransportista)}</span>
-                </div>
+                {!hideClientFields && (
+                  <div>
+                    <span className="text-muted-foreground text-sm block">Tarifa servicio transportista</span>
+                    <span className="font-mono font-medium">{formatCurrency(informe.tarifaServicioTransportista)}</span>
+                  </div>
+                )}
                 <div>
                   <span className="text-muted-foreground text-sm block">Programado</span>
                   <Badge variant={informe.programado ? 'default' : 'secondary'} className="text-xs">
@@ -357,22 +361,26 @@ export default function InformeCumplimientoCards({
                   <span className="text-muted-foreground text-sm block">Cierre Realizado</span>
                   <span className="font-mono font-medium">{informe.cierreRealizado || '-'}</span>
                 </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Última Descarga</span>
-                  <span className="font-mono font-medium">{informe.ultimaDescarga || '-'}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Pasajeros</span>
-                  <span className="font-medium">{informe.pasajeros}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Transmitidos</span>
-                  <span className="font-medium">{informe.transmitidos}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground text-sm block">Faltante</span>
-                  <span className="font-medium">{informe.faltante}</span>
-                </div>
+                {!hideClientFields && (
+                  <>
+                    <div>
+                      <span className="text-muted-foreground text-sm block">Última Descarga</span>
+                      <span className="font-mono font-medium">{informe.ultimaDescarga || '-'}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-sm block">Pasajeros</span>
+                      <span className="font-medium">{informe.pasajeros}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-sm block">Transmitidos</span>
+                      <span className="font-medium">{informe.transmitidos}</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground text-sm block">Faltante</span>
+                      <span className="font-medium">{informe.faltante}</span>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Fila de estado y acciones */}
@@ -438,7 +446,7 @@ export default function InformeCumplimientoCards({
                   >
                     Rev. Admin.
                   </Button>
-                  {canShowCambioRuta(informe) && (
+                  {!hideClientFields && canShowCambioRuta(informe) && (
                     <Button
                       size="sm"
                       variant="outline"
