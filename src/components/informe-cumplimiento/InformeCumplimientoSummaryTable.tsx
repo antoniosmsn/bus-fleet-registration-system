@@ -27,6 +27,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmpresaForRevision, setSelectedEmpresaForRevision] = useState<string>('');
   const [selectedTipoForRevision, setSelectedTipoForRevision] = useState<string>('');
+  const [approvedServices, setApprovedServices] = useState<Map<string, Set<string>>>(new Map());
   // Aggregate data by empresa de transporte
   const summaryData = React.useMemo(() => {
     const dataMap = new Map<string, SummaryData>();
@@ -105,10 +106,28 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
 
   const handleConfirmRevision = () => {
     if (selectedTipoForRevision) {
+      // Mark this service type as approved for this company
+      const newApprovedServices = new Map(approvedServices);
+      const companyApprovals = newApprovedServices.get(selectedEmpresaForRevision) || new Set();
+      companyApprovals.add(selectedTipoForRevision);
+      newApprovedServices.set(selectedEmpresaForRevision, companyApprovals);
+      setApprovedServices(newApprovedServices);
+      
       onRevisionPorTipo(selectedEmpresaForRevision, selectedTipoForRevision);
     } else {
+      // Mark all service types as approved for this company
+      const newApprovedServices = new Map(approvedServices);
+      const companyApprovals = new Set(['parque', 'privada', 'especial']);
+      newApprovedServices.set(selectedEmpresaForRevision, companyApprovals);
+      setApprovedServices(newApprovedServices);
+      
       onRevisionCliente(selectedEmpresaForRevision);
     }
+  };
+
+  const isServiceApproved = (empresa: string, tipoRuta: string): boolean => {
+    const companyApprovals = approvedServices.get(empresa);
+    return companyApprovals ? companyApprovals.has(tipoRuta) : false;
   };
 
   return (
@@ -146,7 +165,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 >
                   <div className="flex items-center justify-end gap-2">
                     <span>{formatCurrency(row.serviciosParque)}</span>
-                    {row.serviciosParque > 0 && (
+                    {row.serviciosParque > 0 && !isServiceApproved(row.empresaTransporte, 'parque') && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -167,7 +186,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 >
                   <div className="flex items-center justify-end gap-2">
                     <span>{formatCurrency(row.serviciosPrivados)}</span>
-                    {row.serviciosPrivados > 0 && (
+                    {row.serviciosPrivados > 0 && !isServiceApproved(row.empresaTransporte, 'privada') && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -188,7 +207,7 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                 >
                   <div className="flex items-center justify-end gap-2">
                     <span>{formatCurrency(row.serviciosEspeciales)}</span>
-                    {row.serviciosEspeciales > 0 && (
+                    {row.serviciosEspeciales > 0 && !isServiceApproved(row.empresaTransporte, 'especial') && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -207,14 +226,21 @@ export default function InformeCumplimientoSummaryTable({ informes, onEmpresaCli
                   {formatCurrency(row.total)}
                 </TableCell>
                 <TableCell className="text-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs px-2 py-1 h-7"
-                    onClick={() => handleRevisionClick(row.empresaTransporte)}
-                  >
-                    Aprobar
-                  </Button>
+                  {/* Only show general Aprobar button if not all services are approved */}
+                  {!isServiceApproved(row.empresaTransporte, 'parque') || 
+                   !isServiceApproved(row.empresaTransporte, 'privada') || 
+                   !isServiceApproved(row.empresaTransporte, 'especial') ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs px-2 py-1 h-7"
+                      onClick={() => handleRevisionClick(row.empresaTransporte)}
+                    >
+                      Aprobar
+                    </Button>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">Aprobado</span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
