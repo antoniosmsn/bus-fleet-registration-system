@@ -89,6 +89,17 @@ export default function InformeCumplimientoFilters({
           {/* Filtros Básicos */}
           <TabsContent value="basicos" className="space-y-4">
             <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="verSoloPendientes"
+                  checked={filtros.verSoloPendientes}
+                  onCheckedChange={(checked) => updateFiltro('verSoloPendientes', checked)}
+                />
+                <Label htmlFor="verSoloPendientes" className="font-medium text-sm">
+                  Ver solo pendientes de aprobación
+                </Label>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="numeroServicio" className="text-xs">Número Servicio</Label>
@@ -231,17 +242,6 @@ export default function InformeCumplimientoFilters({
           {/* Fechas */}
           <TabsContent value="fechas" className="space-y-4">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="verSoloPendientes"
-                  checked={filtros.verSoloPendientes}
-                  onCheckedChange={(checked) => updateFiltro('verSoloPendientes', checked)}
-                />
-                <Label htmlFor="verSoloPendientes" className="font-medium text-sm">
-                  Ver solo pendientes de aprobación
-                </Label>
-              </div>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="fechaInicio" className="text-sm font-medium">Fecha de Servicio - Inicio</Label>
