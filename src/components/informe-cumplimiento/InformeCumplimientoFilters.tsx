@@ -7,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { X, FileDown, Filter, RotateCcw } from 'lucide-react';
-import { FiltrosInformeCumplimiento } from '@/types/informe-cumplimiento';
+import { FiltrosInformeCumplimiento, CampoOrdenamiento, DireccionOrdenamiento } from '@/types/informe-cumplimiento';
 import { 
   getUniqueEmpresasCliente as getUniqueEmpresasClienteInforme
 } from '@/data/mockInformesCumplimiento';
@@ -222,6 +223,58 @@ export default function InformeCumplimientoFilters({
                       ))}
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Sección de Ordenamiento */}
+              <div className="mt-6 pt-4 border-t border-border">
+                <h4 className="text-sm font-medium mb-4">Ordenar por</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Campo de ordenamiento */}
+                  <div className="space-y-3">
+                    <Label className="text-xs font-medium">Campo:</Label>
+                    <RadioGroup
+                      value={filtros.campoOrdenamiento}
+                      onValueChange={(value: CampoOrdenamiento) => updateFiltro('campoOrdenamiento', value)}
+                      className="space-y-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="fecha" id="fecha" />
+                        <Label htmlFor="fecha" className="text-sm">Fecha</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="estadoServicio" id="estadoServicio" />
+                        <Label htmlFor="estadoServicio" className="text-sm">Estado del servicio</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="programado" id="programado" />
+                        <Label htmlFor="programado" className="text-sm">Programado (sí o no)</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="indicadorInconsistencia" id="indicadorInconsistencia" />
+                        <Label htmlFor="indicadorInconsistencia" className="text-sm">Indicador de inconsistencia (Neutro, positivo, Negativo)</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  {/* Dirección de ordenamiento */}
+                  <div className="space-y-3">
+                    <Label className="text-xs font-medium">Dirección:</Label>
+                    <RadioGroup
+                      value={filtros.direccionOrdenamiento}
+                      onValueChange={(value: DireccionOrdenamiento) => updateFiltro('direccionOrdenamiento', value)}
+                      className="space-y-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="asc" id="asc" />
+                        <Label htmlFor="asc" className="text-sm">Ascendente</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="desc" id="desc" />
+                        <Label htmlFor="desc" className="text-sm">Descendente</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
                 </div>
               </div>
             </div>

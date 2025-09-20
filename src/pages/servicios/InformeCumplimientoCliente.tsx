@@ -22,7 +22,9 @@ const filtrosIniciales: FiltrosInformeCumplimiento = {
   empresaCliente: [],
   estadoRevision: [],
   programado: [],
-  verSoloPendientes: true
+  verSoloPendientes: true,
+  campoOrdenamiento: 'fecha',
+  direccionOrdenamiento: 'desc'
 };
 
 export default function InformeCumplimientoClientePage() {

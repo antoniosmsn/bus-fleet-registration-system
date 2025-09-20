@@ -34,6 +34,9 @@ export interface InformeCumplimiento {
   estadoRevision: EstadoRevision;
 }
 
+export type CampoOrdenamiento = 'fecha' | 'estadoServicio' | 'programado' | 'indicadorInconsistencia';
+export type DireccionOrdenamiento = 'asc' | 'desc';
+
 export interface FiltrosInformeCumplimiento {
   // Filtros de fechas y horarios
   fechaInicio: string;
@@ -53,4 +56,7 @@ export interface FiltrosInformeCumplimiento {
   // Filtros de empresas (de CumplimientoServicios)
   empresaCliente: string[];
   verSoloPendientes: boolean;
+  // Ordenamiento
+  campoOrdenamiento: CampoOrdenamiento;
+  direccionOrdenamiento: DireccionOrdenamiento;
 }
