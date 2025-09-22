@@ -8,12 +8,23 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, ChevronUp, ChevronDown, Plus, Trash2, Search } from 'lucide-react';
+import { Save, ChevronUp, ChevronDown, Plus, Trash2, Search, RotateCcw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { RutaMap } from './RutaMap';
 import RutaRecorridoMap from './RutaRecorridoMap';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 // Define los tipos de ruta disponibles
 const tiposRuta = [
@@ -160,8 +171,9 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
 
   // Estados para dibujo del recorrido
   const [dibujarActivo, setDibujarActivo] = useState(false);
-  const [recorridoFinalizado, setRecorridoFinalizado] = useState(false);
   const [puntosRecorridoDibujados, setPuntosRecorridoDibujados] = useState<{lat: number, lng: number, orden: number}[]>([]);
+  const [recorridoOriginal, setRecorridoOriginal] = useState<{lat: number, lng: number, orden: number}[]>([]);
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false);
 
   // Inicializar el formulario con los datos de la ruta
   const form = useForm<FormValues>({
@@ -194,10 +206,7 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
     // Cargar puntos del recorrido dibujados si existen
     if (rutaData.recorridoDibujado && rutaData.recorridoDibujado.length > 0) {
       setPuntosRecorridoDibujados(rutaData.recorridoDibujado);
-      // Si ya hay un recorrido dibujado, marcarlo como finalizado
-      if (rutaData.recorridoDibujado.length >= 2) {
-        setRecorridoFinalizado(true);
-      }
+      setRecorridoOriginal([...rutaData.recorridoDibujado]); // Guardar copia del original
     }
   }, [rutaData]);
 
@@ -311,27 +320,26 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
 
   // Funciones para dibujo del recorrido
   const toggleDibujar = () => {
-    setDibujarActivo(prev => !prev);
-    if (recorridoFinalizado) {
-      setRecorridoFinalizado(false);
+    if (!dibujarActivo && puntosRecorrido.length < 2) {
+      toast.error('Debe agregar al menos 2 puntos de recorrido antes de dibujar');
+      return;
     }
+    setDibujarActivo(!dibujarActivo);
   };
 
   const limpiarRecorrido = () => {
     setPuntosRecorridoDibujados([]);
-    setRecorridoFinalizado(false);
     setDibujarActivo(false);
   };
 
-  const finalizarRecorrido = () => {
-    if (puntosRecorridoDibujados.length >= 2) {
-      setRecorridoFinalizado(true);
-      setDibujarActivo(false);
-    }
+  const restaurarRecorridoOriginal = () => {
+    setPuntosRecorridoDibujados([...recorridoOriginal]);
+    setShowRestoreDialog(false);
+    toast.success('Recorrido restaurado al original');
   };
 
   const agregarPuntoDibujado = (lat: number, lng: number) => {
-    if (dibujarActivo && !recorridoFinalizado) {
+    if (dibujarActivo) {
       setPuntosRecorridoDibujados(prev => [
         ...prev,
         { lat, lng, orden: prev.length + 1 }
@@ -340,10 +348,12 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
   };
 
   const eliminarPuntoDibujado = (index: number) => {
-    const puntosActualizados = puntosRecorridoDibujados
-      .filter((_, i) => i !== index)
-      .map((punto, i) => ({ ...punto, orden: i + 1 })); // Reordenar números
-    setPuntosRecorridoDibujados(puntosActualizados);
+    if (dibujarActivo) {
+      const puntosActualizados = puntosRecorridoDibujados
+        .filter((_, i) => i !== index)
+        .map((punto, i) => ({ ...punto, orden: i + 1 })); // Reordenar números
+      setPuntosRecorridoDibujados(puntosActualizados);
+    }
   };
 
   // Manejar el envío del formulario
@@ -899,14 +909,14 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                   <div className="space-y-3">
                     <h3 className="text-base font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[350px]">
-                      <RutaRecorridoMap 
-                        paradas={paradasAsignadas}
+                       <RutaRecorridoMap 
+                        paradas={puntosRecorrido}
                         puntosRecorrido={puntosRecorridoDibujados}
                         onAgregarPunto={agregarPuntoDibujado}
                         onLimpiarRecorrido={limpiarRecorrido}
                         onDeshacerUltimo={() => {}}
                         dibujarActivo={dibujarActivo}
-                        recorridoFinalizado={recorridoFinalizado}
+                        recorridoFinalizado={false}
                         onEliminarPunto={eliminarPuntoDibujado}
                       />
                     </div>
@@ -918,7 +928,8 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                         variant={dibujarActivo ? "default" : "outline"}
                         size="sm"
                         onClick={toggleDibujar}
-                        disabled={recorridoFinalizado}
+                        disabled={!dibujarActivo && puntosRecorrido.length < 2}
+                        title={puntosRecorrido.length < 2 ? "Agregue al menos 2 puntos de recorrido para dibujar" : ""}
                       >
                         Dibujar Recorrido {dibujarActivo ? 'ON' : 'OFF'}
                       </Button>
@@ -932,30 +943,38 @@ const RutaEditForm: React.FC<RutaEditFormProps> = ({ rutaData }) => {
                       >
                         Limpiar
                       </Button>
-                      
-                      {!recorridoFinalizado ? (
-                        <Button
-                          type="button"
-                          variant="default"
-                          size="sm"
-                          onClick={finalizarRecorrido}
-                          disabled={puntosRecorridoDibujados.length < 2}
-                        >
-                          Finalizar Recorrido
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={toggleDibujar}
-                        >
-                          Editar Recorrido
-                        </Button>
-                      )}
+
+                      <AlertDialog open={showRestoreDialog} onOpenChange={setShowRestoreDialog}>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={recorridoOriginal.length === 0}
+                          >
+                            <RotateCcw className="h-3 w-3 mr-1" />
+                            Restaurar Original
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Restaurar recorrido original?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción restaurará el recorrido a su estado original. Se perderán todos los cambios realizados en el recorrido actual.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={restaurarRecorridoOriginal}>
+                              Restaurar
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                       
                       <div className="text-sm text-muted-foreground self-center">
                         {puntosRecorridoDibujados.length} puntos marcados
+                        {dibujarActivo ? " (Modo edición)" : " (Solo visualización)"}
                       </div>
                     </div>
                   </div>
