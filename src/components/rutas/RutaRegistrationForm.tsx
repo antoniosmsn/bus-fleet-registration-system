@@ -155,7 +155,6 @@ const RutaRegistrationForm = () => {
 
   // Estados para dibujo del recorrido
   const [dibujarActivo, setDibujarActivo] = useState(false);
-  const [recorridoFinalizado, setRecorridoFinalizado] = useState(false);
   const [puntosRecorridoDibujados, setPuntosRecorridoDibujados] = useState<{lat: number, lng: number, orden: number}[]>([]);
 
   // Inicializar el formulario
@@ -289,36 +288,27 @@ const RutaRegistrationForm = () => {
   // Funciones para dibujo del recorrido
   const toggleDibujar = () => {
     setDibujarActivo(!dibujarActivo);
-    if (recorridoFinalizado) {
-      setRecorridoFinalizado(false);
-    }
   };
 
   const limpiarRecorrido = () => {
     setPuntosRecorridoDibujados([]);
-    setRecorridoFinalizado(false);
     setDibujarActivo(false);
   };
 
-  const finalizarRecorrido = () => {
-    if (puntosRecorridoDibujados.length >= 2) {
-      setRecorridoFinalizado(true);
-      setDibujarActivo(false);
-    }
-  };
-
   const agregarPuntoDibujado = (lat: number, lng: number) => {
-    if (dibujarActivo && !recorridoFinalizado) {
+    if (dibujarActivo) {
       const nuevoPunto = { lat, lng, orden: puntosRecorridoDibujados.length + 1 };
       setPuntosRecorridoDibujados([...puntosRecorridoDibujados, nuevoPunto]);
     }
   };
 
   const eliminarPuntoDibujado = (index: number) => {
-    const puntosActualizados = puntosRecorridoDibujados
-      .filter((_, i) => i !== index)
-      .map((punto, i) => ({ ...punto, orden: i + 1 })); // Reordenar números
-    setPuntosRecorridoDibujados(puntosActualizados);
+    if (dibujarActivo) {
+      const puntosActualizados = puntosRecorridoDibujados
+        .filter((_, i) => i !== index)
+        .map((punto, i) => ({ ...punto, orden: i + 1 })); // Reordenar números
+      setPuntosRecorridoDibujados(puntosActualizados);
+    }
   };
 
   // Manejar el envío del formulario
@@ -871,14 +861,14 @@ const RutaRegistrationForm = () => {
                   <div className="space-y-3">
                     <h3 className="text-base font-medium">Mapa de Ruta</h3>
                     <div className="border rounded-lg h-[350px]">
-                      <RutaRecorridoMap 
+                       <RutaRecorridoMap 
                         paradas={puntosRecorrido}
                         puntosRecorrido={puntosRecorridoDibujados}
                         onAgregarPunto={agregarPuntoDibujado}
                         onLimpiarRecorrido={limpiarRecorrido}
                         onDeshacerUltimo={() => {}}
                         dibujarActivo={dibujarActivo}
-                        recorridoFinalizado={recorridoFinalizado}
+                        recorridoFinalizado={false}
                         onEliminarPunto={eliminarPuntoDibujado}
                       />
                     </div>
@@ -890,7 +880,6 @@ const RutaRegistrationForm = () => {
                         variant={dibujarActivo ? "default" : "outline"}
                         size="sm"
                         onClick={toggleDibujar}
-                        disabled={recorridoFinalizado}
                       >
                         Dibujar Recorrido {dibujarActivo ? 'ON' : 'OFF'}
                       </Button>
@@ -905,29 +894,9 @@ const RutaRegistrationForm = () => {
                         Limpiar
                       </Button>
                       
-                      {!recorridoFinalizado ? (
-                        <Button
-                          type="button"
-                          variant="default"
-                          size="sm"
-                          onClick={finalizarRecorrido}
-                          disabled={puntosRecorridoDibujados.length < 2}
-                        >
-                          Finalizar Recorrido
-                        </Button>
-                      ) : (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={toggleDibujar}
-                        >
-                          Editar Recorrido
-                        </Button>
-                      )}
-                      
                       <div className="text-sm text-muted-foreground self-center">
                         {puntosRecorridoDibujados.length} puntos marcados
+                        {dibujarActivo ? " (Modo edición)" : " (Solo visualización)"}
                       </div>
                     </div>
                   </div>

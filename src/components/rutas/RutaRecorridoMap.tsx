@@ -39,12 +39,11 @@ interface RutaRecorridoMapProps {
 const MapClickHandler: React.FC<{ 
   onAgregarPunto: (lat: number, lng: number) => void;
   dibujarActivo: boolean;
-  recorridoFinalizado: boolean;
-}> = ({ onAgregarPunto, dibujarActivo, recorridoFinalizado }) => {
+}> = ({ onAgregarPunto, dibujarActivo }) => {
   useMapEvents({
     click: (e) => {
       // Cuando el botón Dibujar está en ON se pueden marcar puntos
-      if (dibujarActivo && !recorridoFinalizado) {
+      if (dibujarActivo) {
         const { lat, lng } = e.latlng;
         onAgregarPunto(lat, lng);
       }
@@ -54,8 +53,8 @@ const MapClickHandler: React.FC<{
 };
 
 // Crear icono personalizado para puntos del recorrido
-const createNumberedIcon = (numero: number, finalizado: boolean = false) => {
-  const backgroundColor = finalizado ? '#22c55e' : '#ef4444'; // Verde si finalizado, rojo si no
+const createNumberedIcon = (numero: number, dibujarActivo: boolean = false) => {
+  const backgroundColor = dibujarActivo ? '#ef4444' : '#22c55e'; // Rojo si editando, verde si solo visualización
   return L.divIcon({
     className: 'custom-numbered-icon',
     html: `<div style="
@@ -114,7 +113,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         center={center}
         zoom={8}
         bounds={bounds}
-        className={`h-full w-full ${(dibujarActivo && !recorridoFinalizado) ? 'cursor-crosshair' : 'cursor-default'}`}
+        className={`h-full w-full ${dibujarActivo ? 'cursor-crosshair' : 'cursor-default'}`}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -122,7 +121,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
         />
         
         {/* Componente para manejar clicks en el mapa */}
-        <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} recorridoFinalizado={recorridoFinalizado} />
+        <MapClickHandler onAgregarPunto={onAgregarPunto} dibujarActivo={dibujarActivo} />
         
         {/* Línea conectando paradas asignadas */}
         {paradas.length >= 2 && (
@@ -168,53 +167,51 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
             );
           })}
         
-        {/* Marcadores de puntos del recorrido - Solo mostrar durante edición */}
+        {/* Marcadores de puntos del recorrido - Siempre visibles */}
         {puntosRecorrido
           .filter((p) => typeof p.lat === 'number' && typeof p.lng === 'number')
           .map((punto, index) => (
-            !recorridoFinalizado && (
-              <Marker
-                key={`punto-${punto.orden}-${index}`}
-                position={[punto.lat, punto.lng]}
-                icon={createNumberedIcon(punto.orden, recorridoFinalizado)}
-              >
-                <Popup>
-                  <div className="text-sm space-y-2">
-                    <div>
-                      <strong>Punto {punto.orden}</strong>
-                      <br />
-                      <span className="text-gray-600">
-                        Punto del recorrido
-                      </span>
-                      <br />
-                      <small>
-                        Lat: {typeof punto.lat === 'number' ? punto.lat.toFixed(6) : '—'}, Lng: {typeof punto.lng === 'number' ? punto.lng.toFixed(6) : '—'}
-                      </small>
-                    </div>
-                    {onEliminarPunto && (
-                      <button
-                        onClick={() => onEliminarPunto(index)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                      >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                        </svg>
-                        Eliminar Punto
-                      </button>
-                    )}
+            <Marker
+              key={`punto-${punto.orden}-${index}`}
+              position={[punto.lat, punto.lng]}
+              icon={createNumberedIcon(punto.orden, dibujarActivo)}
+            >
+              <Popup>
+                <div className="text-sm space-y-2">
+                  <div>
+                    <strong>Punto {punto.orden}</strong>
+                    <br />
+                    <span className="text-gray-600">
+                      Punto del recorrido
+                    </span>
+                    <br />
+                    <small>
+                      Lat: {typeof punto.lat === 'number' ? punto.lat.toFixed(6) : '—'}, Lng: {typeof punto.lng === 'number' ? punto.lng.toFixed(6) : '—'}
+                    </small>
                   </div>
-                </Popup>
-              </Marker>
-            )
+                  {onEliminarPunto && dibujarActivo && (
+                    <button
+                      onClick={() => onEliminarPunto(index)}
+                      className="flex items-center gap-1 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                      </svg>
+                      Eliminar Punto
+                    </button>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
           ))}
         
-        {/* Polilínea conectando los puntos del recorrido */}
+        {/* Polilínea conectando los puntos del recorrido - Siempre visible */}
         {puntosRecorrido.length > 1 && (
           <Polyline
             positions={puntosRecorrido
               .filter((p) => typeof p.lat === 'number' && typeof p.lng === 'number')
               .map(p => [p.lat, p.lng] as [number, number])}
-            color={recorridoFinalizado ? "#22c55e" : "#ef4444"}
+            color={dibujarActivo ? "#ef4444" : "#22c55e"}
             weight={4}
             opacity={0.8}
           />
