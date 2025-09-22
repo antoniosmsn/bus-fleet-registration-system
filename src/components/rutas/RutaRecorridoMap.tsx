@@ -167,8 +167,8 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
             );
           })}
         
-        {/* Marcadores de puntos del recorrido - Siempre visibles */}
-        {puntosRecorrido
+        {/* Marcadores de puntos del recorrido - Solo mostrar en modo edición */}
+        {dibujarActivo && puntosRecorrido
           .filter((p) => typeof p.lat === 'number' && typeof p.lng === 'number')
           .map((punto, index) => (
             <Marker
@@ -189,9 +189,12 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
                       Lat: {typeof punto.lat === 'number' ? punto.lat.toFixed(6) : '—'}, Lng: {typeof punto.lng === 'number' ? punto.lng.toFixed(6) : '—'}
                     </small>
                   </div>
-                  {onEliminarPunto && dibujarActivo && (
+                  {onEliminarPunto && (
                     <button
-                      onClick={() => onEliminarPunto(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEliminarPunto(index);
+                      }}
                       className="flex items-center gap-1 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -205,7 +208,7 @@ const RutaRecorridoMap: React.FC<RutaRecorridoMapProps> = ({
             </Marker>
           ))}
         
-        {/* Polilínea conectando los puntos del recorrido - Siempre visible */}
+        {/* Polilínea conectando los puntos del recorrido - Siempre visible cuando hay puntos */}
         {puntosRecorrido.length > 1 && (
           <Polyline
             positions={puntosRecorrido
