@@ -287,6 +287,10 @@ const RutaRegistrationForm = () => {
 
   // Funciones para dibujo del recorrido
   const toggleDibujar = () => {
+    if (!dibujarActivo && puntosRecorrido.length < 2) {
+      toast.error('Debe agregar al menos 2 puntos de recorrido antes de dibujar');
+      return;
+    }
     setDibujarActivo(!dibujarActivo);
   };
 
@@ -880,6 +884,8 @@ const RutaRegistrationForm = () => {
                         variant={dibujarActivo ? "default" : "outline"}
                         size="sm"
                         onClick={toggleDibujar}
+                        disabled={!dibujarActivo && puntosRecorrido.length < 2}
+                        title={puntosRecorrido.length < 2 ? "Agregue al menos 2 puntos de recorrido para dibujar" : ""}
                       >
                         Dibujar Recorrido {dibujarActivo ? 'ON' : 'OFF'}
                       </Button>
