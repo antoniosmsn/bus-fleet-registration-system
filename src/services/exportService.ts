@@ -6,6 +6,8 @@ import { Pasajero } from "@/types/pasajero";
 import { TelemetriaRecord } from "@/types/telemetria";
 import { AlarmaRecord } from "@/types/alarma";
 import { BitacoraUsuario } from "@/types/bitacora-usuario";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 export const exportConductoresToPDF = async (conductores: Conductor[]) => {
   // Aquí iría la lógica real de exportación a PDF
   // Por ahora simulamos la exportación
@@ -253,85 +255,76 @@ export const exportCargaCreditosToExcel = (cargues: any[]) => {
 export const exportBitacorasUsuarioToPDF = async (bitacoras: BitacoraUsuario[]) => {
   const timestamp = format(new Date(), "yyyyMMdd_HHmm", { locale: es });
   const fileName = `Bitacoras_Usuario_${timestamp}.pdf`;
-  
-  // Crear contenido HTML para PDF
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Bitácoras de Acciones de Usuario</title>
-      <style>
-        body { font-family: Arial, sans-serif; font-size: 10px; margin: 20px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .title { font-size: 16px; font-weight: bold; color: #333; }
-        .subtitle { font-size: 12px; color: #666; margin-top: 5px; }
-        .info { margin: 15px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
-        th { background-color: #f5f5f5; font-weight: bold; }
-        .text-center { text-align: center; }
-        .badge-exitoso { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px; }
-        .badge-error { background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 3px; }
-        .badge-advertencia { background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="title">SISTEMA DE GESTIÓN DE TRANSPORTE</div>
-        <div class="subtitle">Bitácoras de Acciones de Usuario</div>
-        <div class="subtitle">Generado el: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: es })}</div>
-      </div>
-      
-      <div class="info">
-        <strong>Total de registros:</strong> ${bitacoras.length}
-      </div>
-      
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 12%">Fecha y Hora</th>
-            <th style="width: 15%">Usuario</th>
-            <th style="width: 15%">Nombre Completo</th>
-            <th style="width: 12%">Perfil</th>
-            <th style="width: 12%">Zona Franca</th>
-            <th style="width: 20%">Acción</th>
-            <th style="width: 8%">Tipo</th>
-            <th style="width: 6%">Resultado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${bitacoras.map(bitacora => `
-            <tr>
-              <td>${format(new Date(bitacora.fechaHora), "dd/MM/yyyy HH:mm", { locale: es })}</td>
-              <td>${bitacora.usuario}</td>
-              <td>${bitacora.nombreCompleto}</td>
-              <td>${bitacora.perfil}</td>
-              <td>${bitacora.zonaFranca}</td>
-              <td>${bitacora.accion}</td>
-              <td>${bitacora.tipoAccion}</td>
-              <td class="text-center">
-                <span class="badge-${bitacora.resultado.toLowerCase()}">${bitacora.resultado}</span>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </body>
-    </html>
-  `;
-  
-  // Crear blob y descargar
-  const blob = new Blob([htmlContent], { type: 'text/html' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-  
+
+  // Crear documento PDF en orientación horizontal para más columnas
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'A4' });
+
+  // Encabezado
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('SISTEMA DE GESTIÓN DE TRANSPORTE', 40, 40);
+  doc.setFontSize(12);
+  doc.text('Bitácoras de Acciones de Usuario', 40, 60);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(`Generado el: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss', { locale: es })}`, 40, 78);
+  doc.text(`Total de registros: ${bitacoras.length}`, 40, 96);
+
+  // Columnas y filas
+  const columns = [
+    { header: 'Fecha y Hora', dataKey: 'fechaHora' },
+    { header: 'Usuario', dataKey: 'usuario' },
+    { header: 'Nombre Completo', dataKey: 'nombreCompleto' },
+    { header: 'Perfil', dataKey: 'perfil' },
+    { header: 'Zona Franca', dataKey: 'zonaFranca' },
+    { header: 'Acción', dataKey: 'accion' },
+    { header: 'Tipo de Acción', dataKey: 'tipoAccion' },
+    { header: 'Resultado', dataKey: 'resultado' },
+  ];
+
+  const rows = bitacoras.map((b) => ({
+    fechaHora: format(new Date(b.fechaHora), 'dd/MM/yyyy HH:mm:ss', { locale: es }),
+    usuario: b.usuario,
+    nombreCompleto: b.nombreCompleto,
+    perfil: b.perfil,
+    zonaFranca: b.zonaFranca,
+    accion: b.accion,
+    tipoAccion: b.tipoAccion,
+    resultado: b.resultado,
+  }));
+
+  // Tabla
+  autoTable(doc, {
+    head: [columns.map((c) => c.header)],
+    body: rows.map((r) => columns.map((c) => (r as any)[c.dataKey])),
+    startY: 115,
+    styles: { fontSize: 8, cellPadding: 4 },
+    headStyles: { fillColor: [240, 240, 240], textColor: 20, halign: 'left' },
+    theme: 'grid',
+    willDrawPage: (data) => {
+      // Pie de página con número de página
+      const pageSize = doc.internal.pageSize;
+      const pageHeight = pageSize.height ? pageSize.height : (pageSize as any).getHeight();
+      doc.setFontSize(9);
+      doc.text(
+        `Página ${data.pageNumber}`,
+        pageSize.width - 80,
+        pageHeight - 20
+      );
+    },
+    columnStyles: {
+      0: { cellWidth: 95 }, // fecha
+      1: { cellWidth: 120 },
+      2: { cellWidth: 150 },
+      3: { cellWidth: 110 },
+      4: { cellWidth: 110 },
+      5: { cellWidth: 220 }, // acción puede ser larga
+      6: { cellWidth: 110 },
+      7: { cellWidth: 90 },
+    },
+  });
+
+  doc.save(fileName);
   logExportAction('PDF', 'bitacoras-usuario');
 };
 
