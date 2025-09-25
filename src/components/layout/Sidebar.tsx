@@ -185,6 +185,11 @@ const SidebarComponent = () => {
       url: "/bitacoras-lectoras", 
       icon: ScrollText 
     },
+    { 
+      title: "Bitácoras de Usuarios", 
+      url: "/bitacoras-usuarios", 
+      icon: Activity 
+    },
   ];
 
   // Telemetría menu items

@@ -77,6 +77,7 @@ import AlarmasConductorListado from '@/pages/alarmas-conductor/Listado';
 import TelemetriaListado from '@/pages/telemetria/Listado';
 import SolicitudesTrasladoIndex from '@/pages/solicitudes-traslado/Index';
 import BitacorasLectorasIndex from '@/pages/bitacoras-lectoras/Index';
+import BitacorasUsuariosIndex from '@/pages/bitacoras-usuarios/Index';
 import CargaCreditosIndex from '@/pages/carga-creditos/Index';
 
 import ParametrosLectura from '@/pages/configuracion/ParametrosLectura';
@@ -206,6 +207,7 @@ function App() {
             
             {/* Bitácoras Lectoras routes */}
             <Route path="/bitacoras-lectoras" element={<BitacorasLectorasIndex />} />
+            <Route path="/bitacoras-usuarios" element={<BitacorasUsuariosIndex />} />
             
             {/* Bancos routes */}
             <Route path="/bancos" element={<BancosIndex />} />
