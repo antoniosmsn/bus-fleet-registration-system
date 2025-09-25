@@ -259,16 +259,19 @@ export const exportBitacorasUsuarioToPDF = async (bitacoras: BitacoraUsuario[]) 
   // Crear documento PDF en orientación horizontal para más columnas
   const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'A4' });
 
-  // Encabezado
+  // Encabezado corporativo siguiendo el formato de los archivos compartidos
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text('SISTEMA DE GESTIÓN DE TRANSPORTE', 40, 40);
-  doc.setFontSize(12);
-  doc.text('Bitácoras de Acciones de Usuario', 40, 60);
+  doc.setFontSize(16);
+  doc.text('Sistema RideCode', 40, 40);
+  
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.text(`Generado el: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss', { locale: es })}`, 40, 78);
-  doc.text(`Total de registros: ${bitacoras.length}`, 40, 96);
+  doc.text(`Impreso: ${format(new Date(), 'dd/MM/yyyy HH:mm:ss', { locale: es })}`, 40, 58);
+
+  // Título del reporte
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Bitácoras de acciones de usuario', 40, 85);
 
   // Columnas y filas
   const columns = [
@@ -293,13 +296,23 @@ export const exportBitacorasUsuarioToPDF = async (bitacoras: BitacoraUsuario[]) 
     resultado: b.resultado,
   }));
 
-  // Tabla
+  // Tabla con el mismo estilo que los reportes corporativos
   autoTable(doc, {
     head: [columns.map((c) => c.header)],
     body: rows.map((r) => columns.map((c) => (r as any)[c.dataKey])),
-    startY: 115,
-    styles: { fontSize: 8, cellPadding: 4 },
-    headStyles: { fillColor: [240, 240, 240], textColor: 20, halign: 'left' },
+    startY: 110,
+    styles: { 
+      fontSize: 8, 
+      cellPadding: 3,
+      lineColor: [0, 0, 0],
+      lineWidth: 0.5
+    },
+    headStyles: { 
+      fillColor: [245, 245, 245], 
+      textColor: 20, 
+      halign: 'left',
+      fontStyle: 'bold'
+    },
     theme: 'grid',
     willDrawPage: (data) => {
       // Pie de página con número de página
@@ -314,13 +327,13 @@ export const exportBitacorasUsuarioToPDF = async (bitacoras: BitacoraUsuario[]) 
     },
     columnStyles: {
       0: { cellWidth: 95 }, // fecha
-      1: { cellWidth: 120 },
-      2: { cellWidth: 150 },
-      3: { cellWidth: 110 },
-      4: { cellWidth: 110 },
-      5: { cellWidth: 220 }, // acción puede ser larga
-      6: { cellWidth: 110 },
-      7: { cellWidth: 90 },
+      1: { cellWidth: 120 }, // usuario
+      2: { cellWidth: 150 }, // nombre
+      3: { cellWidth: 110 }, // perfil
+      4: { cellWidth: 110 }, // zona franca
+      5: { cellWidth: 220 }, // acción
+      6: { cellWidth: 110 }, // tipo acción
+      7: { cellWidth: 90 },  // resultado
     },
   });
 
@@ -332,33 +345,32 @@ export const exportBitacorasUsuarioToExcel = async (bitacoras: BitacoraUsuario[]
   const timestamp = format(new Date(), "yyyyMMdd_HHmm", { locale: es });
   const fileName = `Bitacoras_Usuario_${timestamp}.csv`;
   
-  // Crear contenido CSV
-  const headers = [
-    'Fecha y Hora',
-    'Usuario',
-    'Nombre Completo',
-    'Perfil',
-    'Zona Franca',
-    'Acción',
-    'Tipo de Acción',
-    'Resultado',
-    'Descripción'
-  ];
+  // Crear contenido CSV siguiendo el formato corporativo
+  const fechaActual = format(new Date(), 'dd/MM/yyyy HH:mm:ss', { locale: es });
   
-  const csvContent = [
-    headers.join(','),
+  const csvLines = [
+    // Encabezado corporativo
+    'SISTEMA RIDECODE,,,,,,,,',
+    `${fechaActual},,,,,,,,`,
+    'BITACORAS DE ACCIONES DE USUARIO,,,,,,,,',
+    ',,,,,,,,', // Línea vacía
+    // Headers de la tabla
+    'Fecha y Hora,Usuario,Nombre Completo,Perfil,Zona Franca,Acción,Tipo de Acción,Resultado,Descripción',
+    // Datos
     ...bitacoras.map(bitacora => [
-      `"${format(new Date(bitacora.fechaHora), "dd/MM/yyyy HH:mm", { locale: es })}"`,
+      `"${format(new Date(bitacora.fechaHora), 'dd/MM/yyyy HH:mm:ss', { locale: es })}"`,
       `"${bitacora.usuario}"`,
       `"${bitacora.nombreCompleto}"`,
       `"${bitacora.perfil}"`,
       `"${bitacora.zonaFranca}"`,
-      `"${bitacora.accion}"`,
+      `"${bitacora.accion.replace(/"/g, '""')}"`,
       `"${bitacora.tipoAccion}"`,
       `"${bitacora.resultado}"`,
-      `"${bitacora.descripcion || ''}"`
+      `"${(bitacora.descripcion || '').replace(/"/g, '""')}"`
     ].join(','))
-  ].join('\n');
+  ];
+  
+  const csvContent = csvLines.join('\n');
   
   // Crear blob y descargar
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
