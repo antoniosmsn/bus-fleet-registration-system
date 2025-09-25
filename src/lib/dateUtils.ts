@@ -38,7 +38,8 @@ export function formatDateWithTime(date: Date | string | null): string {
     const dateObj = new Date(date);
     return `${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString('es-ES', { 
       hour: '2-digit', 
-      minute: '2-digit' 
+      minute: '2-digit',
+      second: '2-digit' 
     })}`;
   } catch (error) {
     return 'Invalid Date';
