@@ -5,6 +5,7 @@ import { Bus } from "@/types/bus";
 import { Pasajero } from "@/types/pasajero";
 import { TelemetriaRecord } from "@/types/telemetria";
 import { AlarmaRecord } from "@/types/alarma";
+import { BitacoraUsuario } from "@/types/bitacora-usuario";
 export const exportConductoresToPDF = async (conductores: Conductor[]) => {
   // Aquí iría la lógica real de exportación a PDF
   // Por ahora simulamos la exportación
@@ -248,7 +249,139 @@ export const exportCargaCreditosToExcel = (cargues: any[]) => {
   logExportAction('Excel', 'carga-creditos');
 };
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' | 'carga-creditos' = 'conductores') => {
+// Bitácoras de Usuario
+export const exportBitacorasUsuarioToPDF = async (bitacoras: BitacoraUsuario[]) => {
+  const timestamp = format(new Date(), "yyyyMMdd_HHmm", { locale: es });
+  const fileName = `Bitacoras_Usuario_${timestamp}.pdf`;
+  
+  // Crear contenido HTML para PDF
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Bitácoras de Acciones de Usuario</title>
+      <style>
+        body { font-family: Arial, sans-serif; font-size: 10px; margin: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .title { font-size: 16px; font-weight: bold; color: #333; }
+        .subtitle { font-size: 12px; color: #666; margin-top: 5px; }
+        .info { margin: 15px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+        th { background-color: #f5f5f5; font-weight: bold; }
+        .text-center { text-align: center; }
+        .badge-exitoso { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 3px; }
+        .badge-error { background: #f8d7da; color: #721c24; padding: 2px 6px; border-radius: 3px; }
+        .badge-advertencia { background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 3px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="title">SISTEMA DE GESTIÓN DE TRANSPORTE</div>
+        <div class="subtitle">Bitácoras de Acciones de Usuario</div>
+        <div class="subtitle">Generado el: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: es })}</div>
+      </div>
+      
+      <div class="info">
+        <strong>Total de registros:</strong> ${bitacoras.length}
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 12%">Fecha y Hora</th>
+            <th style="width: 15%">Usuario</th>
+            <th style="width: 15%">Nombre Completo</th>
+            <th style="width: 12%">Perfil</th>
+            <th style="width: 12%">Zona Franca</th>
+            <th style="width: 20%">Acción</th>
+            <th style="width: 8%">Tipo</th>
+            <th style="width: 6%">Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bitacoras.map(bitacora => `
+            <tr>
+              <td>${format(new Date(bitacora.fechaHora), "dd/MM/yyyy HH:mm", { locale: es })}</td>
+              <td>${bitacora.usuario}</td>
+              <td>${bitacora.nombreCompleto}</td>
+              <td>${bitacora.perfil}</td>
+              <td>${bitacora.zonaFranca}</td>
+              <td>${bitacora.accion}</td>
+              <td>${bitacora.tipoAccion}</td>
+              <td class="text-center">
+                <span class="badge-${bitacora.resultado.toLowerCase()}">${bitacora.resultado}</span>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </body>
+    </html>
+  `;
+  
+  // Crear blob y descargar
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+  
+  logExportAction('PDF', 'bitacoras-usuario');
+};
+
+export const exportBitacorasUsuarioToExcel = async (bitacoras: BitacoraUsuario[]) => {
+  const timestamp = format(new Date(), "yyyyMMdd_HHmm", { locale: es });
+  const fileName = `Bitacoras_Usuario_${timestamp}.csv`;
+  
+  // Crear contenido CSV
+  const headers = [
+    'Fecha y Hora',
+    'Usuario',
+    'Nombre Completo',
+    'Perfil',
+    'Zona Franca',
+    'Acción',
+    'Tipo de Acción',
+    'Resultado',
+    'Descripción'
+  ];
+  
+  const csvContent = [
+    headers.join(','),
+    ...bitacoras.map(bitacora => [
+      `"${format(new Date(bitacora.fechaHora), "dd/MM/yyyy HH:mm", { locale: es })}"`,
+      `"${bitacora.usuario}"`,
+      `"${bitacora.nombreCompleto}"`,
+      `"${bitacora.perfil}"`,
+      `"${bitacora.zonaFranca}"`,
+      `"${bitacora.accion}"`,
+      `"${bitacora.tipoAccion}"`,
+      `"${bitacora.resultado}"`,
+      `"${bitacora.descripcion || ''}"`
+    ].join(','))
+  ].join('\n');
+  
+  // Crear blob y descargar
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
+  
+  logExportAction('Excel', 'bitacoras-usuario');
+};
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' | 'carga-creditos' | 'bitacoras-usuario' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación
