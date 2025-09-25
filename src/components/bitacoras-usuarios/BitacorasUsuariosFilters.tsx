@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarIcon, Search, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
 import { BitacoraUsuarioFilter, tiposAccion, tiposResultado } from '@/types/bitacora-usuario';
 
 interface BitacorasUsuariosFiltersProps {
@@ -36,30 +37,30 @@ const BitacorasUsuariosFilters: React.FC<BitacorasUsuariosFiltersProps> = ({
   const handleFechaInicioChange = (date: Date | undefined) => {
     setFechaInicio(date);
     if (date) {
-      const isoDate = date.toISOString().split('T')[0] + 'T00:00:00.000Z';
-      onFiltrosChange({ ...filtros, fechaInicio: isoDate });
+      onFiltrosChange({ ...filtros, fechaInicio: date.toISOString() });
     }
   };
 
   const handleFechaFinChange = (date: Date | undefined) => {
     setFechaFin(date);
     if (date) {
-      const isoDate = date.toISOString().split('T')[0] + 'T23:59:59.999Z';
-      onFiltrosChange({ ...filtros, fechaFin: isoDate });
+      onFiltrosChange({ ...filtros, fechaFin: date.toISOString() });
     }
   };
 
   const handleLimpiar = () => {
     const today = new Date();
-    const fechaInicioDefault = today.toISOString().split('T')[0] + 'T00:00:00.000Z';
-    const fechaFinDefault = today.toISOString().split('T')[0] + 'T23:59:59.999Z';
+    const startOfDay = new Date(today);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
     
-    setFechaInicio(today);
-    setFechaFin(today);
+    setFechaInicio(startOfDay);
+    setFechaFin(endOfDay);
     
     const filtrosLimpios: BitacoraUsuarioFilter = {
-      fechaInicio: fechaInicioDefault,
-      fechaFin: fechaFinDefault,
+      fechaInicio: startOfDay.toISOString(),
+      fechaFin: endOfDay.toISOString(),
       usuario: '',
       tipoAccion: 'todos',
       resultado: 'todos',
@@ -105,7 +106,7 @@ const BitacorasUsuariosFilters: React.FC<BitacorasUsuariosFiltersProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Fecha Inicio */}
               <div className="space-y-2">
-                <Label htmlFor="fechaInicio" className="text-sm font-medium text-slate-600">Fecha Inicio *</Label>
+                <Label htmlFor="fechaInicio" className="text-sm font-medium text-slate-600">Fecha y Hora de Inicio *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -116,24 +117,35 @@ const BitacorasUsuariosFilters: React.FC<BitacorasUsuariosFiltersProps> = ({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {fechaInicio ? format(fechaInicio, "dd/MM/yyyy") : "Seleccionar fecha"}
+                      {fechaInicio 
+                        ? format(fechaInicio, "dd/MM/yyyy HH:mm:ss")
+                        : "Seleccionar fecha y hora"
+                      }
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={fechaInicio}
-                      onSelect={handleFechaInicioChange}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
+                    <div className="p-3">
+                      <Calendar
+                        mode="single"
+                        selected={fechaInicio}
+                        onSelect={handleFechaInicioChange}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                      <div className="border-t pt-3 mt-3">
+                        <DateTimePicker
+                          date={fechaInicio}
+                          onDateTimeChange={handleFechaInicioChange}
+                        />
+                      </div>
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
 
               {/* Fecha Fin */}
               <div className="space-y-2">
-                <Label htmlFor="fechaFin" className="text-sm font-medium text-slate-600">Fecha Fin *</Label>
+                <Label htmlFor="fechaFin" className="text-sm font-medium text-slate-600">Fecha y Hora de Fin *</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -144,17 +156,28 @@ const BitacorasUsuariosFilters: React.FC<BitacorasUsuariosFiltersProps> = ({
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {fechaFin ? format(fechaFin, "dd/MM/yyyy") : "Seleccionar fecha"}
+                      {fechaFin 
+                        ? format(fechaFin, "dd/MM/yyyy HH:mm:ss")
+                        : "Seleccionar fecha y hora"
+                      }
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={fechaFin}
-                      onSelect={handleFechaFinChange}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
+                    <div className="p-3">
+                      <Calendar
+                        mode="single"
+                        selected={fechaFin}
+                        onSelect={handleFechaFinChange}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                      <div className="border-t pt-3 mt-3">
+                        <DateTimePicker
+                          date={fechaFin}
+                          onDateTimeChange={handleFechaFinChange}
+                        />
+                      </div>
+                    </div>
                   </PopoverContent>
                 </Popover>
               </div>
