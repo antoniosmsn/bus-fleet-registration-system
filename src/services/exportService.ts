@@ -386,7 +386,132 @@ export const exportBitacorasUsuarioToExcel = async (bitacoras: BitacoraUsuario[]
   logExportAction('Excel', 'bitacoras-usuario');
 };
 
-const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' | 'carga-creditos' | 'bitacoras-usuario' = 'conductores') => {
+// BitacoraSistema export functions
+export const exportBitacorasSistemaToPDF = async (bitacoras: any[]) => {
+  const { jsPDF } = await import('jspdf');
+  await import('jspdf-autotable');
+
+  const doc = new jsPDF();
+  
+  // Logo and header
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Bitácoras del Sistema', 20, 20);
+  
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Fecha de generación: ${new Date().toLocaleDateString('es-ES')}`, 20, 30);
+  doc.text(`Total de registros: ${bitacoras.length}`, 20, 37);
+
+  // Table data
+  const tableData = bitacoras.map((bitacora) => [
+    new Date(bitacora.fechaHora).toLocaleDateString('es-ES') + ' ' + 
+    new Date(bitacora.fechaHora).toLocaleTimeString('es-ES'),
+    bitacora.application || '-',
+    bitacora.logLevel || '-',
+    bitacora.user || '-',
+    bitacora.message || '-',
+    bitacora.errorCode || '-',
+    bitacora.apiErrorMessage || '-',
+    bitacora.internalErrorMessage || '-'
+  ]);
+
+  const tableHeaders = [
+    'Fecha y Hora',
+    'Aplicación', 
+    'Nivel',
+    'Usuario',
+    'Mensaje',
+    'Código Error',
+    'Error API',
+    'Error Interno'
+  ];
+
+  (doc as any).autoTable({
+    head: [tableHeaders],
+    body: tableData,
+    startY: 45,
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+    columnStyles: {
+      0: { cellWidth: 25 },
+      1: { cellWidth: 25 },
+      2: { cellWidth: 20 },
+      3: { cellWidth: 20 },
+      4: { cellWidth: 30 },
+      5: { cellWidth: 20 },
+      6: { cellWidth: 25 },
+      7: { cellWidth: 25 }
+    }
+  });
+
+  // Footer
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(10);
+    doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.getWidth() - 30, doc.internal.pageSize.getHeight() - 10);
+  }
+
+  doc.save(`bitacoras-sistema-${new Date().toISOString().split('T')[0]}.pdf`);
+  
+  logExportAction('PDF', 'bitacoras-sistema');
+};
+
+export const exportBitacorasSistemaToExcel = async (bitacoras: any[]) => {
+  const headers = [
+    'Fecha y Hora',
+    'Aplicación',
+    'Nivel',
+    'Usuario', 
+    'Mensaje',
+    'Código Error',
+    'Error API',
+    'Error Interno'
+  ];
+
+  const csvData = [
+    headers,
+    ...bitacoras.map(bitacora => [
+      new Date(bitacora.fechaHora).toLocaleDateString('es-ES') + ' ' + 
+      new Date(bitacora.fechaHora).toLocaleTimeString('es-ES'),
+      bitacora.application || '-',
+      bitacora.logLevel || '-',
+      bitacora.user || '-',
+      bitacora.message || '-',
+      bitacora.errorCode || '-',
+      bitacora.apiErrorMessage || '-',
+      bitacora.internalErrorMessage || '-'
+    ])
+  ];
+
+  const csvContent = csvData.map(row => 
+    row.map(cell => `"${cell}"`).join(',')
+  ).join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `bitacoras-sistema-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  logExportAction('Excel', 'bitacoras-sistema');
+};
+
+const logExportAction = (tipoArchivo: 'PDF' | 'Excel', tipo: 'conductores' | 'buses' | 'pasajeros' | 'capacidad-cumplida' | 'mantenimiento' | 'carga-creditos' | 'bitacoras-usuario' | 'bitacoras-sistema' = 'conductores') => {
   // Aquí iría la lógica real de logging
   console.log('Registro en bitácora:', {
     usuario: 'Usuario actual', // En implementación real, obtener del contexto de autenticación
