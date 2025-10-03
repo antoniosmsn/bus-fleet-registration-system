@@ -201,7 +201,7 @@ function App() {
             <Route path="/alarmas-conductor" element={<AlarmasConductorListado />} />
             
             {/* Telemetría routes */}
-            <Route path="/telemetria" element={<TelemetriaListado />} />
+            <Route path="/telemetria/listado" element={<TelemetriaListado />} />
             
             {/* Solicitudes Traslado routes */}
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
