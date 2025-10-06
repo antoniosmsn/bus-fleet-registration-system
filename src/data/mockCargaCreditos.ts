@@ -224,6 +224,7 @@ export const generateDetallesCargue = (cargue: CargueCredito): DetalleCargueCred
   for (let i = 1; i <= cargue.registrosConError; i++) {
     const empresa = empresasClientes[Math.floor(Math.random() * empresasClientes.length)];
     const cedula = `${Math.floor(Math.random() * 900000000) + 100000000}`;
+    const campos = ['Cédula', 'Monto', 'Fecha', 'Empresa', 'Nombre Pasajero', 'Zona Franca'];
     const errores = [
       'Cédula no válida en el sistema',
       'Pasajero no activo',
@@ -243,7 +244,8 @@ export const generateDetallesCargue = (cargue: CargueCredito): DetalleCargueCred
       empresa,
       estado: 'error',
       mensajeError: errores[Math.floor(Math.random() * errores.length)],
-      numeroLinea: cargue.registrosExitosos + i + 1
+      numeroLinea: cargue.registrosExitosos + i + 1,
+      campo: campos[Math.floor(Math.random() * campos.length)]
     });
   }
   

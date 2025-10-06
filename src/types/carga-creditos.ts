@@ -26,6 +26,7 @@ export interface DetalleCargueCredito {
   estado: 'exitoso' | 'error';
   mensajeError?: string;
   numeroLinea?: number;
+  campo?: string;
 }
 
 export interface FiltrosCargueCredito {

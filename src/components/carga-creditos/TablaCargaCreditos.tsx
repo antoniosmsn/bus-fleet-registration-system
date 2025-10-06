@@ -64,18 +64,32 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues, onVerD
   };
 
   const getDetallesPaginados = (cargueId: string): DetalleCargueCredito[] => {
+    const cargue = cargues.find(c => c.id === cargueId);
     const detalles = getDetallesCargue(cargueId);
+    
+    // Si tiene errores, solo paginar los errores
+    const detallesFiltrados = cargue?.estado === 'Procesado con error' 
+      ? detalles.filter(d => d.estado === 'error')
+      : detalles;
+    
     const currentPage = detallesPagination[cargueId] || 1;
     const itemsPerPage = detallesItemsPerPage[cargueId] || 10;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return detalles.slice(startIndex, endIndex);
+    return detallesFiltrados.slice(startIndex, endIndex);
   };
 
   const getTotalPages = (cargueId: string): number => {
+    const cargue = cargues.find(c => c.id === cargueId);
     const detalles = getDetallesCargue(cargueId);
+    
+    // Si tiene errores, solo contar los errores
+    const detallesFiltrados = cargue?.estado === 'Procesado con error' 
+      ? detalles.filter(d => d.estado === 'error')
+      : detalles;
+    
     const itemsPerPage = detallesItemsPerPage[cargueId] || 10;
-    return Math.ceil(detalles.length / itemsPerPage);
+    return Math.ceil(detallesFiltrados.length / itemsPerPage);
   };
 
   const changePage = (cargueId: string, newPage: number) => {
@@ -179,38 +193,32 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues, onVerD
                               <Table>
                                 <TableHeader>
                                   <TableRow>
-                                    <TableHead className="w-[180px]">Fecha de carga</TableHead>
-                                    <TableHead className="w-[120px] text-right">Monto</TableHead>
-                                    <TableHead className="w-[200px]">Pasajero</TableHead>
-                                    <TableHead className="w-[150px]">Cédula</TableHead>
-                                    <TableHead className="w-[200px]">Empresa</TableHead>
-                                    {cargue.estado === 'Procesado con error' && (
+                                    {cargue.estado === 'Procesado con error' ? (
                                       <>
-                                        <TableHead className="w-[100px]">Estado</TableHead>
-                                        <TableHead className="w-[250px]">Error</TableHead>
+                                        <TableHead className="w-20">Fila</TableHead>
+                                        <TableHead className="w-32">Campo</TableHead>
+                                        <TableHead className="w-32">Cédula</TableHead>
+                                        <TableHead>Descripción del error</TableHead>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <TableHead className="w-[180px]">Fecha de carga</TableHead>
+                                        <TableHead className="w-[120px] text-right">Monto</TableHead>
+                                        <TableHead className="w-[200px]">Pasajero</TableHead>
+                                        <TableHead className="w-[150px]">Cédula</TableHead>
+                                        <TableHead className="w-[200px]">Empresa</TableHead>
                                       </>
                                     )}
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                   {cargue.estado === 'Procesado con error' 
-                                    ? getDetallesConError(cargue.id).map((detalle) => (
+                                    ? getDetallesPaginados(cargue.id).filter(d => d.estado === 'error').map((detalle) => (
                                         <TableRow key={detalle.id} className="bg-destructive/5">
+                                          <TableCell className="font-medium">{detalle.numeroLinea || '-'}</TableCell>
+                                          <TableCell>{detalle.campo || '-'}</TableCell>
+                                          <TableCell>{detalle.cedula || '-'}</TableCell>
                                           <TableCell className="text-sm">
-                                            {formatDateTime(detalle.fechaCargue)}
-                                          </TableCell>
-                                          <TableCell className="text-right font-medium">
-                                            {formatCurrency(detalle.monto)}
-                                          </TableCell>
-                                          <TableCell>{detalle.nombrePasajero}</TableCell>
-                                          <TableCell>{detalle.cedula}</TableCell>
-                                          <TableCell className="text-sm">{detalle.empresa}</TableCell>
-                                          <TableCell>
-                                            <Badge variant="destructive" className="text-xs">
-                                              Error
-                                            </Badge>
-                                          </TableCell>
-                                          <TableCell className="text-sm text-destructive">
                                             {detalle.mensajeError || 'Error desconocido'}
                                           </TableCell>
                                         </TableRow>
@@ -232,8 +240,8 @@ const TablaCargaCreditos: React.FC<TablaCargaCreditosProps> = ({ cargues, onVerD
                                 </TableBody>
                               </Table>
 
-                              {/* Paginación para detalles (solo para registros exitosos) */}
-                              {cargue.estado !== 'Procesado con error' && getTotalPages(cargue.id) > 1 && (
+                              {/* Paginación para detalles (para ambos estados) */}
+                              {getTotalPages(cargue.id) > 1 && (
                                 <div className="flex justify-between items-center mt-4">
                                   <div className="flex items-center gap-2">
                                     <span className="text-sm text-muted-foreground">Registros por página:</span>
