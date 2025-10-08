@@ -198,7 +198,7 @@ function App() {
             
             {/* Alarmas routes */}
             <Route path="/alarmas" element={<AlarmasListado />} />
-            <Route path="/alarmas-conductor" element={<AlarmasConductorListado />} />
+            <Route path="/alarmas-conductor/listado" element={<AlarmasConductorListado />} />
             
             {/* Telemetría routes */}
             <Route path="/telemetria/listado" element={<TelemetriaListado />} />
