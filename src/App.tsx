@@ -76,6 +76,8 @@ import AlarmasListado from '@/pages/alarmas/Listado';
 import AlarmasConductorListado from '@/pages/alarmas-conductor/Listado';
 import TelemetriaListado from '@/pages/telemetria/Listado';
 import SolicitudesTrasladoIndex from '@/pages/solicitudes-traslado/Index';
+import SondeosRutasListado from '@/pages/sondeos-rutas/Index';
+import NuevoSondeoRuta from '@/pages/sondeos-rutas/Register';
 import BitacorasLectorasIndex from '@/pages/bitacoras-lectoras/Index';
 import BitacorasUsuariosIndex from '@/pages/bitacoras-usuarios/Index';
 import BitacorasSistemaIndex from '@/pages/bitacoras-sistema/Index';
@@ -202,6 +204,10 @@ function App() {
             
             {/* Telemetría routes */}
             <Route path="/telemetria/listado" element={<TelemetriaListado />} />
+            
+            {/* Sondeos de Rutas routes */}
+            <Route path="/sondeos-rutas" element={<SondeosRutasListado />} />
+            <Route path="/sondeos-rutas/registro" element={<NuevoSondeoRuta />} />
             
             {/* Solicitudes Traslado routes */}
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
