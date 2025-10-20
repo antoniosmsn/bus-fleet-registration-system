@@ -226,12 +226,20 @@ const NuevoSondeoRuta = () => {
   // Cargar puntos de ruta existente si se selecciona
   const handleSeleccionarRutaExistente = (rutaId: string) => {
     setRutaExistenteId(rutaId);
-    // Simular carga de puntos de la ruta
-    if (rutaId === 'ruta-3') {
+    
+    // Buscar la ruta seleccionada en el mock
+    const rutaSeleccionada = mockRutasDisponibles.find(r => r.id === rutaId);
+    
+    if (rutaSeleccionada && rutaSeleccionada.puntos) {
+      // Cargar los puntos de la ruta seleccionada
+      setPuntosTrazado(rutaSeleccionada.puntos);
+    } else {
+      // Si no tiene puntos definidos, usar puntos de ejemplo
       setPuntosTrazado([
         { lat: 9.9200, lng: -84.1000, orden: 1 },
         { lat: 9.9250, lng: -84.0950, orden: 2 },
-        { lat: 9.9300, lng: -84.0900, orden: 3 }
+        { lat: 9.9300, lng: -84.0900, orden: 3 },
+        { lat: 9.9350, lng: -84.0850, orden: 4 },
       ]);
     }
   };
@@ -276,12 +284,12 @@ const NuevoSondeoRuta = () => {
 
               {tipoTrazado === 'ruta-existente' && (
                 <div className="space-y-2">
-                  <Label htmlFor="rutaExistente">Ruta Existente *</Label>
+                  <Label htmlFor="rutaExistente">Ruta Existente * (filtrable por nombre/código)</Label>
                   <Select value={rutaExistenteId} onValueChange={handleSeleccionarRutaExistente}>
                     <SelectTrigger id="rutaExistente">
                       <SelectValue placeholder="Seleccionar ruta..." />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="max-h-[300px]">
                       {mockRutasDisponibles.map((ruta) => (
                         <SelectItem key={ruta.id} value={ruta.id}>
                           {ruta.nombre} ({ruta.codigo})
@@ -289,6 +297,9 @@ const NuevoSondeoRuta = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Al seleccionar la ruta, se mostrará su recorrido en el mapa en modo solo lectura
+                  </p>
                 </div>
               )}
 

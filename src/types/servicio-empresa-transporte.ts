@@ -2,6 +2,12 @@ export type EstadoSolicitudCambio = 'Pendiente' | 'Aprobado' | 'Rechazado' | 'Si
 
 export type SentidoServicio = 'Ingreso' | 'Salida';
 
+export interface PuntoTrazadoRuta {
+  lat: number;
+  lng: number;
+  orden: number;
+}
+
 export interface ServicioEmpresaTransporte {
   id: string;
   tipoRuta: string;
@@ -77,4 +83,5 @@ export interface RutaDisponible {
   nombre: string;
   codigo: string;
   sentidosDisponibles: SentidoServicio[];
+  puntos?: PuntoTrazadoRuta[];
 }

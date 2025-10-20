@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Polyline, Marker, useMapEvents } from 'react-leaflet';
-import { LatLngExpression, Icon, divIcon } from 'leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, useMapEvents, useMap } from 'react-leaflet';
+import { LatLngExpression, Icon, divIcon, LatLngBounds } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
 import { Undo, Trash2 } from 'lucide-react';
@@ -44,6 +44,28 @@ const MapClickHandler = ({
       }
     },
   });
+  return null;
+};
+
+const MapBoundsAdjuster = ({ puntos }: { puntos: PuntoTrazado[] }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (puntos.length > 0) {
+      const bounds = new LatLngBounds(
+        puntos.map(p => [p.lat, p.lng] as LatLngExpression)
+      );
+      
+      // Ajustar el mapa para que muestre todos los puntos con padding
+      map.fitBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 15,
+        animate: true,
+        duration: 1
+      });
+    }
+  }, [puntos, map]);
+
   return null;
 };
 
@@ -120,7 +142,7 @@ export const SondeoRutaMap = ({
         </div>
       )}
 
-      <div className="rounded-lg border overflow-hidden" style={{ height: '500px' }}>
+      <div className="rounded-lg border overflow-hidden" style={{ height: '500px', position: 'relative', zIndex: 1 }}>
         <MapContainer
           center={center}
           zoom={11}
@@ -136,6 +158,11 @@ export const SondeoRutaMap = ({
               onAgregarPunto={handleAgregarPunto}
               isEnabled={isDrawingEnabled}
             />
+          )}
+
+          {/* Ajustar bounds cuando hay puntos y está en modo solo lectura */}
+          {soloLectura && puntos.length > 0 && (
+            <MapBoundsAdjuster puntos={puntos} />
           )}
 
           {puntos.length > 1 && (
