@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen, FileCheck, DollarSign, Building, CreditCard, Database } from 'lucide-react';
+import { Settings, FileText, Bus, Users, Map, MapPin, Route, Monitor, Calendar, UserCheck, Truck, ScrollText, ArrowRightLeft, Radar, AlertTriangle, Activity, Wrench, Tags, BookOpen, FileCheck, DollarSign, Building, CreditCard, Database, MessageSquare } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -62,6 +62,11 @@ const SidebarComponent = () => {
       title: "Geocercas", 
       url: "/geocercas", 
       icon: MapPin 
+    },
+    { 
+      title: "Sondeos de Rutas", 
+      url: "/sondeos-rutas", 
+      icon: MessageSquare 
     },
   ];
 
