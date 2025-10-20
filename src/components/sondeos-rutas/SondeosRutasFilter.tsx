@@ -30,25 +30,7 @@ export const SondeosRutasFilter = ({ filters, onFilterChange, onSearch, onClear 
 
           {/* Tab General */}
           <TabsContent value="general" className="space-y-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="estado">Estado</Label>
-                <Select
-                  value={filters.estado || 'publicado'}
-                  onValueChange={(value) => onFilterChange({ ...filters, estado: value as any })}
-                >
-                  <SelectTrigger id="estado">
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="publicado">Publicado</SelectItem>
-                    <SelectItem value="borrador">Borrador</SelectItem>
-                    <SelectItem value="finalizado">Finalizado</SelectItem>
-                    <SelectItem value="todos">Todos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="turno">Turno</Label>
                 <Select
