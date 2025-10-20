@@ -46,14 +46,14 @@ export const SondeosRutasFilter = ({ filters, onFilterChange }: SondeosRutasFilt
           <div className="space-y-2">
             <Label htmlFor="turno">Turno</Label>
             <Select
-              value={filters.turno || ''}
-              onValueChange={(value) => onFilterChange({ ...filters, turno: value })}
+              value={filters.turno || 'todos'}
+              onValueChange={(value) => onFilterChange({ ...filters, turno: value === 'todos' ? '' : value })}
             >
               <SelectTrigger id="turno">
                 <SelectValue placeholder="Todos los turnos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos</SelectItem>
+                <SelectItem value="todos">Todos</SelectItem>
                 {mockTurnos.map((turno) => (
                   <SelectItem key={turno.id} value={turno.id}>
                     {turno.nombre}
