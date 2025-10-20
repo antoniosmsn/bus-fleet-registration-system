@@ -58,9 +58,34 @@ export interface SondeoRutaFormData {
 }
 
 export interface SondeoRutaFilter {
-  titulo?: string;
+  tituloEs?: string;
+  tituloEn?: string;
+  mensajeEs?: string;
+  mensajeEn?: string;
+  usuarioCreacion?: string;
   estado?: 'borrador' | 'publicado' | 'finalizado' | 'todos';
   fechaPublicacionStart?: string;
   fechaPublicacionEnd?: string;
-  turno?: string;
+  turnos?: string[];
+}
+
+export interface RespuestaSondeo {
+  questionId: string;
+  optionId: string;
+  pasajeroId: string;
+  fechaRespuesta: string;
+}
+
+export interface ResultadoConsolidado {
+  questionId: string;
+  questionTextoEs: string;
+  questionTextoEn: string;
+  opciones: {
+    optionId: string;
+    textoEs: string;
+    textoEn: string;
+    cantidad: number;
+    porcentaje: number;
+  }[];
+  totalRespuestas: number;
 }
