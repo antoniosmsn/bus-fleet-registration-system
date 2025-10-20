@@ -344,7 +344,7 @@ const NuevoSondeoRuta = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tituloEn">Título (English) *</Label>
+                  <Label htmlFor="tituloEn">Título (inglés) *</Label>
                   <Input
                     id="tituloEn"
                     placeholder="Ex: San José - Cartago Express Route"
@@ -375,7 +375,7 @@ const NuevoSondeoRuta = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="mensajeEn">Mensaje (English) *</Label>
+                  <Label htmlFor="mensajeEn">Mensaje (inglés) *</Label>
                   <Textarea
                     id="mensajeEn"
                     placeholder="Survey description that passengers will see..."
@@ -430,7 +430,7 @@ const NuevoSondeoRuta = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label className="text-sm">Pregunta (English)</Label>
+                          <Label className="text-sm">Pregunta (inglés)</Label>
                           <Input
                             placeholder="Question text..."
                             value={pregunta.textoEn}
@@ -456,7 +456,7 @@ const NuevoSondeoRuta = () => {
                             />
                             <div className="flex gap-2">
                               <Input
-                                placeholder={`Option ${oIndex + 1} (English)`}
+                                placeholder={`Option ${oIndex + 1} (inglés)`}
                                 value={opcion.textoEn}
                                 onChange={(e) => handleActualizarOpcion(pregunta.id, opcion.id, 'textoEn', e.target.value)}
                                 maxLength={80}
