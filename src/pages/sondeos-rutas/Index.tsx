@@ -20,46 +20,53 @@ const SondeosRutasListado = () => {
     turnos: []
   });
 
+  const [appliedFilters, setAppliedFilters] = useState<SondeoRutaFilter>({
+    estado: 'publicado',
+    fechaPublicacionStart: today,
+    fechaPublicacionEnd: today,
+    turnos: []
+  });
+
   const sondeosFiltrados = mockSondeosRutas.filter((sondeo) => {
     // Filtrar solo publicados según HU
-    if (filters.estado !== 'todos' && sondeo.estado !== filters.estado) {
+    if (appliedFilters.estado !== 'todos' && sondeo.estado !== appliedFilters.estado) {
       return false;
     }
 
     // Filtro por título español
-    if (filters.tituloEs && 
-        !sondeo.tituloEs.toLowerCase().includes(filters.tituloEs.toLowerCase())) {
+    if (appliedFilters.tituloEs && 
+        !sondeo.tituloEs.toLowerCase().includes(appliedFilters.tituloEs.toLowerCase())) {
       return false;
     }
 
     // Filtro por título inglés
-    if (filters.tituloEn && 
-        !sondeo.tituloEn.toLowerCase().includes(filters.tituloEn.toLowerCase())) {
+    if (appliedFilters.tituloEn && 
+        !sondeo.tituloEn.toLowerCase().includes(appliedFilters.tituloEn.toLowerCase())) {
       return false;
     }
 
     // Filtro por mensaje español
-    if (filters.mensajeEs && 
-        !sondeo.mensajeEs.toLowerCase().includes(filters.mensajeEs.toLowerCase())) {
+    if (appliedFilters.mensajeEs && 
+        !sondeo.mensajeEs.toLowerCase().includes(appliedFilters.mensajeEs.toLowerCase())) {
       return false;
     }
 
     // Filtro por mensaje inglés
-    if (filters.mensajeEn && 
-        !sondeo.mensajeEn.toLowerCase().includes(filters.mensajeEn.toLowerCase())) {
+    if (appliedFilters.mensajeEn && 
+        !sondeo.mensajeEn.toLowerCase().includes(appliedFilters.mensajeEn.toLowerCase())) {
       return false;
     }
 
     // Filtro por usuario creador
-    if (filters.usuarioCreacion && 
-        !sondeo.usuarioCreacion.toLowerCase().includes(filters.usuarioCreacion.toLowerCase())) {
+    if (appliedFilters.usuarioCreacion && 
+        !sondeo.usuarioCreacion.toLowerCase().includes(appliedFilters.usuarioCreacion.toLowerCase())) {
       return false;
     }
 
     // Filtro por turnos
-    if (filters.turnos && filters.turnos.length > 0) {
+    if (appliedFilters.turnos && appliedFilters.turnos.length > 0) {
       const hasMatchingTurno = sondeo.turnosObjetivo.some(turno => 
-        filters.turnos?.includes(turno)
+        appliedFilters.turnos?.includes(turno)
       );
       if (!hasMatchingTurno) {
         return false;
@@ -67,18 +74,18 @@ const SondeosRutasListado = () => {
     }
 
     // Filtro por rango de fechas
-    if (filters.fechaPublicacionStart) {
+    if (appliedFilters.fechaPublicacionStart) {
       const fechaPublicacion = new Date(sondeo.fechaPublicacion);
-      const fechaInicio = new Date(filters.fechaPublicacionStart);
+      const fechaInicio = new Date(appliedFilters.fechaPublicacionStart);
       fechaInicio.setHours(0, 0, 0, 0);
       if (fechaPublicacion < fechaInicio) {
         return false;
       }
     }
 
-    if (filters.fechaPublicacionEnd) {
+    if (appliedFilters.fechaPublicacionEnd) {
       const fechaPublicacion = new Date(sondeo.fechaPublicacion);
-      const fechaFin = new Date(filters.fechaPublicacionEnd);
+      const fechaFin = new Date(appliedFilters.fechaPublicacionEnd);
       fechaFin.setHours(23, 59, 59, 999);
       if (fechaPublicacion > fechaFin) {
         return false;
@@ -88,8 +95,8 @@ const SondeosRutasListado = () => {
     return true;
   });
 
-  // Validación de rango de fechas (máximo 30 días)
-  const validateDateRange = () => {
+  const handleSearch = () => {
+    // Validación de rango de fechas (máximo 30 días)
     if (filters.fechaPublicacionStart && filters.fechaPublicacionEnd) {
       const inicio = new Date(filters.fechaPublicacionStart);
       const fin = new Date(filters.fechaPublicacionEnd);
@@ -98,15 +105,29 @@ const SondeosRutasListado = () => {
       
       if (diffDays > 30) {
         toast.error("El rango máximo de fechas permitido es de 1 mes.");
-        return false;
+        return;
       }
       
       if (inicio > fin) {
         toast.error("Debe seleccionar una fecha de inicio y fin válidas.");
-        return false;
+        return;
       }
     }
-    return true;
+    
+    setAppliedFilters(filters);
+    toast.success("Filtros aplicados correctamente");
+  };
+
+  const handleClearFilters = () => {
+    const defaultFilters: SondeoRutaFilter = {
+      estado: 'publicado',
+      fechaPublicacionStart: today,
+      fechaPublicacionEnd: today,
+      turnos: []
+    };
+    setFilters(defaultFilters);
+    setAppliedFilters(defaultFilters);
+    toast.success("Filtros limpiados");
   };
 
   const handleViewEncuesta = (sondeo: SondeoRuta) => {
@@ -133,7 +154,12 @@ const SondeosRutasListado = () => {
           </Button>
         </div>
 
-        <SondeosRutasFilter filters={filters} onFilterChange={setFilters} />
+        <SondeosRutasFilter 
+          filters={filters} 
+          onFilterChange={setFilters}
+          onSearch={handleSearch}
+          onClear={handleClearFilters}
+        />
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
