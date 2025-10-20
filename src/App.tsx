@@ -78,6 +78,8 @@ import TelemetriaListado from '@/pages/telemetria/Listado';
 import SolicitudesTrasladoIndex from '@/pages/solicitudes-traslado/Index';
 import SondeosRutasListado from '@/pages/sondeos-rutas/Index';
 import NuevoSondeoRuta from '@/pages/sondeos-rutas/Register';
+import DetalleSondeo from '@/pages/sondeos-rutas/Detalle';
+import ResultadosSondeo from '@/pages/sondeos-rutas/Resultados';
 import BitacorasLectorasIndex from '@/pages/bitacoras-lectoras/Index';
 import BitacorasUsuariosIndex from '@/pages/bitacoras-usuarios/Index';
 import BitacorasSistemaIndex from '@/pages/bitacoras-sistema/Index';
@@ -208,6 +210,8 @@ function App() {
             {/* Sondeos de Rutas routes */}
             <Route path="/sondeos-rutas" element={<SondeosRutasListado />} />
             <Route path="/sondeos-rutas/registro" element={<NuevoSondeoRuta />} />
+            <Route path="/sondeos-rutas/detalle/:id" element={<DetalleSondeo />} />
+            <Route path="/sondeos-rutas/resultados/:id" element={<ResultadosSondeo />} />
             
             {/* Solicitudes Traslado routes */}
             <Route path="/solicitudes-traslado" element={<SolicitudesTrasladoIndex />} />
