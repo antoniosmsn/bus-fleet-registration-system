@@ -21,12 +21,37 @@ export const SondeosRutasFilter = ({ filters, onFilterChange, onSearch, onClear 
   return (
     <Card>
       <CardContent className="pt-6">
-        <Tabs defaultValue="general" className="w-full">
+        <Tabs defaultValue="fechas" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="fechas">Fechas</TabsTrigger>
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="contenido">Contenido</TabsTrigger>
-            <TabsTrigger value="fechas">Fechas</TabsTrigger>
           </TabsList>
+
+          {/* Tab Fechas */}
+          <TabsContent value="fechas" className="space-y-4 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="fechaPublicacionStart">Fecha Inicio</Label>
+                <Input
+                  id="fechaPublicacionStart"
+                  type="date"
+                  value={filters.fechaPublicacionStart || today}
+                  onChange={(e) => onFilterChange({ ...filters, fechaPublicacionStart: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fechaPublicacionEnd">Fecha Fin</Label>
+                <Input
+                  id="fechaPublicacionEnd"
+                  type="date"
+                  value={filters.fechaPublicacionEnd || today}
+                  onChange={(e) => onFilterChange({ ...filters, fechaPublicacionEnd: e.target.value })}
+                />
+              </div>
+            </div>
+          </TabsContent>
 
           {/* Tab General */}
           <TabsContent value="general" className="space-y-4 mt-4">
@@ -108,31 +133,6 @@ export const SondeosRutasFilter = ({ filters, onFilterChange, onSearch, onClear 
                     onChange={(e) => onFilterChange({ ...filters, mensajeEn: e.target.value })}
                   />
                 </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Tab Fechas */}
-          <TabsContent value="fechas" className="space-y-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fechaPublicacionStart">Fecha Inicio</Label>
-                <Input
-                  id="fechaPublicacionStart"
-                  type="date"
-                  value={filters.fechaPublicacionStart || today}
-                  onChange={(e) => onFilterChange({ ...filters, fechaPublicacionStart: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="fechaPublicacionEnd">Fecha Fin</Label>
-                <Input
-                  id="fechaPublicacionEnd"
-                  type="date"
-                  value={filters.fechaPublicacionEnd || today}
-                  onChange={(e) => onFilterChange({ ...filters, fechaPublicacionEnd: e.target.value })}
-                />
               </div>
             </div>
           </TabsContent>
