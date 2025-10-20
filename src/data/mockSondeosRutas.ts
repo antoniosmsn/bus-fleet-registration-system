@@ -46,6 +46,32 @@ export const mockSondeosRutas: SondeoRuta[] = [
           { id: 'o5', textoEs: '1-2 veces por semana', textoEn: '1-2 times per week', orden: 3 },
           { id: 'o6', textoEs: 'Ocasionalmente', textoEn: 'Occasionally', orden: 4 }
         ]
+      },
+      {
+        id: 'p3',
+        textoEs: '¿Qué horario preferiría?',
+        textoEn: 'What schedule would you prefer?',
+        obligatoria: false,
+        orden: 3,
+        opciones: [
+          { id: 'o7', textoEs: '5:00 AM - 7:00 AM', textoEn: '5:00 AM - 7:00 AM', orden: 1 },
+          { id: 'o8', textoEs: '7:00 AM - 9:00 AM', textoEn: '7:00 AM - 9:00 AM', orden: 2 },
+          { id: 'o9', textoEs: '4:00 PM - 6:00 PM', textoEn: '4:00 PM - 6:00 PM', orden: 3 },
+          { id: 'o10', textoEs: '6:00 PM - 8:00 PM', textoEn: '6:00 PM - 8:00 PM', orden: 4 }
+        ]
+      },
+      {
+        id: 'p4',
+        textoEs: '¿Cuál es su principal motivo de viaje?',
+        textoEn: 'What is your main travel purpose?',
+        obligatoria: false,
+        orden: 4,
+        opciones: [
+          { id: 'o11', textoEs: 'Trabajo', textoEn: 'Work', orden: 1 },
+          { id: 'o12', textoEs: 'Estudio', textoEn: 'Study', orden: 2 },
+          { id: 'o13', textoEs: 'Compras', textoEn: 'Shopping', orden: 3 },
+          { id: 'o14', textoEs: 'Recreación', textoEn: 'Recreation', orden: 4 }
+        ]
       }
     ],
     turnosObjetivo: ['1', '2'],
@@ -549,6 +575,43 @@ export const mockSondeosRutas: SondeoRuta[] = [
         opciones: [
           { id: 'o36', textoEs: 'Sí', textoEn: 'Yes', orden: 1 },
           { id: 'o37', textoEs: 'No', textoEn: 'No', orden: 2 }
+        ]
+      },
+      {
+        id: 'p17a',
+        textoEs: '¿Con qué frecuencia asistiría a eventos deportivos?',
+        textoEn: 'How often would you attend sports events?',
+        obligatoria: false,
+        orden: 2,
+        opciones: [
+          { id: 'o37a', textoEs: 'Cada semana', textoEn: 'Every week', orden: 1 },
+          { id: 'o37b', textoEs: 'Una vez al mes', textoEn: 'Once a month', orden: 2 },
+          { id: 'o37c', textoEs: 'Ocasionalmente', textoEn: 'Occasionally', orden: 3 }
+        ]
+      },
+      {
+        id: 'p17b',
+        textoEs: '¿Qué tipo de eventos prefiere?',
+        textoEn: 'What type of events do you prefer?',
+        obligatoria: false,
+        orden: 3,
+        opciones: [
+          { id: 'o37d', textoEs: 'Fútbol', textoEn: 'Soccer', orden: 1 },
+          { id: 'o37e', textoEs: 'Baloncesto', textoEn: 'Basketball', orden: 2 },
+          { id: 'o37f', textoEs: 'Conciertos', textoEn: 'Concerts', orden: 3 },
+          { id: 'o37g', textoEs: 'Otros eventos', textoEn: 'Other events', orden: 4 }
+        ]
+      },
+      {
+        id: 'p17c',
+        textoEs: '¿Viajaría acompañado?',
+        textoEn: 'Would you travel with companions?',
+        obligatoria: false,
+        orden: 4,
+        opciones: [
+          { id: 'o37h', textoEs: 'Solo', textoEn: 'Alone', orden: 1 },
+          { id: 'o37i', textoEs: 'Con 1-2 personas', textoEn: 'With 1-2 people', orden: 2 },
+          { id: 'o37j', textoEs: 'Con 3+ personas', textoEn: 'With 3+ people', orden: 3 }
         ]
       }
     ],
