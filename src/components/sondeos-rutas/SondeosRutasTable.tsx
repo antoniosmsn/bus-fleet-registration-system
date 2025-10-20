@@ -56,7 +56,7 @@ export const SondeosRutasTable = ({ sondeos, onView, onEdit }: SondeosRutasTable
           ) : (
             sondeos.map((sondeo) => (
               <TableRow key={sondeo.id}>
-                <TableCell className="font-medium">{sondeo.titulo}</TableCell>
+                <TableCell className="font-medium">{sondeo.tituloEs}</TableCell>
                 <TableCell>
                   <Badge variant={getEstadoBadgeVariant(sondeo.estado)}>
                     {sondeo.estado.charAt(0).toUpperCase() + sondeo.estado.slice(1)}

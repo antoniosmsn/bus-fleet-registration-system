@@ -16,7 +16,9 @@ const SondeosRutasListado = () => {
   });
 
   const sondeosFiltrados = mockSondeosRutas.filter((sondeo) => {
-    if (filters.titulo && !sondeo.titulo.toLowerCase().includes(filters.titulo.toLowerCase())) {
+    if (filters.titulo && 
+        !sondeo.tituloEs.toLowerCase().includes(filters.titulo.toLowerCase()) && 
+        !sondeo.tituloEn.toLowerCase().includes(filters.titulo.toLowerCase())) {
       return false;
     }
     if (filters.estado && filters.estado !== 'todos' && sondeo.estado !== filters.estado) {
@@ -36,12 +38,12 @@ const SondeosRutasListado = () => {
   });
 
   const handleView = (sondeo: SondeoRuta) => {
-    toast.info(`Visualizando sondeo: ${sondeo.titulo}`);
+    toast.info(`Visualizando sondeo: ${sondeo.tituloEs}`);
     // TODO: Implementar vista de detalles
   };
 
   const handleEdit = (sondeo: SondeoRuta) => {
-    toast.info(`Editando sondeo: ${sondeo.titulo}`);
+    toast.info(`Editando sondeo: ${sondeo.tituloEs}`);
     navigate(`/sondeos-rutas/editar/${sondeo.id}`);
   };
 

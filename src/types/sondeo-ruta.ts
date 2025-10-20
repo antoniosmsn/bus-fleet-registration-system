@@ -8,13 +8,15 @@ export type TipoTrazado = 'dibujado' | 'ruta-existente';
 
 export interface OpcionPregunta {
   id: string;
-  texto: string;
+  textoEs: string;
+  textoEn: string;
   orden: number;
 }
 
 export interface PreguntaSondeo {
   id: string;
-  texto: string;
+  textoEs: string;
+  textoEn: string;
   opciones: OpcionPregunta[];
   obligatoria: boolean;
   orden: number;
@@ -22,8 +24,10 @@ export interface PreguntaSondeo {
 
 export interface SondeoRuta {
   id: string;
-  titulo: string;
-  mensaje: string;
+  tituloEs: string;
+  tituloEn: string;
+  mensajeEs: string;
+  mensajeEn: string;
   fechaPublicacion: string;
   tipoTrazado: TipoTrazado;
   rutaExistenteId?: string;
@@ -41,8 +45,10 @@ export interface SondeoRuta {
 }
 
 export interface SondeoRutaFormData {
-  titulo: string;
-  mensaje: string;
+  tituloEs: string;
+  tituloEn: string;
+  mensajeEs: string;
+  mensajeEn: string;
   tipoTrazado: TipoTrazado;
   rutaExistenteId?: string;
   trazado: PuntoTrazado[];

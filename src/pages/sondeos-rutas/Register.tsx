@@ -20,8 +20,10 @@ const NuevoSondeoRuta = () => {
   const navigate = useNavigate();
   
   // Form state
-  const [titulo, setTitulo] = useState('');
-  const [mensaje, setMensaje] = useState('');
+  const [tituloEs, setTituloEs] = useState('');
+  const [tituloEn, setTituloEn] = useState('');
+  const [mensajeEs, setMensajeEs] = useState('');
+  const [mensajeEn, setMensajeEn] = useState('');
   const [tipoTrazado, setTipoTrazado] = useState<TipoTrazado>('dibujado');
   const [rutaExistenteId, setRutaExistenteId] = useState('');
   const [puntosTrazado, setPuntosTrazado] = useState<PuntoTrazado[]>([]);
@@ -32,12 +34,13 @@ const NuevoSondeoRuta = () => {
   const [preguntas, setPreguntas] = useState<PreguntaSondeo[]>([
     {
       id: 'p_default',
-      texto: '¿Está interesado en usar esta nueva ruta?',
+      textoEs: '¿Está interesado en usar esta nueva ruta?',
+      textoEn: 'Are you interested in using this new route?',
       obligatoria: true,
       orden: 1,
       opciones: [
-        { id: 'o_default_1', texto: 'Sí', orden: 1 },
-        { id: 'o_default_2', texto: 'No', orden: 2 }
+        { id: 'o_default_1', textoEs: 'Sí', textoEn: 'Yes', orden: 1 },
+        { id: 'o_default_2', textoEs: 'No', textoEn: 'No', orden: 2 }
       ]
     }
   ]);
@@ -50,12 +53,13 @@ const NuevoSondeoRuta = () => {
 
     const nuevaPregunta: PreguntaSondeo = {
       id: `p_${Date.now()}`,
-      texto: '',
+      textoEs: '',
+      textoEn: '',
       obligatoria: false,
       orden: preguntas.length + 1,
       opciones: [
-        { id: `o_${Date.now()}_1`, texto: '', orden: 1 },
-        { id: `o_${Date.now()}_2`, texto: '', orden: 2 }
+        { id: `o_${Date.now()}_1`, textoEs: '', textoEn: '', orden: 1 },
+        { id: `o_${Date.now()}_2`, textoEs: '', textoEn: '', orden: 2 }
       ]
     };
 
@@ -91,7 +95,8 @@ const NuevoSondeoRuta = () => {
         }
         const nuevaOpcion: OpcionPregunta = {
           id: `o_${Date.now()}`,
-          texto: '',
+          textoEs: '',
+          textoEn: '',
           orden: p.opciones.length + 1
         };
         return { ...p, opciones: [...p.opciones, nuevaOpcion] };
@@ -115,13 +120,13 @@ const NuevoSondeoRuta = () => {
     }));
   };
 
-  const handleActualizarOpcion = (preguntaId: string, opcionId: string, texto: string) => {
+  const handleActualizarOpcion = (preguntaId: string, opcionId: string, campo: 'textoEs' | 'textoEn', valor: string) => {
     setPreguntas(preguntas.map(p => {
       if (p.id === preguntaId) {
         return {
           ...p,
           opciones: p.opciones.map(o => 
-            o.id === opcionId ? { ...o, texto } : o
+            o.id === opcionId ? { ...o, [campo]: valor } : o
           )
         };
       }
@@ -138,19 +143,19 @@ const NuevoSondeoRuta = () => {
   };
 
   const validarFormulario = (): boolean => {
-    if (!titulo.trim()) {
-      toast.error('El título es obligatorio');
+    if (!tituloEs.trim() || !tituloEn.trim()) {
+      toast.error('El título en español e inglés es obligatorio');
       return false;
     }
-    if (titulo.length > 120) {
+    if (tituloEs.length > 120 || tituloEn.length > 120) {
       toast.error('El título no puede exceder 120 caracteres');
       return false;
     }
-    if (!mensaje.trim()) {
-      toast.error('El mensaje es obligatorio');
+    if (!mensajeEs.trim() || !mensajeEn.trim()) {
+      toast.error('El mensaje en español e inglés es obligatorio');
       return false;
     }
-    if (mensaje.length > 1000) {
+    if (mensajeEs.length > 1000 || mensajeEn.length > 1000) {
       toast.error('El mensaje no puede exceder 1000 caracteres');
       return false;
     }
@@ -173,11 +178,11 @@ const NuevoSondeoRuta = () => {
 
     // Validar preguntas
     for (const pregunta of preguntas) {
-      if (!pregunta.texto.trim()) {
-        toast.error('Todas las preguntas deben tener texto');
+      if (!pregunta.textoEs.trim() || !pregunta.textoEn.trim()) {
+        toast.error('Todas las preguntas deben tener texto en español e inglés');
         return false;
       }
-      if (pregunta.texto.length > 200) {
+      if (pregunta.textoEs.length > 200 || pregunta.textoEn.length > 200) {
         toast.error('El texto de las preguntas no puede exceder 200 caracteres');
         return false;
       }
@@ -186,11 +191,11 @@ const NuevoSondeoRuta = () => {
         return false;
       }
       for (const opcion of pregunta.opciones) {
-        if (!opcion.texto.trim()) {
-          toast.error('Todas las opciones deben tener texto');
+        if (!opcion.textoEs.trim() || !opcion.textoEn.trim()) {
+          toast.error('Todas las opciones deben tener texto en español e inglés');
           return false;
         }
-        if (opcion.texto.length > 80) {
+        if (opcion.textoEs.length > 80 || opcion.textoEn.length > 80) {
           toast.error('El texto de las opciones no puede exceder 80 caracteres');
           return false;
         }
@@ -210,8 +215,10 @@ const NuevoSondeoRuta = () => {
     
     // TODO: Aquí iría la llamada al backend
     console.log({
-      titulo,
-      mensaje,
+      tituloEs,
+      tituloEn,
+      mensajeEs,
+      mensajeEn,
       tipoTrazado,
       rutaExistenteId,
       puntosTrazado,
@@ -321,33 +328,66 @@ const NuevoSondeoRuta = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="titulo">Título *</Label>
-                <Input
-                  id="titulo"
-                  placeholder="Ej: Ruta San José - Cartago Express"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
-                  maxLength={120}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {titulo.length}/120 caracteres
-                </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tituloEs">Título (Español) *</Label>
+                  <Input
+                    id="tituloEs"
+                    placeholder="Ej: Ruta San José - Cartago Express"
+                    value={tituloEs}
+                    onChange={(e) => setTituloEs(e.target.value)}
+                    maxLength={120}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {tituloEs.length}/120 caracteres
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="tituloEn">Título (English) *</Label>
+                  <Input
+                    id="tituloEn"
+                    placeholder="Ex: San José - Cartago Express Route"
+                    value={tituloEn}
+                    onChange={(e) => setTituloEn(e.target.value)}
+                    maxLength={120}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {tituloEn.length}/120 characters
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="mensaje">Mensaje *</Label>
-                <Textarea
-                  id="mensaje"
-                  placeholder="Descripción del sondeo que verán los pasajeros..."
-                  value={mensaje}
-                  onChange={(e) => setMensaje(e.target.value)}
-                  maxLength={1000}
-                  rows={4}
-                />
-                <p className="text-xs text-muted-foreground">
-                  {mensaje.length}/1000 caracteres
-                </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="mensajeEs">Mensaje (Español) *</Label>
+                  <Textarea
+                    id="mensajeEs"
+                    placeholder="Descripción del sondeo que verán los pasajeros..."
+                    value={mensajeEs}
+                    onChange={(e) => setMensajeEs(e.target.value)}
+                    maxLength={1000}
+                    rows={4}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {mensajeEs.length}/1000 caracteres
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mensajeEn">Mensaje (English) *</Label>
+                  <Textarea
+                    id="mensajeEn"
+                    placeholder="Survey description that passengers will see..."
+                    value={mensajeEn}
+                    onChange={(e) => setMensajeEn(e.target.value)}
+                    maxLength={1000}
+                    rows={4}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {mensajeEn.length}/1000 characters
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -373,37 +413,65 @@ const NuevoSondeoRuta = () => {
                           </span>
                         )}
                       </div>
-                      <Input
-                        placeholder="Texto de la pregunta..."
-                        value={pregunta.texto}
-                        onChange={(e) => handleActualizarPregunta(pregunta.id, 'texto', e.target.value)}
-                        maxLength={200}
-                        disabled={pregunta.obligatoria && pIndex === 0}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        {pregunta.texto.length}/200 caracteres
-                      </p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm">Pregunta (Español)</Label>
+                          <Input
+                            placeholder="Texto de la pregunta..."
+                            value={pregunta.textoEs}
+                            onChange={(e) => handleActualizarPregunta(pregunta.id, 'textoEs', e.target.value)}
+                            maxLength={200}
+                            disabled={pregunta.obligatoria && pIndex === 0}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {pregunta.textoEs.length}/200 caracteres
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-sm">Pregunta (English)</Label>
+                          <Input
+                            placeholder="Question text..."
+                            value={pregunta.textoEn}
+                            onChange={(e) => handleActualizarPregunta(pregunta.id, 'textoEn', e.target.value)}
+                            maxLength={200}
+                            disabled={pregunta.obligatoria && pIndex === 0}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {pregunta.textoEn.length}/200 characters
+                          </p>
+                        </div>
+                      </div>
 
                       <div className="space-y-2">
                         <Label className="text-sm">Opciones</Label>
                         {pregunta.opciones.map((opcion, oIndex) => (
-                          <div key={opcion.id} className="flex items-center gap-2">
+                          <div key={opcion.id} className="grid md:grid-cols-2 gap-2">
                             <Input
-                              placeholder={`Opción ${oIndex + 1}`}
-                              value={opcion.texto}
-                              onChange={(e) => handleActualizarOpcion(pregunta.id, opcion.id, e.target.value)}
+                              placeholder={`Opción ${oIndex + 1} (Español)`}
+                              value={opcion.textoEs}
+                              onChange={(e) => handleActualizarOpcion(pregunta.id, opcion.id, 'textoEs', e.target.value)}
                               maxLength={80}
                             />
-                            {pregunta.opciones.length > 2 && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleEliminarOpcion(pregunta.id, opcion.id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder={`Option ${oIndex + 1} (English)`}
+                                value={opcion.textoEn}
+                                onChange={(e) => handleActualizarOpcion(pregunta.id, opcion.id, 'textoEn', e.target.value)}
+                                maxLength={80}
+                              />
+                              {pregunta.opciones.length > 2 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEliminarOpcion(pregunta.id, opcion.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         ))}
                         {pregunta.opciones.length < 8 && (
