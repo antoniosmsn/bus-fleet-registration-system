@@ -24,6 +24,7 @@ const NuevoSondeoRuta = () => {
   const [tituloEn, setTituloEn] = useState('');
   const [mensajeEs, setMensajeEs] = useState('');
   const [mensajeEn, setMensajeEn] = useState('');
+  const [fechaFinalizacionRespuestas, setFechaFinalizacionRespuestas] = useState('');
   const [tipoTrazado, setTipoTrazado] = useState<TipoTrazado>('dibujado');
   const [rutaExistenteId, setRutaExistenteId] = useState('');
   const [puntosTrazado, setPuntosTrazado] = useState<PuntoTrazado[]>([]);
@@ -159,6 +160,20 @@ const NuevoSondeoRuta = () => {
       toast.error('El mensaje no puede exceder 1000 caracteres');
       return false;
     }
+    
+    // Validar fecha de finalización
+    if (!fechaFinalizacionRespuestas) {
+      toast.error('La fecha de finalización de respuestas es obligatoria');
+      return false;
+    }
+    const fechaSeleccionada = new Date(fechaFinalizacionRespuestas);
+    const fechaActual = new Date();
+    fechaActual.setHours(0, 0, 0, 0); // Resetear horas para comparar solo fechas
+    if (fechaSeleccionada < fechaActual) {
+      toast.error('La fecha de finalización no puede ser menor al día actual');
+      return false;
+    }
+    
     if (tipoTrazado === 'dibujado' && puntosTrazado.length < 2) {
       toast.error('Debe dibujar al menos 2 puntos en el mapa');
       return false;
@@ -219,6 +234,7 @@ const NuevoSondeoRuta = () => {
       tituloEn,
       mensajeEs,
       mensajeEn,
+      fechaFinalizacionRespuestas: new Date(fechaFinalizacionRespuestas).toISOString(),
       tipoTrazado,
       rutaExistenteId,
       puntosTrazado,
@@ -388,6 +404,20 @@ const NuevoSondeoRuta = () => {
                     {mensajeEn.length}/1000 characters
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fechaFinalizacion">Fecha de finalización de recepción de respuestas *</Label>
+                <Input
+                  id="fechaFinalizacion"
+                  type="date"
+                  value={fechaFinalizacionRespuestas}
+                  onChange={(e) => setFechaFinalizacionRespuestas(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+                <p className="text-xs text-muted-foreground">
+                  La fecha se almacenará en UTC. Seleccione hasta cuándo desea recibir respuestas.
+                </p>
               </div>
             </CardContent>
           </Card>

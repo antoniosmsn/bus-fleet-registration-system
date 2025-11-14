@@ -29,6 +29,7 @@ export interface SondeoRuta {
   mensajeEs: string;
   mensajeEn: string;
   fechaPublicacion: string;
+  fechaFinalizacionRespuestas: string;
   tipoTrazado: TipoTrazado;
   rutaExistenteId?: string;
   rutaExistenteNombre?: string;
@@ -49,6 +50,7 @@ export interface SondeoRutaFormData {
   tituloEn: string;
   mensajeEs: string;
   mensajeEn: string;
+  fechaFinalizacionRespuestas: string;
   tipoTrazado: TipoTrazado;
   rutaExistenteId?: string;
   trazado: PuntoTrazado[];

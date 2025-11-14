@@ -15,6 +15,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Estamos evaluando la apertura de una nueva ruta directa entre San José y Cartago. Nos gustaría conocer su opinión y nivel de interés.',
     mensajeEn: 'We are evaluating the opening of a new direct route between San José and Cartago. We would like to know your opinion and level of interest.',
     fechaPublicacion: '2024-01-15T08:00:00',
+    fechaFinalizacionRespuestas: '2024-02-15T23:59:59',
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9281, lng: -84.0907, orden: 1 },
@@ -90,6 +91,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Propuesta de ruta circular dentro de la zona franca para mejorar la conectividad interna.',
     mensajeEn: 'Proposed circular route within the free zone to improve internal connectivity.',
     fechaPublicacion: '2024-01-20T09:00:00',
+    fechaFinalizacionRespuestas: '2024-02-20T23:59:59',
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-5',
     rutaExistenteNombre: 'Circuito Metropolitano',
@@ -140,6 +142,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Evaluación de demanda para servicio nocturno que conecte el centro con principales zonas residenciales.',
     mensajeEn: 'Demand evaluation for night service connecting downtown with main residential areas.',
     fechaPublicacion: '2024-02-01T10:00:00',
+    fechaFinalizacionRespuestas: '2024-03-01T23:59:59',
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9300, lng: -84.0850, orden: 1 },
@@ -175,6 +178,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta express para conectar el aeropuerto internacional con las principales zonas francas.',
     mensajeEn: 'Express route to connect the international airport with the main free zones.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9937, lng: -84.2089, orden: 1 },
@@ -210,6 +214,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Propuesta de circuito urbano que conecta los principales puntos del centro de la ciudad.',
     mensajeEn: 'Urban circuit proposal connecting the main points of downtown.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9326, lng: -84.0894, orden: 1 },
@@ -245,6 +250,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta especializada para estudiantes universitarios que conecta campus principales.',
     mensajeEn: 'Specialized route for university students connecting main campuses.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-8',
     rutaExistenteNombre: 'Ruta Universitaria',
@@ -281,6 +287,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Conexión rápida entre las principales zonas industriales del área metropolitana.',
     mensajeEn: 'Fast connection between the main industrial zones of the metropolitan area.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9200, lng: -84.0650, orden: 1 },
@@ -316,6 +323,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta que conecta los principales parques y áreas verdes de la ciudad.',
     mensajeEn: 'Route connecting the main parks and green areas of the city.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9450, lng: -84.0700, orden: 1 },
@@ -350,6 +358,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta especializada para conectar los principales centros médicos.',
     mensajeEn: 'Specialized route to connect the main medical centers.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9320, lng: -84.0780, orden: 1 },
@@ -384,6 +393,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Conecta los principales centros comerciales de la zona metropolitana.',
     mensajeEn: 'Connects the main shopping malls in the metropolitan area.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-12',
     rutaExistenteNombre: 'Ruta Comercial',
@@ -420,6 +430,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta turística que recorre los principales sitios históricos del centro.',
     mensajeEn: 'Tourist route touring the main historic sites downtown.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9330, lng: -84.0830, orden: 1 },
@@ -455,6 +466,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta nocturna con paradas en zonas iluminadas y seguras.',
     mensajeEn: 'Night route with stops in well-lit and safe areas.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9280, lng: -84.0870, orden: 1 },
@@ -489,6 +501,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Conexión directa entre terminales de buses y zonas de trabajo.',
     mensajeEn: 'Direct connection between bus terminals and work zones.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-15',
     rutaExistenteNombre: 'Ruta Terminal',
@@ -525,6 +538,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta que conecta las zonas residenciales del norte con el centro.',
     mensajeEn: 'Route connecting northern residential areas with downtown.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9550, lng: -84.0850, orden: 1 },
@@ -560,6 +574,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta especial para días de eventos deportivos conectando estadios.',
     mensajeEn: 'Special route for sports event days connecting stadiums.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9360, lng: -84.0950, orden: 1 },
@@ -631,6 +646,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta matutina y vespertina para estudiantes de secundaria.',
     mensajeEn: 'Morning and afternoon route for high school students.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-18',
     rutaExistenteNombre: 'Ruta Escolar',
@@ -667,6 +683,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta de fin de semana hacia las playas cercanas.',
     mensajeEn: 'Weekend route to nearby beaches.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9300, lng: -84.0900, orden: 1 },
@@ -702,6 +719,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Recorrido por los principales museos y centros culturales.',
     mensajeEn: 'Tour of the main museums and cultural centers.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9340, lng: -84.0760, orden: 1 },
@@ -736,6 +754,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Conexión directa con el parque tecnológico y empresas de innovación.',
     mensajeEn: 'Direct connection to the technology park and innovation companies.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'ruta-existente',
     rutaExistenteId: 'ruta-20',
     rutaExistenteNombre: 'Ruta Tecnológica',
@@ -772,6 +791,7 @@ export const mockSondeosRutas: SondeoRuta[] = [
     mensajeEs: 'Ruta que conecta los principales mercados y ferias de agricultores.',
     mensajeEn: 'Route connecting the main markets and farmers fairs.',
     fechaPublicacion: generarFechaAleatoria(30),
+    fechaFinalizacionRespuestas: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     tipoTrazado: 'dibujado',
     trazado: [
       { lat: 9.9310, lng: -84.0860, orden: 1 },
